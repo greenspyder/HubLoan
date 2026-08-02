@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Credito.Calculos/Credito.Calculos.csproj" />
+  <Project Path="CreditoSimulador.App/CreditoSimulador.App.csproj" />
+</Solution>
