@@ -1,5 +1,7 @@
 using Credito.Calculos;
 using CreditoSimulador.App.Commands;
+using CreditoSimulador.App.Models;
+using CreditoSimulador.App.Services;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
@@ -184,7 +186,13 @@ namespace CreditoSimulador.App.Handlers
                     using (var cmdLimite = new NpgsqlCommand(sqlLimite, conn))
                     {
                         cmdLimite.Parameters.AddWithValue("idCliente", idCliente);
-                        decimal limiteDisponivel = (decimal)cmdLimite.ExecuteScalar();
+                        var limiteResult = cmdLimite.ExecuteScalar();
+                        if (limiteResult is null)
+                        {
+                            return new BadRequestObjectResult("Cliente não encontrado.");
+                        }
+
+                        decimal limiteDisponivel = Convert.ToDecimal(limiteResult);
 
                         if (principal > limiteDisponivel)
                         {
@@ -292,6 +300,325 @@ namespace CreditoSimulador.App.Handlers
                 trans.Rollback();
                 return new BadRequestObjectResult("Erro no pagamento: " + ex.Message);
             }
+        }
+    }
+
+    public class SimularCreditoHandler : BaseClientesHandler
+    {
+        private readonly InMemoryCreditCatalog _catalog;
+
+        public SimularCreditoHandler(InMemoryCreditCatalog catalog)
+        {
+            _catalog = catalog;
+        }
+
+        public IActionResult Handle(SimularCreditoCommand command)
+        {
+            try
+            {
+                var offer = _catalog.GetById(command.Request.OfertaId);
+                if (offer is null)
+                {
+                    return new BadRequestObjectResult("Oferta não encontrada.");
+                }
+
+                if (!offer.Ativa)
+                {
+                    return new BadRequestObjectResult("Essa oferta não está mais disponível.");
+                }
+
+                if (command.Request.ValorSolicitado < offer.ValorMinimo || command.Request.ValorSolicitado > offer.ValorMaximo)
+                {
+                    return new BadRequestObjectResult($"Valor fora da faixa permitida para a oferta ({offer.ValorMinimo:C2} a {offer.ValorMaximo:C2}).");
+                }
+
+                if (command.Request.QuantidadeParcelas < offer.ParcelasMinimas || command.Request.QuantidadeParcelas > offer.ParcelasMaximas)
+                {
+                    return new BadRequestObjectResult($"Quantidade de parcelas fora do permitido ({offer.ParcelasMinimas} a {offer.ParcelasMaximas}).");
+                }
+
+                if (command.Request.DiaVencimento < offer.DiaVencimentoMinimo || command.Request.DiaVencimento > offer.DiaVencimentoMaximo)
+                {
+                    return new BadRequestObjectResult($"Dia de vencimento fora do permitido ({offer.DiaVencimentoMinimo} a {offer.DiaVencimentoMaximo}).");
+                }
+
+                if (command.Request.CarenciaMeses < offer.CarenciaMinimaMeses || command.Request.CarenciaMeses > offer.CarenciaMaximaMeses)
+                {
+                    return new BadRequestObjectResult($"Carência fora do permitido ({offer.CarenciaMinimaMeses} a {offer.CarenciaMaximaMeses}).");
+                }
+
+                using var conn = new NpgsqlConnection(ConnectionString);
+                conn.Open();
+                const string sqlCliente = "SELECT limite_global FROM clientes WHERE id_cliente = @id";
+                using var cmdCliente = new NpgsqlCommand(sqlCliente, conn);
+                cmdCliente.Parameters.AddWithValue("id", command.Request.ClienteId);
+                var limiteCliente = cmdCliente.ExecuteScalar();
+                if (limiteCliente is null)
+                {
+                    return new BadRequestObjectResult("Cliente não encontrado.");
+                }
+
+                var limiteDisponivel = Convert.ToDecimal(limiteCliente);
+                if (command.Request.ValorSolicitado > limiteDisponivel)
+                {
+                    return new BadRequestObjectResult($"Crédito indisponível: o valor sugerido excede o limite do cliente ({limiteDisponivel:C2}).");
+                }
+
+                var calc = new CalculadoraAmortizacao();
+                var cronograma = calc.GerarCronograma(command.Request.ValorSolicitado, offer.TaxaJurosMensal, command.Request.QuantidadeParcelas, offer.TipoAmortizacao);
+                var parcelas = cronograma.Select(p => new SimulacaoParcela
+                {
+                    Numero = p.Numero,
+                    DataVencimento = DateTime.Now.AddMonths(command.Request.CarenciaMeses + p.Numero).Date.AddDays(command.Request.DiaVencimento - 1),
+                    ValorAmortizacao = p.Amortizacao,
+                    ValorJuros = p.Juros,
+                    ValorTotalParcela = p.Total
+                }).ToList();
+
+                var response = new SimulacaoCreditoResponse
+                {
+                    Aprovado = true,
+                    Mensagem = "Simulação aprovada.",
+                    Oferta = offer,
+                    ValorSolicitado = command.Request.ValorSolicitado,
+                    QuantidadeParcelas = command.Request.QuantidadeParcelas,
+                    DiaVencimento = command.Request.DiaVencimento,
+                    CarenciaMeses = command.Request.CarenciaMeses,
+                    ValorParcela = parcelas.FirstOrDefault()?.ValorTotalParcela ?? 0m,
+                    Parcelas = parcelas
+                };
+
+                return new OkObjectResult(response);
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult($"Erro na simulação: {ex.Message}");
+            }
+        }
+    }
+
+    public class ContratarCreditoHandler : BaseClientesHandler
+    {
+        private readonly InMemoryCreditCatalog _catalog;
+
+        public ContratarCreditoHandler(InMemoryCreditCatalog catalog)
+        {
+            _catalog = catalog;
+        }
+
+        public IActionResult Handle(ContratarCreditoCommand command)
+        {
+            using var conn = new NpgsqlConnection(ConnectionString);
+            conn.Open();
+            using var transaction = conn.BeginTransaction();
+
+            try
+            {
+                var offer = _catalog.GetById(command.Request.OfertaId);
+                if (offer is null || !offer.Ativa)
+                {
+                    return new BadRequestObjectResult("Oferta inválida ou indisponível.");
+                }
+
+                if (command.Request.ValorSolicitado < offer.ValorMinimo || command.Request.ValorSolicitado > offer.ValorMaximo)
+                {
+                    return new BadRequestObjectResult("Valor não contempla os limites da oferta.");
+                }
+
+                const string sqlCliente = "SELECT limite_global FROM clientes WHERE id_cliente = @id";
+                using var cmdCliente = new NpgsqlCommand(sqlCliente, conn);
+                cmdCliente.Parameters.AddWithValue("id", command.Request.ClienteId);
+                var limiteCliente = cmdCliente.ExecuteScalar();
+                if (limiteCliente is null)
+                {
+                    return new BadRequestObjectResult("Cliente não encontrado.");
+                }
+
+                var limiteDisponivel = Convert.ToDecimal(limiteCliente);
+                if (command.Request.ValorSolicitado > limiteDisponivel)
+                {
+                    return new BadRequestObjectResult("Crédito negado pelo limite do cliente.");
+                }
+
+                const string sqlConta = "SELECT id_cliente FROM contas WHERE id_cliente = @id";
+                using var cmdConta = new NpgsqlCommand(sqlConta, conn);
+                cmdConta.Parameters.AddWithValue("id", command.Request.ClienteId);
+                if (cmdConta.ExecuteScalar() is null)
+                {
+                    return new BadRequestObjectResult("Cliente não possui conta ativa para desembolso.");
+                }
+
+                const string sqlInsertContrato = @"INSERT INTO contratos (valor_financiado, taxa_juros_mensal, quantidade_parcelas, tipo_amortizacao, id_cliente)
+                    VALUES (@valor, @taxa, @parcelas, @tipo, @cliente)
+                    RETURNING id_contrato";
+                using var cmdContrato = new NpgsqlCommand(sqlInsertContrato, conn);
+                cmdContrato.Parameters.AddWithValue("valor", command.Request.ValorSolicitado);
+                cmdContrato.Parameters.AddWithValue("taxa", offer.TaxaJurosMensal);
+                cmdContrato.Parameters.AddWithValue("parcelas", command.Request.QuantidadeParcelas);
+                cmdContrato.Parameters.AddWithValue("tipo", offer.TipoAmortizacao);
+                cmdContrato.Parameters.AddWithValue("cliente", command.Request.ClienteId);
+                var idContrato = (int)cmdContrato.ExecuteScalar();
+
+                const string sqlDesembolso = "UPDATE contas SET saldo = saldo + @valor WHERE id_cliente = @idCliente";
+                using var cmdDesembolso = new NpgsqlCommand(sqlDesembolso, conn);
+                cmdDesembolso.Parameters.AddWithValue("valor", command.Request.ValorSolicitado);
+                cmdDesembolso.Parameters.AddWithValue("idCliente", command.Request.ClienteId);
+                cmdDesembolso.ExecuteNonQuery();
+
+                var calc = new CalculadoraAmortizacao();
+                var cronograma = calc.GerarCronograma(command.Request.ValorSolicitado, offer.TaxaJurosMensal, command.Request.QuantidadeParcelas, offer.TipoAmortizacao);
+                const string sqlInsertParcela = @"INSERT INTO parcelas (id_contrato, num_parcela, data_vencimento, valor_amortizacao, valor_juros, valor_total_parcela, status_pagamento)
+                    VALUES (@contrato, @numero, @data, @amort, @juros, @total, 'ABERTO')";
+                using var cmdParcela = new NpgsqlCommand(sqlInsertParcela, conn);
+                cmdParcela.Parameters.Add("@contrato", NpgsqlTypes.NpgsqlDbType.Integer);
+                cmdParcela.Parameters.Add("@numero", NpgsqlTypes.NpgsqlDbType.Integer);
+                cmdParcela.Parameters.Add("@data", NpgsqlTypes.NpgsqlDbType.Date);
+                cmdParcela.Parameters.Add("@amort", NpgsqlTypes.NpgsqlDbType.Numeric);
+                cmdParcela.Parameters.Add("@juros", NpgsqlTypes.NpgsqlDbType.Numeric);
+                cmdParcela.Parameters.Add("@total", NpgsqlTypes.NpgsqlDbType.Numeric);
+
+                foreach (var parcela in cronograma)
+                {
+                    cmdParcela.Parameters["@contrato"].Value = idContrato;
+                    cmdParcela.Parameters["@numero"].Value = parcela.Numero;
+                    cmdParcela.Parameters["@data"].Value = DateTime.Now.AddMonths(command.Request.CarenciaMeses + parcela.Numero).Date.AddDays(command.Request.DiaVencimento - 1);
+                    cmdParcela.Parameters["@amort"].Value = parcela.Amortizacao;
+                    cmdParcela.Parameters["@juros"].Value = parcela.Juros;
+                    cmdParcela.Parameters["@total"].Value = parcela.Total;
+                    cmdParcela.ExecuteNonQuery();
+                }
+
+                _catalog.AddRequest(new CreditLimitRequest
+                {
+                    ClienteId = command.Request.ClienteId,
+                    OfertaId = offer.Id,
+                    ValorSolicitado = command.Request.ValorSolicitado,
+                    QuantidadeParcelas = command.Request.QuantidadeParcelas,
+                    DiaVencimento = command.Request.DiaVencimento,
+                    CarenciaMeses = command.Request.CarenciaMeses,
+                    Status = "APROVADO",
+                    Garantias = offer.Garantias
+                });
+
+                transaction.Commit();
+
+                return new OkObjectResult(new
+                {
+                    Mensagem = "Contrato criado com sucesso.",
+                    ContratoId = idContrato,
+                    Oferta = offer.Nome,
+                    ValorFinanciado = command.Request.ValorSolicitado,
+                    Parcelas = command.Request.QuantidadeParcelas,
+                    Garantias = offer.Garantias
+                });
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                return new BadRequestObjectResult($"Erro na contratação: {ex.Message}");
+            }
+        }
+    }
+
+    public class ObterDetalhesContratoHandler : BaseClientesHandler
+    {
+        public IActionResult Handle(ObterDetalhesContratoCommand command)
+        {
+            try
+            {
+                using var conn = new NpgsqlConnection(ConnectionString);
+                conn.Open();
+
+                const string sqlContrato = @"SELECT id_contrato, id_cliente, valor_financiado, taxa_juros_mensal, quantidade_parcelas, tipo_amortizacao FROM contratos WHERE id_contrato = @id";
+                using var cmdContrato = new NpgsqlCommand(sqlContrato, conn);
+                cmdContrato.Parameters.AddWithValue("id", command.ContratoId);
+                using var reader = cmdContrato.ExecuteReader();
+
+                if (!reader.Read())
+                {
+                    return new NotFoundObjectResult("Contrato não encontrado.");
+                }
+
+                var contrato = new ContratoDetalhesResponse
+                {
+                    IdContrato = reader.GetInt32(0),
+                    IdCliente = reader.GetInt32(1),
+                    ValorFinanciado = reader.GetDecimal(2),
+                    TaxaJurosMensal = reader.GetDecimal(3),
+                    QuantidadeParcelas = reader.GetInt32(4),
+                    TipoAmortizacao = reader.GetString(5)
+                };
+
+                reader.Close();
+
+                const string sqlParcelas = @"SELECT num_parcela, data_vencimento, valor_amortizacao, valor_juros, valor_total_parcela FROM parcelas WHERE id_contrato = @id ORDER BY num_parcela";
+                using var cmdParcelas = new NpgsqlCommand(sqlParcelas, conn);
+                cmdParcelas.Parameters.AddWithValue("id", command.ContratoId);
+                using var parcelasReader = cmdParcelas.ExecuteReader();
+                while (parcelasReader.Read())
+                {
+                    contrato.Parcelas.Add(new SimulacaoParcela
+                    {
+                        Numero = parcelasReader.GetInt32(0),
+                        DataVencimento = parcelasReader.GetDateTime(1),
+                        ValorAmortizacao = parcelasReader.GetDecimal(2),
+                        ValorJuros = parcelasReader.GetDecimal(3),
+                        ValorTotalParcela = parcelasReader.GetDecimal(4)
+                    });
+                }
+
+                return new OkObjectResult(contrato);
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult($"Erro ao buscar detalhes: {ex.Message}");
+            }
+        }
+    }
+
+    public class CriarOfertaHandler
+    {
+        private readonly InMemoryCreditCatalog _catalog;
+
+        public CriarOfertaHandler(InMemoryCreditCatalog catalog)
+        {
+            _catalog = catalog;
+        }
+
+        public IActionResult Handle(CriarOfertaCommand command)
+        {
+            var oferta = _catalog.AddOrUpdate(command.Oferta);
+            return new OkObjectResult(oferta);
+        }
+    }
+
+    public class ListarOfertasHandler
+    {
+        private readonly InMemoryCreditCatalog _catalog;
+
+        public ListarOfertasHandler(InMemoryCreditCatalog catalog)
+        {
+            _catalog = catalog;
+        }
+
+        public IActionResult Handle(ListarOfertasCommand command)
+        {
+            return new OkObjectResult(_catalog.Offers.Where(o => o.Ativa).ToList());
+        }
+    }
+
+    public class ListarSolicitacoesAdminHandler
+    {
+        private readonly InMemoryCreditCatalog _catalog;
+
+        public ListarSolicitacoesAdminHandler(InMemoryCreditCatalog catalog)
+        {
+            _catalog = catalog;
+        }
+
+        public IActionResult Handle(ListarSolicitacoesAdminCommand command)
+        {
+            return new OkObjectResult(_catalog.Requests.OrderByDescending(r => r.CriadoEm).ToList());
         }
     }
 }
