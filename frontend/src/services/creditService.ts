@@ -1,6 +1,7 @@
 import type {
   AdminContract,
   Client,
+  ClientContractParcel,
   ContractActionResponse,
   ContractDetails,
   ContractSummary,
@@ -58,6 +59,10 @@ export async function listAdminRequests(): Promise<LimitRequest[]> {
 
 export async function listClientContracts(clientId: number): Promise<ContractSummary[]> {
   return requestJson<ContractSummary[]>(`/clientes/contratos?customerId=${clientId}`);
+}
+
+export async function listClientParcels(clientId: number): Promise<ClientContractParcel[]> {
+  return requestJson<ClientContractParcel[]>(`/clientes/parcelas?customerId=${clientId}`);
 }
 
 export async function getContractDetails(contractId: number): Promise<ContractDetails> {

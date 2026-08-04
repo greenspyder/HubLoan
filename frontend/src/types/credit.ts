@@ -39,6 +39,17 @@ export type ContractParcel = {
   valorTotalParcela: number;
 };
 
+export type ClientContractParcel = {
+  id: number;
+  idContrato: number;
+  numeroParcela: number;
+  dataVencimento: string;
+  valorAmortizacao: number;
+  valorJuros: number;
+  valorTotalParcela: number;
+  statusPagamento: string;
+};
+
 export type ContractDetails = {
   idContrato: number;
   idCliente: number;

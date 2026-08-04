@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
+import { StatusChip } from "../../../components/ui/status-chip";
 import { getContractDetails } from "../../../services/creditService";
 import type { ContractDetails } from "../../../types/credit";
 
@@ -64,14 +65,23 @@ export function AdminContractDetailsPage() {
             <CardHeader>
               <CardTitle>Resumo da operação</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-slate-700">
-              <p>Contrato #{details.idContrato}</p>
-              <p>Cliente #{details.idCliente}</p>
-              <p>Valor financiado: {formatCurrency(details.valorFinanciado)}</p>
-              <p>Taxa mensal: {(details.taxaJurosMensal * 100).toFixed(2)}%</p>
-              <p>Parcelas: {details.quantidadeParcelas}</p>
+            <CardContent className="space-y-4 text-sm text-slate-700">
+              <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-4">
+                <StatusChip status={details.status} />
+                <p className="mt-4 text-2xl font-semibold text-slate-900">{formatCurrency(details.valorFinanciado)}</p>
+                <p className="text-sm text-slate-500">Contrato #{details.idContrato} • Cliente #{details.idCliente}</p>
+              </div>
+              <div className="grid gap-3 md:grid-cols-2">
+                <div className="rounded-[20px] border border-slate-200 bg-white p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Taxa mensal</p>
+                  <p className="mt-2 text-lg font-semibold text-slate-900">{(details.taxaJurosMensal * 100).toFixed(2)}%</p>
+                </div>
+                <div className="rounded-[20px] border border-slate-200 bg-white p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Parcelas</p>
+                  <p className="mt-2 text-lg font-semibold text-slate-900">{details.quantidadeParcelas}</p>
+                </div>
+              </div>
               <p>Amortização: {details.tipoAmortizacao}</p>
-              <p>Status: {details.status}</p>
               {typeof details.valorTotalPago === "number" ? <p>Valor total pago: {formatCurrency(details.valorTotalPago)}</p> : null}
             </CardContent>
           </Card>
@@ -85,10 +95,15 @@ export function AdminContractDetailsPage() {
                 <p className="text-sm text-slate-500">Nenhuma parcela encontrada.</p>
               ) : (
                 details.parcelas.map((parcela) => (
-                  <div key={parcela.numero} className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
-                    <span>Parcela {parcela.numero}</span>
-                    <span>{formatDate(parcela.dataVencimento)}</span>
-                    <span>{formatCurrency(parcela.valorTotalParcela)}</span>
+                  <div key={parcela.numero} className="grid gap-3 rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-4 text-sm md:grid-cols-[auto_1fr_auto] md:items-center">
+                    <div>
+                      <p className="font-semibold text-slate-900">Parcela {parcela.numero}</p>
+                      <p className="text-xs text-slate-500">Vencimento {formatDate(parcela.dataVencimento)}</p>
+                    </div>
+                    <div className="text-slate-600">{formatCurrency(parcela.valorTotalParcela)}</div>
+                    <div className="text-right">
+                      <StatusChip status="Em aberto" />
+                    </div>
                   </div>
                 ))
               )}

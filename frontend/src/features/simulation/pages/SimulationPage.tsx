@@ -3,7 +3,8 @@ import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Input } from "../../../components/ui/input";
-import { listClients, listClientOffers, contractCredit, simulateCredit } from "../../../services/creditService";
+import { StatusChip } from "../../../components/ui/status-chip";
+import { contractCredit, listClientOffers, listClients, simulateCredit } from "../../../services/creditService";
 import type { Client, Offer, SimulationResponse } from "../../../types/credit";
 import { useImpersonation } from "../../../app/contexts/ImpersonationContext";
 
@@ -121,13 +122,18 @@ export function SimulationPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Simulação</p>
-          <h1 className="text-3xl font-semibold text-slate-900">{selectedOffer.nome}</h1>
-          {selectedClient ? <p className="mt-1 text-sm text-slate-600">Cliente #{selectedClient.id} • {selectedClient.nome}</p> : null}
+      <div className="rounded-[28px] border border-slate-200/80 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-6 text-white shadow-[0_24px_50px_-28px_rgba(15,23,42,0.85)]">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Simulação premium</p>
+            <h1 className="mt-2 text-3xl font-semibold">{selectedOffer.nome}</h1>
+            {selectedClient ? <p className="mt-2 text-sm text-slate-300">Cliente #{selectedClient.id} • {selectedClient.nome}</p> : null}
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <StatusChip status={simulation?.aprovado ? "Aprovado" : step === 3 ? "Em análise" : "Rascunho"} className="border-white/20 bg-white/10 text-white" />
+            <Button variant="outline" className="border-white/20 bg-white/10 text-white hover:bg-white/15" onClick={() => navigate("/cliente")}>Voltar para ofertas</Button>
+          </div>
         </div>
-        <Button variant="outline" onClick={() => navigate("/cliente")}>Voltar para ofertas</Button>
       </div>
 
       <div className="grid gap-3 md:grid-cols-3">
@@ -136,7 +142,7 @@ export function SimulationPage() {
           { number: 2, title: "Garantias e condições" },
           { number: 3, title: "Resumo e contratação" },
         ].map((item) => (
-          <div key={item.number} className={`rounded-2xl border px-4 py-3 ${step === item.number ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200 bg-white text-slate-500"}`}>
+          <div key={item.number} className={`rounded-[20px] border px-4 py-3 transition ${step === item.number ? "border-slate-900 bg-slate-900 text-white shadow-[0_18px_40px_-26px_rgba(15,23,42,0.8)]" : "border-slate-200 bg-white/85 text-slate-500"}`}>
             <p className="text-xs uppercase tracking-[0.2em]">Etapa {item.number}</p>
             <p className="mt-1 text-sm font-medium">{item.title}</p>
           </div>
@@ -170,12 +176,23 @@ export function SimulationPage() {
               </label>
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-              <p className="font-medium text-slate-800">Limites da oferta</p>
-              <p>Valor: {formatCurrency(selectedOffer.valorMinimo)} a {formatCurrency(selectedOffer.valorMaximo)}</p>
-              <p>Parcelas: {selectedOffer.parcelasMinimas} a {selectedOffer.parcelasMaximas}</p>
-              <p>Carência: {selectedOffer.carenciaMinimaMeses} a {selectedOffer.carenciaMaximaMeses} meses</p>
-              <p>Vencimento: dia {selectedOffer.diaVencimentoMinimo} ao dia {selectedOffer.diaVencimentoMaximo}</p>
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Valor</p>
+                <p className="mt-2 text-lg font-semibold text-slate-900">{formatCurrency(selectedOffer.valorMinimo)} a {formatCurrency(selectedOffer.valorMaximo)}</p>
+              </div>
+              <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Parcelas</p>
+                <p className="mt-2 text-lg font-semibold text-slate-900">{selectedOffer.parcelasMinimas} a {selectedOffer.parcelasMaximas}</p>
+              </div>
+              <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Carência</p>
+                <p className="mt-2 text-lg font-semibold text-slate-900">{selectedOffer.carenciaMinimaMeses} a {selectedOffer.carenciaMaximaMeses} meses</p>
+              </div>
+              <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Vencimento</p>
+                <p className="mt-2 text-lg font-semibold text-slate-900">Dia {selectedOffer.diaVencimentoMinimo} ao {selectedOffer.diaVencimentoMaximo}</p>
+              </div>
             </div>
 
             <Button onClick={() => void handleSimulate()} disabled={loading}>
@@ -194,17 +211,17 @@ export function SimulationPage() {
             <CardContent className="space-y-4 text-sm text-slate-600">
               <div>
                 <p className="font-medium text-slate-800">Garantias exigidas</p>
-                <ul className="mt-2 list-disc space-y-1 pl-5">
-                  {selectedOffer.garantias.map((garantia) => <li key={garantia}>{garantia}</li>)}
-                </ul>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {selectedOffer.garantias.map((garantia) => <StatusChip key={garantia} status={garantia} />)}
+                </div>
               </div>
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-4">
                 <p className="font-medium text-slate-800">Condições da oferta</p>
                 <p>Taxa mensal: {(selectedOffer.taxaJurosMensal * 100).toFixed(2)}%</p>
                 <p>Amortização: {selectedOffer.tipoAmortizacao}</p>
                 <p>Condição de limite máximo por cliente: {formatCurrency(selectedOffer.limiteMaximoCliente)}</p>
               </div>
-              <label className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-700">
+              <label className="flex items-center gap-3 rounded-[20px] border border-slate-200 bg-white p-4 text-sm text-slate-700">
                 <input type="checkbox" checked={acceptedConditions} onChange={(event) => setAcceptedConditions(event.target.checked)} />
                 Li e aceito as condições e garantias da oferta.
               </label>
@@ -220,12 +237,20 @@ export function SimulationPage() {
               <CardTitle>Prévia da simulação</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm text-slate-600">
-              <p>Valor solicitado: {formatCurrency(simulation.valorSolicitado)}</p>
+              <div className="grid gap-3 md:grid-cols-2">
+                <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Valor</p>
+                  <p className="mt-2 text-lg font-semibold text-slate-900">{formatCurrency(simulation.valorSolicitado)}</p>
+                </div>
+                <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Parcela estimada</p>
+                  <p className="mt-2 text-lg font-semibold text-slate-900">{formatCurrency(simulation.valorParcela)}</p>
+                </div>
+              </div>
               <p>Parcelas: {simulation.quantidadeParcelas}</p>
               <p>Dia de vencimento: {simulation.diaVencimento}</p>
               <p>Carência: {simulation.carenciaMeses} meses</p>
-              <p className="font-medium text-slate-900">Primeira parcela estimada: {formatCurrency(simulation.valorParcela)}</p>
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div className="rounded-[20px] border border-slate-200 bg-slate-50 p-4">
                 <p className="font-medium text-slate-800">Mensagem da análise</p>
                 <p className="mt-1">{simulation.mensagem}</p>
               </div>
@@ -241,8 +266,8 @@ export function SimulationPage() {
               <CardTitle>Resumo final</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-slate-700">
-              <p>Status: {simulation.aprovado ? "Aprovado" : "Não aprovado"}</p>
-              <p>Valor solicitado: {formatCurrency(simulation.valorSolicitado)}</p>
+              <StatusChip status={simulation.aprovado ? "Aprovado" : "Reprovado"} />
+              <p className="pt-2">Valor solicitado: {formatCurrency(simulation.valorSolicitado)}</p>
               <p>Quantidade de parcelas: {simulation.quantidadeParcelas}</p>
               <p>Dia de vencimento: {simulation.diaVencimento}</p>
               <p>Carência: {simulation.carenciaMeses} meses</p>
@@ -263,10 +288,10 @@ export function SimulationPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               {simulation.parcelas.map((parcela) => (
-                <div key={parcela.numero} className="grid grid-cols-3 items-center rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
-                  <span>Parcela {parcela.numero}</span>
+                <div key={parcela.numero} className="grid grid-cols-3 items-center rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
+                  <span className="font-medium text-slate-900">Parcela {parcela.numero}</span>
                   <span>{formatDate(parcela.dataVencimento)}</span>
-                  <span className="text-right">{formatCurrency(parcela.valorTotalParcela)}</span>
+                  <span className="text-right font-medium">{formatCurrency(parcela.valorTotalParcela)}</span>
                 </div>
               ))}
             </CardContent>
