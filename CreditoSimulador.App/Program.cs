@@ -24,6 +24,7 @@ builder.Services.AddScoped<PagarParcelaHandler>();
 builder.Services.AddScoped<SimularCreditoHandler>();
 builder.Services.AddScoped<ContratarCreditoHandler>();
 builder.Services.AddScoped<ObterDetalhesContratoHandler>();
+builder.Services.AddScoped<AtualizarStatusContratoHandler>();
 builder.Services.AddScoped<CriarOfertaHandler>();
 builder.Services.AddScoped<ListarOfertasHandler>();
 builder.Services.AddScoped<ListarSolicitacoesAdminHandler>();

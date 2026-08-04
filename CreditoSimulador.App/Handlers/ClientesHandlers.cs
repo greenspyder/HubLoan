@@ -10,6 +10,89 @@ namespace CreditoSimulador.App.Handlers
     public abstract class BaseClientesHandler
     {
         protected readonly string ConnectionString = "Host=localhost;Username=postgres;Password=13531;Database=postgres";
+
+        protected void AtualizarParcelasEVincularStatusDosContratos(NpgsqlConnection conn)
+        {
+            const string sqlAtualizarParcelas = @"
+                UPDATE parcelas
+                SET status_pagamento = CASE
+                    WHEN status_pagamento IS NULL OR status_pagamento = '' THEN 'ABERTO'
+                    WHEN status_pagamento = 'ABERTO' AND data_vencimento < CURRENT_DATE THEN 'ATRASADO'
+                    ELSE status_pagamento
+                END
+                WHERE (status_pagamento IS NULL OR status_pagamento = '' OR status_pagamento = 'ABERTO')
+                  AND data_vencimento < CURRENT_DATE";
+
+            using var cmdParcelas = new NpgsqlCommand(sqlAtualizarParcelas, conn);
+            cmdParcelas.ExecuteNonQuery();
+
+            const string sqlAtualizarContratos = @"
+                UPDATE contratos
+                SET status = CASE
+                    WHEN EXISTS (
+                        SELECT 1
+                        FROM parcelas p
+                        WHERE p.id_contrato = contratos.id_contrato
+                          AND p.status_pagamento = 'ATRASADO'
+                    ) THEN @atrasado
+                    WHEN status IS NULL OR status = '' THEN @geracao
+                    ELSE status
+                END";
+
+            using var cmdContratos = new NpgsqlCommand(sqlAtualizarContratos, conn);
+            cmdContratos.Parameters.AddWithValue("atrasado", ContratoStatus.Atrasado);
+            cmdContratos.Parameters.AddWithValue("geracao", ContratoStatus.GeracaoContratos);
+            cmdContratos.ExecuteNonQuery();
+        }
+
+        protected void MarcarContratoComoDesembolsado(NpgsqlConnection conn, int contratoId)
+        {
+            const string sql = @"
+                UPDATE contratos
+                SET status = @desembolsado
+                WHERE id_contrato = @id
+                  AND NOT EXISTS (
+                      SELECT 1
+                      FROM parcelas p
+                      WHERE p.id_contrato = @id
+                        AND p.status_pagamento <> 'PAGO'
+                  )";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("desembolsado", ContratoStatus.Desembolsado);
+            cmd.Parameters.AddWithValue("id", contratoId);
+            cmd.ExecuteNonQuery();
+        }
+
+        protected string NormalizarStatusParcela(string? status)
+        {
+            return status switch
+            {
+                "PAGO" => "Pago",
+                "ATRASADO" => "Atrasado",
+                "ABERTO" => "Pendente",
+                _ => string.IsNullOrWhiteSpace(status) ? "Pendente" : status
+            };
+        }
+
+        protected string NormalizarStatusContrato(string? status)
+        {
+            if (string.IsNullOrWhiteSpace(status))
+            {
+                return ContratoStatus.GeracaoContratos;
+            }
+
+            return status.Trim().ToLowerInvariant() switch
+            {
+                "geração de contratos" => ContratoStatus.GeracaoContratos,
+                "pendente assinatura" => ContratoStatus.PendenteAssinatura,
+                "aguardando desembolso" => ContratoStatus.AguardandoDesembolso,
+                "desembolsado" => ContratoStatus.Desembolsado,
+                "atrasado" => ContratoStatus.Atrasado,
+                "expirado" => ContratoStatus.Expirado,
+                _ => status
+            };
+        }
     }
 
     public class ListarClientesHandler : BaseClientesHandler
@@ -67,6 +150,8 @@ namespace CreditoSimulador.App.Handlers
                 using var conn = new NpgsqlConnection(ConnectionString);
                 conn.Open();
 
+                AtualizarParcelasEVincularStatusDosContratos(conn);
+
                 const string sql = @"
             SELECT 
                 id_contrato, 
@@ -74,7 +159,8 @@ namespace CreditoSimulador.App.Handlers
                 taxa_juros_mensal, 
                 quantidade_parcelas, 
                 tipo_amortizacao, 
-                id_cliente
+                id_cliente,
+                status
             FROM contratos 
             WHERE id_cliente = @id
             ORDER BY id_contrato DESC";
@@ -94,6 +180,7 @@ namespace CreditoSimulador.App.Handlers
                         quantidadeParcelas = reader.GetInt32(3),
                         tipoAmortizacao = reader.GetString(4),
                         idCliente = reader.GetInt32(5),
+                        status = NormalizarStatusContrato(reader.IsDBNull(6) ? null : reader.GetString(6))
                     });
                 }
 
@@ -114,6 +201,8 @@ namespace CreditoSimulador.App.Handlers
             {
                 using var conn = new NpgsqlConnection(ConnectionString);
                 conn.Open();
+
+                AtualizarParcelasEVincularStatusDosContratos(conn);
 
                 const string sql = @"
             SELECT 
@@ -146,7 +235,7 @@ namespace CreditoSimulador.App.Handlers
                         valorAmortizacao = reader.GetDecimal(4),
                         valorJuros = reader.GetDecimal(5),
                         valorTotalParcela = reader.GetDecimal(6),
-                        statusPagamento = reader.IsDBNull(7) ? "Pendente" : reader.GetString(7)
+                        statusPagamento = NormalizarStatusParcela(reader.IsDBNull(7) ? null : reader.GetString(7))
                     });
                 }
 
@@ -291,6 +380,8 @@ namespace CreditoSimulador.App.Handlers
                 cmdBaixa.Parameters.AddWithValue("c", command.ContratoId);
                 cmdBaixa.Parameters.AddWithValue("n", command.NumeroParcela);
                 cmdBaixa.ExecuteNonQuery();
+
+                MarcarContratoComoDesembolsado(conn, command.ContratoId);
 
                 trans.Commit();
                 return new OkObjectResult($"Parcela {command.NumeroParcela} paga com sucesso! Saldo atualizado.");
@@ -459,6 +550,13 @@ namespace CreditoSimulador.App.Handlers
                 cmdContrato.Parameters.AddWithValue("cliente", command.Request.ClienteId);
                 var idContrato = (int)cmdContrato.ExecuteScalar();
 
+                using (var cmdStatusContrato = new NpgsqlCommand("UPDATE contratos SET status = @status WHERE id_contrato = @id", conn))
+                {
+                    cmdStatusContrato.Parameters.AddWithValue("status", ContratoStatus.GeracaoContratos);
+                    cmdStatusContrato.Parameters.AddWithValue("id", idContrato);
+                    cmdStatusContrato.ExecuteNonQuery();
+                }
+
                 const string sqlDesembolso = "UPDATE contas SET saldo = saldo + @valor WHERE id_cliente = @idCliente";
                 using var cmdDesembolso = new NpgsqlCommand(sqlDesembolso, conn);
                 cmdDesembolso.Parameters.AddWithValue("valor", command.Request.ValorSolicitado);
@@ -529,7 +627,9 @@ namespace CreditoSimulador.App.Handlers
                 using var conn = new NpgsqlConnection(ConnectionString);
                 conn.Open();
 
-                const string sqlContrato = @"SELECT id_contrato, id_cliente, valor_financiado, taxa_juros_mensal, quantidade_parcelas, tipo_amortizacao FROM contratos WHERE id_contrato = @id";
+                AtualizarParcelasEVincularStatusDosContratos(conn);
+
+                const string sqlContrato = @"SELECT id_contrato, id_cliente, valor_financiado, taxa_juros_mensal, quantidade_parcelas, tipo_amortizacao, status FROM contratos WHERE id_contrato = @id";
                 using var cmdContrato = new NpgsqlCommand(sqlContrato, conn);
                 cmdContrato.Parameters.AddWithValue("id", command.ContratoId);
                 using var reader = cmdContrato.ExecuteReader();
@@ -546,7 +646,8 @@ namespace CreditoSimulador.App.Handlers
                     ValorFinanciado = reader.GetDecimal(2),
                     TaxaJurosMensal = reader.GetDecimal(3),
                     QuantidadeParcelas = reader.GetInt32(4),
-                    TipoAmortizacao = reader.GetString(5)
+                    TipoAmortizacao = reader.GetString(5),
+                    Status = NormalizarStatusContrato(reader.IsDBNull(6) ? null : reader.GetString(6))
                 };
 
                 reader.Close();
@@ -572,6 +673,40 @@ namespace CreditoSimulador.App.Handlers
             catch (Exception ex)
             {
                 return new BadRequestObjectResult($"Erro ao buscar detalhes: {ex.Message}");
+            }
+        }
+    }
+
+    public class AtualizarStatusContratoHandler : BaseClientesHandler
+    {
+        public IActionResult Handle(AtualizarStatusContratoCommand command)
+        {
+            try
+            {
+                using var conn = new NpgsqlConnection(ConnectionString);
+                conn.Open();
+
+                if (!ContratoStatus.Todos.Contains(command.Status, StringComparer.OrdinalIgnoreCase))
+                {
+                    return new BadRequestObjectResult("Status inválido.");
+                }
+
+                const string sql = "UPDATE contratos SET status = @status WHERE id_contrato = @id";
+                using var cmd = new NpgsqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("status", command.Status);
+                cmd.Parameters.AddWithValue("id", command.ContratoId);
+                var linhas = cmd.ExecuteNonQuery();
+
+                if (linhas == 0)
+                {
+                    return new NotFoundObjectResult("Contrato não encontrado.");
+                }
+
+                return new OkObjectResult(new { Mensagem = "Status atualizado com sucesso." });
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult($"Erro ao atualizar status: {ex.Message}");
             }
         }
     }

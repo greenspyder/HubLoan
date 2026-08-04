@@ -105,46 +105,6 @@ namespace CreditoSimulador.App.Services
             {
                 return;
             }
-
-            AddOrUpdate(new CreditOffer
-            {
-                Id = "oferta-basica",
-                Nome = "Oferta Básica",
-                Descricao = "Crédito pessoal com garantia simples.",
-                ValorMinimo = 1000,
-                ValorMaximo = 50000,
-                ParcelasMinimas = 6,
-                ParcelasMaximas = 24,
-                CarenciaMinimaMeses = 0,
-                CarenciaMaximaMeses = 3,
-                DiaVencimentoMinimo = 1,
-                DiaVencimentoMaximo = 28,
-                TaxaJurosMensal = 0.015m,
-                TipoAmortizacao = "PRICE",
-                Garantias = new List<string> { "RG", "CPF", "Comprovante de renda" },
-                Ativa = true,
-                LimiteMaximoCliente = 50000
-            });
-
-            AddOrUpdate(new CreditOffer
-            {
-                Id = "oferta-premium",
-                Nome = "Oferta Premium",
-                Descricao = "Crédito com garantia adicional e maior limite.",
-                ValorMinimo = 5000,
-                ValorMaximo = 120000,
-                ParcelasMinimas = 12,
-                ParcelasMaximas = 36,
-                CarenciaMinimaMeses = 1,
-                CarenciaMaximaMeses = 6,
-                DiaVencimentoMinimo = 5,
-                DiaVencimentoMaximo = 25,
-                TaxaJurosMensal = 0.012m,
-                TipoAmortizacao = "SAC",
-                Garantias = new List<string> { "RG", "CPF", "Comprovante de renda", "Contrato de locação" },
-                Ativa = true,
-                LimiteMaximoCliente = 120000
-            });
         }
 
         private static CreditOffer MapToModel(CreditOfferEntityData entity) => new()

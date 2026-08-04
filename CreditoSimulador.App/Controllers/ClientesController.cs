@@ -17,6 +17,7 @@ namespace CreditoSimulador.App.Controllers
         private readonly SimularCreditoHandler _simularCreditoHandler;
         private readonly ContratarCreditoHandler _contratarCreditoHandler;
         private readonly ObterDetalhesContratoHandler _obterDetalhesContratoHandler;
+        private readonly AtualizarStatusContratoHandler _atualizarStatusContratoHandler;
         private readonly ListarOfertasHandler _listarOfertasHandler;
 
         public ClientesController(
@@ -28,6 +29,7 @@ namespace CreditoSimulador.App.Controllers
             SimularCreditoHandler simularCreditoHandler,
             ContratarCreditoHandler contratarCreditoHandler,
             ObterDetalhesContratoHandler obterDetalhesContratoHandler,
+            AtualizarStatusContratoHandler atualizarStatusContratoHandler,
             ListarOfertasHandler listarOfertasHandler)
         {
             _listarClientesHandler = listarClientesHandler;
@@ -38,6 +40,7 @@ namespace CreditoSimulador.App.Controllers
             _simularCreditoHandler = simularCreditoHandler;
             _contratarCreditoHandler = contratarCreditoHandler;
             _obterDetalhesContratoHandler = obterDetalhesContratoHandler;
+            _atualizarStatusContratoHandler = atualizarStatusContratoHandler;
             _listarOfertasHandler = listarOfertasHandler;
         }
 
@@ -97,6 +100,16 @@ namespace CreditoSimulador.App.Controllers
         public IActionResult ObterDetalhesContrato(int contratoId)
         {
             return _obterDetalhesContratoHandler.Handle(new ObterDetalhesContratoCommand { ContratoId = contratoId });
+        }
+
+        [HttpPost("contratos/{contratoId:int}/status")]
+        public IActionResult AtualizarStatusContrato(int contratoId, [FromForm] string status)
+        {
+            return _atualizarStatusContratoHandler.Handle(new AtualizarStatusContratoCommand
+            {
+                ContratoId = contratoId,
+                Status = status
+            });
         }
     }
 }
