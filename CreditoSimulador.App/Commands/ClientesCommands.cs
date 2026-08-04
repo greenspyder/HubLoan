@@ -48,6 +48,12 @@ namespace CreditoSimulador.App.Commands
         public string Status { get; init; } = string.Empty;
     }
 
+    public class AssinarContratoCommand
+    {
+        public int ContratoId { get; init; }
+        public int CustomerId { get; init; }
+    }
+
     public class CriarOfertaCommand
     {
         public CreditOffer Oferta { get; init; } = new();

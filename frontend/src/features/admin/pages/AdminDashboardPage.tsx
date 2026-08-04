@@ -6,8 +6,8 @@ import { Input } from "../../../components/ui/input";
 import { Skeleton } from "../../../components/ui/skeleton";
 import { StatusChip } from "../../../components/ui/status-chip";
 import { Textarea } from "../../../components/ui/textarea";
-import { createOffer, listAdminContracts, listAdminRequests } from "../../../services/creditService";
-import type { AdminContract, LimitRequest } from "../../../types/credit";
+import { createContractTemplate, createOffer, listAdminContracts, listAdminRequests, listContractTemplates } from "../../../services/creditService";
+import type { AdminContract, ContractTemplate, LimitRequest } from "../../../types/credit";
 import { useImpersonation } from "../../../app/contexts/ImpersonationContext";
 
 const defaultOfferForm = {
@@ -28,6 +28,12 @@ const defaultOfferForm = {
   limiteMaximoCliente: 30000,
 };
 
+const defaultTemplateForm = {
+  nome: "Template padrão de empréstimo",
+  conteudo: "Contrato de empréstimo entre {{cliente_nome}} e CreditoSimulador. Contrato #{{id_contrato}} no valor de R$ {{valor_financiado}}, taxa mensal {{taxa_juros_mensal}}, {{quantidade_parcelas}} parcelas, amortização {{tipo_amortizacao}} e pagamento via {{tipo_pagamento}}. Gerado em {{data_geracao}}.",
+  ativo: true,
+};
+
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
 }
@@ -37,10 +43,13 @@ export function AdminDashboardPage() {
   const { impersonateClient } = useImpersonation();
   const [contracts, setContracts] = useState<AdminContract[]>([]);
   const [requests, setRequests] = useState<LimitRequest[]>([]);
+  const [templates, setTemplates] = useState<ContractTemplate[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [savingTemplate, setSavingTemplate] = useState(false);
   const [message, setMessage] = useState("");
   const [form, setForm] = useState(defaultOfferForm);
+  const [templateForm, setTemplateForm] = useState(defaultTemplateForm);
 
   const refreshData = async (showSkeleton = false) => {
     if (showSkeleton) {
@@ -48,9 +57,10 @@ export function AdminDashboardPage() {
     }
 
     try {
-      const [contractsData, requestsData] = await Promise.all([listAdminContracts(), listAdminRequests()]);
+      const [contractsData, requestsData, templatesData] = await Promise.all([listAdminContracts(), listAdminRequests(), listContractTemplates()]);
       setContracts(contractsData);
       setRequests(requestsData);
+      setTemplates(templatesData);
     } finally {
       setLoadingData(false);
     }
@@ -89,6 +99,31 @@ export function AdminDashboardPage() {
       setMessage(error instanceof Error ? error.message : "Falha ao criar oferta.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCreateTemplate = async () => {
+    if (!templateForm.nome.trim() || !templateForm.conteudo.trim()) {
+      setMessage("Informe nome e conteúdo do template para salvar.");
+      return;
+    }
+
+    setSavingTemplate(true);
+    setMessage("");
+
+    try {
+      await createContractTemplate({
+        nome: templateForm.nome,
+        conteudo: templateForm.conteudo,
+        ativo: templateForm.ativo,
+      });
+
+      await refreshData();
+      setMessage("Template de contrato criado com sucesso.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Falha ao criar template de contrato.");
+    } finally {
+      setSavingTemplate(false);
     }
   };
 
@@ -247,6 +282,57 @@ export function AdminDashboardPage() {
                 </div>
               ))
             )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Templates de contrato</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-3">
+              <label className="space-y-2 text-sm">
+                <span className="font-medium">Nome do template</span>
+                <Input
+                  value={templateForm.nome}
+                  onChange={(event) => setTemplateForm({ ...templateForm, nome: event.target.value })}
+                />
+              </label>
+              <label className="space-y-2 text-sm">
+                <span className="font-medium">Conteúdo do contrato</span>
+                <Textarea
+                  value={templateForm.conteudo}
+                  onChange={(event) => setTemplateForm({ ...templateForm, conteudo: event.target.value })}
+                />
+              </label>
+              <Button onClick={handleCreateTemplate} disabled={savingTemplate}>
+                Salvar template
+              </Button>
+            </div>
+
+            <div className="space-y-3">
+              {loadingData ? (
+                Array.from({ length: 2 }).map((_, index) => (
+                  <div key={`template-skeleton-${index}`} className="rounded-xl border border-slate-200 p-4">
+                    <Skeleton className="h-5 w-40" />
+                    <Skeleton className="mt-2 h-4 w-full" />
+                    <Skeleton className="mt-2 h-4 w-2/3" />
+                  </div>
+                ))
+              ) : templates.length === 0 ? (
+                <p className="text-sm text-slate-500">Nenhum template cadastrado ainda.</p>
+              ) : (
+                templates.map((template) => (
+                  <div key={template.idTemplate} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="font-semibold text-slate-900">{template.nome}</p>
+                      <StatusChip status={template.ativo ? "Ativo" : "Inativo"} />
+                    </div>
+                    <p className="mt-2 line-clamp-3 text-sm text-slate-600">{template.conteudo}</p>
+                  </div>
+                ))
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

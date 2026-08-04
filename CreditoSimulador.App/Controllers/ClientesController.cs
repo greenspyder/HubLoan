@@ -18,6 +18,7 @@ namespace CreditoSimulador.App.Controllers
         private readonly ContratarCreditoHandler _contratarCreditoHandler;
         private readonly ObterDetalhesContratoHandler _obterDetalhesContratoHandler;
         private readonly AtualizarStatusContratoHandler _atualizarStatusContratoHandler;
+        private readonly AssinarContratoHandler _assinarContratoHandler;
         private readonly ListarOfertasHandler _listarOfertasHandler;
 
         public ClientesController(
@@ -30,6 +31,7 @@ namespace CreditoSimulador.App.Controllers
             ContratarCreditoHandler contratarCreditoHandler,
             ObterDetalhesContratoHandler obterDetalhesContratoHandler,
             AtualizarStatusContratoHandler atualizarStatusContratoHandler,
+            AssinarContratoHandler assinarContratoHandler,
             ListarOfertasHandler listarOfertasHandler)
         {
             _listarClientesHandler = listarClientesHandler;
@@ -41,6 +43,7 @@ namespace CreditoSimulador.App.Controllers
             _contratarCreditoHandler = contratarCreditoHandler;
             _obterDetalhesContratoHandler = obterDetalhesContratoHandler;
             _atualizarStatusContratoHandler = atualizarStatusContratoHandler;
+            _assinarContratoHandler = assinarContratoHandler;
             _listarOfertasHandler = listarOfertasHandler;
         }
 
@@ -109,6 +112,16 @@ namespace CreditoSimulador.App.Controllers
             {
                 ContratoId = contratoId,
                 Status = status
+            });
+        }
+
+        [HttpPost("contratos/{contratoId:int}/assinar")]
+        public IActionResult AssinarContrato(int contratoId, [FromQuery] int customerId)
+        {
+            return _assinarContratoHandler.Handle(new AssinarContratoCommand
+            {
+                ContratoId = contratoId,
+                CustomerId = customerId
             });
         }
     }

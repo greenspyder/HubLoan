@@ -4,7 +4,7 @@ import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Skeleton } from "../../../components/ui/skeleton";
 import { StatusChip } from "../../../components/ui/status-chip";
-import { getContractDetails, listClientContracts, listClientParcels } from "../../../services/creditService";
+import { getContractDetails, listClientContracts, listClientParcels, signContract } from "../../../services/creditService";
 import type { ClientContractParcel, ContractDetails, ContractSummary } from "../../../types/credit";
 import { useImpersonation } from "../../../app/contexts/ImpersonationContext";
 
@@ -30,6 +30,7 @@ export function ClientContractDetailsPage() {
   const [details, setDetails] = useState<ContractDetails | null>(null);
   const [loadingBaseData, setLoadingBaseData] = useState(true);
   const [loadingDetails, setLoadingDetails] = useState(false);
+  const [signing, setSigning] = useState(false);
   const [message, setMessage] = useState("");
 
   const selectedContract = useMemo(() => {
@@ -84,6 +85,30 @@ export function ClientContractDetailsPage() {
 
     void loadDetails().catch((error: Error) => setMessage(error.message));
   }, [impersonatedClientId, selectedContract]);
+
+  const handleSignContract = async () => {
+    if (impersonatedClientId === null || details === null) {
+      return;
+    }
+
+    setSigning(true);
+    setMessage("");
+
+    try {
+      await signContract(details.idContrato, impersonatedClientId);
+      const updatedDetails = await getContractDetails(details.idContrato);
+      setDetails(updatedDetails);
+
+      const updatedContracts = await listClientContracts(impersonatedClientId);
+      setContracts(updatedContracts);
+
+      setMessage("Contrato assinado. Status avançado com sucesso.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Não foi possível assinar o contrato.");
+    } finally {
+      setSigning(false);
+    }
+  };
 
   if (impersonatedClientId === null) {
     return <Navigate to="/admin" replace />;
@@ -216,7 +241,22 @@ export function ClientContractDetailsPage() {
               <div className="rounded-[20px] border border-slate-200 bg-white p-4 text-sm text-slate-600">
                 <p>Amortização: {details.tipoAmortizacao}</p>
                 <p className="mt-1">Valor total pago: {typeof details.valorTotalPago === "number" ? formatCurrency(details.valorTotalPago) : "Não informado"}</p>
+                {details.contratoGeradoEm ? <p className="mt-1">Contrato gerado em: {formatDate(details.contratoGeradoEm)}</p> : null}
+                {details.assinadoEm ? <p className="mt-1">Assinado em: {formatDate(details.assinadoEm)}</p> : null}
               </div>
+
+              {details.contratoGeradoTexto ? (
+                <div className="rounded-[20px] border border-slate-200 bg-white p-4 text-sm text-slate-700">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Contrato</p>
+                  <p className="mt-2 whitespace-pre-wrap leading-relaxed">{details.contratoGeradoTexto}</p>
+                </div>
+              ) : null}
+
+              {details.status.trim().toLowerCase() === "pendente assinatura" ? (
+                <Button onClick={handleSignContract} disabled={signing}>
+                  {signing ? "Assinando contrato..." : "Assinar contrato"}
+                </Button>
+              ) : null}
 
               <div className="grid gap-3 md:grid-cols-2">
                 <div className="rounded-[20px] border border-rose-200 bg-rose-50 p-4">

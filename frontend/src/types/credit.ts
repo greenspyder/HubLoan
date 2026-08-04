@@ -57,8 +57,12 @@ export type ContractDetails = {
   taxaJurosMensal: number;
   quantidadeParcelas: number;
   tipoAmortizacao: string;
+  tipoPagamento?: string;
   status: string;
   valorTotalPago?: number;
+  contratoGeradoTexto?: string;
+  contratoGeradoEm?: string;
+  assinadoEm?: string;
   parcelas: ContractParcel[];
 };
 
@@ -115,4 +119,21 @@ export type ContractActionResponse = {
   Mensagem?: string;
   Contrato?: number;
   ValorDesembolsado?: number;
+  ContratoId?: number;
+  NovoStatus?: string;
+};
+
+export type ContractTemplate = {
+  idTemplate: string;
+  nome: string;
+  conteudo: string;
+  ativo: boolean;
+  criadoEm: string;
+  atualizadoEm?: string;
+};
+
+export type CreateContractTemplateRequest = {
+  nome: string;
+  conteudo: string;
+  ativo: boolean;
 };

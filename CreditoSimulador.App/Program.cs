@@ -37,10 +37,12 @@ builder.Services.AddScoped<SimularCreditoHandler>();
 builder.Services.AddScoped<ContratarCreditoHandler>();
 builder.Services.AddScoped<ObterDetalhesContratoHandler>();
 builder.Services.AddScoped<AtualizarStatusContratoHandler>();
+builder.Services.AddScoped<AssinarContratoHandler>();
 builder.Services.AddScoped<CriarOfertaHandler>();
 builder.Services.AddScoped<ListarOfertasHandler>();
 builder.Services.AddScoped<ListarSolicitacoesAdminHandler>();
 builder.Services.AddScoped<OverdueParcelAutoPaymentJob>();
+builder.Services.AddScoped<LoanContractGenerationConsumer>();
 
 // Adicione ANTES de app.Build()
 builder.Services.AddCors(options =>
@@ -80,6 +82,11 @@ using (var scope = app.Services.CreateScope())
     {
         recurringJobManager.AddOrUpdate<OverdueParcelAutoPaymentJob>(
             "auto-pay-overdue-parcels",
+            job => job.Execute(),
+            Cron.Minutely);
+
+        recurringJobManager.AddOrUpdate<LoanContractGenerationConsumer>(
+            "generate-loan-contracts",
             job => job.Execute(),
             Cron.Minutely);
     }
@@ -123,6 +130,16 @@ static void BaselineExistingSchemaMigrations(AppDbContext dbContext)
         && ColumnExists(dbContext, "contratos", "tipo_pagamento"))
     {
         InsertMigrationHistoryIfMissing(dbContext, "20260804000000_AddTipoPagamentoToContratos");
+    }
+
+    if (pending.Contains("20260804003000_AddContractTemplatesAndLoanContractColumns")
+        && TableExists(dbContext, "contract_templates")
+        && ColumnExists(dbContext, "contratos", "id_template_contrato")
+        && ColumnExists(dbContext, "contratos", "contrato_gerado_texto")
+        && ColumnExists(dbContext, "contratos", "contrato_gerado_em")
+        && ColumnExists(dbContext, "contratos", "assinado_em"))
+    {
+        InsertMigrationHistoryIfMissing(dbContext, "20260804003000_AddContractTemplatesAndLoanContractColumns");
     }
 }
 
@@ -229,8 +246,22 @@ static void EnsureLegacySchemaCompatibility(AppDbContext dbContext)
     {
         dbContext.Database.ExecuteSqlRaw("ALTER TABLE contratos ADD COLUMN IF NOT EXISTS tipo_pagamento varchar(50);");
         dbContext.Database.ExecuteSqlRaw("ALTER TABLE contratos ADD COLUMN IF NOT EXISTS status varchar(50) DEFAULT 'geração de contratos';");
+        dbContext.Database.ExecuteSqlRaw("ALTER TABLE contratos ADD COLUMN IF NOT EXISTS id_template_contrato varchar(100);");
+        dbContext.Database.ExecuteSqlRaw("ALTER TABLE contratos ADD COLUMN IF NOT EXISTS contrato_gerado_texto text;");
+        dbContext.Database.ExecuteSqlRaw("ALTER TABLE contratos ADD COLUMN IF NOT EXISTS contrato_gerado_em timestamptz;");
+        dbContext.Database.ExecuteSqlRaw("ALTER TABLE contratos ADD COLUMN IF NOT EXISTS assinado_em timestamptz;");
         dbContext.Database.ExecuteSqlRaw("UPDATE contratos SET status = COALESCE(status, 'geração de contratos') WHERE status IS NULL OR status = '';");
     }
+
+    dbContext.Database.ExecuteSqlRaw(@"
+CREATE TABLE IF NOT EXISTS contract_templates (
+    id_template varchar(100) NOT NULL PRIMARY KEY,
+    nome varchar(200) NOT NULL,
+    conteudo text NOT NULL,
+    ativo boolean NOT NULL DEFAULT TRUE,
+    criado_em timestamptz NOT NULL DEFAULT NOW(),
+    atualizado_em timestamptz NULL
+);");
 
     if (TableExists(dbContext, "parcelas"))
     {

@@ -3,8 +3,10 @@ import type {
   Client,
   ClientContractParcel,
   ContractActionResponse,
+  ContractTemplate,
   ContractDetails,
   ContractSummary,
+  CreateContractTemplateRequest,
   LimitRequest,
   Offer,
   SimulationRequest,
@@ -57,6 +59,17 @@ export async function listAdminRequests(): Promise<LimitRequest[]> {
   return requestJson<LimitRequest[]>("/admin/solicitacoes");
 }
 
+export async function listContractTemplates(): Promise<ContractTemplate[]> {
+  return requestJson<ContractTemplate[]>("/admin/contract-templates");
+}
+
+export async function createContractTemplate(payload: CreateContractTemplateRequest): Promise<ContractTemplate> {
+  return requestJson<ContractTemplate>("/admin/contract-templates", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
 export async function listClientContracts(clientId: number): Promise<ContractSummary[]> {
   return requestJson<ContractSummary[]>(`/clientes/contratos?customerId=${clientId}`);
 }
@@ -87,5 +100,11 @@ export async function contractCredit(payload: SimulationRequest): Promise<Contra
   return requestJson<ContractActionResponse>("/clientes/contratar", {
     method: "POST",
     body: JSON.stringify(payload),
+  });
+}
+
+export async function signContract(contractId: number, customerId: number): Promise<ContractActionResponse> {
+  return requestJson<ContractActionResponse>(`/clientes/contratos/${contractId}/assinar?customerId=${customerId}`, {
+    method: "POST",
   });
 }

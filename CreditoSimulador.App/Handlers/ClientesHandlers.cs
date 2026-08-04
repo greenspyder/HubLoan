@@ -655,7 +655,7 @@ namespace CreditoSimulador.App.Handlers
 
                 AtualizarParcelasEVincularStatusDosContratos(conn);
 
-                const string sqlContrato = @"SELECT c.id_contrato, c.id_cliente, c.valor_financiado, c.taxa_juros_mensal, c.quantidade_parcelas, c.tipo_amortizacao, to_jsonb(c) ->> 'tipo_pagamento' AS tipo_pagamento, to_jsonb(c) ->> 'status' AS status FROM contratos c WHERE c.id_contrato = @id";
+                const string sqlContrato = @"SELECT c.id_contrato, c.id_cliente, c.valor_financiado, c.taxa_juros_mensal, c.quantidade_parcelas, c.tipo_amortizacao, to_jsonb(c) ->> 'tipo_pagamento' AS tipo_pagamento, to_jsonb(c) ->> 'status' AS status, to_jsonb(c) ->> 'contrato_gerado_texto' AS contrato_gerado_texto, (to_jsonb(c) ->> 'contrato_gerado_em')::timestamptz AS contrato_gerado_em, (to_jsonb(c) ->> 'assinado_em')::timestamptz AS assinado_em FROM contratos c WHERE c.id_contrato = @id";
                 using var cmdContrato = new NpgsqlCommand(sqlContrato, conn);
                 cmdContrato.Parameters.AddWithValue("id", command.ContratoId);
                 using var reader = cmdContrato.ExecuteReader();
@@ -674,7 +674,10 @@ namespace CreditoSimulador.App.Handlers
                     QuantidadeParcelas = reader.GetInt32(4),
                     TipoAmortizacao = reader.GetString(5),
                     TipoPagamento = NormalizarTipoPagamento(reader.IsDBNull(6) ? null : reader.GetString(6)),
-                    Status = NormalizarStatusContrato(reader.IsDBNull(7) ? null : reader.GetString(7))
+                    Status = NormalizarStatusContrato(reader.IsDBNull(7) ? null : reader.GetString(7)),
+                    ContratoGeradoTexto = reader.IsDBNull(8) ? null : reader.GetString(8),
+                    ContratoGeradoEm = reader.IsDBNull(9) ? null : reader.GetDateTime(9),
+                    AssinadoEm = reader.IsDBNull(10) ? null : reader.GetDateTime(10)
                 };
 
                 reader.Close();
@@ -734,6 +737,50 @@ namespace CreditoSimulador.App.Handlers
             catch (Exception ex)
             {
                 return new BadRequestObjectResult($"Erro ao atualizar status: {ex.Message}");
+            }
+        }
+    }
+
+    public class AssinarContratoHandler : BaseClientesHandler
+    {
+        public IActionResult Handle(AssinarContratoCommand command)
+        {
+            try
+            {
+                using var conn = new NpgsqlConnection(ConnectionString);
+                conn.Open();
+
+                const string sql = @"
+                    UPDATE contratos c
+                    SET status = @novoStatus,
+                        assinado_em = NOW()
+                    WHERE c.id_contrato = @idContrato
+                      AND c.id_cliente = @idCliente
+                      AND LOWER(COALESCE(to_jsonb(c) ->> 'status', '')) = LOWER(@statusAtual)
+                    RETURNING c.id_contrato";
+
+                using var cmd = new NpgsqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("novoStatus", ContratoStatus.AguardandoDesembolso);
+                cmd.Parameters.AddWithValue("idContrato", command.ContratoId);
+                cmd.Parameters.AddWithValue("idCliente", command.CustomerId);
+                cmd.Parameters.AddWithValue("statusAtual", ContratoStatus.PendenteAssinatura);
+
+                var result = cmd.ExecuteScalar();
+                if (result is null)
+                {
+                    return new BadRequestObjectResult("Contrato não encontrado para esse cliente ou status atual não permite assinatura.");
+                }
+
+                return new OkObjectResult(new
+                {
+                    Mensagem = "Contrato assinado com sucesso.",
+                    ContratoId = command.ContratoId,
+                    NovoStatus = ContratoStatus.AguardandoDesembolso
+                });
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult($"Erro ao assinar contrato: {ex.Message}");
             }
         }
     }

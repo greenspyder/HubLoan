@@ -88,6 +88,26 @@ namespace CreditoSimulador.App.Models
         public string TipoPagamento { get; set; } = "Débito em conta";
         public string Status { get; set; } = "ATIVO";
         public decimal ValorTotalPago { get; set; }
+        public string? ContratoGeradoTexto { get; set; }
+        public DateTime? ContratoGeradoEm { get; set; }
+        public DateTime? AssinadoEm { get; set; }
         public List<SimulacaoParcela> Parcelas { get; set; } = new();
+    }
+
+    public class ContractTemplateRequest
+    {
+        public string Nome { get; set; } = string.Empty;
+        public string Conteudo { get; set; } = string.Empty;
+        public bool Ativo { get; set; } = true;
+    }
+
+    public class ContractTemplateResponse
+    {
+        public string IdTemplate { get; set; } = string.Empty;
+        public string Nome { get; set; } = string.Empty;
+        public string Conteudo { get; set; } = string.Empty;
+        public bool Ativo { get; set; }
+        public DateTime CriadoEm { get; set; }
+        public DateTime? AtualizadoEm { get; set; }
     }
 }
