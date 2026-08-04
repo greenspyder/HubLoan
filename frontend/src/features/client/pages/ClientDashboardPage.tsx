@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, Navigate } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
+import { Skeleton } from "../../../components/ui/skeleton";
 import { StatusChip } from "../../../components/ui/status-chip";
 import { listClientContracts, listClientOffers, listClientParcels, listClients } from "../../../services/creditService";
 import type { Client, ClientContractParcel, ContractSummary, Offer } from "../../../types/credit";
@@ -18,6 +19,7 @@ export function ClientDashboardPage() {
   const [contracts, setContracts] = useState<ContractSummary[]>([]);
   const [parcels, setParcels] = useState<ClientContractParcel[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
+  const [loadingData, setLoadingData] = useState(true);
   const [message, setMessage] = useState("");
 
   const selectedClient = useMemo(() => clients.find((client) => client.id === impersonatedClientId) ?? null, [clients, impersonatedClientId]);
@@ -28,17 +30,23 @@ export function ClientDashboardPage() {
         return;
       }
 
-      const [clientsData, contractsData, parcelsData, offersData] = await Promise.all([
-        listClients(),
-        listClientContracts(impersonatedClientId),
-        listClientParcels(impersonatedClientId),
-        listClientOffers(),
-      ]);
+      setLoadingData(true);
 
-      setClients(clientsData);
-      setContracts(contractsData);
-      setParcels(parcelsData);
-      setOffers(offersData);
+      try {
+        const [clientsData, contractsData, parcelsData, offersData] = await Promise.all([
+          listClients(),
+          listClientContracts(impersonatedClientId),
+          listClientParcels(impersonatedClientId),
+          listClientOffers(),
+        ]);
+
+        setClients(clientsData);
+        setContracts(contractsData);
+        setParcels(parcelsData);
+        setOffers(offersData);
+      } finally {
+        setLoadingData(false);
+      }
     };
 
     void loadData().catch((error: Error) => setMessage(error.message));
@@ -59,19 +67,19 @@ export function ClientDashboardPage() {
         <Card>
           <CardContent className="p-6">
             <p className="text-sm text-slate-500">Contratos ativos</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-900">{contracts.length}</p>
+            {loadingData ? <Skeleton className="mt-2 h-9 w-16" /> : <p className="mt-2 text-3xl font-semibold text-slate-900">{contracts.length}</p>}
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6">
             <p className="text-sm text-slate-500">Parcelas atrasadas</p>
-            <p className="mt-2 text-3xl font-semibold text-rose-600">{overdueParcels.length}</p>
+            {loadingData ? <Skeleton className="mt-2 h-9 w-16" /> : <p className="mt-2 text-3xl font-semibold text-rose-600">{overdueParcels.length}</p>}
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6">
             <p className="text-sm text-slate-500">Ofertas disponíveis</p>
-            <p className="mt-2 text-3xl font-semibold text-slate-900">{offers.length}</p>
+            {loadingData ? <Skeleton className="mt-2 h-9 w-16" /> : <p className="mt-2 text-3xl font-semibold text-slate-900">{offers.length}</p>}
           </CardContent>
         </Card>
       </div>
@@ -83,7 +91,13 @@ export function ClientDashboardPage() {
         </CardHeader>
         <CardContent className="space-y-5">
           {message ? <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{message}</div> : null}
-          {selectedClient ? (
+          {loadingData ? (
+            <div className="rounded-[20px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
+              <Skeleton className="h-4 w-36" />
+              <Skeleton className="mt-3 h-8 w-56" />
+              <Skeleton className="mt-2 h-4 w-44" />
+            </div>
+          ) : selectedClient ? (
             <div className="rounded-[20px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
               <p className="text-sm font-semibold text-slate-800">Cliente selecionado</p>
               <p className="text-2xl font-semibold text-slate-900">{selectedClient.nome}</p>
@@ -100,7 +114,19 @@ export function ClientDashboardPage() {
               <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">{contracts.length} contrato(s)</span>
             </div>
 
-            {contracts.length === 0 ? (
+            {loadingData ? (
+              <div className="space-y-3">
+                {Array.from({ length: 2 }).map((_, index) => (
+                  <div key={`contract-skeleton-${index}`} className="rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-4">
+                    <Skeleton className="h-5 w-40" />
+                    <Skeleton className="mt-2 h-4 w-52" />
+                    <div className="mt-4 flex gap-2">
+                      <Skeleton className="h-8 w-24" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : contracts.length === 0 ? (
               <p className="text-sm text-slate-500">Nenhum contrato encontrado para este cliente.</p>
             ) : (
               <div className="space-y-3">
@@ -134,7 +160,17 @@ export function ClientDashboardPage() {
           <CardTitle>Ofertas disponíveis</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {offers.length === 0 ? (
+          {loadingData ? (
+            Array.from({ length: 2 }).map((_, index) => (
+              <div key={`offer-skeleton-${index}`} className="rounded-[20px] border border-slate-200 bg-slate-50 p-4">
+                <Skeleton className="h-5 w-40" />
+                <Skeleton className="mt-2 h-4 w-60" />
+                <Skeleton className="mt-4 h-4 w-52" />
+                <Skeleton className="mt-2 h-4 w-48" />
+                <Skeleton className="mt-4 h-9 w-40" />
+              </div>
+            ))
+          ) : offers.length === 0 ? (
             <p className="text-sm text-slate-500">Nenhuma oferta disponível.</p>
           ) : (
             offers.map((offer) => (

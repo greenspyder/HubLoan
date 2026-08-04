@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
+import { Skeleton } from "../../../components/ui/skeleton";
 import { StatusChip } from "../../../components/ui/status-chip";
-import { getContractDetails } from "../../../services/creditService";
-import type { ContractDetails } from "../../../types/credit";
+import { getContractDetails, listClientParcels } from "../../../services/creditService";
+import type { ClientContractParcel, ContractDetails } from "../../../types/credit";
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
@@ -18,8 +19,16 @@ export function AdminContractDetailsPage() {
   const navigate = useNavigate();
   const { contractId } = useParams();
   const [details, setDetails] = useState<ContractDetails | null>(null);
+  const [contractParcels, setContractParcels] = useState<ClientContractParcel[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+
+  const statusByParcela = useMemo(() => {
+    return contractParcels.reduce<Record<number, string>>((acc, parcel) => {
+      acc[parcel.numeroParcela] = parcel.statusPagamento;
+      return acc;
+    }, {});
+  }, [contractParcels]);
 
   useEffect(() => {
     const loadDetails = async () => {
@@ -32,7 +41,9 @@ export function AdminContractDetailsPage() {
 
       try {
         const data = await getContractDetails(parsedContractId);
+        const parcelData = await listClientParcels(data.idCliente);
         setDetails(data);
+        setContractParcels(parcelData.filter((parcel) => parcel.idContrato === data.idContrato));
       } catch (error) {
         setMessage(error instanceof Error ? error.message : "Não foi possível carregar os detalhes da operação.");
       } finally {
@@ -56,9 +67,40 @@ export function AdminContractDetailsPage() {
       {message ? <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{message}</div> : null}
 
       {loading ? (
-        <Card>
-          <CardContent className="p-6 text-sm text-slate-500">Carregando detalhes da operação...</CardContent>
-        </Card>
+        <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
+          <Card>
+            <CardHeader>
+              <CardTitle>Resumo da operação</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 p-6">
+              <Skeleton className="h-8 w-40 rounded-full" />
+              <Skeleton className="h-9 w-52" />
+              <Skeleton className="h-4 w-60" />
+              <div className="grid gap-3 md:grid-cols-2">
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+              </div>
+              <Skeleton className="h-4 w-48" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Parcelas</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 p-6">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div key={`parcel-skeleton-${index}`} className="grid gap-3 rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-4 md:grid-cols-[auto_1fr_auto] md:items-center">
+                  <div>
+                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="mt-2 h-4 w-32" />
+                  </div>
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-7 w-28 rounded-full" />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
       ) : details ? (
         <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
           <Card>
@@ -102,7 +144,7 @@ export function AdminContractDetailsPage() {
                     </div>
                     <div className="text-slate-600">{formatCurrency(parcela.valorTotalParcela)}</div>
                     <div className="text-right">
-                      <StatusChip status="Em aberto" />
+                      <StatusChip status={statusByParcela[parcela.numero] ?? "Pendente"} />
                     </div>
                   </div>
                 ))

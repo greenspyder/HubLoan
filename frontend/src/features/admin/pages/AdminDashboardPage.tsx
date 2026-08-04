@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Input } from "../../../components/ui/input";
+import { Skeleton } from "../../../components/ui/skeleton";
+import { StatusChip } from "../../../components/ui/status-chip";
 import { Textarea } from "../../../components/ui/textarea";
 import { createOffer, listAdminContracts, listAdminRequests } from "../../../services/creditService";
 import type { AdminContract, LimitRequest } from "../../../types/credit";
@@ -35,18 +37,27 @@ export function AdminDashboardPage() {
   const { impersonateClient } = useImpersonation();
   const [contracts, setContracts] = useState<AdminContract[]>([]);
   const [requests, setRequests] = useState<LimitRequest[]>([]);
+  const [loadingData, setLoadingData] = useState(true);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [form, setForm] = useState(defaultOfferForm);
 
-  const refreshData = async () => {
-    const [contractsData, requestsData] = await Promise.all([listAdminContracts(), listAdminRequests()]);
-    setContracts(contractsData);
-    setRequests(requestsData);
+  const refreshData = async (showSkeleton = false) => {
+    if (showSkeleton) {
+      setLoadingData(true);
+    }
+
+    try {
+      const [contractsData, requestsData] = await Promise.all([listAdminContracts(), listAdminRequests()]);
+      setContracts(contractsData);
+      setRequests(requestsData);
+    } finally {
+      setLoadingData(false);
+    }
   };
 
   useEffect(() => {
-    void refreshData().catch((error: Error) => setMessage(error.message));
+    void refreshData(true).catch((error: Error) => setMessage(error.message));
   }, []);
 
   const handleCreateOffer = async () => {
@@ -155,7 +166,19 @@ export function AdminDashboardPage() {
             <CardTitle>Contratos do administrativo</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {contracts.length === 0 ? (
+            {loadingData ? (
+              Array.from({ length: 3 }).map((_, index) => (
+                <div key={`contract-skeleton-${index}`} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <Skeleton className="h-5 w-44" />
+                  <Skeleton className="mt-3 h-4 w-56" />
+                  <Skeleton className="mt-2 h-4 w-40" />
+                  <div className="mt-4 flex gap-2">
+                    <Skeleton className="h-8 w-28" />
+                    <Skeleton className="h-8 w-24" />
+                  </div>
+                </div>
+              ))
+            ) : contracts.length === 0 ? (
               <p className="text-sm text-slate-500">Nenhum contrato cadastrado ainda.</p>
             ) : (
               contracts.map((contract) => (
@@ -167,7 +190,7 @@ export function AdminDashboardPage() {
                       <p className="text-sm text-slate-600">Valor: {formatCurrency(contract.valorFinanciado)}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-medium text-slate-700">{contract.status}</p>
+                      <StatusChip status={contract.status} />
                       <p className="text-xs text-slate-500">{contract.tipoAmortizacao}</p>
                     </div>
                   </div>
@@ -197,7 +220,19 @@ export function AdminDashboardPage() {
             <CardTitle>Solicitações recebidas</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {requests.length === 0 ? (
+            {loadingData ? (
+              Array.from({ length: 3 }).map((_, index) => (
+                <div key={`request-skeleton-${index}`} className="rounded-xl border border-slate-200 p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-6 w-24 rounded-full" />
+                  </div>
+                  <Skeleton className="mt-3 h-4 w-48" />
+                  <Skeleton className="mt-2 h-4 w-36" />
+                  <Skeleton className="mt-2 h-4 w-full" />
+                </div>
+              ))
+            ) : requests.length === 0 ? (
               <p className="text-sm text-slate-500">Nenhuma solicitação encontrada.</p>
             ) : (
               requests.map((request) => (

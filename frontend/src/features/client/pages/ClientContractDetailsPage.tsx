@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
+import { Skeleton } from "../../../components/ui/skeleton";
 import { StatusChip } from "../../../components/ui/status-chip";
 import { getContractDetails, listClientContracts, listClientParcels } from "../../../services/creditService";
 import type { ClientContractParcel, ContractDetails, ContractSummary } from "../../../types/credit";
@@ -27,6 +28,8 @@ export function ClientContractDetailsPage() {
   const [contracts, setContracts] = useState<ContractSummary[]>([]);
   const [parcels, setParcels] = useState<ClientContractParcel[]>([]);
   const [details, setDetails] = useState<ContractDetails | null>(null);
+  const [loadingBaseData, setLoadingBaseData] = useState(true);
+  const [loadingDetails, setLoadingDetails] = useState(false);
   const [message, setMessage] = useState("");
 
   const selectedContract = useMemo(() => {
@@ -40,13 +43,19 @@ export function ClientContractDetailsPage() {
         return;
       }
 
-      const [contractsData, parcelsData] = await Promise.all([
-        listClientContracts(impersonatedClientId),
-        listClientParcels(impersonatedClientId),
-      ]);
+      setLoadingBaseData(true);
 
-      setContracts(contractsData);
-      setParcels(parcelsData);
+      try {
+        const [contractsData, parcelsData] = await Promise.all([
+          listClientContracts(impersonatedClientId),
+          listClientParcels(impersonatedClientId),
+        ]);
+
+        setContracts(contractsData);
+        setParcels(parcelsData);
+      } finally {
+        setLoadingBaseData(false);
+      }
     };
 
     void loadData().catch((error: Error) => setMessage(error.message));
@@ -59,12 +68,18 @@ export function ClientContractDetailsPage() {
         return;
       }
 
-      const data = await getContractDetails(selectedContract.id);
-      if (data.idCliente !== impersonatedClientId) {
-        throw new Error("Você só pode visualizar contratos do cliente impersonado.");
-      }
+      setLoadingDetails(true);
 
-      setDetails(data);
+      try {
+        const data = await getContractDetails(selectedContract.id);
+        if (data.idCliente !== impersonatedClientId) {
+          throw new Error("Você só pode visualizar contratos do cliente impersonado.");
+        }
+
+        setDetails(data);
+      } finally {
+        setLoadingDetails(false);
+      }
     };
 
     void loadDetails().catch((error: Error) => setMessage(error.message));
@@ -72,6 +87,46 @@ export function ClientContractDetailsPage() {
 
   if (impersonatedClientId === null) {
     return <Navigate to="/admin" replace />;
+  }
+
+  if (loadingBaseData) {
+    return (
+      <div className="mx-auto max-w-6xl space-y-6">
+        <Skeleton className="h-10 w-80" />
+        <div className="grid gap-6 xl:grid-cols-[1fr_1.1fr]">
+          <Card>
+            <CardHeader>
+              <CardTitle>Resumo da operação</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Skeleton className="h-8 w-40 rounded-full" />
+              <Skeleton className="h-9 w-52" />
+              <div className="grid gap-3 md:grid-cols-2">
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Parcelas e vencimentos</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div key={`parcel-loading-${index}`} className="grid gap-3 rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-4 md:grid-cols-[auto_1fr_auto] md:items-center">
+                  <div>
+                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="mt-2 h-4 w-32" />
+                  </div>
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-7 w-28 rounded-full" />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
   }
 
   if (!contractId || selectedContract === null) {
@@ -100,7 +155,41 @@ export function ClientContractDetailsPage() {
 
       {message ? <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{message}</div> : null}
 
-      {details ? (
+      {loadingDetails ? (
+        <div className="grid gap-6 xl:grid-cols-[1fr_1.1fr]">
+          <Card>
+            <CardHeader>
+              <CardTitle>Resumo da operação</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Skeleton className="h-8 w-40 rounded-full" />
+              <Skeleton className="h-9 w-52" />
+              <div className="grid gap-3 md:grid-cols-2">
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+              </div>
+              <Skeleton className="h-20 w-full" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Parcelas e vencimentos</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div key={`parcel-details-loading-${index}`} className="grid gap-3 rounded-[20px] border border-slate-200 bg-slate-50 px-4 py-4 md:grid-cols-[auto_1fr_auto] md:items-center">
+                  <div>
+                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="mt-2 h-4 w-32" />
+                  </div>
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-7 w-28 rounded-full" />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+      ) : details ? (
         <div className="grid gap-6 xl:grid-cols-[1fr_1.1fr]">
           <Card>
             <CardHeader>
