@@ -6,8 +6,8 @@ import { Input } from "../../../components/ui/input";
 import { Skeleton } from "../../../components/ui/skeleton";
 import { StatusChip } from "../../../components/ui/status-chip";
 import { Textarea } from "../../../components/ui/textarea";
-import { createContractTemplate, createOffer, listAdminContracts, listAdminRequests, listContractTemplates } from "../../../services/creditService";
-import type { AdminContract, ContractTemplate, LimitRequest } from "../../../types/credit";
+import { authorizeDisbursement, createContractTemplate, createOffer, listAdminContracts, listAdminRequests, listClients, listContractTemplates } from "../../../services/creditService";
+import type { AdminContract, Client, ContractTemplate, LimitRequest } from "../../../types/credit";
 import { useImpersonation } from "../../../app/contexts/ImpersonationContext";
 
 const defaultOfferForm = {
@@ -40,7 +40,9 @@ function formatCurrency(value: number) {
 
 export function AdminDashboardPage() {
   const navigate = useNavigate();
-  const { impersonateClient } = useImpersonation();
+  const { impersonateClient, impersonatedClientId } = useImpersonation();
+  const [clients, setClients] = useState<Client[]>([]);
+  const [selectedClientId, setSelectedClientId] = useState<number | null>(null);
   const [contracts, setContracts] = useState<AdminContract[]>([]);
   const [requests, setRequests] = useState<LimitRequest[]>([]);
   const [templates, setTemplates] = useState<ContractTemplate[]>([]);
@@ -57,10 +59,15 @@ export function AdminDashboardPage() {
     }
 
     try {
-      const [contractsData, requestsData, templatesData] = await Promise.all([listAdminContracts(), listAdminRequests(), listContractTemplates()]);
+      const [clientsData, contractsData, requestsData, templatesData] = await Promise.all([listClients(), listAdminContracts(), listAdminRequests(), listContractTemplates()]);
+      setClients(clientsData);
       setContracts(contractsData);
       setRequests(requestsData);
       setTemplates(templatesData);
+
+      if (selectedClientId === null && clientsData.length > 0) {
+        setSelectedClientId(clientsData[0].id);
+      }
     } finally {
       setLoadingData(false);
     }
@@ -125,6 +132,27 @@ export function AdminDashboardPage() {
     } finally {
       setSavingTemplate(false);
     }
+  };
+
+  const handleAuthorizeDisbursement = async (contractId: number) => {
+    setMessage("");
+    try {
+      await authorizeDisbursement(contractId);
+      await refreshData();
+      setMessage(`Desembolso do contrato #${contractId} autorizado.`);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Falha ao autorizar desembolso.");
+    }
+  };
+
+  const handleImpersonate = () => {
+    if (selectedClientId === null) {
+      setMessage("Selecione um cliente para impersonar.");
+      return;
+    }
+
+    impersonateClient(selectedClientId);
+    navigate("/cliente");
   };
 
   return (
@@ -198,6 +226,41 @@ export function AdminDashboardPage() {
       <div className="space-y-6">
         <Card>
           <CardHeader>
+            <CardTitle>Impersonação administrativa</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-slate-600">
+              Selecione um cliente para entrar na experiência do cliente sem depender de um contrato específico.
+            </p>
+
+            <label className="space-y-2 text-sm">
+              <span className="font-medium">Cliente</span>
+              <select
+                className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700"
+                value={selectedClientId ?? ""}
+                onChange={(event) => setSelectedClientId(Number(event.target.value))}
+              >
+                {clients.length === 0 ? <option value="">Nenhum cliente disponível</option> : null}
+                {clients.map((client) => (
+                  <option key={client.id} value={client.id}>
+                    #{client.id} - {client.nome}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            {impersonatedClientId !== null ? (
+              <p className="text-xs text-slate-500">Impersonação ativa no cliente #{impersonatedClientId}</p>
+            ) : null}
+
+            <Button onClick={handleImpersonate} disabled={clients.length === 0}>
+              Entrar na plataforma do cliente
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle>Contratos do administrativo</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -230,19 +293,14 @@ export function AdminDashboardPage() {
                     </div>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        impersonateClient(contract.idCliente);
-                        navigate("/cliente");
-                      }}
-                    >
-                      Impersonar
-                    </Button>
                     <Button size="sm" variant="outline" onClick={() => navigate(`/admin/contratos/${contract.idContrato}`)}>
                       Ver detalhes
                     </Button>
+                    {contract.status.trim().toLowerCase() === "aguardando desembolso" ? (
+                      <Button size="sm" onClick={() => void handleAuthorizeDisbursement(contract.idContrato)}>
+                        Autorizar desembolso
+                      </Button>
+                    ) : null}
                   </div>
                 </div>
               ))

@@ -582,12 +582,6 @@ namespace CreditoSimulador.App.Handlers
                     cmdStatusContrato.ExecuteNonQuery();
                 }
 
-                const string sqlDesembolso = "UPDATE contas SET saldo = saldo + @valor WHERE id_cliente = @idCliente";
-                using var cmdDesembolso = new NpgsqlCommand(sqlDesembolso, conn);
-                cmdDesembolso.Parameters.AddWithValue("valor", command.Request.ValorSolicitado);
-                cmdDesembolso.Parameters.AddWithValue("idCliente", command.Request.ClienteId);
-                cmdDesembolso.ExecuteNonQuery();
-
                 var calc = new CalculadoraAmortizacao();
                 var cronograma = calc.GerarCronograma(command.Request.ValorSolicitado, offer.TaxaJurosMensal, command.Request.QuantidadeParcelas, offer.TipoAmortizacao);
                 const string sqlInsertParcela = @"INSERT INTO parcelas (id_contrato, num_parcela, data_vencimento, valor_amortizacao, valor_juros, valor_total_parcela, status_pagamento)
@@ -655,7 +649,7 @@ namespace CreditoSimulador.App.Handlers
 
                 AtualizarParcelasEVincularStatusDosContratos(conn);
 
-                const string sqlContrato = @"SELECT c.id_contrato, c.id_cliente, c.valor_financiado, c.taxa_juros_mensal, c.quantidade_parcelas, c.tipo_amortizacao, to_jsonb(c) ->> 'tipo_pagamento' AS tipo_pagamento, to_jsonb(c) ->> 'status' AS status, to_jsonb(c) ->> 'contrato_gerado_texto' AS contrato_gerado_texto, (to_jsonb(c) ->> 'contrato_gerado_em')::timestamptz AS contrato_gerado_em, (to_jsonb(c) ->> 'assinado_em')::timestamptz AS assinado_em FROM contratos c WHERE c.id_contrato = @id";
+                const string sqlContrato = @"SELECT c.id_contrato, c.id_cliente, c.valor_financiado, c.taxa_juros_mensal, c.quantidade_parcelas, c.tipo_amortizacao, to_jsonb(c) ->> 'tipo_pagamento' AS tipo_pagamento, to_jsonb(c) ->> 'status' AS status, to_jsonb(c) ->> 'contrato_gerado_texto' AS contrato_gerado_texto, (to_jsonb(c) ->> 'contrato_gerado_em')::timestamptz AS contrato_gerado_em, (to_jsonb(c) ->> 'assinado_em')::timestamptz AS assinado_em, (to_jsonb(c) ->> 'desembolso_autorizado_em')::timestamptz AS desembolso_autorizado_em FROM contratos c WHERE c.id_contrato = @id";
                 using var cmdContrato = new NpgsqlCommand(sqlContrato, conn);
                 cmdContrato.Parameters.AddWithValue("id", command.ContratoId);
                 using var reader = cmdContrato.ExecuteReader();
@@ -677,7 +671,8 @@ namespace CreditoSimulador.App.Handlers
                     Status = NormalizarStatusContrato(reader.IsDBNull(7) ? null : reader.GetString(7)),
                     ContratoGeradoTexto = reader.IsDBNull(8) ? null : reader.GetString(8),
                     ContratoGeradoEm = reader.IsDBNull(9) ? null : reader.GetDateTime(9),
-                    AssinadoEm = reader.IsDBNull(10) ? null : reader.GetDateTime(10)
+                    AssinadoEm = reader.IsDBNull(10) ? null : reader.GetDateTime(10),
+                    DesembolsoAutorizadoEm = reader.IsDBNull(11) ? null : reader.GetDateTime(11)
                 };
 
                 reader.Close();
@@ -781,6 +776,76 @@ namespace CreditoSimulador.App.Handlers
             catch (Exception ex)
             {
                 return new BadRequestObjectResult($"Erro ao assinar contrato: {ex.Message}");
+            }
+        }
+    }
+
+    public class AutorizarDesembolsoHandler : BaseClientesHandler
+    {
+        public IActionResult Handle(AutorizarDesembolsoCommand command)
+        {
+            using var conn = new NpgsqlConnection(ConnectionString);
+            conn.Open();
+            using var trans = conn.BeginTransaction();
+
+            try
+            {
+                const string sqlBusca = @"
+                    SELECT id_cliente, valor_financiado
+                    FROM contratos c
+                    WHERE c.id_contrato = @idContrato
+                      AND LOWER(COALESCE(to_jsonb(c) ->> 'status', '')) = LOWER(@statusAtual)
+                    FOR UPDATE";
+
+                using var cmdBusca = new NpgsqlCommand(sqlBusca, conn, trans);
+                cmdBusca.Parameters.AddWithValue("idContrato", command.ContratoId);
+                cmdBusca.Parameters.AddWithValue("statusAtual", ContratoStatus.AguardandoDesembolso);
+                using var reader = cmdBusca.ExecuteReader();
+
+                if (!reader.Read())
+                {
+                    return new BadRequestObjectResult("Contrato não está aguardando desembolso ou não existe.");
+                }
+
+                var idCliente = reader.GetInt32(0);
+                var valor = reader.GetDecimal(1);
+                reader.Close();
+
+                const string sqlCreditarConta = @"
+                    UPDATE contas
+                    SET saldo = saldo + @valor
+                    WHERE id_cliente = @idCliente";
+                using var cmdConta = new NpgsqlCommand(sqlCreditarConta, conn, trans);
+                cmdConta.Parameters.AddWithValue("valor", valor);
+                cmdConta.Parameters.AddWithValue("idCliente", idCliente);
+
+                if (cmdConta.ExecuteNonQuery() == 0)
+                {
+                    return new BadRequestObjectResult("Cliente não possui conta ativa para desembolso.");
+                }
+
+                const string sqlAtualizarStatus = @"
+                    UPDATE contratos
+                    SET status = @novoStatus,
+                        desembolso_autorizado_em = NOW()
+                    WHERE id_contrato = @idContrato";
+                using var cmdStatus = new NpgsqlCommand(sqlAtualizarStatus, conn, trans);
+                cmdStatus.Parameters.AddWithValue("novoStatus", ContratoStatus.Desembolsado);
+                cmdStatus.Parameters.AddWithValue("idContrato", command.ContratoId);
+                cmdStatus.ExecuteNonQuery();
+
+                trans.Commit();
+                return new OkObjectResult(new
+                {
+                    Mensagem = "Desembolso autorizado com sucesso.",
+                    ContratoId = command.ContratoId,
+                    NovoStatus = ContratoStatus.Desembolsado
+                });
+            }
+            catch (Exception ex)
+            {
+                trans.Rollback();
+                return new BadRequestObjectResult($"Erro ao autorizar desembolso: {ex.Message}");
             }
         }
     }

@@ -63,6 +63,7 @@ export type ContractDetails = {
   contratoGeradoTexto?: string;
   contratoGeradoEm?: string;
   assinadoEm?: string;
+  desembolsoAutorizadoEm?: string;
   parcelas: ContractParcel[];
 };
 

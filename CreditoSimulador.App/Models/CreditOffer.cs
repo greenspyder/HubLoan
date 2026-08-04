@@ -91,6 +91,7 @@ namespace CreditoSimulador.App.Models
         public string? ContratoGeradoTexto { get; set; }
         public DateTime? ContratoGeradoEm { get; set; }
         public DateTime? AssinadoEm { get; set; }
+        public DateTime? DesembolsoAutorizadoEm { get; set; }
         public List<SimulacaoParcela> Parcelas { get; set; } = new();
     }
 

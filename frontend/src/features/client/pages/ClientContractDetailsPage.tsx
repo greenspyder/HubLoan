@@ -2,9 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
+import { ContractWorkflow } from "../../../components/ui/contract-workflow";
 import { Skeleton } from "../../../components/ui/skeleton";
 import { StatusChip } from "../../../components/ui/status-chip";
-import { getContractDetails, listClientContracts, listClientParcels, signContract } from "../../../services/creditService";
+import { downloadContractDocx, getContractDetails, listClientContracts, listClientParcels, signContract } from "../../../services/creditService";
 import type { ClientContractParcel, ContractDetails, ContractSummary } from "../../../types/credit";
 import { useImpersonation } from "../../../app/contexts/ImpersonationContext";
 
@@ -31,6 +32,7 @@ export function ClientContractDetailsPage() {
   const [loadingBaseData, setLoadingBaseData] = useState(true);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [signing, setSigning] = useState(false);
+  const [downloadingDocx, setDownloadingDocx] = useState(false);
   const [message, setMessage] = useState("");
 
   const selectedContract = useMemo(() => {
@@ -107,6 +109,23 @@ export function ClientContractDetailsPage() {
       setMessage(error instanceof Error ? error.message : "Não foi possível assinar o contrato.");
     } finally {
       setSigning(false);
+    }
+  };
+
+  const handleDownloadDocx = async () => {
+    if (impersonatedClientId === null || details === null) {
+      return;
+    }
+
+    setDownloadingDocx(true);
+    setMessage("");
+
+    try {
+      await downloadContractDocx(details.idContrato, impersonatedClientId);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Não foi possível baixar o DOCX.");
+    } finally {
+      setDownloadingDocx(false);
     }
   };
 
@@ -215,7 +234,10 @@ export function ClientContractDetailsPage() {
           </Card>
         </div>
       ) : details ? (
-        <div className="grid gap-6 xl:grid-cols-[1fr_1.1fr]">
+        <div className="space-y-6">
+          <ContractWorkflow status={details.status} />
+
+          <div className="grid gap-6 xl:grid-cols-[1fr_1.1fr]">
           <Card>
             <CardHeader>
               <CardTitle>Resumo da operação</CardTitle>
@@ -243,12 +265,18 @@ export function ClientContractDetailsPage() {
                 <p className="mt-1">Valor total pago: {typeof details.valorTotalPago === "number" ? formatCurrency(details.valorTotalPago) : "Não informado"}</p>
                 {details.contratoGeradoEm ? <p className="mt-1">Contrato gerado em: {formatDate(details.contratoGeradoEm)}</p> : null}
                 {details.assinadoEm ? <p className="mt-1">Assinado em: {formatDate(details.assinadoEm)}</p> : null}
+                {details.desembolsoAutorizadoEm ? <p className="mt-1">Desembolso autorizado em: {formatDate(details.desembolsoAutorizadoEm)}</p> : null}
               </div>
 
               {details.contratoGeradoTexto ? (
                 <div className="rounded-[20px] border border-slate-200 bg-white p-4 text-sm text-slate-700">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Contrato</p>
                   <p className="mt-2 whitespace-pre-wrap leading-relaxed">{details.contratoGeradoTexto}</p>
+                  <div className="mt-4">
+                    <Button variant="outline" onClick={handleDownloadDocx} disabled={downloadingDocx}>
+                      {downloadingDocx ? "Gerando DOCX..." : "Baixar contrato (DOCX)"}
+                    </Button>
+                  </div>
                 </div>
               ) : null}
 
@@ -294,6 +322,7 @@ export function ClientContractDetailsPage() {
               )}
             </CardContent>
           </Card>
+          </div>
         </div>
       ) : null}
     </div>

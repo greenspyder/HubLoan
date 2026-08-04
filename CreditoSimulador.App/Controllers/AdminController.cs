@@ -14,18 +14,21 @@ namespace CreditoSimulador.App.Controllers
         private readonly CriarOfertaHandler _criarOfertaHandler;
         private readonly ListarOfertasHandler _listarOfertasHandler;
         private readonly ListarSolicitacoesAdminHandler _listarSolicitacoesHandler;
+        private readonly AutorizarDesembolsoHandler _autorizarDesembolsoHandler;
 
         public AdminController(
             IConfiguration configuration,
             CriarOfertaHandler criarOfertaHandler,
             ListarOfertasHandler listarOfertasHandler,
-            ListarSolicitacoesAdminHandler listarSolicitacoesHandler)
+            ListarSolicitacoesAdminHandler listarSolicitacoesHandler,
+            AutorizarDesembolsoHandler autorizarDesembolsoHandler)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection")
                 ?? "Host=localhost;Username=postgres;Password=13531;Database=postgres";
             _criarOfertaHandler = criarOfertaHandler;
             _listarOfertasHandler = listarOfertasHandler;
             _listarSolicitacoesHandler = listarSolicitacoesHandler;
+            _autorizarDesembolsoHandler = autorizarDesembolsoHandler;
         }
 
         [HttpGet("ofertas")]
@@ -165,6 +168,15 @@ namespace CreditoSimulador.App.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+        [HttpPost("contratos/{contratoId:int}/autorizar-desembolso")]
+        public IActionResult AutorizarDesembolso(int contratoId)
+        {
+            return _autorizarDesembolsoHandler.Handle(new AutorizarDesembolsoCommand
+            {
+                ContratoId = contratoId
+            });
         }
     }
 }

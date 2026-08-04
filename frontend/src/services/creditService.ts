@@ -108,3 +108,28 @@ export async function signContract(contractId: number, customerId: number): Prom
     method: "POST",
   });
 }
+
+export async function authorizeDisbursement(contractId: number): Promise<ContractActionResponse> {
+  return requestJson<ContractActionResponse>(`/admin/contratos/${contractId}/autorizar-desembolso`, {
+    method: "POST",
+  });
+}
+
+export async function downloadContractDocx(contractId: number, customerId: number): Promise<void> {
+  const response = await fetch(`${API_BASE}/clientes/contratos/${contractId}/documento-docx?customerId=${customerId}`);
+
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(body || "Não foi possível baixar o DOCX.");
+  }
+
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `contrato-${contractId}.docx`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}

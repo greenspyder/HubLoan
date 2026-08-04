@@ -2,9 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
+import { ContractWorkflow } from "../../../components/ui/contract-workflow";
 import { Skeleton } from "../../../components/ui/skeleton";
 import { StatusChip } from "../../../components/ui/status-chip";
-import { getContractDetails, listClientParcels } from "../../../services/creditService";
+import { authorizeDisbursement, getContractDetails, listClientParcels } from "../../../services/creditService";
 import type { ClientContractParcel, ContractDetails } from "../../../types/credit";
 
 function formatCurrency(value: number) {
@@ -21,6 +22,7 @@ export function AdminContractDetailsPage() {
   const [details, setDetails] = useState<ContractDetails | null>(null);
   const [contractParcels, setContractParcels] = useState<ClientContractParcel[]>([]);
   const [loading, setLoading] = useState(true);
+  const [authorizing, setAuthorizing] = useState(false);
   const [message, setMessage] = useState("");
 
   const statusByParcela = useMemo(() => {
@@ -30,29 +32,48 @@ export function AdminContractDetailsPage() {
     }, {});
   }, [contractParcels]);
 
+  const loadDetails = async () => {
+    const parsedContractId = Number(contractId);
+    if (!Number.isFinite(parsedContractId)) {
+      setMessage("Contrato inválido.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const data = await getContractDetails(parsedContractId);
+      const parcelData = await listClientParcels(data.idCliente);
+      setDetails(data);
+      setContractParcels(parcelData.filter((parcel) => parcel.idContrato === data.idContrato));
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Não foi possível carregar os detalhes da operação.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const loadDetails = async () => {
-      const parsedContractId = Number(contractId);
-      if (!Number.isFinite(parsedContractId)) {
-        setMessage("Contrato inválido.");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const data = await getContractDetails(parsedContractId);
-        const parcelData = await listClientParcels(data.idCliente);
-        setDetails(data);
-        setContractParcels(parcelData.filter((parcel) => parcel.idContrato === data.idContrato));
-      } catch (error) {
-        setMessage(error instanceof Error ? error.message : "Não foi possível carregar os detalhes da operação.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     void loadDetails();
   }, [contractId]);
+
+  const handleAuthorizeDisbursement = async () => {
+    if (!details) {
+      return;
+    }
+
+    setAuthorizing(true);
+    setMessage("");
+
+    try {
+      await authorizeDisbursement(details.idContrato);
+      await loadDetails();
+      setMessage("Desembolso autorizado com sucesso.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Não foi possível autorizar o desembolso.");
+    } finally {
+      setAuthorizing(false);
+    }
+  };
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -102,7 +123,10 @@ export function AdminContractDetailsPage() {
           </Card>
         </div>
       ) : details ? (
-        <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
+        <div className="space-y-6">
+          <ContractWorkflow status={details.status} />
+
+          <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
           <Card>
             <CardHeader>
               <CardTitle>Resumo da operação</CardTitle>
@@ -125,6 +149,12 @@ export function AdminContractDetailsPage() {
               </div>
               <p>Amortização: {details.tipoAmortizacao}</p>
               {typeof details.valorTotalPago === "number" ? <p>Valor total pago: {formatCurrency(details.valorTotalPago)}</p> : null}
+              {details.desembolsoAutorizadoEm ? <p>Desembolso autorizado em: {formatDate(details.desembolsoAutorizadoEm)}</p> : null}
+              {details.status.trim().toLowerCase() === "aguardando desembolso" ? (
+                <Button onClick={handleAuthorizeDisbursement} disabled={authorizing}>
+                  {authorizing ? "Autorizando..." : "Autorizar desembolso"}
+                </Button>
+              ) : null}
             </CardContent>
           </Card>
 
@@ -151,6 +181,7 @@ export function AdminContractDetailsPage() {
               )}
             </CardContent>
           </Card>
+          </div>
         </div>
       ) : null}
     </div>

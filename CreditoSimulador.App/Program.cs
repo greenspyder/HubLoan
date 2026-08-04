@@ -38,11 +38,13 @@ builder.Services.AddScoped<ContratarCreditoHandler>();
 builder.Services.AddScoped<ObterDetalhesContratoHandler>();
 builder.Services.AddScoped<AtualizarStatusContratoHandler>();
 builder.Services.AddScoped<AssinarContratoHandler>();
+builder.Services.AddScoped<AutorizarDesembolsoHandler>();
 builder.Services.AddScoped<CriarOfertaHandler>();
 builder.Services.AddScoped<ListarOfertasHandler>();
 builder.Services.AddScoped<ListarSolicitacoesAdminHandler>();
 builder.Services.AddScoped<OverdueParcelAutoPaymentJob>();
 builder.Services.AddScoped<LoanContractGenerationConsumer>();
+builder.Services.AddScoped<ContractDocxService>();
 
 // Adicione ANTES de app.Build()
 builder.Services.AddCors(options =>
@@ -140,6 +142,12 @@ static void BaselineExistingSchemaMigrations(AppDbContext dbContext)
         && ColumnExists(dbContext, "contratos", "assinado_em"))
     {
         InsertMigrationHistoryIfMissing(dbContext, "20260804003000_AddContractTemplatesAndLoanContractColumns");
+    }
+
+    if (pending.Contains("20260804005000_AddDesembolsoAutorizadoEmToContratos")
+        && ColumnExists(dbContext, "contratos", "desembolso_autorizado_em"))
+    {
+        InsertMigrationHistoryIfMissing(dbContext, "20260804005000_AddDesembolsoAutorizadoEmToContratos");
     }
 }
 
@@ -250,6 +258,7 @@ static void EnsureLegacySchemaCompatibility(AppDbContext dbContext)
         dbContext.Database.ExecuteSqlRaw("ALTER TABLE contratos ADD COLUMN IF NOT EXISTS contrato_gerado_texto text;");
         dbContext.Database.ExecuteSqlRaw("ALTER TABLE contratos ADD COLUMN IF NOT EXISTS contrato_gerado_em timestamptz;");
         dbContext.Database.ExecuteSqlRaw("ALTER TABLE contratos ADD COLUMN IF NOT EXISTS assinado_em timestamptz;");
+        dbContext.Database.ExecuteSqlRaw("ALTER TABLE contratos ADD COLUMN IF NOT EXISTS desembolso_autorizado_em timestamptz;");
         dbContext.Database.ExecuteSqlRaw("UPDATE contratos SET status = COALESCE(status, 'geração de contratos') WHERE status IS NULL OR status = '';");
     }
 

@@ -85,6 +85,10 @@ namespace CreditoSimulador.App.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("id_cliente");
 
+                    b.Property<DateTime?>("DesembolsoAutorizadoEm")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("desembolso_autorizado_em");
+
                     b.Property<int>("QuantidadeParcelas")
                         .HasColumnType("integer")
                         .HasColumnName("quantidade_parcelas");
