@@ -1,5 +1,6 @@
 export type Offer = {
   id: string;
+  clienteId: number;
   nome: string;
   descricao: string;
   valorMinimo: number;
@@ -21,6 +22,35 @@ export type Client = {
   id: number;
   nome: string;
   limite: number;
+  saldoConta: number;
+  totalContas?: number;
+};
+
+export type AdminAccount = {
+  idConta: number;
+  clienteId: number;
+  nomeCliente: string;
+  saldo: number;
+};
+
+export type OperationalDateState = {
+  dataAtual: string;
+  usandoDataCustomizada: boolean;
+};
+
+export type AccountMovement = {
+  idMovimentacao: number;
+  clienteId: number;
+  idConta: number;
+  tipo: string;
+  valor: number;
+  saldoAnterior: number;
+  saldoAtual: number;
+  descricao?: string;
+  idContrato?: number;
+  idParcela?: number;
+  dataOperacional: string;
+  criadoEm: string;
 };
 
 export type ContractSummary = {
@@ -91,6 +121,7 @@ export type LimitRequest = {
 
 export type SimulationRequest = {
   clienteId: number;
+  contaDesembolsoId: number;
   valorSolicitado: number;
   quantidadeParcelas: number;
   diaVencimento: number;

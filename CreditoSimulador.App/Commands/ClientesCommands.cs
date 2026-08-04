@@ -66,6 +66,8 @@ namespace CreditoSimulador.App.Commands
 
     public class ListarOfertasCommand
     {
+        public int? CustomerId { get; init; }
+        public bool IncluirInativas { get; init; }
     }
 
     public class ListarSolicitacoesAdminCommand

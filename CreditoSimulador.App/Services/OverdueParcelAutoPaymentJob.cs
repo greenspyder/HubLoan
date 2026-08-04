@@ -21,6 +21,8 @@ public class OverdueParcelAutoPaymentJob
         using var conn = new NpgsqlConnection(connectionString);
         conn.Open();
 
+        var dataOperacional = ObterDataOperacional(conn);
+
         var hasTipoPagamento = ColumnExists(conn, "contratos", "tipo_pagamento");
 
         var sqlContratos = hasTipoPagamento
@@ -33,7 +35,7 @@ public class OverdueParcelAutoPaymentJob
                   FROM parcelas p
                   WHERE p.id_contrato = c.id_contrato
                     AND COALESCE(p.status_pagamento, 'ABERTO') <> 'PAGO'
-                    AND p.data_vencimento < CURRENT_DATE
+                                        AND p.data_vencimento < @dataOperacional
               )
             ORDER BY c.id_contrato"
             : @"
@@ -44,7 +46,7 @@ public class OverdueParcelAutoPaymentJob
                   FROM parcelas p
                   WHERE p.id_contrato = c.id_contrato
                     AND COALESCE(p.status_pagamento, 'ABERTO') <> 'PAGO'
-                    AND p.data_vencimento < CURRENT_DATE
+                                        AND p.data_vencimento < @dataOperacional
               )
             ORDER BY c.id_contrato";
 
@@ -54,6 +56,7 @@ public class OverdueParcelAutoPaymentJob
         }
 
         using var cmdContratos = new NpgsqlCommand(sqlContratos, conn);
+        cmdContratos.Parameters.AddWithValue("dataOperacional", dataOperacional);
         using var readerContratos = cmdContratos.ExecuteReader();
 
         var contratos = new List<(int ContratoId, int ClienteId)>();
@@ -73,7 +76,7 @@ public class OverdueParcelAutoPaymentJob
             try
             {
                 var saldoCliente = ObterSaldoCliente(conn, contrato.ClienteId, transaction);
-                var parcelasAtrasadas = ObterParcelasAtrasadas(conn, contrato.ContratoId, transaction);
+                var parcelasAtrasadas = ObterParcelasAtrasadas(conn, contrato.ContratoId, dataOperacional, transaction);
 
                 var saldoDisponivel = saldoCliente;
                 var pagasNesteContrato = 0;
@@ -84,13 +87,26 @@ public class OverdueParcelAutoPaymentJob
                         break;
                     }
 
-                    DebitarSaldo(conn, contrato.ClienteId, parcela.ValorTotalParcela, transaction);
+                    var (idConta, saldoAnterior, saldoAtual) = DebitarSaldo(conn, contrato.ClienteId, parcela.ValorTotalParcela, transaction);
                     MarcarParcelaComoPaga(conn, parcela.IdParcela, transaction);
+                    RegistrarMovimentacaoConta(
+                        conn,
+                        contrato.ClienteId,
+                        idConta,
+                        "PAGAMENTO_AUTOMATICO_PARCELA",
+                        -parcela.ValorTotalParcela,
+                        saldoAnterior,
+                        saldoAtual,
+                        dataOperacional,
+                        $"Pagamento automático de parcela em atraso (parcela {parcela.IdParcela}).",
+                        contrato.ContratoId,
+                        parcela.IdParcela,
+                        transaction);
                     saldoDisponivel -= parcela.ValorTotalParcela;
                     pagasNesteContrato++;
                 }
 
-                AtualizarStatusContrato(conn, contrato.ContratoId, transaction);
+                AtualizarStatusContrato(conn, contrato.ContratoId, dataOperacional, transaction);
 
                 transaction.Commit();
                 contratosProcessados++;
@@ -121,18 +137,19 @@ public class OverdueParcelAutoPaymentJob
         return Convert.ToDecimal(result);
     }
 
-    private static List<ParcelaEmAtraso> ObterParcelasAtrasadas(NpgsqlConnection conn, int contratoId, NpgsqlTransaction transaction)
+    private static List<ParcelaEmAtraso> ObterParcelasAtrasadas(NpgsqlConnection conn, int contratoId, DateTime dataOperacional, NpgsqlTransaction transaction)
     {
         const string sql = @"
             SELECT id_parcela, valor_total_parcela
             FROM parcelas
             WHERE id_contrato = @idContrato
               AND COALESCE(status_pagamento, 'ABERTO') <> 'PAGO'
-              AND data_vencimento < CURRENT_DATE
+              AND data_vencimento < @dataOperacional
             ORDER BY data_vencimento, num_parcela";
 
         using var cmd = new NpgsqlCommand(sql, conn, transaction);
         cmd.Parameters.AddWithValue("idContrato", contratoId);
+        cmd.Parameters.AddWithValue("dataOperacional", dataOperacional);
         using var reader = cmd.ExecuteReader();
 
         var parcelas = new List<ParcelaEmAtraso>();
@@ -144,22 +161,29 @@ public class OverdueParcelAutoPaymentJob
         return parcelas;
     }
 
-    private static void DebitarSaldo(NpgsqlConnection conn, int clienteId, decimal valor, NpgsqlTransaction transaction)
+    private static (int IdConta, decimal SaldoAnterior, decimal SaldoAtual) DebitarSaldo(NpgsqlConnection conn, int clienteId, decimal valor, NpgsqlTransaction transaction)
     {
         const string sql = @"
             UPDATE contas
             SET saldo = saldo - @valor
             WHERE id_cliente = @idCliente
-              AND saldo >= @valor";
+              AND saldo >= @valor
+            RETURNING id_conta, saldo";
 
         using var cmd = new NpgsqlCommand(sql, conn, transaction);
         cmd.Parameters.AddWithValue("valor", valor);
         cmd.Parameters.AddWithValue("idCliente", clienteId);
 
-        if (cmd.ExecuteNonQuery() == 0)
+        using var reader = cmd.ExecuteReader();
+        if (!reader.Read())
         {
             throw new InvalidOperationException("Saldo insuficiente para o débito automático.");
         }
+
+        var idConta = reader.GetInt32(0);
+        var saldoAtual = reader.GetDecimal(1);
+        var saldoAnterior = saldoAtual + valor;
+        return (idConta, saldoAnterior, saldoAtual);
     }
 
     private static void MarcarParcelaComoPaga(NpgsqlConnection conn, int parcelaId, NpgsqlTransaction transaction)
@@ -174,7 +198,7 @@ public class OverdueParcelAutoPaymentJob
         cmd.ExecuteNonQuery();
     }
 
-    private static void AtualizarStatusContrato(NpgsqlConnection conn, int contratoId, NpgsqlTransaction transaction)
+    private static void AtualizarStatusContrato(NpgsqlConnection conn, int contratoId, DateTime dataOperacional, NpgsqlTransaction transaction)
     {
         const string sql = @"
             UPDATE contratos
@@ -184,7 +208,7 @@ public class OverdueParcelAutoPaymentJob
                     FROM parcelas p
                     WHERE p.id_contrato = @idContrato
                       AND COALESCE(p.status_pagamento, 'ABERTO') <> 'PAGO'
-                      AND p.data_vencimento < CURRENT_DATE
+                      AND p.data_vencimento < @dataOperacional
                 ) THEN 'atrasado'
                 ELSE 'desembolsado'
             END
@@ -192,6 +216,49 @@ public class OverdueParcelAutoPaymentJob
 
         using var cmd = new NpgsqlCommand(sql, conn, transaction);
         cmd.Parameters.AddWithValue("idContrato", contratoId);
+        cmd.Parameters.AddWithValue("dataOperacional", dataOperacional);
+        cmd.ExecuteNonQuery();
+    }
+
+    private static DateTime ObterDataOperacional(NpgsqlConnection conn)
+    {
+        const string sql = "SELECT COALESCE((SELECT data_operacional FROM operational_control WHERE id = 1), CURRENT_DATE)";
+        using var cmd = new NpgsqlCommand(sql, conn);
+        var result = cmd.ExecuteScalar();
+        return result is DateTime parsed ? parsed.Date : DateTime.Today;
+    }
+
+    private static void RegistrarMovimentacaoConta(
+        NpgsqlConnection conn,
+        int clienteId,
+        int idConta,
+        string tipo,
+        decimal valor,
+        decimal saldoAnterior,
+        decimal saldoAtual,
+        DateTime dataOperacional,
+        string? descricao,
+        int? idContrato,
+        int? idParcela,
+        NpgsqlTransaction transaction)
+    {
+        const string sql = @"
+            INSERT INTO account_movements
+            (id_cliente, id_conta, tipo, valor, saldo_anterior, saldo_atual, descricao, id_contrato, id_parcela, data_operacional)
+            VALUES
+            (@idCliente, @idConta, @tipo, @valor, @saldoAnterior, @saldoAtual, @descricao, @idContrato, @idParcela, @dataOperacional)";
+
+        using var cmd = new NpgsqlCommand(sql, conn, transaction);
+        cmd.Parameters.AddWithValue("idCliente", clienteId);
+        cmd.Parameters.AddWithValue("idConta", idConta);
+        cmd.Parameters.AddWithValue("tipo", tipo);
+        cmd.Parameters.AddWithValue("valor", valor);
+        cmd.Parameters.AddWithValue("saldoAnterior", saldoAnterior);
+        cmd.Parameters.AddWithValue("saldoAtual", saldoAtual);
+        cmd.Parameters.AddWithValue("descricao", string.IsNullOrWhiteSpace(descricao) ? (object)DBNull.Value : descricao);
+        cmd.Parameters.AddWithValue("idContrato", idContrato.HasValue ? idContrato.Value : (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("idParcela", idParcela.HasValue ? idParcela.Value : (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("dataOperacional", dataOperacional.Date);
         cmd.ExecuteNonQuery();
     }
 

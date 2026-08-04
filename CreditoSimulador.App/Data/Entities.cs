@@ -59,6 +59,9 @@ public class Contrato
     [Column("id_cliente")]
     public int IdCliente { get; set; }
 
+    [Column("conta_desembolso_id")]
+    public int? ContaDesembolsoId { get; set; }
+
     [Column("desembolso_autorizado_em")]
     public DateTime? DesembolsoAutorizadoEm { get; set; }
 

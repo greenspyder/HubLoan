@@ -50,6 +50,7 @@ public class AppDbContext : DbContext
             entity.Property(e => e.TipoAmortizacao).HasColumnName("tipo_amortizacao").HasMaxLength(50).IsRequired();
             entity.Property(e => e.TipoPagamento).HasColumnName("tipo_pagamento").HasMaxLength(50);
             entity.Property(e => e.IdCliente).HasColumnName("id_cliente").IsRequired();
+            entity.Property(e => e.ContaDesembolsoId).HasColumnName("conta_desembolso_id");
             entity.Property(e => e.DesembolsoAutorizadoEm).HasColumnName("desembolso_autorizado_em");
         });
 
@@ -76,6 +77,7 @@ public class AppDbContext : DbContext
             entity.ToTable("credit_offers");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ClienteId).HasColumnName("cliente_id").IsRequired();
             entity.Property(e => e.Nome).HasColumnName("nome").HasMaxLength(200).IsRequired();
             entity.Property(e => e.Descricao).HasColumnName("descricao");
             entity.Property(e => e.ValorMinimo).HasColumnName("valor_minimo").HasPrecision(12, 2).IsRequired();

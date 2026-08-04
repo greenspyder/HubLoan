@@ -6,7 +6,7 @@ namespace CreditoSimulador.App.Services;
 
 public class ContractDocxService
 {
-    public byte[] BuildContractDocument(string titulo, string conteudo)
+    public byte[] BuildContractDocument(string titulo, string conteudo, DateTime? dataGeracao)
     {
         using var stream = new MemoryStream();
         using (var wordDocument = WordprocessingDocument.Create(stream, WordprocessingDocumentType.Document, true))
@@ -16,7 +16,8 @@ public class ContractDocxService
             var body = mainPart.Document.Body!;
 
             body.Append(CreateParagraph(titulo, true));
-            body.Append(CreateParagraph($"Gerado em {DateTime.Now:dd/MM/yyyy HH:mm:ss}", false));
+            var dataTexto = dataGeracao.HasValue ? dataGeracao.Value.ToString("dd/MM/yyyy") : "não informada";
+            body.Append(CreateParagraph($"Gerado em {dataTexto}", false));
             body.Append(CreateParagraph(string.Empty, false));
 
             foreach (var line in conteudo.Split('\n', StringSplitOptions.None))

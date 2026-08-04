@@ -22,6 +22,8 @@ public class LoanContractGenerationConsumer
         using var conn = new NpgsqlConnection(connectionString);
         conn.Open();
 
+        var dataOperacional = ObterDataOperacional(conn);
+
         var template = ObterTemplateAtivo(conn);
         if (template is null)
         {
@@ -66,13 +68,13 @@ public class LoanContractGenerationConsumer
         var processados = 0;
         foreach (var contrato in contratos)
         {
-            var textoContrato = RenderizarContrato(template, contrato);
+            var textoContrato = RenderizarContrato(template, contrato, dataOperacional);
 
             const string sqlUpdate = @"
                 UPDATE contratos c
                 SET id_template_contrato = @idTemplate,
                     contrato_gerado_texto = @texto,
-                    contrato_gerado_em = NOW(),
+                    contrato_gerado_em = @geradoEm,
                     status = @novoStatus
                 WHERE c.id_contrato = @idContrato
                   AND LOWER(COALESCE(to_jsonb(c) ->> 'status', '')) = LOWER(@statusGeracao)";
@@ -80,6 +82,7 @@ public class LoanContractGenerationConsumer
             using var cmdUpdate = new NpgsqlCommand(sqlUpdate, conn);
             cmdUpdate.Parameters.AddWithValue("idTemplate", template.IdTemplate);
             cmdUpdate.Parameters.AddWithValue("texto", textoContrato);
+            cmdUpdate.Parameters.AddWithValue("geradoEm", dataOperacional);
             cmdUpdate.Parameters.AddWithValue("novoStatus", ContratoStatus.PendenteAssinatura);
             cmdUpdate.Parameters.AddWithValue("idContrato", contrato.IdContrato);
             cmdUpdate.Parameters.AddWithValue("statusGeracao", ContratoStatus.GeracaoContratos);
@@ -115,7 +118,15 @@ public class LoanContractGenerationConsumer
             reader.GetString(2));
     }
 
-    private static string RenderizarContrato(TemplateContrato template, ContratoPendente contrato)
+    private static DateTime ObterDataOperacional(NpgsqlConnection conn)
+    {
+        const string sql = "SELECT COALESCE((SELECT data_operacional FROM operational_control WHERE id = 1), CURRENT_DATE)";
+        using var cmd = new NpgsqlCommand(sql, conn);
+        var result = cmd.ExecuteScalar();
+        return result is DateTime parsed ? parsed.Date : DateTime.Today;
+    }
+
+    private static string RenderizarContrato(TemplateContrato template, ContratoPendente contrato, DateTime dataOperacional)
     {
         return template.Conteudo
             .Replace("{{cliente_nome}}", contrato.NomeCliente)
@@ -126,7 +137,7 @@ public class LoanContractGenerationConsumer
             .Replace("{{quantidade_parcelas}}", contrato.QuantidadeParcelas.ToString())
             .Replace("{{tipo_amortizacao}}", contrato.TipoAmortizacao)
             .Replace("{{tipo_pagamento}}", contrato.TipoPagamento)
-            .Replace("{{data_geracao}}", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"))
+                .Replace("{{data_geracao}}", dataOperacional.ToString("yyyy-MM-dd"))
             .Replace("{{nome_template}}", template.Nome);
     }
 

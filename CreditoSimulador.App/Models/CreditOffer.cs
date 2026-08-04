@@ -3,6 +3,7 @@ namespace CreditoSimulador.App.Models
     public class CreditOffer
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
+        public int ClienteId { get; set; }
         public string Nome { get; set; } = string.Empty;
         public string Descricao { get; set; } = string.Empty;
         public decimal ValorMinimo { get; set; }
@@ -55,6 +56,7 @@ namespace CreditoSimulador.App.Models
     public class ContratarCreditoRequest
     {
         public int ClienteId { get; set; }
+        public int ContaDesembolsoId { get; set; }
         public decimal ValorSolicitado { get; set; }
         public int QuantidadeParcelas { get; set; }
         public int DiaVencimento { get; set; }
@@ -110,5 +112,52 @@ namespace CreditoSimulador.App.Models
         public bool Ativo { get; set; }
         public DateTime CriadoEm { get; set; }
         public DateTime? AtualizadoEm { get; set; }
+    }
+
+    public class CreateAccountRequest
+    {
+        public int ClienteId { get; set; }
+        public decimal SaldoInicial { get; set; }
+    }
+
+    public class DepositAccountRequest
+    {
+        public int IdConta { get; set; }
+        public decimal Valor { get; set; }
+    }
+
+    public class AdminAccountResponse
+    {
+        public int IdConta { get; set; }
+        public int ClienteId { get; set; }
+        public string NomeCliente { get; set; } = string.Empty;
+        public decimal Saldo { get; set; }
+    }
+
+    public class OperationalDateRequest
+    {
+        public DateTime? DataAtual { get; set; }
+    }
+
+    public class OperationalDateResponse
+    {
+        public DateTime DataAtual { get; set; }
+        public bool UsandoDataCustomizada { get; set; }
+    }
+
+    public class AccountMovementResponse
+    {
+        public int IdMovimentacao { get; set; }
+        public int ClienteId { get; set; }
+        public int IdConta { get; set; }
+        public string Tipo { get; set; } = string.Empty;
+        public decimal Valor { get; set; }
+        public decimal SaldoAnterior { get; set; }
+        public decimal SaldoAtual { get; set; }
+        public string? Descricao { get; set; }
+        public int? IdContrato { get; set; }
+        public int? IdParcela { get; set; }
+        public DateTime DataOperacional { get; set; }
+        public DateTime CriadoEm { get; set; }
     }
 }

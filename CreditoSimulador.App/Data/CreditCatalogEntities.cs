@@ -9,6 +9,9 @@ public class CreditOfferEntity
     [Column("id")]
     public string Id { get; set; } = string.Empty;
 
+    [Column("cliente_id")]
+    public int ClienteId { get; set; }
+
     [Required]
     [Column("nome")]
     [MaxLength(200)]

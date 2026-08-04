@@ -1,4 +1,6 @@
 import type {
+  AccountMovement,
+  AdminAccount,
   AdminContract,
   Client,
   ClientContractParcel,
@@ -8,6 +10,7 @@ import type {
   ContractSummary,
   CreateContractTemplateRequest,
   LimitRequest,
+  OperationalDateState,
   Offer,
   SimulationRequest,
   SimulationResponse,
@@ -32,23 +35,68 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
   return (await response.json()) as T;
 }
 
-export async function listClientOffers(): Promise<Offer[]> {
-  const [clientOffers, adminOffers] = await Promise.all([
-    requestJson<Offer[]>("/clientes/ofertas"),
-    requestJson<Offer[]>("/admin/ofertas"),
-  ]);
-
-  return clientOffers.length > 0 ? clientOffers : adminOffers;
+export async function listClientOffers(customerId: number): Promise<Offer[]> {
+  return requestJson<Offer[]>(`/clientes/ofertas?customerId=${customerId}`);
 }
 
 export async function listClients(): Promise<Client[]> {
-  const data = await requestJson<Array<{ id?: number; idCliente?: number; nome?: string; limite?: number; limiteGlobal?: number }>>("/clientes");
+  const data = await requestJson<Array<{ id?: number; idCliente?: number; nome?: string; limite?: number; limiteGlobal?: number; saldoConta?: number; totalContas?: number }>>("/clientes");
 
   return data.map((client) => ({
     id: client.id ?? client.idCliente ?? 0,
     nome: client.nome ?? "Cliente",
     limite: client.limite ?? client.limiteGlobal ?? 0,
+    saldoConta: client.saldoConta ?? 0,
+    totalContas: client.totalContas ?? 0,
   }));
+}
+
+export async function listAdminAccounts(customerId?: number): Promise<AdminAccount[]> {
+  const path = customerId ? `/admin/contas?customerId=${customerId}` : "/admin/contas";
+  return requestJson<AdminAccount[]>(path);
+}
+
+export async function listClientAccounts(customerId: number): Promise<AdminAccount[]> {
+  return requestJson<AdminAccount[]>(`/clientes/contas?customerId=${customerId}`);
+}
+
+export async function createAdminAccount(clienteId: number, saldoInicial: number): Promise<void> {
+  await requestJson<void>("/admin/contas", {
+    method: "POST",
+    body: JSON.stringify({ clienteId, saldoInicial }),
+  });
+}
+
+export async function depositAdminAccount(idConta: number, valor: number): Promise<void> {
+  await requestJson<void>("/admin/contas/deposito", {
+    method: "POST",
+    body: JSON.stringify({ idConta, valor }),
+  });
+}
+
+export async function getOperationalDate(): Promise<OperationalDateState> {
+  return requestJson<OperationalDateState>("/admin/data-operacional");
+}
+
+export async function setOperationalDate(dataAtual: string | null): Promise<void> {
+  await requestJson<void>("/admin/data-operacional", {
+    method: "POST",
+    body: JSON.stringify({ dataAtual }),
+  });
+}
+
+export async function listAdminMovements(clienteId?: number, limit = 100): Promise<AccountMovement[]> {
+  const params = new URLSearchParams({ limit: String(limit) });
+  if (clienteId) {
+    params.set("clienteId", String(clienteId));
+  }
+
+  return requestJson<AccountMovement[]>(`/admin/movimentacoes?${params.toString()}`);
+}
+
+export async function listClientMovements(customerId: number, limit = 100): Promise<AccountMovement[]> {
+  const params = new URLSearchParams({ customerId: String(customerId), limit: String(limit) });
+  return requestJson<AccountMovement[]>(`/clientes/movimentacoes?${params.toString()}`);
 }
 
 export async function listAdminContracts(): Promise<AdminContract[]> {

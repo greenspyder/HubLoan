@@ -60,6 +60,7 @@ namespace CreditoSimulador.App.Services
             }
 
             entity.Nome = offer.Nome;
+            entity.ClienteId = offer.ClienteId;
             entity.Descricao = offer.Descricao;
             entity.ValorMinimo = offer.ValorMinimo;
             entity.ValorMaximo = offer.ValorMaximo;
@@ -110,6 +111,7 @@ namespace CreditoSimulador.App.Services
         private static CreditOffer MapToModel(CreditOfferEntityData entity) => new()
         {
             Id = entity.Id,
+            ClienteId = entity.ClienteId,
             Nome = entity.Nome,
             Descricao = entity.Descricao,
             ValorMinimo = entity.ValorMinimo,

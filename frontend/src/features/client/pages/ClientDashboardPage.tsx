@@ -4,8 +4,8 @@ import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Skeleton } from "../../../components/ui/skeleton";
 import { StatusChip } from "../../../components/ui/status-chip";
-import { listClientContracts, listClientOffers, listClientParcels, listClients } from "../../../services/creditService";
-import type { Client, ClientContractParcel, ContractSummary, Offer } from "../../../types/credit";
+import { listClientContracts, listClientMovements, listClientOffers, listClientParcels, listClients } from "../../../services/creditService";
+import type { AccountMovement, Client, ClientContractParcel, ContractSummary, Offer } from "../../../types/credit";
 import { useImpersonation } from "../../../app/contexts/ImpersonationContext";
 
 function formatCurrency(value: number) {
@@ -18,6 +18,7 @@ export function ClientDashboardPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [contracts, setContracts] = useState<ContractSummary[]>([]);
   const [parcels, setParcels] = useState<ClientContractParcel[]>([]);
+  const [movements, setMovements] = useState<AccountMovement[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [message, setMessage] = useState("");
@@ -33,17 +34,19 @@ export function ClientDashboardPage() {
       setLoadingData(true);
 
       try {
-        const [clientsData, contractsData, parcelsData, offersData] = await Promise.all([
+        const [clientsData, contractsData, parcelsData, offersData, movementsData] = await Promise.all([
           listClients(),
           listClientContracts(impersonatedClientId),
           listClientParcels(impersonatedClientId),
-          listClientOffers(),
+          listClientOffers(impersonatedClientId),
+          listClientMovements(impersonatedClientId, 40),
         ]);
 
         setClients(clientsData);
         setContracts(contractsData);
         setParcels(parcelsData);
         setOffers(offersData);
+        setMovements(movementsData);
       } finally {
         setLoadingData(false);
       }
@@ -102,6 +105,8 @@ export function ClientDashboardPage() {
               <p className="text-sm font-semibold text-slate-800">Cliente selecionado</p>
               <p className="text-2xl font-semibold text-slate-900">{selectedClient.nome}</p>
               <p className="mt-1 text-sm text-slate-600">Limite global: {formatCurrency(selectedClient.limite)}</p>
+              <p className="mt-1 text-sm text-slate-600">Contas ativas: {selectedClient.totalContas ?? 0}</p>
+              <p className="mt-1 text-sm text-slate-600">Saldo total em contas: {formatCurrency(selectedClient.saldoConta)}</p>
             </div>
           ) : null}
 
@@ -196,6 +201,35 @@ export function ClientDashboardPage() {
                 </Button>
               </div>
             ))
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Extrato recente da conta</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {loadingData ? (
+            <div className="space-y-2">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+            </div>
+          ) : movements.length === 0 ? (
+            <p className="text-sm text-slate-500">Ainda não há movimentações para este cliente.</p>
+          ) : (
+            <div className="space-y-2">
+              {movements.map((movement) => (
+                <div key={movement.idMovimentacao} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-semibold text-slate-800">{movement.tipo}</p>
+                    <p className={movement.valor >= 0 ? "font-semibold text-emerald-700" : "font-semibold text-rose-700"}>{formatCurrency(movement.valor)}</p>
+                  </div>
+                  <p className="text-xs text-slate-600">Saldo: {formatCurrency(movement.saldoAnterior)} → {formatCurrency(movement.saldoAtual)}</p>
+                  <p className="text-xs text-slate-500">Data operacional: {new Date(movement.dataOperacional).toLocaleDateString("pt-BR")}</p>
+                </div>
+              ))}
+            </div>
           )}
         </CardContent>
       </Card>

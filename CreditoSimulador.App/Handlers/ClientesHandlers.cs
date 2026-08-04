@@ -13,17 +13,20 @@ namespace CreditoSimulador.App.Handlers
 
         protected void AtualizarParcelasEVincularStatusDosContratos(NpgsqlConnection conn)
         {
+            var dataOperacional = ObterDataOperacional(conn);
+
             const string sqlAtualizarParcelas = @"
                 UPDATE parcelas
                 SET status_pagamento = CASE
                     WHEN status_pagamento IS NULL OR status_pagamento = '' THEN 'ABERTO'
-                    WHEN status_pagamento = 'ABERTO' AND data_vencimento < CURRENT_DATE THEN 'ATRASADO'
+                    WHEN status_pagamento = 'ABERTO' AND data_vencimento < @dataOperacional THEN 'ATRASADO'
                     ELSE status_pagamento
                 END
                 WHERE (status_pagamento IS NULL OR status_pagamento = '' OR status_pagamento = 'ABERTO')
-                  AND data_vencimento < CURRENT_DATE";
+                  AND data_vencimento < @dataOperacional";
 
             using var cmdParcelas = new NpgsqlCommand(sqlAtualizarParcelas, conn);
+            cmdParcelas.Parameters.AddWithValue("dataOperacional", dataOperacional);
             cmdParcelas.ExecuteNonQuery();
 
             const string sqlAtualizarContratos = @"
@@ -43,6 +46,16 @@ namespace CreditoSimulador.App.Handlers
             cmdContratos.Parameters.AddWithValue("atrasado", ContratoStatus.Atrasado);
             cmdContratos.Parameters.AddWithValue("geracao", ContratoStatus.GeracaoContratos);
             cmdContratos.ExecuteNonQuery();
+        }
+
+        protected DateTime ObterDataOperacional(NpgsqlConnection conn, NpgsqlTransaction? transaction = null)
+        {
+            const string sql = "SELECT COALESCE((SELECT data_operacional FROM operational_control WHERE id = 1), CURRENT_DATE)";
+            using var cmd = transaction is null
+                ? new NpgsqlCommand(sql, conn)
+                : new NpgsqlCommand(sql, conn, transaction);
+            var result = cmd.ExecuteScalar();
+            return result is DateTime parsed ? parsed.Date : DateTime.Today;
         }
 
         protected void MarcarContratoComoDesembolsado(NpgsqlConnection conn, int contratoId)
@@ -109,6 +122,43 @@ namespace CreditoSimulador.App.Handlers
                 _ => tipoPagamento.Trim()
             };
         }
+
+        protected void RegistrarMovimentacaoConta(
+            NpgsqlConnection conn,
+            int clienteId,
+            int idConta,
+            string tipo,
+            decimal valor,
+            decimal saldoAnterior,
+            decimal saldoAtual,
+            DateTime dataOperacional,
+            string? descricao = null,
+            int? idContrato = null,
+            int? idParcela = null,
+            NpgsqlTransaction? transaction = null)
+        {
+            const string sql = @"
+                INSERT INTO account_movements
+                (id_cliente, id_conta, tipo, valor, saldo_anterior, saldo_atual, descricao, id_contrato, id_parcela, data_operacional)
+                VALUES
+                (@idCliente, @idConta, @tipo, @valor, @saldoAnterior, @saldoAtual, @descricao, @idContrato, @idParcela, @dataOperacional)";
+
+            using var cmd = transaction is null
+                ? new NpgsqlCommand(sql, conn)
+                : new NpgsqlCommand(sql, conn, transaction);
+
+            cmd.Parameters.AddWithValue("idCliente", clienteId);
+            cmd.Parameters.AddWithValue("idConta", idConta);
+            cmd.Parameters.AddWithValue("tipo", tipo);
+            cmd.Parameters.AddWithValue("valor", valor);
+            cmd.Parameters.AddWithValue("saldoAnterior", saldoAnterior);
+            cmd.Parameters.AddWithValue("saldoAtual", saldoAtual);
+            cmd.Parameters.AddWithValue("descricao", string.IsNullOrWhiteSpace(descricao) ? (object)DBNull.Value : descricao);
+            cmd.Parameters.AddWithValue("idContrato", idContrato.HasValue ? idContrato.Value : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("idParcela", idParcela.HasValue ? idParcela.Value : (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("dataOperacional", dataOperacional.Date);
+            cmd.ExecuteNonQuery();
+        }
     }
 
     public class ListarClientesHandler : BaseClientesHandler
@@ -123,7 +173,15 @@ namespace CreditoSimulador.App.Handlers
 
                 if (command.CustomerId.HasValue)
                 {
-                    const string sqlFiltro = "SELECT id_cliente, nome, limite_global FROM clientes WHERE id_cliente = @id";
+                    const string sqlFiltro = @"SELECT c.id_cliente,
+                                                     c.nome,
+                                                     c.limite_global,
+                                                     COALESCE(SUM(ct.saldo), 0) AS saldo_total,
+                                                     COUNT(ct.id_conta) AS total_contas
+                                              FROM clientes c
+                                              LEFT JOIN contas ct ON ct.id_cliente = c.id_cliente
+                                              WHERE c.id_cliente = @id
+                                              GROUP BY c.id_cliente, c.nome, c.limite_global";
                     using var cmdFiltro = new NpgsqlCommand(sqlFiltro, conn);
                     cmdFiltro.Parameters.AddWithValue("id", command.CustomerId.Value);
 
@@ -132,20 +190,42 @@ namespace CreditoSimulador.App.Handlers
                     {
                         return new OkObjectResult(new
                         {
-                            Cliente = new { Id = readerFiltro.GetInt32(0), Nome = readerFiltro.GetString(1), Limite = readerFiltro.GetDecimal(2) }
+                            Cliente = new
+                            {
+                                Id = readerFiltro.GetInt32(0),
+                                Nome = readerFiltro.GetString(1),
+                                Limite = readerFiltro.GetDecimal(2),
+                                SaldoConta = readerFiltro.IsDBNull(3) ? 0m : readerFiltro.GetDecimal(3),
+                                TotalContas = readerFiltro.IsDBNull(4) ? 0 : readerFiltro.GetInt64(4)
+                            }
                         });
                     }
 
                     return new NotFoundObjectResult("Cliente para impersonation não encontrado.");
                 }
 
-                const string sqlTodos = "SELECT id_cliente, nome, limite_global FROM clientes ORDER BY nome";
+                  const string sqlTodos = @"SELECT c.id_cliente,
+                                    c.nome,
+                                    c.limite_global,
+                                    COALESCE(SUM(ct.saldo), 0) AS saldo_total,
+                                    COUNT(ct.id_conta) AS total_contas
+                                          FROM clientes c
+                                          LEFT JOIN contas ct ON ct.id_cliente = c.id_cliente
+                                GROUP BY c.id_cliente, c.nome, c.limite_global
+                                          ORDER BY c.nome";
                 using var cmdTodos = new NpgsqlCommand(sqlTodos, conn);
                 using var reader = cmdTodos.ExecuteReader();
 
                 while (reader.Read())
                 {
-                    listaClientes.Add(new { Id = reader.GetInt32(0), Nome = reader.GetString(1), Limite = reader.GetDecimal(2) });
+                    listaClientes.Add(new
+                    {
+                        Id = reader.GetInt32(0),
+                        Nome = reader.GetString(1),
+                        Limite = reader.GetDecimal(2),
+                        SaldoConta = reader.IsDBNull(3) ? 0m : reader.GetDecimal(3),
+                        TotalContas = reader.IsDBNull(4) ? 0 : reader.GetInt64(4)
+                    });
                 }
 
                 return new OkObjectResult(listaClientes);
@@ -281,6 +361,7 @@ namespace CreditoSimulador.App.Handlers
 
                 if (reader.Read())
                 {
+                    var dataOperacional = ObterDataOperacional(conn);
                     int idContrato = reader.GetInt32(0);
                     decimal principal = reader.GetDecimal(1);
                     decimal taxa = reader.GetDecimal(2);
@@ -309,17 +390,32 @@ namespace CreditoSimulador.App.Handlers
                         Console.WriteLine($">>> LIMITE APROVADO: Limite de {limiteDisponivel:C2} para uma solicitação de {principal:C2}");
                     }
 
-                    const string sqlDesembolso = "UPDATE contas SET saldo = saldo + @valor WHERE id_cliente = @idCliente";
-                    using (var cmdDesembolso = new NpgsqlCommand(sqlDesembolso, conn))
+                        using (var cmdDesembolso = new NpgsqlCommand(@"UPDATE contas SET saldo = saldo + @valor WHERE id_cliente = @idCliente RETURNING id_conta, saldo", conn))
                     {
                         cmdDesembolso.Parameters.AddWithValue("valor", principal);
                         cmdDesembolso.Parameters.AddWithValue("idCliente", idCliente);
-                        int linhasAfetadas = cmdDesembolso.ExecuteNonQuery();
-
-                        if (linhasAfetadas == 0)
+                            using var readerSaldo = cmdDesembolso.ExecuteReader();
+                            if (!readerSaldo.Read())
                         {
                             return new BadRequestObjectResult("Cliente não possui conta ativa para desembolso.");
                         }
+
+                            var idConta = readerSaldo.GetInt32(0);
+                            var saldoAtual = readerSaldo.GetDecimal(1);
+                            var saldoAnterior = saldoAtual - principal;
+                            readerSaldo.Close();
+
+                            RegistrarMovimentacaoConta(
+                                conn,
+                                idCliente,
+                                idConta,
+                                "DESEMBOLSO_PROCESSAMENTO",
+                                principal,
+                                saldoAnterior,
+                                saldoAtual,
+                                dataOperacional,
+                                "Desembolso realizado no processamento manual de contrato.",
+                                idContrato);
                     }
 
                     using (var cmdDel = new NpgsqlCommand("DELETE FROM parcelas WHERE id_contrato = @id", conn))
@@ -346,7 +442,7 @@ namespace CreditoSimulador.App.Handlers
                     {
                         cmdInsert.Parameters["@id"].Value = idContrato;
                         cmdInsert.Parameters["@n"].Value = p.Numero;
-                        cmdInsert.Parameters["@data"].Value = DateTime.Now.AddMonths(p.Numero);
+                        cmdInsert.Parameters["@data"].Value = dataOperacional.AddMonths(p.Numero);
                         cmdInsert.Parameters["@amort"].Value = p.Amortizacao;
                         cmdInsert.Parameters["@juros"].Value = p.Juros;
                         cmdInsert.Parameters["@total"].Value = p.Total;
@@ -376,25 +472,59 @@ namespace CreditoSimulador.App.Handlers
 
             try
             {
-                const string sqlParc = "SELECT valor_total_parcela FROM parcelas WHERE id_contrato = @c AND num_parcela = @n AND status_pagamento = 'ABERTO'";
-                using var cmdParc = new NpgsqlCommand(sqlParc, conn);
+                var dataOperacional = ObterDataOperacional(conn, trans);
+
+                const string sqlParc = "SELECT id_parcela, valor_total_parcela FROM parcelas WHERE id_contrato = @c AND num_parcela = @n AND status_pagamento = 'ABERTO'";
+                using var cmdParc = new NpgsqlCommand(sqlParc, conn, trans);
                 cmdParc.Parameters.AddWithValue("c", command.ContratoId);
                 cmdParc.Parameters.AddWithValue("n", command.NumeroParcela);
-                var valor = (decimal?)cmdParc.ExecuteScalar();
+                using var readerParcela = cmdParc.ExecuteReader();
 
-                if (valor == null)
+                if (!readerParcela.Read())
                 {
                     return new BadRequestObjectResult("Parcela não encontrada ou já paga.");
                 }
 
-                const string sqlDebito = "UPDATE contas SET saldo = saldo - @v WHERE id_cliente = (SELECT id_cliente FROM contratos WHERE id_contrato = @c)";
-                using var cmdDeb = new NpgsqlCommand(sqlDebito, conn);
+                var idParcela = readerParcela.GetInt32(0);
+                var valor = readerParcela.GetDecimal(1);
+                readerParcela.Close();
+
+                const string sqlDebito = @"
+                    UPDATE contas
+                    SET saldo = saldo - @v
+                    WHERE id_cliente = (SELECT id_cliente FROM contratos WHERE id_contrato = @c)
+                    RETURNING id_conta, id_cliente, saldo";
+                using var cmdDeb = new NpgsqlCommand(sqlDebito, conn, trans);
                 cmdDeb.Parameters.AddWithValue("v", valor);
                 cmdDeb.Parameters.AddWithValue("c", command.ContratoId);
-                cmdDeb.ExecuteNonQuery();
+                using var readerDebito = cmdDeb.ExecuteReader();
+                if (!readerDebito.Read())
+                {
+                    return new BadRequestObjectResult("Conta não encontrada para pagamento da parcela.");
+                }
+
+                var idConta = readerDebito.GetInt32(0);
+                var idCliente = readerDebito.GetInt32(1);
+                var saldoAtual = readerDebito.GetDecimal(2);
+                var saldoAnterior = saldoAtual + valor;
+                readerDebito.Close();
+
+                RegistrarMovimentacaoConta(
+                    conn,
+                    idCliente,
+                    idConta,
+                    "PAGAMENTO_MANUAL_PARCELA",
+                    -valor,
+                    saldoAnterior,
+                    saldoAtual,
+                    dataOperacional,
+                    $"Pagamento manual da parcela {command.NumeroParcela}.",
+                    command.ContratoId,
+                    idParcela,
+                    trans);
 
                 const string sqlBaixa = "UPDATE parcelas SET status_pagamento = 'PAGO' WHERE id_contrato = @c AND num_parcela = @n";
-                using var cmdBaixa = new NpgsqlCommand(sqlBaixa, conn);
+                using var cmdBaixa = new NpgsqlCommand(sqlBaixa, conn, trans);
                 cmdBaixa.Parameters.AddWithValue("c", command.ContratoId);
                 cmdBaixa.Parameters.AddWithValue("n", command.NumeroParcela);
                 cmdBaixa.ExecuteNonQuery();
@@ -429,6 +559,11 @@ namespace CreditoSimulador.App.Handlers
                 if (offer is null)
                 {
                     return new BadRequestObjectResult("Oferta não encontrada.");
+                }
+
+                if (offer.ClienteId != command.Request.ClienteId)
+                {
+                    return new BadRequestObjectResult("Oferta não está disponível para este cliente.");
                 }
 
                 if (!offer.Ativa)
@@ -473,12 +608,14 @@ namespace CreditoSimulador.App.Handlers
                     return new BadRequestObjectResult($"Crédito indisponível: o valor sugerido excede o limite do cliente ({limiteDisponivel:C2}).");
                 }
 
+                var dataOperacional = ObterDataOperacional(conn);
+
                 var calc = new CalculadoraAmortizacao();
                 var cronograma = calc.GerarCronograma(command.Request.ValorSolicitado, offer.TaxaJurosMensal, command.Request.QuantidadeParcelas, offer.TipoAmortizacao);
                 var parcelas = cronograma.Select(p => new SimulacaoParcela
                 {
                     Numero = p.Numero,
-                    DataVencimento = DateTime.Now.AddMonths(command.Request.CarenciaMeses + p.Numero).Date.AddDays(command.Request.DiaVencimento - 1),
+                    DataVencimento = dataOperacional.AddMonths(command.Request.CarenciaMeses + p.Numero).Date.AddDays(command.Request.DiaVencimento - 1),
                     ValorAmortizacao = p.Amortizacao,
                     ValorJuros = p.Juros,
                     ValorTotalParcela = p.Total
@@ -529,6 +666,11 @@ namespace CreditoSimulador.App.Handlers
                     return new BadRequestObjectResult("Oferta inválida ou indisponível.");
                 }
 
+                if (offer.ClienteId != command.Request.ClienteId)
+                {
+                    return new BadRequestObjectResult("Oferta não está disponível para este cliente.");
+                }
+
                 if (command.Request.ValorSolicitado < offer.ValorMinimo || command.Request.ValorSolicitado > offer.ValorMaximo)
                 {
                     return new BadRequestObjectResult("Valor não contempla os limites da oferta.");
@@ -549,12 +691,18 @@ namespace CreditoSimulador.App.Handlers
                     return new BadRequestObjectResult("Crédito negado pelo limite do cliente.");
                 }
 
-                const string sqlConta = "SELECT id_cliente FROM contas WHERE id_cliente = @id";
+                if (command.Request.ContaDesembolsoId <= 0)
+                {
+                    return new BadRequestObjectResult("Selecione a conta para desembolso no último passo.");
+                }
+
+                const string sqlConta = "SELECT id_conta FROM contas WHERE id_conta = @idConta AND id_cliente = @idCliente";
                 using var cmdConta = new NpgsqlCommand(sqlConta, conn);
-                cmdConta.Parameters.AddWithValue("id", command.Request.ClienteId);
+                cmdConta.Parameters.AddWithValue("idConta", command.Request.ContaDesembolsoId);
+                cmdConta.Parameters.AddWithValue("idCliente", command.Request.ClienteId);
                 if (cmdConta.ExecuteScalar() is null)
                 {
-                    return new BadRequestObjectResult("Cliente não possui conta ativa para desembolso.");
+                    return new BadRequestObjectResult("Conta de desembolso inválida para o cliente.");
                 }
 
                 var tipoPagamento = NormalizarTipoPagamento(command.Request.TipoPagamento);
@@ -563,8 +711,8 @@ namespace CreditoSimulador.App.Handlers
                     tipoPagamento = "Débito em conta";
                 }
 
-                const string sqlInsertContrato = @"INSERT INTO contratos (valor_financiado, taxa_juros_mensal, quantidade_parcelas, tipo_amortizacao, tipo_pagamento, id_cliente)
-                    VALUES (@valor, @taxa, @parcelas, @tipo, @tipoPagamento, @cliente)
+                const string sqlInsertContrato = @"INSERT INTO contratos (valor_financiado, taxa_juros_mensal, quantidade_parcelas, tipo_amortizacao, tipo_pagamento, id_cliente, conta_desembolso_id)
+                    VALUES (@valor, @taxa, @parcelas, @tipo, @tipoPagamento, @cliente, @contaDesembolsoId)
                     RETURNING id_contrato";
                 using var cmdContrato = new NpgsqlCommand(sqlInsertContrato, conn);
                 cmdContrato.Parameters.AddWithValue("valor", command.Request.ValorSolicitado);
@@ -573,6 +721,7 @@ namespace CreditoSimulador.App.Handlers
                 cmdContrato.Parameters.AddWithValue("tipo", offer.TipoAmortizacao);
                 cmdContrato.Parameters.AddWithValue("tipoPagamento", tipoPagamento);
                 cmdContrato.Parameters.AddWithValue("cliente", command.Request.ClienteId);
+                cmdContrato.Parameters.AddWithValue("contaDesembolsoId", command.Request.ContaDesembolsoId);
                 var idContrato = (int)cmdContrato.ExecuteScalar();
 
                 using (var cmdStatusContrato = new NpgsqlCommand("UPDATE contratos SET status = @status WHERE id_contrato = @id", conn))
@@ -581,6 +730,8 @@ namespace CreditoSimulador.App.Handlers
                     cmdStatusContrato.Parameters.AddWithValue("id", idContrato);
                     cmdStatusContrato.ExecuteNonQuery();
                 }
+
+                var dataOperacional = ObterDataOperacional(conn);
 
                 var calc = new CalculadoraAmortizacao();
                 var cronograma = calc.GerarCronograma(command.Request.ValorSolicitado, offer.TaxaJurosMensal, command.Request.QuantidadeParcelas, offer.TipoAmortizacao);
@@ -598,7 +749,7 @@ namespace CreditoSimulador.App.Handlers
                 {
                     cmdParcela.Parameters["@contrato"].Value = idContrato;
                     cmdParcela.Parameters["@numero"].Value = parcela.Numero;
-                    cmdParcela.Parameters["@data"].Value = DateTime.Now.AddMonths(command.Request.CarenciaMeses + parcela.Numero).Date.AddDays(command.Request.DiaVencimento - 1);
+                    cmdParcela.Parameters["@data"].Value = dataOperacional.AddMonths(command.Request.CarenciaMeses + parcela.Numero).Date.AddDays(command.Request.DiaVencimento - 1);
                     cmdParcela.Parameters["@amort"].Value = parcela.Amortizacao;
                     cmdParcela.Parameters["@juros"].Value = parcela.Juros;
                     cmdParcela.Parameters["@total"].Value = parcela.Total;
@@ -745,10 +896,12 @@ namespace CreditoSimulador.App.Handlers
                 using var conn = new NpgsqlConnection(ConnectionString);
                 conn.Open();
 
+                                var dataOperacional = ObterDataOperacional(conn);
+
                 const string sql = @"
                     UPDATE contratos c
                     SET status = @novoStatus,
-                        assinado_em = NOW()
+                                                assinado_em = @dataOperacional
                     WHERE c.id_contrato = @idContrato
                       AND c.id_cliente = @idCliente
                       AND LOWER(COALESCE(to_jsonb(c) ->> 'status', '')) = LOWER(@statusAtual)
@@ -759,6 +912,7 @@ namespace CreditoSimulador.App.Handlers
                 cmd.Parameters.AddWithValue("idContrato", command.ContratoId);
                 cmd.Parameters.AddWithValue("idCliente", command.CustomerId);
                 cmd.Parameters.AddWithValue("statusAtual", ContratoStatus.PendenteAssinatura);
+                cmd.Parameters.AddWithValue("dataOperacional", dataOperacional);
 
                 var result = cmd.ExecuteScalar();
                 if (result is null)
@@ -790,8 +944,10 @@ namespace CreditoSimulador.App.Handlers
 
             try
             {
+                var dataOperacional = ObterDataOperacional(conn, trans);
+
                 const string sqlBusca = @"
-                    SELECT id_cliente, valor_financiado
+                                        SELECT id_cliente, valor_financiado, conta_desembolso_id
                     FROM contratos c
                     WHERE c.id_contrato = @idContrato
                       AND LOWER(COALESCE(to_jsonb(c) ->> 'status', '')) = LOWER(@statusAtual)
@@ -809,15 +965,30 @@ namespace CreditoSimulador.App.Handlers
 
                 var idCliente = reader.GetInt32(0);
                 var valor = reader.GetDecimal(1);
+                var contaDesembolsoId = reader.IsDBNull(2) ? (int?)null : reader.GetInt32(2);
                 reader.Close();
+
+                if (!contaDesembolsoId.HasValue)
+                {
+                    const string sqlContaFallback = "SELECT id_conta FROM contas WHERE id_cliente = @idCliente ORDER BY id_conta LIMIT 1";
+                    using var cmdContaFallback = new NpgsqlCommand(sqlContaFallback, conn, trans);
+                    cmdContaFallback.Parameters.AddWithValue("idCliente", idCliente);
+                    var fallbackId = cmdContaFallback.ExecuteScalar();
+                    if (fallbackId is null)
+                    {
+                        return new BadRequestObjectResult("Cliente não possui conta ativa para desembolso.");
+                    }
+
+                    contaDesembolsoId = Convert.ToInt32(fallbackId);
+                }
 
                 const string sqlCreditarConta = @"
                     UPDATE contas
                     SET saldo = saldo + @valor
-                    WHERE id_cliente = @idCliente";
+                    WHERE id_conta = @idConta";
                 using var cmdConta = new NpgsqlCommand(sqlCreditarConta, conn, trans);
                 cmdConta.Parameters.AddWithValue("valor", valor);
-                cmdConta.Parameters.AddWithValue("idCliente", idCliente);
+                cmdConta.Parameters.AddWithValue("idConta", contaDesembolsoId.Value);
 
                 if (cmdConta.ExecuteNonQuery() == 0)
                 {
@@ -827,12 +998,49 @@ namespace CreditoSimulador.App.Handlers
                 const string sqlAtualizarStatus = @"
                     UPDATE contratos
                     SET status = @novoStatus,
-                        desembolso_autorizado_em = NOW()
-                    WHERE id_contrato = @idContrato";
+                        desembolso_autorizado_em = @dataOperacional
+                    WHERE id_contrato = @idContrato
+                    RETURNING id_cliente, valor_financiado";
                 using var cmdStatus = new NpgsqlCommand(sqlAtualizarStatus, conn, trans);
                 cmdStatus.Parameters.AddWithValue("novoStatus", ContratoStatus.Desembolsado);
                 cmdStatus.Parameters.AddWithValue("idContrato", command.ContratoId);
-                cmdStatus.ExecuteNonQuery();
+                cmdStatus.Parameters.AddWithValue("dataOperacional", dataOperacional);
+                using var readerStatus = cmdStatus.ExecuteReader();
+                if (!readerStatus.Read())
+                {
+                    return new BadRequestObjectResult("Não foi possível finalizar o desembolso do contrato.");
+                }
+                readerStatus.Close();
+
+                const string sqlSaldoConta = "SELECT id_conta, saldo FROM contas WHERE id_conta = @idConta LIMIT 1";
+                using var cmdSaldoConta = new NpgsqlCommand(sqlSaldoConta, conn, trans);
+                cmdSaldoConta.Parameters.AddWithValue("idConta", contaDesembolsoId.Value);
+                using var readerConta = cmdSaldoConta.ExecuteReader();
+                if (readerConta.Read())
+                {
+                    var idConta = readerConta.GetInt32(0);
+                    var saldoAtual = readerConta.GetDecimal(1);
+                    var saldoAnterior = saldoAtual - valor;
+                    readerConta.Close();
+
+                    RegistrarMovimentacaoConta(
+                        conn,
+                        idCliente,
+                        idConta,
+                        "DESEMBOLSO_AUTORIZADO",
+                        valor,
+                        saldoAnterior,
+                        saldoAtual,
+                        dataOperacional,
+                        "Desembolso autorizado no painel administrativo.",
+                        command.ContratoId,
+                        null,
+                        trans);
+                }
+                else
+                {
+                    readerConta.Close();
+                }
 
                 trans.Commit();
                 return new OkObjectResult(new
@@ -861,6 +1069,11 @@ namespace CreditoSimulador.App.Handlers
 
         public IActionResult Handle(CriarOfertaCommand command)
         {
+            if (command.Oferta.ClienteId <= 0)
+            {
+                return new BadRequestObjectResult("Selecione um cliente válido para a oferta.");
+            }
+
             var oferta = _catalog.AddOrUpdate(command.Oferta);
             return new OkObjectResult(oferta);
         }
@@ -877,7 +1090,19 @@ namespace CreditoSimulador.App.Handlers
 
         public IActionResult Handle(ListarOfertasCommand command)
         {
-            return new OkObjectResult(_catalog.Offers.Where(o => o.Ativa).ToList());
+            var ofertas = _catalog.Offers.AsEnumerable();
+
+            if (command.CustomerId.HasValue)
+            {
+                ofertas = ofertas.Where(o => o.ClienteId == command.CustomerId.Value);
+            }
+
+            if (!command.IncluirInativas)
+            {
+                ofertas = ofertas.Where(o => o.Ativa);
+            }
+
+            return new OkObjectResult(ofertas.ToList());
         }
     }
 

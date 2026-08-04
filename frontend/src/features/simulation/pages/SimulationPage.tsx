@@ -4,8 +4,8 @@ import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Input } from "../../../components/ui/input";
 import { StatusChip } from "../../../components/ui/status-chip";
-import { contractCredit, listClientOffers, listClients, simulateCredit } from "../../../services/creditService";
-import type { Client, Offer, SimulationResponse } from "../../../types/credit";
+import { contractCredit, listClientAccounts, listClientOffers, listClients, simulateCredit } from "../../../services/creditService";
+import type { AdminAccount, Client, Offer, SimulationResponse } from "../../../types/credit";
 import { useImpersonation } from "../../../app/contexts/ImpersonationContext";
 
 type SimulationStep = 1 | 2 | 3;
@@ -23,6 +23,7 @@ export function SimulationPage() {
   const { offerId } = useParams();
   const { impersonatedClientId } = useImpersonation();
   const [clients, setClients] = useState<Client[]>([]);
+  const [accounts, setAccounts] = useState<AdminAccount[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [step, setStep] = useState<SimulationStep>(1);
   const [simulation, setSimulation] = useState<SimulationResponse | null>(null);
@@ -30,6 +31,7 @@ export function SimulationPage() {
   const [loading, setLoading] = useState(false);
   const [contracting, setContracting] = useState(false);
   const [message, setMessage] = useState("");
+  const [contaDesembolsoId, setContaDesembolsoId] = useState<number>(0);
   const [form, setForm] = useState({
     valorSolicitado: 0,
     quantidadeParcelas: 0,
@@ -46,9 +48,18 @@ export function SimulationPage() {
         return;
       }
 
-      const [clientsData, offersData] = await Promise.all([listClients(), listClientOffers()]);
+      const [clientsData, offersData, accountsData] = await Promise.all([
+        listClients(),
+        listClientOffers(impersonatedClientId),
+        listClientAccounts(impersonatedClientId),
+      ]);
       setClients(clientsData);
       setOffers(offersData);
+      setAccounts(accountsData);
+
+      if (accountsData.length > 0) {
+        setContaDesembolsoId(accountsData[0].idConta);
+      }
     };
 
     void loadData().catch((error: Error) => setMessage(error.message));
@@ -84,6 +95,7 @@ export function SimulationPage() {
 
   const currentPayload = {
     clienteId: impersonatedClientId,
+    contaDesembolsoId,
     ofertaId: selectedOffer.id,
     valorSolicitado: form.valorSolicitado,
     quantidadeParcelas: form.quantidadeParcelas,
@@ -273,9 +285,26 @@ export function SimulationPage() {
               <p>Carência: {simulation.carenciaMeses} meses</p>
               <p>Valor da parcela: {formatCurrency(simulation.valorParcela)}</p>
               <p>Oferta: {simulation.oferta.nome}</p>
+
+              <label className="space-y-2 text-sm block pt-2">
+                <span className="font-medium">Conta para desembolso</span>
+                <select
+                  className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700"
+                  value={contaDesembolsoId}
+                  onChange={(event) => setContaDesembolsoId(Number(event.target.value))}
+                >
+                  {accounts.length === 0 ? <option value={0}>Nenhuma conta disponível</option> : null}
+                  {accounts.map((account) => (
+                    <option key={account.idConta} value={account.idConta}>
+                      Conta #{account.idConta} • Saldo {formatCurrency(account.saldo)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
               <div className="flex flex-wrap gap-3 pt-3">
                 <Button variant="outline" onClick={() => setStep(2)}>Voltar</Button>
-                <Button onClick={() => void handleContract()} disabled={contracting || !simulation.aprovado}>
+                <Button onClick={() => void handleContract()} disabled={contracting || !simulation.aprovado || contaDesembolsoId <= 0}>
                   {contracting ? "Contratando..." : "Contratar agora"}
                 </Button>
               </div>
