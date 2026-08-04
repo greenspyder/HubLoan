@@ -123,8 +123,8 @@ export function SimulationPage() {
     setMessage("");
 
     try {
-      const response = await contractCredit(currentPayload);
-      setMessage(response.Mensagem ?? "Contratação concluída com sucesso.");
+      await contractCredit(currentPayload);
+      navigate("/cliente?tab=offers&contratado=1", { replace: true });
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Não foi possível contratar a oferta.");
     } finally {

@@ -112,6 +112,7 @@ namespace CreditoSimulador.App.Services
         {
             Id = entity.Id,
             ClienteId = entity.ClienteId,
+            Status = entity.Ativa ? "ACTIVE" : "INACTIVE",
             Nome = entity.Nome,
             Descricao = entity.Descricao,
             ValorMinimo = entity.ValorMinimo,

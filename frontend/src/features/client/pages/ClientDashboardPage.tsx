@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate, Navigate, useSearchParams } from "react-router-dom";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Skeleton } from "../../../components/ui/skeleton";
@@ -14,6 +14,7 @@ function formatCurrency(value: number) {
 
 export function ClientDashboardPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { impersonatedClientId } = useImpersonation();
   const [clients, setClients] = useState<Client[]>([]);
   const [contracts, setContracts] = useState<ContractSummary[]>([]);
@@ -22,8 +23,27 @@ export function ClientDashboardPage() {
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [message, setMessage] = useState("");
+  const [activeTab, setActiveTab] = useState<"overview" | "offers" | "contracts" | "movements">("overview");
 
   const selectedClient = useMemo(() => clients.find((client) => client.id === impersonatedClientId) ?? null, [clients, impersonatedClientId]);
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "overview" || tab === "offers" || tab === "contracts" || tab === "movements") {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (searchParams.get("contratado") === "1") {
+      setMessage("Oferta contratada com sucesso. A oferta foi consumida e removida da lista disponível.");
+      setSearchParams((current) => {
+        const next = new URLSearchParams(current);
+        next.delete("contratado");
+        return next;
+      }, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -64,6 +84,11 @@ export function ClientDashboardPage() {
     return normalized.includes("atras") || normalized.includes("venc");
   });
 
+  const tabButtonClass = (tab: "overview" | "offers" | "contracts" | "movements") =>
+    `rounded-full px-4 py-2 text-sm font-medium transition ${
+      activeTab === tab ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
+    }`;
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-3">
@@ -87,10 +112,9 @@ export function ClientDashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
       <Card>
         <CardHeader>
-          <CardTitle>Cliente em impersonação</CardTitle>
+          <CardTitle>Área do cliente</CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
           {message ? <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{message}</div> : null}
@@ -110,7 +134,32 @@ export function ClientDashboardPage() {
             </div>
           ) : null}
 
-          <div className="rounded-xl border border-slate-200 bg-white p-4">
+          <div className="flex flex-wrap gap-2">
+            <button type="button" className={tabButtonClass("overview")} onClick={() => setActiveTab("overview")}>Visão geral</button>
+            <button type="button" className={tabButtonClass("offers")} onClick={() => setActiveTab("offers")}>Ofertas</button>
+            <button type="button" className={tabButtonClass("contracts")} onClick={() => setActiveTab("contracts")}>Contratos</button>
+            <button type="button" className={tabButtonClass("movements")} onClick={() => setActiveTab("movements")}>Extrato</button>
+          </div>
+
+          {activeTab === "overview" ? (
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Ofertas</p>
+                <p className="mt-2 text-2xl font-semibold text-slate-900">{offers.length}</p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Contratos</p>
+                <p className="mt-2 text-2xl font-semibold text-slate-900">{contracts.length}</p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Movimentações</p>
+                <p className="mt-2 text-2xl font-semibold text-slate-900">{movements.length}</p>
+              </div>
+            </div>
+          ) : null}
+
+          {activeTab === "contracts" ? (
+            <div className="rounded-xl border border-slate-200 bg-white p-4">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-slate-800">Contratos do cliente</p>
@@ -156,84 +205,97 @@ export function ClientDashboardPage() {
                 ))}
               </div>
             )}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Ofertas disponíveis</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {loadingData ? (
-            Array.from({ length: 2 }).map((_, index) => (
-              <div key={`offer-skeleton-${index}`} className="rounded-[20px] border border-slate-200 bg-slate-50 p-4">
-                <Skeleton className="h-5 w-40" />
-                <Skeleton className="mt-2 h-4 w-60" />
-                <Skeleton className="mt-4 h-4 w-52" />
-                <Skeleton className="mt-2 h-4 w-48" />
-                <Skeleton className="mt-4 h-9 w-40" />
-              </div>
-            ))
-          ) : offers.length === 0 ? (
-            <p className="text-sm text-slate-500">Nenhuma oferta disponível.</p>
-          ) : (
-            offers.map((offer) => (
-              <div key={offer.id} className="rounded-[20px] border border-slate-200 bg-slate-50 p-4 shadow-[0_12px_24px_-20px_rgba(15,23,42,0.35)]">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-semibold text-slate-900">{offer.nome}</p>
-                    <p className="text-sm text-slate-600">{offer.descricao}</p>
-                  </div>
-                  <StatusChip status={offer.ativa ? "Ativa" : "Inativa"} />
-                </div>
-                <div className="mt-3 grid gap-2 text-sm text-slate-600">
-                  <p>Valor: {formatCurrency(offer.valorMinimo)} a {formatCurrency(offer.valorMaximo)}</p>
-                  <p>Parcelas: {offer.parcelasMinimas} a {offer.parcelasMaximas}</p>
-                  <p>Garantias: {offer.garantias.join(", ")}</p>
-                </div>
-                <Button
-                  className="mt-4"
-                  variant="outline"
-                  onClick={() => navigate(`/cliente/ofertas/${offer.id}/simulacao`) }
-                >
-                  Simular esta oferta
-                </Button>
-              </div>
-            ))
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Extrato recente da conta</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {loadingData ? (
-            <div className="space-y-2">
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
             </div>
-          ) : movements.length === 0 ? (
-            <p className="text-sm text-slate-500">Ainda não há movimentações para este cliente.</p>
-          ) : (
-            <div className="space-y-2">
-              {movements.map((movement) => (
-                <div key={movement.idMovimentacao} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="font-semibold text-slate-800">{movement.tipo}</p>
-                    <p className={movement.valor >= 0 ? "font-semibold text-emerald-700" : "font-semibold text-rose-700"}>{formatCurrency(movement.valor)}</p>
-                  </div>
-                  <p className="text-xs text-slate-600">Saldo: {formatCurrency(movement.saldoAnterior)} → {formatCurrency(movement.saldoAtual)}</p>
-                  <p className="text-xs text-slate-500">Data operacional: {new Date(movement.dataOperacional).toLocaleDateString("pt-BR")}</p>
+          ) : null}
+
+          {activeTab === "offers" ? (
+            <div className="rounded-xl border border-slate-200 bg-white p-4">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Ofertas disponíveis</p>
+                  <p className="text-sm text-slate-600">Escolha uma oferta para simular e contratar.</p>
                 </div>
-              ))}
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">{offers.length} oferta(s)</span>
+              </div>
+
+              {loadingData ? (
+                <div className="space-y-4">
+                  {Array.from({ length: 2 }).map((_, index) => (
+                    <div key={`offer-skeleton-${index}`} className="rounded-[20px] border border-slate-200 bg-slate-50 p-4">
+                      <Skeleton className="h-5 w-40" />
+                      <Skeleton className="mt-2 h-4 w-60" />
+                      <Skeleton className="mt-4 h-4 w-52" />
+                      <Skeleton className="mt-2 h-4 w-48" />
+                      <Skeleton className="mt-4 h-9 w-40" />
+                    </div>
+                  ))}
+                </div>
+              ) : offers.length === 0 ? (
+                <p className="text-sm text-slate-500">Nenhuma oferta disponível.</p>
+              ) : (
+                <div className="grid gap-4 lg:grid-cols-2">
+                  {offers.map((offer) => (
+                    <div key={offer.id} className="rounded-[20px] border border-slate-200 bg-slate-50 p-4 shadow-[0_12px_24px_-20px_rgba(15,23,42,0.35)]">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-semibold text-slate-900">{offer.nome}</p>
+                          <p className="text-sm text-slate-600">{offer.descricao}</p>
+                        </div>
+                        <StatusChip status={offer.ativa ? "Ativa" : "Inativa"} />
+                      </div>
+                      <div className="mt-3 grid gap-2 text-sm text-slate-600">
+                        <p>Valor: {formatCurrency(offer.valorMinimo)} a {formatCurrency(offer.valorMaximo)}</p>
+                        <p>Parcelas: {offer.parcelasMinimas} a {offer.parcelasMaximas}</p>
+                        <p>Garantias: {offer.garantias.join(", ")}</p>
+                      </div>
+                      <Button
+                        className="mt-4"
+                        variant="outline"
+                        onClick={() => navigate(`/cliente/ofertas/${offer.id}/simulacao`) }
+                      >
+                        Simular esta oferta
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
+          ) : null}
+
+          {activeTab === "movements" ? (
+            <div className="rounded-xl border border-slate-200 bg-white p-4">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Extrato recente da conta</p>
+                  <p className="text-sm text-slate-600">Acompanhe as movimentações mais recentes.</p>
+                </div>
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">{movements.length} registro(s)</span>
+              </div>
+              {loadingData ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                </div>
+              ) : movements.length === 0 ? (
+                <p className="text-sm text-slate-500">Ainda não há movimentações para este cliente.</p>
+              ) : (
+                <div className="space-y-2">
+                  {movements.map((movement) => (
+                    <div key={movement.idMovimentacao} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-semibold text-slate-800">{movement.tipo}</p>
+                        <p className={movement.valor >= 0 ? "font-semibold text-emerald-700" : "font-semibold text-rose-700"}>{formatCurrency(movement.valor)}</p>
+                      </div>
+                      <p className="text-xs text-slate-600">Saldo: {formatCurrency(movement.saldoAnterior)} → {formatCurrency(movement.saldoAtual)}</p>
+                      <p className="text-xs text-slate-500">Data operacional: {new Date(movement.dataOperacional).toLocaleDateString("pt-BR")}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : null}
         </CardContent>
       </Card>
-    </div>
     </div>
   );
 }

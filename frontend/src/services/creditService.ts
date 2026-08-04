@@ -39,6 +39,10 @@ export async function listClientOffers(customerId: number): Promise<Offer[]> {
   return requestJson<Offer[]>(`/clientes/ofertas?customerId=${customerId}`);
 }
 
+export async function listAdminOffers(): Promise<Offer[]> {
+  return requestJson<Offer[]>("/admin/ofertas");
+}
+
 export async function listClients(): Promise<Client[]> {
   const data = await requestJson<Array<{ id?: number; idCliente?: number; nome?: string; limite?: number; limiteGlobal?: number; saldoConta?: number; totalContas?: number }>>("/clientes");
 

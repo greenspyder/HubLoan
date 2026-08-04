@@ -262,6 +262,7 @@ export function ClientContractDetailsPage() {
 
               <div className="rounded-[20px] border border-slate-200 bg-white p-4 text-sm text-slate-600">
                 <p>Amortização: {details.tipoAmortizacao}</p>
+                <p className="mt-1">Conta de desembolso: {details.contaDesembolsoId ? `#${details.contaDesembolsoId}` : "Não definida"}</p>
                 <p className="mt-1">Valor total pago: {typeof details.valorTotalPago === "number" ? formatCurrency(details.valorTotalPago) : "Não informado"}</p>
                 {details.contratoGeradoEm ? <p className="mt-1">Contrato gerado em: {formatDate(details.contratoGeradoEm)}</p> : null}
                 {details.assinadoEm ? <p className="mt-1">Assinado em: {formatDate(details.assinadoEm)}</p> : null}

@@ -1,6 +1,7 @@
 export type Offer = {
   id: string;
   clienteId: number;
+  status?: "ACTIVE" | "INACTIVE" | "CONSUMED" | string;
   nome: string;
   descricao: string;
   valorMinimo: number;
@@ -83,6 +84,7 @@ export type ClientContractParcel = {
 export type ContractDetails = {
   idContrato: number;
   idCliente: number;
+  contaDesembolsoId?: number;
   valorFinanciado: number;
   taxaJurosMensal: number;
   quantidadeParcelas: number;

@@ -770,6 +770,10 @@ namespace CreditoSimulador.App.Handlers
 
                 transaction.Commit();
 
+                offer.Ativa = false;
+                offer.Status = "CONSUMED";
+                _catalog.AddOrUpdate(offer);
+
                 return new OkObjectResult(new
                 {
                     Mensagem = "Contrato criado com sucesso.",
@@ -800,7 +804,7 @@ namespace CreditoSimulador.App.Handlers
 
                 AtualizarParcelasEVincularStatusDosContratos(conn);
 
-                const string sqlContrato = @"SELECT c.id_contrato, c.id_cliente, c.valor_financiado, c.taxa_juros_mensal, c.quantidade_parcelas, c.tipo_amortizacao, to_jsonb(c) ->> 'tipo_pagamento' AS tipo_pagamento, to_jsonb(c) ->> 'status' AS status, to_jsonb(c) ->> 'contrato_gerado_texto' AS contrato_gerado_texto, (to_jsonb(c) ->> 'contrato_gerado_em')::timestamptz AS contrato_gerado_em, (to_jsonb(c) ->> 'assinado_em')::timestamptz AS assinado_em, (to_jsonb(c) ->> 'desembolso_autorizado_em')::timestamptz AS desembolso_autorizado_em FROM contratos c WHERE c.id_contrato = @id";
+                const string sqlContrato = @"SELECT c.id_contrato, c.id_cliente, c.conta_desembolso_id, c.valor_financiado, c.taxa_juros_mensal, c.quantidade_parcelas, c.tipo_amortizacao, to_jsonb(c) ->> 'tipo_pagamento' AS tipo_pagamento, to_jsonb(c) ->> 'status' AS status, to_jsonb(c) ->> 'contrato_gerado_texto' AS contrato_gerado_texto, (to_jsonb(c) ->> 'contrato_gerado_em')::timestamptz AS contrato_gerado_em, (to_jsonb(c) ->> 'assinado_em')::timestamptz AS assinado_em, (to_jsonb(c) ->> 'desembolso_autorizado_em')::timestamptz AS desembolso_autorizado_em FROM contratos c WHERE c.id_contrato = @id";
                 using var cmdContrato = new NpgsqlCommand(sqlContrato, conn);
                 cmdContrato.Parameters.AddWithValue("id", command.ContratoId);
                 using var reader = cmdContrato.ExecuteReader();
@@ -814,16 +818,17 @@ namespace CreditoSimulador.App.Handlers
                 {
                     IdContrato = reader.GetInt32(0),
                     IdCliente = reader.GetInt32(1),
-                    ValorFinanciado = reader.GetDecimal(2),
-                    TaxaJurosMensal = reader.GetDecimal(3),
-                    QuantidadeParcelas = reader.GetInt32(4),
-                    TipoAmortizacao = reader.GetString(5),
-                    TipoPagamento = NormalizarTipoPagamento(reader.IsDBNull(6) ? null : reader.GetString(6)),
-                    Status = NormalizarStatusContrato(reader.IsDBNull(7) ? null : reader.GetString(7)),
-                    ContratoGeradoTexto = reader.IsDBNull(8) ? null : reader.GetString(8),
-                    ContratoGeradoEm = reader.IsDBNull(9) ? null : reader.GetDateTime(9),
-                    AssinadoEm = reader.IsDBNull(10) ? null : reader.GetDateTime(10),
-                    DesembolsoAutorizadoEm = reader.IsDBNull(11) ? null : reader.GetDateTime(11)
+                    ContaDesembolsoId = reader.IsDBNull(2) ? null : reader.GetInt32(2),
+                    ValorFinanciado = reader.GetDecimal(3),
+                    TaxaJurosMensal = reader.GetDecimal(4),
+                    QuantidadeParcelas = reader.GetInt32(5),
+                    TipoAmortizacao = reader.GetString(6),
+                    TipoPagamento = NormalizarTipoPagamento(reader.IsDBNull(7) ? null : reader.GetString(7)),
+                    Status = NormalizarStatusContrato(reader.IsDBNull(8) ? null : reader.GetString(8)),
+                    ContratoGeradoTexto = reader.IsDBNull(9) ? null : reader.GetString(9),
+                    ContratoGeradoEm = reader.IsDBNull(10) ? null : reader.GetDateTime(10),
+                    AssinadoEm = reader.IsDBNull(11) ? null : reader.GetDateTime(11),
+                    DesembolsoAutorizadoEm = reader.IsDBNull(12) ? null : reader.GetDateTime(12)
                 };
 
                 reader.Close();
@@ -1090,7 +1095,24 @@ namespace CreditoSimulador.App.Handlers
 
         public IActionResult Handle(ListarOfertasCommand command)
         {
-            var ofertas = _catalog.Offers.AsEnumerable();
+            var requestsByOffer = _catalog.Requests
+                .Where(r => string.Equals(r.Status, "APROVADO", StringComparison.OrdinalIgnoreCase))
+                .GroupBy(r => r.OfertaId)
+                .ToDictionary(group => group.Key, _ => true);
+
+            var ofertas = _catalog.Offers
+                .Select(offer =>
+                {
+                    var status = offer.Ativa
+                        ? "ACTIVE"
+                        : requestsByOffer.ContainsKey(offer.Id)
+                            ? "CONSUMED"
+                            : "INACTIVE";
+
+                    offer.Status = status;
+                    return offer;
+                })
+                .AsEnumerable();
 
             if (command.CustomerId.HasValue)
             {

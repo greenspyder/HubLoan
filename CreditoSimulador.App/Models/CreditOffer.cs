@@ -4,6 +4,7 @@ namespace CreditoSimulador.App.Models
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public int ClienteId { get; set; }
+        public string Status { get; set; } = "ACTIVE";
         public string Nome { get; set; } = string.Empty;
         public string Descricao { get; set; } = string.Empty;
         public decimal ValorMinimo { get; set; }
@@ -83,6 +84,7 @@ namespace CreditoSimulador.App.Models
     {
         public int IdContrato { get; set; }
         public int IdCliente { get; set; }
+        public int? ContaDesembolsoId { get; set; }
         public decimal ValorFinanciado { get; set; }
         public decimal TaxaJurosMensal { get; set; }
         public int QuantidadeParcelas { get; set; }

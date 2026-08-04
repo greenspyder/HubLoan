@@ -148,6 +148,7 @@ export function AdminContractDetailsPage() {
                 </div>
               </div>
               <p>Amortização: {details.tipoAmortizacao}</p>
+              <p>Conta de desembolso: {details.contaDesembolsoId ? `#${details.contaDesembolsoId}` : "Não definida"}</p>
               {typeof details.valorTotalPago === "number" ? <p>Valor total pago: {formatCurrency(details.valorTotalPago)}</p> : null}
               {details.desembolsoAutorizadoEm ? <p>Desembolso autorizado em: {formatDate(details.desembolsoAutorizadoEm)}</p> : null}
               {details.status.trim().toLowerCase() === "aguardando desembolso" ? (
