@@ -100,6 +100,11 @@ namespace CreditoSimulador.App.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("tipo_amortizacao");
 
+                    b.Property<string>("TipoPagamento")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("tipo_pagamento");
+
                     b.Property<decimal>("ValorFinanciado")
                         .HasPrecision(12, 2)
                         .HasColumnType("numeric(12,2)")

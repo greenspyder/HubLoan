@@ -93,6 +93,22 @@ namespace CreditoSimulador.App.Handlers
                 _ => status
             };
         }
+
+        protected string NormalizarTipoPagamento(string? tipoPagamento)
+        {
+            if (string.IsNullOrWhiteSpace(tipoPagamento))
+            {
+                return string.Empty;
+            }
+
+            return tipoPagamento.Trim().ToLowerInvariant() switch
+            {
+                "débito em conta" => "Débito em conta",
+                "debito em conta" => "Débito em conta",
+                "boleto" => "Boleto",
+                _ => tipoPagamento.Trim()
+            };
+        }
     }
 
     public class ListarClientesHandler : BaseClientesHandler
@@ -154,16 +170,17 @@ namespace CreditoSimulador.App.Handlers
 
                 const string sql = @"
             SELECT 
-                id_contrato, 
-                valor_financiado, 
-                taxa_juros_mensal, 
-                quantidade_parcelas, 
-                tipo_amortizacao, 
-                id_cliente,
-                status
-            FROM contratos 
-            WHERE id_cliente = @id
-            ORDER BY id_contrato DESC";
+                c.id_contrato, 
+                c.valor_financiado, 
+                c.taxa_juros_mensal, 
+                c.quantidade_parcelas, 
+                c.tipo_amortizacao, 
+                c.id_cliente,
+                to_jsonb(c) ->> 'tipo_pagamento' AS tipo_pagamento,
+                to_jsonb(c) ->> 'status' AS status
+            FROM contratos c
+            WHERE c.id_cliente = @id
+            ORDER BY c.id_contrato DESC";
 
                 using var cmd = new NpgsqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("id", command.CustomerId);
@@ -180,7 +197,8 @@ namespace CreditoSimulador.App.Handlers
                         quantidadeParcelas = reader.GetInt32(3),
                         tipoAmortizacao = reader.GetString(4),
                         idCliente = reader.GetInt32(5),
-                        status = NormalizarStatusContrato(reader.IsDBNull(6) ? null : reader.GetString(6))
+                        tipoPagamento = NormalizarTipoPagamento(reader.IsDBNull(6) ? null : reader.GetString(6)),
+                        status = NormalizarStatusContrato(reader.IsDBNull(7) ? null : reader.GetString(7))
                     });
                 }
 
@@ -539,14 +557,21 @@ namespace CreditoSimulador.App.Handlers
                     return new BadRequestObjectResult("Cliente não possui conta ativa para desembolso.");
                 }
 
-                const string sqlInsertContrato = @"INSERT INTO contratos (valor_financiado, taxa_juros_mensal, quantidade_parcelas, tipo_amortizacao, id_cliente)
-                    VALUES (@valor, @taxa, @parcelas, @tipo, @cliente)
+                var tipoPagamento = NormalizarTipoPagamento(command.Request.TipoPagamento);
+                if (string.IsNullOrWhiteSpace(tipoPagamento))
+                {
+                    tipoPagamento = "Débito em conta";
+                }
+
+                const string sqlInsertContrato = @"INSERT INTO contratos (valor_financiado, taxa_juros_mensal, quantidade_parcelas, tipo_amortizacao, tipo_pagamento, id_cliente)
+                    VALUES (@valor, @taxa, @parcelas, @tipo, @tipoPagamento, @cliente)
                     RETURNING id_contrato";
                 using var cmdContrato = new NpgsqlCommand(sqlInsertContrato, conn);
                 cmdContrato.Parameters.AddWithValue("valor", command.Request.ValorSolicitado);
                 cmdContrato.Parameters.AddWithValue("taxa", offer.TaxaJurosMensal);
                 cmdContrato.Parameters.AddWithValue("parcelas", command.Request.QuantidadeParcelas);
                 cmdContrato.Parameters.AddWithValue("tipo", offer.TipoAmortizacao);
+                cmdContrato.Parameters.AddWithValue("tipoPagamento", tipoPagamento);
                 cmdContrato.Parameters.AddWithValue("cliente", command.Request.ClienteId);
                 var idContrato = (int)cmdContrato.ExecuteScalar();
 
@@ -607,6 +632,7 @@ namespace CreditoSimulador.App.Handlers
                     Oferta = offer.Nome,
                     ValorFinanciado = command.Request.ValorSolicitado,
                     Parcelas = command.Request.QuantidadeParcelas,
+                    TipoPagamento = tipoPagamento,
                     Garantias = offer.Garantias
                 });
             }
@@ -629,7 +655,7 @@ namespace CreditoSimulador.App.Handlers
 
                 AtualizarParcelasEVincularStatusDosContratos(conn);
 
-                const string sqlContrato = @"SELECT id_contrato, id_cliente, valor_financiado, taxa_juros_mensal, quantidade_parcelas, tipo_amortizacao, status FROM contratos WHERE id_contrato = @id";
+                const string sqlContrato = @"SELECT c.id_contrato, c.id_cliente, c.valor_financiado, c.taxa_juros_mensal, c.quantidade_parcelas, c.tipo_amortizacao, to_jsonb(c) ->> 'tipo_pagamento' AS tipo_pagamento, to_jsonb(c) ->> 'status' AS status FROM contratos c WHERE c.id_contrato = @id";
                 using var cmdContrato = new NpgsqlCommand(sqlContrato, conn);
                 cmdContrato.Parameters.AddWithValue("id", command.ContratoId);
                 using var reader = cmdContrato.ExecuteReader();
@@ -647,7 +673,8 @@ namespace CreditoSimulador.App.Handlers
                     TaxaJurosMensal = reader.GetDecimal(3),
                     QuantidadeParcelas = reader.GetInt32(4),
                     TipoAmortizacao = reader.GetString(5),
-                    Status = NormalizarStatusContrato(reader.IsDBNull(6) ? null : reader.GetString(6))
+                    TipoPagamento = NormalizarTipoPagamento(reader.IsDBNull(6) ? null : reader.GetString(6)),
+                    Status = NormalizarStatusContrato(reader.IsDBNull(7) ? null : reader.GetString(7))
                 };
 
                 reader.Close();

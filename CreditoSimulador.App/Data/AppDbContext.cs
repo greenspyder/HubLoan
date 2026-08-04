@@ -48,6 +48,7 @@ public class AppDbContext : DbContext
             entity.Property(e => e.TaxaJurosMensal).HasColumnName("taxa_juros_mensal").HasPrecision(12, 6).IsRequired();
             entity.Property(e => e.QuantidadeParcelas).HasColumnName("quantidade_parcelas").IsRequired();
             entity.Property(e => e.TipoAmortizacao).HasColumnName("tipo_amortizacao").HasMaxLength(50).IsRequired();
+            entity.Property(e => e.TipoPagamento).HasColumnName("tipo_pagamento").HasMaxLength(50);
             entity.Property(e => e.IdCliente).HasColumnName("id_cliente").IsRequired();
         });
 

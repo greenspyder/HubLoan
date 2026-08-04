@@ -52,6 +52,10 @@ public class Contrato
     [MaxLength(50)]
     public string TipoAmortizacao { get; set; } = string.Empty;
 
+    [Column("tipo_pagamento")]
+    [MaxLength(50)]
+    public string? TipoPagamento { get; set; }
+
     [Column("id_cliente")]
     public int IdCliente { get; set; }
 

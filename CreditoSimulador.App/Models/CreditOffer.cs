@@ -60,6 +60,7 @@ namespace CreditoSimulador.App.Models
         public int DiaVencimento { get; set; }
         public int CarenciaMeses { get; set; }
         public string? OfertaId { get; set; }
+        public string TipoPagamento { get; set; } = "Débito em conta";
     }
 
     public class CreditLimitRequest
@@ -84,6 +85,7 @@ namespace CreditoSimulador.App.Models
         public decimal TaxaJurosMensal { get; set; }
         public int QuantidadeParcelas { get; set; }
         public string TipoAmortizacao { get; set; } = string.Empty;
+        public string TipoPagamento { get; set; } = "Débito em conta";
         public string Status { get; set; } = "ATIVO";
         public decimal ValorTotalPago { get; set; }
         public List<SimulacaoParcela> Parcelas { get; set; } = new();
