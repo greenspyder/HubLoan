@@ -55,7 +55,12 @@ namespace CreditoSimulador.App.Handlers
                 ? new NpgsqlCommand(sql, conn)
                 : new NpgsqlCommand(sql, conn, transaction);
             var result = cmd.ExecuteScalar();
-            return result is DateTime parsed ? parsed.Date : DateTime.Today;
+            return result switch
+            {
+                DateTime parsed => parsed.Date,
+                DateOnly parsed => parsed.ToDateTime(TimeOnly.MinValue),
+                _ => DateTime.Today
+            };
         }
 
         protected void MarcarContratoComoDesembolsado(NpgsqlConnection conn, int contratoId)

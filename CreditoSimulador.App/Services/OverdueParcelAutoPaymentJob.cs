@@ -225,7 +225,12 @@ public class OverdueParcelAutoPaymentJob
         const string sql = "SELECT COALESCE((SELECT data_operacional FROM operational_control WHERE id = 1), CURRENT_DATE)";
         using var cmd = new NpgsqlCommand(sql, conn);
         var result = cmd.ExecuteScalar();
-        return result is DateTime parsed ? parsed.Date : DateTime.Today;
+        return result switch
+        {
+            DateTime parsed => parsed.Date,
+            DateOnly parsed => parsed.ToDateTime(TimeOnly.MinValue),
+            _ => DateTime.Today
+        };
     }
 
     private static void RegistrarMovimentacaoConta(

@@ -1,6 +1,8 @@
 using CreditoSimulador.App.Commands;
 using CreditoSimulador.App.Handlers;
 using CreditoSimulador.App.Models;
+using CreditoSimulador.App.Services;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using NpgsqlTypes;
@@ -16,13 +18,15 @@ namespace CreditoSimulador.App.Controllers
         private readonly ListarOfertasHandler _listarOfertasHandler;
         private readonly ListarSolicitacoesAdminHandler _listarSolicitacoesHandler;
         private readonly AutorizarDesembolsoHandler _autorizarDesembolsoHandler;
+        private readonly IBackgroundJobClient _backgroundJobClient;
 
         public AdminController(
             IConfiguration configuration,
             CriarOfertaHandler criarOfertaHandler,
             ListarOfertasHandler listarOfertasHandler,
             ListarSolicitacoesAdminHandler listarSolicitacoesHandler,
-            AutorizarDesembolsoHandler autorizarDesembolsoHandler)
+            AutorizarDesembolsoHandler autorizarDesembolsoHandler,
+            IBackgroundJobClient backgroundJobClient)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection")
                 ?? "Host=localhost;Username=postgres;Password=13531;Database=postgres";
@@ -30,6 +34,7 @@ namespace CreditoSimulador.App.Controllers
             _listarOfertasHandler = listarOfertasHandler;
             _listarSolicitacoesHandler = listarSolicitacoesHandler;
             _autorizarDesembolsoHandler = autorizarDesembolsoHandler;
+            _backgroundJobClient = backgroundJobClient;
         }
 
         [HttpGet("ofertas")]
@@ -447,8 +452,8 @@ namespace CreditoSimulador.App.Controllers
                 using var cmd = new NpgsqlCommand(sql, conn);
                 var result = cmd.ExecuteScalar();
 
-                var possuiDataCustomizada = result is DateTime;
-                var dataAtual = possuiDataCustomizada ? ((DateTime)result!).Date : DateTime.Today;
+                var possuiDataCustomizada = result is DateTime or DateOnly;
+                var dataAtual = ConverterDataOperacional(result);
 
                 return Ok(new OperationalDateResponse
                 {
@@ -482,6 +487,10 @@ namespace CreditoSimulador.App.Controllers
                 cmd.Parameters.AddWithValue("data", request.DataAtual.HasValue ? request.DataAtual.Value.Date : (object)DBNull.Value);
                 cmd.ExecuteNonQuery();
 
+                // Run a one-off processing right after date change so users do not need to wait for the minutely trigger.
+                _backgroundJobClient.Enqueue<LoanContractGenerationConsumer>(job => job.Execute());
+                _backgroundJobClient.Enqueue<OverdueParcelAutoPaymentJob>(job => job.Execute());
+
                 return Ok(new
                 {
                     Mensagem = request.DataAtual.HasValue
@@ -501,7 +510,17 @@ namespace CreditoSimulador.App.Controllers
             const string sql = "SELECT COALESCE((SELECT data_operacional FROM operational_control WHERE id = 1), CURRENT_DATE)";
             using var cmd = new NpgsqlCommand(sql, conn, transaction);
             var result = cmd.ExecuteScalar();
-            return result is DateTime parsed ? parsed.Date : DateTime.Today;
+            return ConverterDataOperacional(result);
+        }
+
+        private static DateTime ConverterDataOperacional(object? result)
+        {
+            return result switch
+            {
+                DateTime parsed => parsed.Date,
+                DateOnly parsed => parsed.ToDateTime(TimeOnly.MinValue),
+                _ => DateTime.Today
+            };
         }
 
         private static bool ColunaExiste(NpgsqlConnection conn, NpgsqlTransaction transaction, string tableName, string columnName)
