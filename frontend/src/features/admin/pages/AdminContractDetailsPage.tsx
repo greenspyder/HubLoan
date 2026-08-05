@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Alert, detectAlertVariant } from "../../../components/ui/alert";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { ContractWorkflow } from "../../../components/ui/contract-workflow";
@@ -85,7 +86,7 @@ export function AdminContractDetailsPage() {
         <Button variant="outline" onClick={() => navigate("/admin")}>Voltar ao administrativo</Button>
       </div>
 
-      {message ? <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{message}</div> : null}
+      {message ? <Alert variant={detectAlertVariant(message)}>{message}</Alert> : null}
 
       {loading ? (
         <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">

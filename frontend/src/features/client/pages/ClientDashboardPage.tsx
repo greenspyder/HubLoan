@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, Navigate, useSearchParams } from "react-router-dom";
+import { Alert, detectAlertVariant } from "../../../components/ui/alert";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Skeleton } from "../../../components/ui/skeleton";
@@ -122,7 +123,7 @@ export function ClientDashboardPage() {
           <CardTitle>Área do cliente</CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
-          {message ? <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{message}</div> : null}
+          {message ? <Alert variant={detectAlertVariant(message)}>{message}</Alert> : null}
           {loadingData ? (
             <div className="rounded-[20px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
               <Skeleton className="h-4 w-36" />

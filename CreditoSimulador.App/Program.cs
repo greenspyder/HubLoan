@@ -94,25 +94,22 @@ using (var scope = app.Services.CreateScope())
     EnsureLegacySchemaCompatibility(dbContext);
 }
 
-using (var scope = app.Services.CreateScope())
+try
 {
+    using var scope = app.Services.CreateScope();
     var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
-    try
-    {
-        recurringJobManager.AddOrUpdate<OverdueParcelAutoPaymentJob>(
-            "auto-pay-overdue-parcels",
-            job => job.Execute(),
-            Cron.Minutely);
-
-        recurringJobManager.AddOrUpdate<LoanContractGenerationConsumer>(
-            "generate-loan-contracts",
-            job => job.Execute(),
-            Cron.Minutely);
-    }
-    catch (Exception ex)
-    {
-        logger.LogWarning(ex, "Não foi possível registrar os recurring jobs do Hangfire no startup. A aplicação continuará e o agendamento pode ser registrado manualmente via POST /api/admin/processar-contratos.");
-    }
+    recurringJobManager.AddOrUpdate<OverdueParcelAutoPaymentJob>(
+        "auto-pay-overdue-parcels",
+        job => job.Execute(),
+        Cron.Minutely);
+    recurringJobManager.AddOrUpdate<LoanContractGenerationConsumer>(
+        "generate-loan-contracts",
+        job => job.Execute(),
+        Cron.Minutely);
+}
+catch (Exception ex)
+{
+    logger.LogWarning(ex, "Hangfire não pôde registrar recurring jobs. Use POST /api/admin/processar-contratos para processar contratos manualmente.");
 }
 
 app.UseCors("AllowFrontend");

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { Alert, detectAlertVariant } from "../../../components/ui/alert";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Input } from "../../../components/ui/input";
@@ -161,7 +162,7 @@ export function SimulationPage() {
         ))}
       </div>
 
-      {message ? <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{message}</div> : null}
+      {message ? <Alert variant={detectAlertVariant(message)}>{message}</Alert> : null}
 
       {step === 1 ? (
         <Card>

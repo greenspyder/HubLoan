@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Users, Layers, FileText, MessageSquare } from "lucide-react";
+import { Alert, detectAlertVariant } from "../../../components/ui/alert";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Input } from "../../../components/ui/input";
@@ -334,7 +335,7 @@ export function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
-      {message ? <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{message}</div> : null}
+      {message ? <Alert variant={detectAlertVariant(message)}>{message}</Alert> : null}
 
       <div className="grid gap-4 grid-cols-2 xl:grid-cols-4">
         <Card>
@@ -345,7 +346,7 @@ export function AdminDashboardPage() {
                 <Users className="h-4 w-4 text-slate-500" />
               </div>
             </div>
-            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{clients.length}</p>
+            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{loadingData ? <Skeleton className="inline-block h-8 w-10" /> : clients.length}</p>
           </CardContent>
         </Card>
         <Card>
@@ -356,7 +357,7 @@ export function AdminDashboardPage() {
                 <Layers className="h-4 w-4 text-slate-500" />
               </div>
             </div>
-            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{offers.length}</p>
+            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{loadingData ? <Skeleton className="inline-block h-8 w-10" /> : offers.length}</p>
           </CardContent>
         </Card>
         <Card>
@@ -367,7 +368,7 @@ export function AdminDashboardPage() {
                 <FileText className="h-4 w-4 text-slate-500" />
               </div>
             </div>
-            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{contracts.length}</p>
+            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{loadingData ? <Skeleton className="inline-block h-8 w-10" /> : contracts.length}</p>
           </CardContent>
         </Card>
         <Card>
@@ -378,7 +379,7 @@ export function AdminDashboardPage() {
                 <MessageSquare className="h-4 w-4 text-slate-500" />
               </div>
             </div>
-            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{requests.length}</p>
+            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{loadingData ? <Skeleton className="inline-block h-8 w-10" /> : requests.length}</p>
           </CardContent>
         </Card>
       </div>

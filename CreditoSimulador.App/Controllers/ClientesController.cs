@@ -24,6 +24,8 @@ namespace CreditoSimulador.App.Controllers
         private readonly AssinarContratoHandler _assinarContratoHandler;
         private readonly ListarOfertasHandler _listarOfertasHandler;
         private readonly ContractDocxService _contractDocxService;
+        private readonly LoanContractGenerationConsumer _loanContractGenerationConsumer;
+        private readonly ILogger<ClientesController> _logger;
         private readonly string _connectionString;
 
         public ClientesController(
@@ -39,6 +41,8 @@ namespace CreditoSimulador.App.Controllers
             AssinarContratoHandler assinarContratoHandler,
             ListarOfertasHandler listarOfertasHandler,
             ContractDocxService contractDocxService,
+            LoanContractGenerationConsumer loanContractGenerationConsumer,
+            ILogger<ClientesController> logger,
             IConfiguration configuration)
         {
             _listarClientesHandler = listarClientesHandler;
@@ -53,6 +57,8 @@ namespace CreditoSimulador.App.Controllers
             _assinarContratoHandler = assinarContratoHandler;
             _listarOfertasHandler = listarOfertasHandler;
             _contractDocxService = contractDocxService;
+            _loanContractGenerationConsumer = loanContractGenerationConsumer;
+            _logger = logger;
             _connectionString = ConnectionStringResolver.Resolve(configuration);
         }
 
@@ -212,7 +218,17 @@ namespace CreditoSimulador.App.Controllers
         [HttpPost("contratar")]
         public IActionResult ContratarCredito([FromBody] ContratarCreditoRequest request)
         {
-            return _contratarCreditoHandler.Handle(new ContratarCreditoCommand { Request = request });
+            var result = _contratarCreditoHandler.Handle(new ContratarCreditoCommand { Request = request });
+
+            // Advance the contract from "geração de contratos" to "pendente assinatura" inline
+            // so this step does not depend on Hangfire being available in the deployment.
+            if (result is OkObjectResult)
+            {
+                try { _loanContractGenerationConsumer.Execute(); }
+                catch (Exception ex) { _logger.LogWarning(ex, "Falha ao executar geração de contrato após ContratarCredito."); }
+            }
+
+            return result;
         }
 
         [HttpGet("contratos/{contratoId:int}")]

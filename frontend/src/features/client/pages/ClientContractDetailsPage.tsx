@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { Alert, detectAlertVariant } from "../../../components/ui/alert";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { ContractWorkflow } from "../../../components/ui/contract-workflow";
@@ -197,7 +198,7 @@ export function ClientContractDetailsPage() {
         <Button variant="outline" onClick={() => navigate("/cliente")}>Voltar para as ofertas</Button>
       </div>
 
-      {message ? <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{message}</div> : null}
+      {message ? <Alert variant={detectAlertVariant(message)}>{message}</Alert> : null}
 
       {loadingDetails ? (
         <div className="grid gap-6 xl:grid-cols-[1fr_1.1fr]">
