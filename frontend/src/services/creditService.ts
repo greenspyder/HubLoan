@@ -16,7 +16,17 @@ import type {
   SimulationResponse,
 } from "../types/credit";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000/api";
+const API_BASE = normalizeApiBase(import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5000/api");
+
+function normalizeApiBase(baseUrl: string): string {
+  const trimmedBase = baseUrl.trim().replace(/\/+$/, "");
+
+  if (trimmedBase.endsWith("/api")) {
+    return trimmedBase;
+  }
+
+  return `${trimmedBase}/api`;
+}
 
 async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
