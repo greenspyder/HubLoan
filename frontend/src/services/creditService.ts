@@ -53,6 +53,13 @@ export async function listAdminOffers(): Promise<Offer[]> {
   return requestJson<Offer[]>("/admin/ofertas");
 }
 
+export async function createAdminClient(nome: string, limiteGlobal: number): Promise<{ id: number; nome: string; limite: number }> {
+  return requestJson<{ id: number; nome: string; limite: number }>("/admin/clientes", {
+    method: "POST",
+    body: JSON.stringify({ nome, limiteGlobal }),
+  });
+}
+
 export async function listClients(): Promise<Client[]> {
   const data = await requestJson<Array<{ id?: number; idCliente?: number; nome?: string; limite?: number; limiteGlobal?: number; saldoConta?: number; totalContas?: number }>>("/clientes");
 

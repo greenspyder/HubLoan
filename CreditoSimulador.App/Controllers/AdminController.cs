@@ -58,6 +58,52 @@ namespace CreditoSimulador.App.Controllers
             return _listarSolicitacoesHandler.Handle(new ListarSolicitacoesAdminCommand());
         }
 
+        [HttpPost("clientes")]
+        public IActionResult CriarCliente([FromBody] CriarClienteRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Nome))
+            {
+                return BadRequest(new { message = "Nome do cliente é obrigatório." });
+            }
+
+            if (request.LimiteGlobal < 0)
+            {
+                return BadRequest(new { message = "Limite do cliente não pode ser negativo." });
+            }
+
+            try
+            {
+                using var conn = new NpgsqlConnection(_connectionString);
+                conn.Open();
+
+                const string sql = @"
+                    INSERT INTO clientes (nome, limite_global)
+                    VALUES (@nome, @limiteGlobal)
+                    RETURNING id_cliente, nome, limite_global";
+
+                using var cmd = new NpgsqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("nome", request.Nome.Trim());
+                cmd.Parameters.AddWithValue("limiteGlobal", request.LimiteGlobal);
+
+                using var reader = cmd.ExecuteReader();
+                if (!reader.Read())
+                {
+                    return BadRequest(new { message = "Não foi possível criar o cliente." });
+                }
+
+                return Ok(new
+                {
+                    id = reader.GetInt32(0),
+                    nome = reader.GetString(1),
+                    limite = reader.GetDecimal(2)
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpGet("contract-templates")]
         public IActionResult ListarTemplatesContrato()
         {

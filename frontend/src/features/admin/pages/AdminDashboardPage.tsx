@@ -8,6 +8,7 @@ import { StatusChip } from "../../../components/ui/status-chip";
 import { Textarea } from "../../../components/ui/textarea";
 import {
   authorizeDisbursement,
+  createAdminClient,
   createAdminAccount,
   createContractTemplate,
   createOffer,
@@ -75,6 +76,9 @@ export function AdminDashboardPage() {
   const [depositAccountId, setDepositAccountId] = useState<number | null>(null);
   const [depositAmount, setDepositAmount] = useState<number>(0);
   const [activeTab, setActiveTab] = useState<"overview" | "offers" | "contracts" | "operations" | "templates" | "requests">("overview");
+  const [createClientName, setCreateClientName] = useState<string>("");
+  const [createClientLimit, setCreateClientLimit] = useState<number>(0);
+  const [loadingClientAction, setLoadingClientAction] = useState(false);
 
   const refreshData = async (showSkeleton = false) => {
     if (showSkeleton) {
@@ -119,6 +123,34 @@ export function AdminDashboardPage() {
     }
   };
 
+  const handleCreateClient = async () => {
+    if (!createClientName.trim()) {
+      setMessage("Informe o nome do cliente.");
+      return;
+    }
+
+    if (createClientLimit < 0) {
+      setMessage("O limite do cliente não pode ser negativo.");
+      return;
+    }
+
+    setLoadingClientAction(true);
+    setMessage("");
+
+    try {
+      const createdClient = await createAdminClient(createClientName.trim(), createClientLimit);
+      setCreateClientName("");
+      setCreateClientLimit(0);
+      setCreateAccountClientId(createdClient.id);
+      setSelectedClientId(createdClient.id);
+      await refreshData();
+      setMessage("Cliente criado com sucesso.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Falha ao criar cliente.");
+    } finally {
+      setLoadingClientAction(false);
+    }
+  };
   useEffect(() => {
     void refreshData(true).catch((error: Error) => setMessage(error.message));
   }, []);
@@ -365,6 +397,13 @@ export function AdminDashboardPage() {
             <label className="space-y-2 text-sm"><span className="font-medium">Cliente</span><select className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700" value={selectedClientId ?? ""} onChange={(event) => setSelectedClientId(Number(event.target.value))}>{clients.length === 0 ? <option value="">Nenhum cliente disponível</option> : null}{clients.map((client) => <option key={client.id} value={client.id}>#{client.id} - {client.nome} ({formatCurrency(client.saldoConta)})</option>)}</select></label>
             {impersonatedClientId !== null ? <p className="text-xs text-slate-500">Impersonação ativa no cliente #{impersonatedClientId}</p> : null}
             <Button onClick={handleImpersonate} disabled={clients.length === 0}>Entrar na plataforma do cliente</Button>
+
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+              <p className="text-sm font-semibold text-slate-800">Cadastro de cliente</p>
+              <label className="space-y-2 text-sm block"><span className="font-medium">Nome do cliente</span><Input value={createClientName} onChange={(event) => setCreateClientName(event.target.value)} placeholder="Ex.: Empresa Alfa" /></label>
+              <label className="space-y-2 text-sm block"><span className="font-medium">Limite global</span><Input type="number" min={0} value={createClientLimit} onChange={(event) => setCreateClientLimit(Number(event.target.value))} /></label>
+              <Button onClick={handleCreateClient} disabled={loadingClientAction}>Criar cliente</Button>
+            </div>
 
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
               <p className="text-sm font-semibold text-slate-800">Gestão de conta</p>

@@ -59,6 +59,18 @@ namespace CreditoSimulador.App.Commands
         public int ContratoId { get; init; }
     }
 
+    public class CriarClienteRequest
+    {
+        public string Nome { get; init; } = string.Empty;
+        public decimal LimiteGlobal { get; init; }
+    }
+
+    public class CriarClienteCommand
+    {
+        public string Nome { get; init; } = string.Empty;
+        public decimal LimiteGlobal { get; init; }
+    }
+
     public class CriarOfertaCommand
     {
         public CreditOffer Oferta { get; init; } = new();
