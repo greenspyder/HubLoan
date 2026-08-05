@@ -1,3 +1,4 @@
+using CreditoSimulador.App.Data;
 using Npgsql;
 
 namespace CreditoSimulador.App.Services;
@@ -15,8 +16,7 @@ public class OverdueParcelAutoPaymentJob
 
     public void Execute()
     {
-        var connectionString = _configuration.GetConnectionString("DefaultConnection")
-            ?? "Host=localhost;Username=postgres;Password=13531;Database=postgres";
+        var connectionString = ConnectionStringResolver.Resolve(_configuration);
 
         using var conn = new NpgsqlConnection(connectionString);
         conn.Open();

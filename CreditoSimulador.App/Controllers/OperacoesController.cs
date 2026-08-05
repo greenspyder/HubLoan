@@ -1,4 +1,5 @@
 using System.Text;
+using CreditoSimulador.App.Data;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
@@ -11,8 +12,7 @@ namespace CreditoSimulador.App.Controllers
 
         public OperacoesController(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection")
-                ?? "Host=localhost;Username=postgres;Password=13531;Database=postgres";
+            _connectionString = ConnectionStringResolver.Resolve(configuration);
         }
 
         [HttpGet("/operacoes")]

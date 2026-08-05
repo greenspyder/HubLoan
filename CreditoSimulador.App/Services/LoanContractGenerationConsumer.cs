@@ -1,3 +1,4 @@
+using CreditoSimulador.App.Data;
 using CreditoSimulador.App.Models;
 using Npgsql;
 
@@ -16,8 +17,7 @@ public class LoanContractGenerationConsumer
 
     public void Execute()
     {
-        var connectionString = _configuration.GetConnectionString("DefaultConnection")
-            ?? "Host=localhost;Username=postgres;Password=13531;Database=postgres";
+        var connectionString = ConnectionStringResolver.Resolve(_configuration);
 
         using var conn = new NpgsqlConnection(connectionString);
         conn.Open();

@@ -1,4 +1,5 @@
 using CreditoSimulador.App.Commands;
+using CreditoSimulador.App.Data;
 using CreditoSimulador.App.Handlers;
 using CreditoSimulador.App.Models;
 using CreditoSimulador.App.Services;
@@ -28,8 +29,7 @@ namespace CreditoSimulador.App.Controllers
             AutorizarDesembolsoHandler autorizarDesembolsoHandler,
             IBackgroundJobClient backgroundJobClient)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection")
-                ?? "Host=localhost;Username=postgres;Password=13531;Database=postgres";
+            _connectionString = ConnectionStringResolver.Resolve(configuration);
             _criarOfertaHandler = criarOfertaHandler;
             _listarOfertasHandler = listarOfertasHandler;
             _listarSolicitacoesHandler = listarSolicitacoesHandler;

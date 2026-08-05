@@ -1,4 +1,5 @@
 ﻿using CreditoSimulador.App.Commands;
+using CreditoSimulador.App.Data;
 using CreditoSimulador.App.Handlers;
 using CreditoSimulador.App.Models;
 using CreditoSimulador.App.Services;
@@ -52,8 +53,7 @@ namespace CreditoSimulador.App.Controllers
             _assinarContratoHandler = assinarContratoHandler;
             _listarOfertasHandler = listarOfertasHandler;
             _contractDocxService = contractDocxService;
-            _connectionString = configuration.GetConnectionString("DefaultConnection")
-                ?? "Host=localhost;Username=postgres;Password=13531;Database=postgres";
+            _connectionString = ConnectionStringResolver.Resolve(configuration);
         }
 
         [HttpGet]
