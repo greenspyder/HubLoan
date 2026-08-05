@@ -191,8 +191,8 @@ export function ClientContractDetailsPage() {
     <div className="mx-auto max-w-6xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Cliente</p>
-          <h1 className="text-3xl font-semibold text-slate-900">Detalhes do contrato #{selectedContract.id}</h1>
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-500">Cliente</p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Detalhes do contrato #{selectedContract.id}</h1>
         </div>
         <Button variant="outline" onClick={() => navigate("/cliente")}>Voltar para as ofertas</Button>
       </div>
@@ -263,7 +263,7 @@ export function ClientContractDetailsPage() {
               <div className="rounded-[20px] border border-slate-200 bg-white p-4 text-sm text-slate-600">
                 <p>Amortização: {details.tipoAmortizacao}</p>
                 <p className="mt-1">Conta de desembolso: {details.contaDesembolsoId ? `#${details.contaDesembolsoId}` : "Não definida"}</p>
-                <p className="mt-1">Valor total pago: {typeof details.valorTotalPago === "number" ? formatCurrency(details.valorTotalPago) : "Não informado"}</p>
+                {typeof details.valorTotalPago === "number" && details.valorTotalPago > 0 ? <p className="mt-1">Valor total pago: {formatCurrency(details.valorTotalPago)}</p> : null}
                 {details.contratoGeradoEm ? <p className="mt-1">Contrato gerado em: {formatDate(details.contratoGeradoEm)}</p> : null}
                 {details.assinadoEm ? <p className="mt-1">Assinado em: {formatDate(details.assinadoEm)}</p> : null}
                 {details.desembolsoAutorizadoEm ? <p className="mt-1">Desembolso autorizado em: {formatDate(details.desembolsoAutorizadoEm)}</p> : null}

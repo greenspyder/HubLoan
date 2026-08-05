@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Users, Layers, FileText, MessageSquare } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Input } from "../../../components/ui/input";
@@ -75,9 +76,12 @@ export function AdminDashboardPage() {
   const [createAccountInitialBalance, setCreateAccountInitialBalance] = useState<number>(0);
   const [depositAccountId, setDepositAccountId] = useState<number | null>(null);
   const [depositAmount, setDepositAmount] = useState<number>(0);
+  const [clientSearch, setClientSearch] = useState<string>("");
+  const [accountSearch, setAccountSearch] = useState<string>("");
   const [activeTab, setActiveTab] = useState<"overview" | "offers" | "contracts" | "operations" | "templates" | "requests">("overview");
   const [createClientName, setCreateClientName] = useState<string>("");
   const [createClientLimit, setCreateClientLimit] = useState<number>(0);
+  const [lastCreatedClient, setLastCreatedClient] = useState<Client | null>(null);
   const [loadingClientAction, setLoadingClientAction] = useState(false);
 
   const refreshData = async (showSkeleton = false) => {
@@ -141,6 +145,7 @@ export function AdminDashboardPage() {
       const createdClient = await createAdminClient(createClientName.trim(), createClientLimit);
       setCreateClientName("");
       setCreateClientLimit(0);
+      setLastCreatedClient({ id: createdClient.id, nome: createdClient.nome, limite: createdClient.limite, saldoConta: 0 });
       setCreateAccountClientId(createdClient.id);
       setSelectedClientId(createdClient.id);
       await refreshData();
@@ -275,8 +280,10 @@ export function AdminDashboardPage() {
   };
 
   const tabButtonClass = (tab: "overview" | "offers" | "contracts" | "operations" | "templates" | "requests") =>
-    `rounded-full px-4 py-2 text-sm font-medium transition ${
-      activeTab === tab ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
+    `rounded-full px-4 py-2 text-sm font-medium transition-all duration-150 ${
+      activeTab === tab
+        ? "bg-indigo-600 text-white shadow-[0_4px_14px_-4px_rgba(99,102,241,0.6)]"
+        : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
     }`;
 
   const statusToLabel = (offer: Offer) => {
@@ -291,15 +298,77 @@ export function AdminDashboardPage() {
     return "Ativa";
   };
 
+  const filteredClients = clients.filter((client) => {
+    const normalizedQuery = clientSearch.trim().toLowerCase();
+    if (!normalizedQuery) {
+      return true;
+    }
+
+    return `${client.id} ${client.nome}`.toLowerCase().includes(normalizedQuery);
+  });
+
+  const filteredAccounts = accounts.filter((account) => {
+    const normalizedQuery = accountSearch.trim().toLowerCase();
+    if (!normalizedQuery) {
+      return true;
+    }
+
+    return `${account.idConta} ${account.clienteId} ${account.nomeCliente}`.toLowerCase().includes(normalizedQuery);
+  });
+
   return (
     <div className="space-y-6">
       {message ? <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{message}</div> : null}
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Card><CardContent className="p-6"><p className="text-sm text-slate-500">Clientes</p><p className="mt-2 text-3xl font-semibold text-slate-900">{clients.length}</p></CardContent></Card>
-        <Card><CardContent className="p-6"><p className="text-sm text-slate-500">Ofertas</p><p className="mt-2 text-3xl font-semibold text-slate-900">{offers.length}</p></CardContent></Card>
-        <Card><CardContent className="p-6"><p className="text-sm text-slate-500">Contratos</p><p className="mt-2 text-3xl font-semibold text-slate-900">{contracts.length}</p></CardContent></Card>
-        <Card><CardContent className="p-6"><p className="text-sm text-slate-500">Solicitações</p><p className="mt-2 text-3xl font-semibold text-slate-900">{requests.length}</p></CardContent></Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-slate-500">Clientes</p>
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-50">
+                <Users className="h-4 w-4 text-indigo-500" />
+              </div>
+            </div>
+            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{clients.length}</p>
+            <div className="mt-2 h-1 w-8 rounded-full bg-indigo-400" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-slate-500">Ofertas</p>
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-violet-50">
+                <Layers className="h-4 w-4 text-violet-500" />
+              </div>
+            </div>
+            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{offers.length}</p>
+            <div className="mt-2 h-1 w-8 rounded-full bg-violet-400" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-slate-500">Contratos</p>
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50">
+                <FileText className="h-4 w-4 text-emerald-500" />
+              </div>
+            </div>
+            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{contracts.length}</p>
+            <div className="mt-2 h-1 w-8 rounded-full bg-emerald-400" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-slate-500">Solicitações</p>
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50">
+                <MessageSquare className="h-4 w-4 text-amber-500" />
+              </div>
+            </div>
+            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{requests.length}</p>
+            <div className="mt-2 h-1 w-8 rounded-full bg-amber-400" />
+          </CardContent>
+        </Card>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -315,16 +384,25 @@ export function AdminDashboardPage() {
         <div className="grid gap-6 xl:grid-cols-2">
           <Card>
             <CardHeader><CardTitle>Resumo de ofertas</CardTitle></CardHeader>
-            <CardContent className="space-y-3 text-sm text-slate-700">
-              <p>Ativas: {offers.filter((offer) => offer.status === "ACTIVE" || (!offer.status && offer.ativa)).length}</p>
-              <p>Consumidas: {offers.filter((offer) => offer.status === "CONSUMED").length}</p>
-              <p>Inativas: {offers.filter((offer) => offer.status === "INACTIVE" || (!offer.ativa && offer.status !== "CONSUMED")).length}</p>
+            <CardContent className="space-y-2">
+              <div className="flex items-center justify-between rounded-xl bg-emerald-50 px-4 py-3">
+                <p className="text-sm font-medium text-emerald-800">Ativas</p>
+                <p className="text-2xl font-bold text-emerald-700">{offers.filter((offer) => offer.status === "ACTIVE" || (!offer.status && offer.ativa)).length}</p>
+              </div>
+              <div className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
+                <p className="text-sm font-medium text-slate-700">Consumidas</p>
+                <p className="text-2xl font-bold text-slate-600">{offers.filter((offer) => offer.status === "CONSUMED").length}</p>
+              </div>
+              <div className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
+                <p className="text-sm font-medium text-slate-700">Inativas</p>
+                <p className="text-2xl font-bold text-slate-500">{offers.filter((offer) => offer.status === "INACTIVE" || (!offer.ativa && offer.status !== "CONSUMED")).length}</p>
+              </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader><CardTitle>Ações rápidas</CardTitle></CardHeader>
-            <CardContent className="space-y-3">
-              <Button variant="outline" onClick={() => setActiveTab("offers")}>Criar nova oferta</Button>
+            <CardContent className="grid gap-2">
+              <Button onClick={() => setActiveTab("offers")}>Criar nova oferta</Button>
               <Button variant="outline" onClick={() => setActiveTab("operations")}>Gerenciar operações</Button>
               <Button variant="outline" onClick={() => setActiveTab("contracts")}>Ver contratos</Button>
             </CardContent>
@@ -393,26 +471,85 @@ export function AdminDashboardPage() {
         <Card>
           <CardHeader><CardTitle>Operações administrativas</CardTitle></CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-slate-600">Selecione um cliente para entrar na experiência do cliente sem depender de contrato específico.</p>
-            <label className="space-y-2 text-sm"><span className="font-medium">Cliente</span><select className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700" value={selectedClientId ?? ""} onChange={(event) => setSelectedClientId(Number(event.target.value))}>{clients.length === 0 ? <option value="">Nenhum cliente disponível</option> : null}{clients.map((client) => <option key={client.id} value={client.id}>#{client.id} - {client.nome} ({formatCurrency(client.saldoConta)})</option>)}</select></label>
-            {impersonatedClientId !== null ? <p className="text-xs text-slate-500">Impersonação ativa no cliente #{impersonatedClientId}</p> : null}
-            <Button onClick={handleImpersonate} disabled={clients.length === 0}>Entrar na plataforma do cliente</Button>
-
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
-              <p className="text-sm font-semibold text-slate-800">Cadastro de cliente</p>
-              <label className="space-y-2 text-sm block"><span className="font-medium">Nome do cliente</span><Input value={createClientName} onChange={(event) => setCreateClientName(event.target.value)} placeholder="Ex.: Empresa Alfa" /></label>
-              <label className="space-y-2 text-sm block"><span className="font-medium">Limite global</span><Input type="number" min={0} value={createClientLimit} onChange={(event) => setCreateClientLimit(Number(event.target.value))} /></label>
-              <Button onClick={handleCreateClient} disabled={loadingClientAction}>Criar cliente</Button>
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">Acesso rápido ao cliente</p>
+                  <p className="text-xs text-slate-500">Escolha um cliente para impersonar e navegar como ele.</p>
+                </div>
+                <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-slate-600">{clients.length} clientes</span>
+              </div>
+              <div className="mt-4 grid gap-3 md:grid-cols-[1fr_220px_auto] md:items-end">
+                <label className="space-y-2 text-sm">
+                  <span className="font-medium">Buscar cliente</span>
+                  <Input value={clientSearch} onChange={(event) => setClientSearch(event.target.value)} placeholder="Digite nome ou código" />
+                </label>
+                <label className="space-y-2 text-sm">
+                  <span className="font-medium">Cliente selecionado</span>
+                  <select className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700" value={selectedClientId ?? ""} onChange={(event) => setSelectedClientId(Number(event.target.value))}>
+                    {filteredClients.length === 0 ? <option value="">Nenhum cliente encontrado</option> : null}
+                    {filteredClients.map((client) => <option key={client.id} value={client.id}>#{client.id} - {client.nome} ({formatCurrency(client.saldoConta)})</option>)}
+                  </select>
+                </label>
+                <Button onClick={handleImpersonate} disabled={filteredClients.length === 0}>Entrar</Button>
+              </div>
+              {impersonatedClientId !== null ? <p className="mt-3 text-xs text-slate-500">Impersonação ativa no cliente #{impersonatedClientId}</p> : null}
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
-              <p className="text-sm font-semibold text-slate-800">Gestão de conta</p>
-              <label className="space-y-2 text-sm block"><span className="font-medium">Criar conta para cliente</span><select className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700" value={createAccountClientId ?? ""} onChange={(event) => setCreateAccountClientId(Number(event.target.value))}>{clients.map((client) => <option key={`create-${client.id}`} value={client.id}>#{client.id} - {client.nome}</option>)}</select></label>
-              <label className="space-y-2 text-sm block"><span className="font-medium">Saldo inicial</span><Input type="number" min={0} value={createAccountInitialBalance} onChange={(event) => setCreateAccountInitialBalance(Number(event.target.value))} /></label>
-              <Button onClick={handleCreateAccount} disabled={loadingAccountAction || clients.length === 0}>Criar conta</Button>
-              <label className="space-y-2 text-sm block"><span className="font-medium">Depositar em conta</span><select className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700" value={depositAccountId ?? ""} onChange={(event) => setDepositAccountId(Number(event.target.value))}>{accounts.map((account) => <option key={`deposit-${account.idConta}`} value={account.idConta}>Conta #{account.idConta} • Cliente #{account.clienteId} - {account.nomeCliente} ({formatCurrency(account.saldo)})</option>)}</select></label>
-              <label className="space-y-2 text-sm block"><span className="font-medium">Valor do depósito</span><Input type="number" min={0} value={depositAmount} onChange={(event) => setDepositAmount(Number(event.target.value))} /></label>
-              <Button variant="outline" onClick={handleDeposit} disabled={loadingAccountAction || accounts.length === 0}>Depositar</Button>
+            <div className="grid gap-4 xl:grid-cols-3">
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm xl:col-span-1">
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-slate-900">Cadastro de cliente</p>
+                  <p className="text-xs text-slate-500">Crie o cliente com o limite global antes de abrir a conta.</p>
+                </div>
+                <div className="mt-4 space-y-3">
+                  <label className="space-y-2 text-sm block"><span className="font-medium">Nome do cliente</span><Input value={createClientName} onChange={(event) => setCreateClientName(event.target.value)} placeholder="Ex.: Empresa Alfa" /></label>
+                  <label className="space-y-2 text-sm block"><span className="font-medium">Limite do cliente</span><Input type="number" min={0} value={createClientLimit} onChange={(event) => setCreateClientLimit(Number(event.target.value))} /></label>
+                  <Button onClick={handleCreateClient} disabled={loadingClientAction} className="w-full">Criar cliente</Button>
+                </div>
+                {lastCreatedClient ? (
+                  <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
+                    <p className="font-semibold">Cliente criado com sucesso</p>
+                    <p className="mt-1">#{lastCreatedClient.id} - {lastCreatedClient.nome}</p>
+                    <Button
+                      className="mt-3 w-full"
+                      variant="outline"
+                      onClick={() => {
+                        setCreateAccountClientId(lastCreatedClient.id);
+                        setMessage(`Cliente #${lastCreatedClient.id} selecionado para criação de conta.`);
+                      }}
+                    >
+                      Usar este cliente na conta
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm xl:col-span-1">
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-slate-900">Cadastro de conta</p>
+                  <p className="text-xs text-slate-500">O saldo inicial é definido aqui, separado do limite do cliente.</p>
+                </div>
+                <div className="mt-4 space-y-3">
+                  <label className="space-y-2 text-sm block"><span className="font-medium">Filtrar cliente</span><Input value={clientSearch} onChange={(event) => setClientSearch(event.target.value)} placeholder="Nome ou código" /></label>
+                  <label className="space-y-2 text-sm block"><span className="font-medium">Cliente da conta</span><select className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700" value={createAccountClientId ?? ""} onChange={(event) => setCreateAccountClientId(Number(event.target.value))}>{filteredClients.length === 0 ? <option value="">Nenhum cliente disponível</option> : null}{filteredClients.map((client) => <option key={`create-${client.id}`} value={client.id}>#{client.id} - {client.nome}</option>)}</select></label>
+                  <label className="space-y-2 text-sm block"><span className="font-medium">Saldo inicial da conta</span><Input type="number" min={0} value={createAccountInitialBalance} onChange={(event) => setCreateAccountInitialBalance(Number(event.target.value))} /></label>
+                  <Button onClick={handleCreateAccount} disabled={loadingAccountAction || clients.length === 0} className="w-full">Criar conta</Button>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm xl:col-span-1">
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-slate-900">Depósito</p>
+                  <p className="text-xs text-slate-500">Escolha a conta existente e informe o valor do depósito.</p>
+                </div>
+                <div className="mt-4 space-y-3">
+                  <label className="space-y-2 text-sm block"><span className="font-medium">Filtrar conta</span><Input value={accountSearch} onChange={(event) => setAccountSearch(event.target.value)} placeholder="Conta, cliente ou nome" /></label>
+                  <label className="space-y-2 text-sm block"><span className="font-medium">Conta para depósito</span><select className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700" value={depositAccountId ?? ""} onChange={(event) => setDepositAccountId(Number(event.target.value))}>{filteredAccounts.length === 0 ? <option value="">Nenhuma conta disponível</option> : null}{filteredAccounts.map((account) => <option key={`deposit-${account.idConta}`} value={account.idConta}>Conta #{account.idConta} • Cliente #{account.clienteId} - {account.nomeCliente} ({formatCurrency(account.saldo)})</option>)}</select></label>
+                  <label className="space-y-2 text-sm block"><span className="font-medium">Valor do depósito</span><Input type="number" min={0} value={depositAmount} onChange={(event) => setDepositAmount(Number(event.target.value))} /></label>
+                  <Button variant="outline" onClick={handleDeposit} disabled={loadingAccountAction || filteredAccounts.length === 0} className="w-full">Depositar</Button>
+                </div>
+              </div>
             </div>
 
             <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">

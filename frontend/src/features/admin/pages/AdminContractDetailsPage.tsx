@@ -79,13 +79,13 @@ export function AdminContractDetailsPage() {
     <div className="mx-auto max-w-5xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-sm uppercase tracking-[0.25em] text-slate-400">Operação</p>
-          <h1 className="text-3xl font-semibold text-slate-900">Detalhes do contrato</h1>
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-500">Operação</p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Detalhes do contrato</h1>
         </div>
         <Button variant="outline" onClick={() => navigate("/admin")}>Voltar ao administrativo</Button>
       </div>
 
-      {message ? <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{message}</div> : null}
+      {message ? <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{message}</div> : null}
 
       {loading ? (
         <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
@@ -149,7 +149,7 @@ export function AdminContractDetailsPage() {
               </div>
               <p>Amortização: {details.tipoAmortizacao}</p>
               <p>Conta de desembolso: {details.contaDesembolsoId ? `#${details.contaDesembolsoId}` : "Não definida"}</p>
-              {typeof details.valorTotalPago === "number" ? <p>Valor total pago: {formatCurrency(details.valorTotalPago)}</p> : null}
+              {typeof details.valorTotalPago === "number" && details.valorTotalPago > 0 ? <p>Valor total pago: {formatCurrency(details.valorTotalPago)}</p> : null}
               {details.desembolsoAutorizadoEm ? <p>Desembolso autorizado em: {formatDate(details.desembolsoAutorizadoEm)}</p> : null}
               {details.status.trim().toLowerCase() === "aguardando desembolso" ? (
                 <Button onClick={handleAuthorizeDisbursement} disabled={authorizing}>

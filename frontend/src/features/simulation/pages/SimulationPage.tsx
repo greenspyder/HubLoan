@@ -134,16 +134,16 @@ export function SimulationPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
-      <div className="rounded-[28px] border border-slate-200/80 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-6 text-white shadow-[0_24px_50px_-28px_rgba(15,23,42,0.85)]">
+      <div className="rounded-[28px] border border-white/10 bg-gradient-to-br from-slate-950 via-[#180e3a] to-slate-900 p-6 text-white shadow-[0_24px_50px_-28px_rgba(15,23,42,0.9)]">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-slate-400">Simulação premium</p>
-            <h1 className="mt-2 text-3xl font-semibold">{selectedOffer.nome}</h1>
-            {selectedClient ? <p className="mt-2 text-sm text-slate-300">Cliente #{selectedClient.id} • {selectedClient.nome}</p> : null}
+            <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-indigo-400/80">Simulação premium</p>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight">{selectedOffer.nome}</h1>
+            {selectedClient ? <p className="mt-2 text-sm text-slate-300">Cliente #{selectedClient.id} · {selectedClient.nome}</p> : null}
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <StatusChip status={simulation?.aprovado ? "Aprovado" : step === 3 ? "Em análise" : "Rascunho"} className="border-white/20 bg-white/10 text-white" />
-            <Button variant="outline" className="border-white/20 bg-white/10 text-white hover:bg-white/15" onClick={() => navigate("/cliente")}>Voltar para ofertas</Button>
+            <Button variant="outline" className="border-white/20 bg-white/10 text-white hover:bg-white/20" onClick={() => navigate("/cliente")}>Voltar para ofertas</Button>
           </div>
         </div>
       </div>
@@ -154,9 +154,9 @@ export function SimulationPage() {
           { number: 2, title: "Garantias e condições" },
           { number: 3, title: "Resumo e contratação" },
         ].map((item) => (
-          <div key={item.number} className={`rounded-[20px] border px-4 py-3 transition ${step === item.number ? "border-slate-900 bg-slate-900 text-white shadow-[0_18px_40px_-26px_rgba(15,23,42,0.8)]" : "border-slate-200 bg-white/85 text-slate-500"}`}>
-            <p className="text-xs uppercase tracking-[0.2em]">Etapa {item.number}</p>
-            <p className="mt-1 text-sm font-medium">{item.title}</p>
+          <div key={item.number} className={`rounded-2xl border px-4 py-3 transition-all duration-200 ${step === item.number ? "border-indigo-600 bg-indigo-600 text-white shadow-[0_8px_20px_-6px_rgba(99,102,241,0.7)]" : step > item.number ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-500"}`}>
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] opacity-70">Etapa {item.number}</p>
+            <p className="mt-1 text-sm font-semibold">{item.title}</p>
           </div>
         ))}
       </div>

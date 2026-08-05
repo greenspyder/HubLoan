@@ -85,8 +85,10 @@ export function ClientDashboardPage() {
   });
 
   const tabButtonClass = (tab: "overview" | "offers" | "contracts" | "movements") =>
-    `rounded-full px-4 py-2 text-sm font-medium transition ${
-      activeTab === tab ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
+    `rounded-full px-4 py-2 text-sm font-medium transition-all duration-150 ${
+      activeTab === tab
+        ? "bg-indigo-600 text-white shadow-[0_4px_14px_-4px_rgba(99,102,241,0.6)]"
+        : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
     }`;
 
   return (
@@ -94,20 +96,23 @@ export function ClientDashboardPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardContent className="p-6">
-            <p className="text-sm text-slate-500">Contratos ativos</p>
-            {loadingData ? <Skeleton className="mt-2 h-9 w-16" /> : <p className="mt-2 text-3xl font-semibold text-slate-900">{contracts.length}</p>}
+            <p className="text-sm font-medium text-slate-500">Contratos ativos</p>
+            {loadingData ? <Skeleton className="mt-3 h-8 w-16" /> : <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{contracts.length}</p>}
+            <div className="mt-2 h-1 w-8 rounded-full bg-indigo-400" />
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6">
-            <p className="text-sm text-slate-500">Parcelas atrasadas</p>
-            {loadingData ? <Skeleton className="mt-2 h-9 w-16" /> : <p className="mt-2 text-3xl font-semibold text-rose-600">{overdueParcels.length}</p>}
+            <p className="text-sm font-medium text-slate-500">Parcelas atrasadas</p>
+            {loadingData ? <Skeleton className="mt-3 h-8 w-16" /> : <p className="mt-3 text-3xl font-bold tracking-tight text-rose-600">{overdueParcels.length}</p>}
+            <div className="mt-2 h-1 w-8 rounded-full bg-rose-400" />
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6">
-            <p className="text-sm text-slate-500">Ofertas disponíveis</p>
-            {loadingData ? <Skeleton className="mt-2 h-9 w-16" /> : <p className="mt-2 text-3xl font-semibold text-slate-900">{offers.length}</p>}
+            <p className="text-sm font-medium text-slate-500">Ofertas disponíveis</p>
+            {loadingData ? <Skeleton className="mt-3 h-8 w-16" /> : <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{offers.length}</p>}
+            <div className="mt-2 h-1 w-8 rounded-full bg-emerald-400" />
           </CardContent>
         </Card>
       </div>
@@ -125,12 +130,14 @@ export function ClientDashboardPage() {
               <Skeleton className="mt-2 h-4 w-44" />
             </div>
           ) : selectedClient ? (
-            <div className="rounded-[20px] border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
-              <p className="text-sm font-semibold text-slate-800">Cliente selecionado</p>
-              <p className="text-2xl font-semibold text-slate-900">{selectedClient.nome}</p>
-              <p className="mt-1 text-sm text-slate-600">Limite global: {formatCurrency(selectedClient.limite)}</p>
-              <p className="mt-1 text-sm text-slate-600">Contas ativas: {selectedClient.totalContas ?? 0}</p>
-              <p className="mt-1 text-sm text-slate-600">Saldo total em contas: {formatCurrency(selectedClient.saldoConta)}</p>
+            <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white p-5">
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-500">Cliente selecionado</p>
+              <p className="mt-2 text-2xl font-bold tracking-tight text-slate-900">{selectedClient.nome}</p>
+              <div className="mt-3 grid gap-1.5 text-sm text-slate-600">
+                <p>Limite global: <span className="font-semibold text-slate-800">{formatCurrency(selectedClient.limite)}</span></p>
+                <p>Contas ativas: <span className="font-semibold text-slate-800">{selectedClient.totalContas ?? 0}</span></p>
+                <p>Saldo total em contas: <span className="font-semibold text-emerald-700">{formatCurrency(selectedClient.saldoConta)}</span></p>
+              </div>
             </div>
           ) : null}
 
@@ -143,17 +150,17 @@ export function ClientDashboardPage() {
 
           {activeTab === "overview" ? (
             <div className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Ofertas</p>
-                <p className="mt-2 text-2xl font-semibold text-slate-900">{offers.length}</p>
+              <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white p-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-indigo-500">Ofertas</p>
+                <p className="mt-2 text-2xl font-bold tracking-tight text-slate-900">{offers.length}</p>
               </div>
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Contratos</p>
-                <p className="mt-2 text-2xl font-semibold text-slate-900">{contracts.length}</p>
+              <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">Contratos</p>
+                <p className="mt-2 text-2xl font-bold tracking-tight text-slate-900">{contracts.length}</p>
               </div>
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Movimentações</p>
-                <p className="mt-2 text-2xl font-semibold text-slate-900">{movements.length}</p>
+              <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">Movimentações</p>
+                <p className="mt-2 text-2xl font-bold tracking-tight text-slate-900">{movements.length}</p>
               </div>
             </div>
           ) : null}
@@ -235,23 +242,22 @@ export function ClientDashboardPage() {
               ) : (
                 <div className="grid gap-4 lg:grid-cols-2">
                   {offers.map((offer) => (
-                    <div key={offer.id} className="rounded-[20px] border border-slate-200 bg-slate-50 p-4 shadow-[0_12px_24px_-20px_rgba(15,23,42,0.35)]">
+                    <div key={offer.id} className="rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_20px_-4px_rgba(15,23,42,0.07)] transition-all duration-200 hover:border-indigo-200 hover:shadow-[0_4px_24px_-4px_rgba(99,102,241,0.14)]">
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <p className="font-semibold text-slate-900">{offer.nome}</p>
-                          <p className="text-sm text-slate-600">{offer.descricao}</p>
+                          <p className="mt-0.5 text-sm text-slate-500">{offer.descricao}</p>
                         </div>
                         <StatusChip status={offer.ativa ? "Ativa" : "Inativa"} />
                       </div>
-                      <div className="mt-3 grid gap-2 text-sm text-slate-600">
-                        <p>Valor: {formatCurrency(offer.valorMinimo)} a {formatCurrency(offer.valorMaximo)}</p>
-                        <p>Parcelas: {offer.parcelasMinimas} a {offer.parcelasMaximas}</p>
-                        <p>Garantias: {offer.garantias.join(", ")}</p>
+                      <div className="mt-4 grid gap-1.5 text-sm text-slate-600">
+                        <p>Valor: <span className="font-medium text-slate-800">{formatCurrency(offer.valorMinimo)} a {formatCurrency(offer.valorMaximo)}</span></p>
+                        <p>Parcelas: <span className="font-medium text-slate-800">{offer.parcelasMinimas} a {offer.parcelasMaximas}</span></p>
+                        <p>Garantias: <span className="font-medium text-slate-700">{offer.garantias.join(", ")}</span></p>
                       </div>
                       <Button
-                        className="mt-4"
-                        variant="outline"
-                        onClick={() => navigate(`/cliente/ofertas/${offer.id}/simulacao`) }
+                        className="mt-4 w-full"
+                        onClick={() => navigate(`/cliente/ofertas/${offer.id}/simulacao`)}
                       >
                         Simular esta oferta
                       </Button>
@@ -279,15 +285,17 @@ export function ClientDashboardPage() {
               ) : movements.length === 0 ? (
                 <p className="text-sm text-slate-500">Ainda não há movimentações para este cliente.</p>
               ) : (
-                <div className="space-y-2">
+                    <div className="space-y-2">
                   {movements.map((movement) => (
-                    <div key={movement.idMovimentacao} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="font-semibold text-slate-800">{movement.tipo}</p>
-                        <p className={movement.valor >= 0 ? "font-semibold text-emerald-700" : "font-semibold text-rose-700"}>{formatCurrency(movement.valor)}</p>
+                    <div key={movement.idMovimentacao} className="flex items-center justify-between gap-3 rounded-xl border border-slate-100 bg-white px-4 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-slate-800">{movement.tipo}</p>
+                        <p className="text-xs text-slate-500">{formatCurrency(movement.saldoAnterior)} → <span className="font-medium text-slate-700">{formatCurrency(movement.saldoAtual)}</span></p>
+                        <p className="text-xs text-slate-400">{new Date(movement.dataOperacional).toLocaleDateString("pt-BR")}</p>
                       </div>
-                      <p className="text-xs text-slate-600">Saldo: {formatCurrency(movement.saldoAnterior)} → {formatCurrency(movement.saldoAtual)}</p>
-                      <p className="text-xs text-slate-500">Data operacional: {new Date(movement.dataOperacional).toLocaleDateString("pt-BR")}</p>
+                      <p className={`shrink-0 text-sm font-bold ${movement.valor >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                        {movement.valor >= 0 ? "+" : ""}{formatCurrency(movement.valor)}
+                      </p>
                     </div>
                   ))}
                 </div>
