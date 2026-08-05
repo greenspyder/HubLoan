@@ -12,6 +12,13 @@ using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var frontendOrigin = builder.Configuration["FRONTEND_ORIGIN"];
+var port = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrWhiteSpace(port))
+{
+    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+}
+
 // Adiciona suporte a Controllers (para seu AdminController)
 builder.Services.AddControllers();
 
@@ -49,11 +56,19 @@ builder.Services.AddScoped<ContractDocxService>();
 // Adicione ANTES de app.Build()
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", builder =>
+    options.AddPolicy("AllowFrontend", builder =>
     {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()  // Permite GET, POST, OPTIONS, etc
-               .AllowAnyHeader(); // Permite todos os headers incluindo X-Customer-Id
+        if (string.IsNullOrWhiteSpace(frontendOrigin))
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+            return;
+        }
+
+        builder.WithOrigins(frontendOrigin)
+               .AllowAnyMethod()
+               .AllowAnyHeader();
     });
 });
 
@@ -98,7 +113,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-app.UseCors("AllowAll");
+app.UseCors("AllowFrontend");
 
 // Habilita o mapeamento das rotas dos Controllers
 app.MapControllers();
