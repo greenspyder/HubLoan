@@ -2,9 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 COPY . .
-RUN dotnet publish CreditoSimulador.App.csproj -c Release -o /app/publish /p:UseAppHost=false
-
-# Prefer the repository-root Dockerfile for deployment so sibling projects are always included.
+RUN dotnet publish CreditoSimulador.App/CreditoSimulador.App.csproj -c Release -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
