@@ -14,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var frontendOrigin = builder.Configuration["FRONTEND_ORIGIN"];
 var port = Environment.GetEnvironmentVariable("PORT");
+var connectionString = ConnectionStringResolver.Resolve(builder.Configuration);
 if (!string.IsNullOrWhiteSpace(port))
 {
     builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
@@ -23,14 +24,12 @@ if (!string.IsNullOrWhiteSpace(port))
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? "Host=localhost;Username=postgres;Password=13531;Database=postgres"));
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddHangfire(configuration =>
 {
     configuration.UsePostgreSqlStorage(options =>
-        options.UseNpgsqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")
-            ?? "Host=localhost;Username=postgres;Password=13531;Database=postgres"));
+        options.UseNpgsqlConnection(connectionString));
 });
 builder.Services.AddHangfireServer();
 

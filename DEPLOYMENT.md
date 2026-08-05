@@ -17,7 +17,8 @@ Create a free PostgreSQL database in Neon and copy the connection string.
 
 Use it as:
 
-- `ConnectionStrings__DefaultConnection` in the backend environment
+- `ConnectionStrings__DefaultConnection` in the backend environment, or
+- `DATABASE_URL` in the backend environment
 
 Use the Neon connection string provided by you in the Render environment variable. Do not commit it to the repository.
 
@@ -33,6 +34,7 @@ The backend already:
 Suggested environment variables:
 
 - `ConnectionStrings__DefaultConnection`
+- `DATABASE_URL` if you prefer the Neon URI format
 - `FRONTEND_ORIGIN=https://hub-loan.vercel.app`
 - `PORT=8080`
 
@@ -64,7 +66,7 @@ The file `frontend/vercel.json` keeps React Router routes working on refresh.
 
 ## 6. Values to paste
 
-- Backend connection string: use the Neon URI you sent in the Render env vars as `ConnectionStrings__DefaultConnection`.
+- Backend connection string: use the Neon URI you sent in the Render env vars as `ConnectionStrings__DefaultConnection` or `DATABASE_URL`.
 - `FRONTEND_ORIGIN`: `https://hub-loan.vercel.app`
 - `VITE_API_BASE_URL`: `https://hubloan.onrender.com/api`
 - `PORT`: `8080`
