@@ -5,6 +5,16 @@ namespace CreditoSimulador.App.Data;
 
 public static class ConnectionStringResolver
 {
+    public static string ResolveFromEnvironment()
+    {
+        var rawConnectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+            ?? Environment.GetEnvironmentVariable("DATABASE_URL")
+            ?? Environment.GetEnvironmentVariable("POSTGRES_CONNECTION_STRING")
+            ?? "Host=localhost;Username=postgres;Password=13531;Database=postgres";
+
+        return Normalize(rawConnectionString);
+    }
+
     public static string Resolve(IConfiguration configuration, string name = "DefaultConnection")
     {
         var rawConnectionString = configuration.GetConnectionString(name)

@@ -1,5 +1,6 @@
 using Credito.Calculos;
 using CreditoSimulador.App.Commands;
+using CreditoSimulador.App.Data;
 using CreditoSimulador.App.Models;
 using CreditoSimulador.App.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ namespace CreditoSimulador.App.Handlers
 {
     public abstract class BaseClientesHandler
     {
-        protected readonly string ConnectionString = "Host=localhost;Username=postgres;Password=13531;Database=postgres";
+        protected readonly string ConnectionString = ConnectionStringResolver.ResolveFromEnvironment();
 
         protected void AtualizarParcelasEVincularStatusDosContratos(NpgsqlConnection conn)
         {
