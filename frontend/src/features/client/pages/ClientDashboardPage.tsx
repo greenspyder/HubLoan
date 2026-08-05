@@ -87,7 +87,7 @@ export function ClientDashboardPage() {
   const tabButtonClass = (tab: "overview" | "offers" | "contracts" | "movements") =>
     `rounded-full px-4 py-2 text-sm font-medium transition-all duration-150 ${
       activeTab === tab
-        ? "bg-indigo-600 text-white shadow-[0_4px_14px_-4px_rgba(99,102,241,0.6)]"
+        ? "bg-slate-900 text-white shadow-sm"
         : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
     }`;
 
@@ -130,8 +130,8 @@ export function ClientDashboardPage() {
               <Skeleton className="mt-2 h-4 w-44" />
             </div>
           ) : selectedClient ? (
-            <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white p-5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-500">Cliente selecionado</p>
+            <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-5">
+              <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">Cliente selecionado</p>
               <p className="mt-2 text-2xl font-bold tracking-tight text-slate-900">{selectedClient.nome}</p>
               <div className="mt-3 grid gap-1.5 text-sm text-slate-600">
                 <p>Limite global: <span className="font-semibold text-slate-800">{formatCurrency(selectedClient.limite)}</span></p>
@@ -141,7 +141,7 @@ export function ClientDashboardPage() {
             </div>
           ) : null}
 
-          <div className="flex flex-wrap gap-2">
+          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
             <button type="button" className={tabButtonClass("overview")} onClick={() => setActiveTab("overview")}>Visão geral</button>
             <button type="button" className={tabButtonClass("offers")} onClick={() => setActiveTab("offers")}>Ofertas</button>
             <button type="button" className={tabButtonClass("contracts")} onClick={() => setActiveTab("contracts")}>Contratos</button>
@@ -149,17 +149,17 @@ export function ClientDashboardPage() {
           </div>
 
           {activeTab === "overview" ? (
-            <div className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white p-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-indigo-500">Ofertas</p>
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
+              <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-400">Ofertas</p>
                 <p className="mt-2 text-2xl font-bold tracking-tight text-slate-900">{offers.length}</p>
               </div>
               <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-                <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">Contratos</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-400">Contratos</p>
                 <p className="mt-2 text-2xl font-bold tracking-tight text-slate-900">{contracts.length}</p>
               </div>
               <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-                <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-500">Movimentações</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-slate-400">Movimentações</p>
                 <p className="mt-2 text-2xl font-bold tracking-tight text-slate-900">{movements.length}</p>
               </div>
             </div>

@@ -154,7 +154,7 @@ export function SimulationPage() {
           { number: 2, title: "Garantias e condições" },
           { number: 3, title: "Resumo e contratação" },
         ].map((item) => (
-          <div key={item.number} className={`rounded-2xl border px-4 py-3 transition-all duration-200 ${step === item.number ? "border-indigo-600 bg-indigo-600 text-white shadow-[0_8px_20px_-6px_rgba(99,102,241,0.7)]" : step > item.number ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-white text-slate-500"}`}>
+          <div key={item.number} className={`rounded-2xl border px-4 py-3 transition-all duration-200 ${step === item.number ? "border-slate-900 bg-slate-900 text-white shadow-[0_4px_12px_rgba(15,23,42,0.25)]" : step > item.number ? "border-emerald-200 bg-emerald-50/60 text-emerald-700" : "border-slate-200 bg-white text-slate-500"}`}>
             <p className="text-[10px] font-bold uppercase tracking-[0.25em] opacity-70">Etapa {item.number}</p>
             <p className="mt-1 text-sm font-semibold">{item.title}</p>
           </div>

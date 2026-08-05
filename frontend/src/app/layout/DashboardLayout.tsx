@@ -155,11 +155,11 @@ export function DashboardLayout() {
               </span>
             </div>
             {impersonatedClientId !== null ? (
-              <div className="flex items-center gap-2 rounded-full border border-indigo-200 bg-gradient-to-r from-indigo-50 to-indigo-100/60 py-1.5 pl-2.5 pr-4">
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-indigo-500 text-[10px] font-bold text-white">
+              <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 py-1.5 pl-2.5 pr-4">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-800 text-[10px] font-bold text-white">
                   {impersonatedClientId}
                 </span>
-                <span className="text-xs font-semibold text-indigo-700">
+                <span className="text-xs font-semibold text-slate-700">
                   Cliente #{impersonatedClientId}
                 </span>
               </div>
@@ -225,7 +225,7 @@ export function DashboardLayout() {
                 {impersonatedClientId !== null ? (
                   <>
                     <div className="mt-2 flex items-center gap-2">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-[11px] font-bold text-indigo-600">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-[11px] font-bold text-slate-700">
                         {impersonatedClientId}
                       </span>
                       <p className="text-sm font-medium text-slate-700">Cliente #{impersonatedClientId} ativo</p>

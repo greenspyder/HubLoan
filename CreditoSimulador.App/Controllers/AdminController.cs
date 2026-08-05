@@ -234,6 +234,24 @@ namespace CreditoSimulador.App.Controllers
             });
         }
 
+        /// <summary>
+        /// Executa o consumer de geração de contratos de forma síncrona.
+        /// Útil em deploys onde o Hangfire não consegue inicializar (ex: Render free tier com Neon).
+        /// </summary>
+        [HttpPost("processar-contratos")]
+        public IActionResult ProcessarContratosPendentes([FromServices] LoanContractGenerationConsumer consumer)
+        {
+            try
+            {
+                consumer.Execute();
+                return Ok(new { message = "Processamento de contratos executado com sucesso." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpGet("contas")]
         public IActionResult ListarContas([FromQuery] int? customerId = null)
         {

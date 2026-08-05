@@ -39,10 +39,10 @@ public class LoanContractGenerationConsumer
                    c.taxa_juros_mensal,
                    c.quantidade_parcelas,
                    c.tipo_amortizacao,
-                   COALESCE(to_jsonb(c) ->> 'tipo_pagamento', 'Débito em conta') AS tipo_pagamento
+                   COALESCE(c.tipo_pagamento, 'Débito em conta') AS tipo_pagamento
             FROM contratos c
             INNER JOIN clientes cl ON cl.id_cliente = c.id_cliente
-            WHERE LOWER(COALESCE(to_jsonb(c) ->> 'status', '')) = LOWER(@statusGeracao)
+            WHERE LOWER(COALESCE(c.status, '')) = LOWER(@statusGeracao)
             ORDER BY c.id_contrato";
 
         using var cmdContratos = new NpgsqlCommand(sqlContratos, conn);
@@ -77,7 +77,7 @@ public class LoanContractGenerationConsumer
                     contrato_gerado_em = @geradoEm,
                     status = @novoStatus
                 WHERE c.id_contrato = @idContrato
-                  AND LOWER(COALESCE(to_jsonb(c) ->> 'status', '')) = LOWER(@statusGeracao)";
+                  AND LOWER(COALESCE(c.status, '')) = LOWER(@statusGeracao)";
 
             using var cmdUpdate = new NpgsqlCommand(sqlUpdate, conn);
             cmdUpdate.Parameters.AddWithValue("idTemplate", template.IdTemplate);

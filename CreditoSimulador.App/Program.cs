@@ -31,7 +31,10 @@ builder.Services.AddHangfire(configuration =>
     configuration.UsePostgreSqlStorage(options =>
         options.UseNpgsqlConnection(connectionString));
 });
-builder.Services.AddHangfireServer();
+builder.Services.AddHangfireServer(options =>
+{
+    options.WorkerCount = 2;
+});
 
 builder.Services.AddScoped<InMemoryCreditCatalog>();
 builder.Services.AddScoped<ListarClientesHandler>();
@@ -106,9 +109,9 @@ using (var scope = app.Services.CreateScope())
             job => job.Execute(),
             Cron.Minutely);
     }
-    catch (DistributedLockTimeoutException ex)
+    catch (Exception ex)
     {
-        logger.LogWarning(ex, "Não foi possível obter lock distribuído do Hangfire para registrar o recurring job neste startup. A aplicação continuará e o agendamento poderá ser registrado por outra instância.");
+        logger.LogWarning(ex, "Não foi possível registrar os recurring jobs do Hangfire no startup. A aplicação continuará e o agendamento pode ser registrado manualmente via POST /api/admin/processar-contratos.");
     }
 }
 

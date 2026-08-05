@@ -79,7 +79,7 @@ export function AdminContractDetailsPage() {
     <div className="mx-auto max-w-5xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-500">Operação</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Operação</p>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Detalhes do contrato</h1>
         </div>
         <Button variant="outline" onClick={() => navigate("/admin")}>Voltar ao administrativo</Button>

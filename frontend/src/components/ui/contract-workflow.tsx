@@ -53,7 +53,7 @@ export function ContractWorkflow({ status }: ContractWorkflowProps) {
 
   return (
     <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_20px_-4px_rgba(15,23,42,0.07)]">
-      <p className="text-[10px] font-bold uppercase tracking-[0.32em] text-indigo-500">Fluxo do contrato</p>
+      <p className="text-[10px] font-bold uppercase tracking-[0.32em] text-slate-500">Fluxo do contrato</p>
 
       {/* Step indicators with connecting lines */}
       <div className="mt-5 flex items-center px-2">
@@ -63,7 +63,7 @@ export function ContractWorkflow({ status }: ContractWorkflowProps) {
               index < currentStepIndex
                 ? "bg-emerald-500 text-white"
                 : index === currentStepIndex
-                  ? "bg-indigo-600 text-white shadow-[0_0_0_4px_rgba(99,102,241,0.18)]"
+                  ? "bg-slate-900 text-white shadow-[0_0_0_4px_rgba(15,23,42,0.1)]"
                   : "border-2 border-slate-200 bg-white text-slate-400"
             }`}>
               {index < currentStepIndex ? "✓" : index + 1}
@@ -82,7 +82,7 @@ export function ContractWorkflow({ status }: ContractWorkflowProps) {
             index < currentStepIndex
               ? "text-emerald-700"
               : index === currentStepIndex
-                ? "text-indigo-700"
+                ? "text-slate-900"
                 : "text-slate-400"
           }`}>
             {step}

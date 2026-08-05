@@ -21,6 +21,7 @@ import {
   listAdminRequests,
   listClients,
   listContractTemplates,
+  triggerContractGeneration,
 } from "../../../services/creditService";
 import type { AccountMovement, AdminContract, Client, ContractTemplate, LimitRequest, Offer } from "../../../types/credit";
 import { useImpersonation } from "../../../app/contexts/ImpersonationContext";
@@ -70,6 +71,7 @@ export function AdminDashboardPage() {
   const [savingTemplate, setSavingTemplate] = useState(false);
   const [message, setMessage] = useState("");
   const [loadingAccountAction, setLoadingAccountAction] = useState(false);
+  const [processingContracts, setProcessingContracts] = useState(false);
   const [form, setForm] = useState(defaultOfferForm);
   const [templateForm, setTemplateForm] = useState(defaultTemplateForm);
   const [createAccountClientId, setCreateAccountClientId] = useState<number | null>(null);
@@ -229,6 +231,20 @@ export function AdminDashboardPage() {
     }
   };
 
+  const handleProcessarContratos = async () => {
+    setProcessingContracts(true);
+    setMessage("");
+    try {
+      const result = await triggerContractGeneration();
+      await refreshData();
+      setMessage(result.message);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Falha ao processar contratos.");
+    } finally {
+      setProcessingContracts(false);
+    }
+  };
+
   const handleImpersonate = () => {
     if (selectedClientId === null) {
       setMessage("Selecione um cliente para impersonar.");
@@ -282,7 +298,7 @@ export function AdminDashboardPage() {
   const tabButtonClass = (tab: "overview" | "offers" | "contracts" | "operations" | "templates" | "requests") =>
     `rounded-full px-4 py-2 text-sm font-medium transition-all duration-150 ${
       activeTab === tab
-        ? "bg-indigo-600 text-white shadow-[0_4px_14px_-4px_rgba(99,102,241,0.6)]"
+        ? "bg-slate-900 text-white shadow-sm"
         : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
     }`;
 
@@ -320,58 +336,54 @@ export function AdminDashboardPage() {
     <div className="space-y-6">
       {message ? <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{message}</div> : null}
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 xl:grid-cols-4">
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-slate-500">Clientes</p>
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-50">
-                <Users className="h-4 w-4 text-indigo-500" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100">
+                <Users className="h-4 w-4 text-slate-500" />
               </div>
             </div>
             <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{clients.length}</p>
-            <div className="mt-2 h-1 w-8 rounded-full bg-indigo-400" />
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-slate-500">Ofertas</p>
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-violet-50">
-                <Layers className="h-4 w-4 text-violet-500" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100">
+                <Layers className="h-4 w-4 text-slate-500" />
               </div>
             </div>
             <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{offers.length}</p>
-            <div className="mt-2 h-1 w-8 rounded-full bg-violet-400" />
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-slate-500">Contratos</p>
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50">
-                <FileText className="h-4 w-4 text-emerald-500" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100">
+                <FileText className="h-4 w-4 text-slate-500" />
               </div>
             </div>
             <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{contracts.length}</p>
-            <div className="mt-2 h-1 w-8 rounded-full bg-emerald-400" />
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-slate-500">Solicitações</p>
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-50">
-                <MessageSquare className="h-4 w-4 text-amber-500" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100">
+                <MessageSquare className="h-4 w-4 text-slate-500" />
               </div>
             </div>
             <p className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{requests.length}</p>
-            <div className="mt-2 h-1 w-8 rounded-full bg-amber-400" />
           </CardContent>
         </Card>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
         <button type="button" className={tabButtonClass("overview")} onClick={() => setActiveTab("overview")}>Visão geral</button>
         <button type="button" className={tabButtonClass("offers")} onClick={() => setActiveTab("offers")}>Ofertas</button>
         <button type="button" className={tabButtonClass("contracts")} onClick={() => setActiveTab("contracts")}>Contratos</button>
@@ -571,7 +583,14 @@ export function AdminDashboardPage() {
 
       {activeTab === "contracts" ? (
         <Card>
-          <CardHeader><CardTitle>Contratos do administrativo</CardTitle></CardHeader>
+          <CardHeader>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <CardTitle>Contratos do administrativo</CardTitle>
+              <Button size="sm" variant="outline" onClick={() => void handleProcessarContratos()} disabled={processingContracts}>
+                {processingContracts ? "Processando..." : "Processar contratos pendentes"}
+              </Button>
+            </div>
+          </CardHeader>
           <CardContent className="space-y-4">
             {loadingData ? Array.from({ length: 3 }).map((_, index) => <div key={`contract-skeleton-${index}`} className="rounded-xl border border-slate-200 bg-slate-50 p-4"><Skeleton className="h-5 w-44" /><Skeleton className="mt-3 h-4 w-56" /></div>) : contracts.length === 0 ? <p className="text-sm text-slate-500">Nenhum contrato cadastrado ainda.</p> : contracts.map((contract) => (
               <div key={contract.idContrato} className="rounded-xl border border-slate-200 bg-slate-50 p-4">

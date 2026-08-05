@@ -191,7 +191,7 @@ export function ClientContractDetailsPage() {
     <div className="mx-auto max-w-6xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-indigo-500">Cliente</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400">Cliente</p>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">Detalhes do contrato #{selectedContract.id}</h1>
         </div>
         <Button variant="outline" onClick={() => navigate("/cliente")}>Voltar para as ofertas</Button>

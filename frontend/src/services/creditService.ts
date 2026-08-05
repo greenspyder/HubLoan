@@ -202,3 +202,7 @@ export async function downloadContractDocx(contractId: number, customerId: numbe
   link.remove();
   URL.revokeObjectURL(url);
 }
+
+export async function triggerContractGeneration(): Promise<{ message: string }> {
+  return requestJson<{ message: string }>("/admin/processar-contratos", { method: "POST" });
+}
