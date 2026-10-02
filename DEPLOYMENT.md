@@ -1,78 +1,29 @@
-# Free Deployment Guide
+# Publicação da central
 
-This repository is ready for a low-cost/free deployment path:
+O runtime ativo usa Node.js 24 e o Dockerfile da raiz. Esse Dockerfile constrói o frontend e entrega interface + API no mesmo serviço. Os projetos .NET antigos permanecem como legado.
 
-- Frontend: Vercel
-- Backend: Render (Docker)
-- Database: Neon PostgreSQL free tier
+## Render existente
 
-Current target URLs:
+Use o repositório existente, contexto na raiz e `Dockerfile` na raiz. O servidor respeita `PORT` e oferece `/health`. Se o serviço já tinha Neon, mantenha `DATABASE_URL` ou `ConnectionStrings__DefaultConnection`: ambos são lidos automaticamente. Formatos aceitos: URI PostgreSQL e conexão .NET `Host=…;Username=…;Password=…;Database=…;SSL Mode=Require`.
 
-- Frontend: https://hub-loan.vercel.app
-- Backend: https://hubloan.onrender.com
+Uma tabela nova `agent_workspaces` é criada automaticamente. Nenhuma tabela do módulo de crédito é alterada. Se uma conexão PostgreSQL configurada falhar, o serviço falha explicitamente; não migra silenciosamente para um banco vazio.
 
-## 1. Database
+Sem conexão de banco, usa SQLite em `/app/data/agents.sqlite`. Esse modo precisa de disco persistente em produção. Em serviço efêmero, os dados podem desaparecer no redeploy. A conexão Neon existente é a opção indicada.
 
-Create a free PostgreSQL database in Neon and copy the connection string.
+`FRONTEND_ORIGIN` adiciona uma origem permitida. A origem Vercel já conhecida `https://hub-loan.vercel.app` também está permitida. A interface no próprio serviço não precisa de CORS ou de variáveis Vite.
 
-Use it as:
+## Vercel existente
 
-- `ConnectionStrings__DefaultConnection` in the backend environment, or
-- `DATABASE_URL` in the backend environment
+Projeto na pasta `frontend`, instalação `npm ci`, build `npm run build`, saída `dist`. `frontend/vercel.json` encaminha `/api/agents/*` ao backend existente `https://hubloan.onrender.com` e mantém rotas da SPA.
 
-Use the Neon connection string provided by you in the Render environment variable. Do not commit it to the repository.
+Se já existe `VITE_API_BASE_URL=https://hubloan.onrender.com/api`, pode mantê-la. Se não existe, o proxy de mesma origem é usado. As URLs são os alvos anteriores deste repositório; este documento não afirma que o deploy foi concluído.
 
-## 2. Backend
+## Ativar a IA
 
-The backend already:
+Na interface, conecte uma chave da OpenAI. Não coloque chave em `VITE_*`, arquivos do repo, URL ou conversa. Ela é validada no provedor e armazenada criptografada. Não exige variável de ambiente do provedor no servidor. O código de acesso gerado pelo navegador é o segredo necessário para desbloquear o espaço; baixe o backup pelo painel.
 
-- reads the connection string from configuration
-- binds to `PORT` when present
-- allows the frontend origin through `FRONTEND_ORIGIN`
-- includes a Dockerfile at the repository root (`Dockerfile`)
+Chamadas podem gerar custos. Conectar valida o acesso ao modelo de texto, mas saldo disponível e autorização de imagem só são confirmados em uma geração real. O app registra falhas de autorização, saldo, limite e conexão sem expor a chave.
 
-Suggested environment variables:
+## Limites operacionais
 
-- `ConnectionStrings__DefaultConnection`
-- `DATABASE_URL` if you prefer the Neon URI format
-- `FRONTEND_ORIGIN=https://hub-loan.vercel.app`
-- `PORT=8080`
-
-Suggested host:
-
-- Render web service using the root `Dockerfile` with repository root as the build context
-
-## 3. Frontend
-
-The frontend already uses `VITE_API_BASE_URL`.
-
-Suggested environment variables:
-
-- `VITE_API_BASE_URL=https://hubloan.onrender.com/api`
-
-Suggested host:
-
-- Vercel
-
-The file `frontend/vercel.json` keeps React Router routes working on refresh.
-
-## 4. Order of deployment
-
-1. Create the Neon database.
-2. Deploy the backend using the root `Dockerfile` and copy the public backend URL.
-3. Configure `VITE_API_BASE_URL` in the frontend.
-4. Deploy the frontend.
-5. Set `FRONTEND_ORIGIN` in the backend to `https://hub-loan.vercel.app`.
-
-## 6. Values to paste
-
-- Backend connection string: use the Neon URI you sent in the Render env vars as `ConnectionStrings__DefaultConnection` or `DATABASE_URL`.
-- `FRONTEND_ORIGIN`: `https://hub-loan.vercel.app`
-- `VITE_API_BASE_URL`: `https://hubloan.onrender.com/api`
-- `PORT`: `8080`
-
-## 5. Notes
-
-- The app applies EF migrations on startup.
-- Hangfire jobs run from the backend, so they stay active only while the backend service is running.
-- If the free backend host sleeps, recurring jobs may pause until the service wakes up again.
+Um worker executa as etapas em sequência, com no máximo cinco missões pendentes por espaço. Cancelamento interrompe a conexão local; chamadas já enviadas podem ser cobradas. Não há tentativas automáticas após interrupção. Serviços gratuitos podem dormir, portanto não há atuação contínua garantida. Após reinício, reabra o app; após uma interrupção longa, aguarde o prazo de dez minutos ou use cancelar antes de tentar novamente.

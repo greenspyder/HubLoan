@@ -1,123 +1,109 @@
-import { useEffect, useState } from "react";
-import type { FormEvent } from "react";
-import { Activity, ArrowUpRight, Bot, Check, Cpu, Download, Layers, Pause, Play, Plus, Radio, Terminal } from "lucide-react";
-import { addMission, approveMission, createWorkspace, parseWorkspace, simulateMission } from "../services/workspace";
-import type { Workspace } from "../services/workspace";
-import "../workspace.css";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { FormEvent } from 'react';
+import { Activity, Bot, Check, Cpu, Download, Layers, Pause, Play, Plus, Radio, Terminal, KeyRound, RefreshCw, X, Settings } from 'lucide-react';
+import { agentApi, getAccessCode, restoreAccessCode } from '../services/agentApi';
+import type { Workspace, Mission, MissionStatus } from '../services/agentApi';
+import '../workspace.css';
 
-const storageKey = "hubloan.agent-workspace.v1";
-const statusLabels = { queued: "Na fila", review: "Em revisão", approved: "Aprovada" };
-const missionPresets = [
-  { label: "Produtos digitais", title: "Planejar uma coleção de produtos digitais", brief: "Pesquise um nicho e proponha três conceitos originais para produtos digitais ou impressão sob demanda. Defina público, formato, critérios de qualidade e etapas de produção para revisão humana." },
-  { label: "Thumbnails", title: "Planejar thumbnails para YouTube", brief: "Prepare um briefing para três thumbnails de YouTube. Defina tema, público, composição visual e variações de título. A entrega será revisada antes da produção das imagens." },
-  { label: "Assets de jogos", title: "Planejar um pacote de assets 2D", brief: "Planeje um pacote original de assets 2D para jogos. Defina estilo, resolução, lista de elementos, formatos de exportação e critérios de consistência visual." },
+const labels: Record<MissionStatus, string> = { draft: 'Rascunho', queued: 'Na fila', running: 'Executando', review: 'Sua revisão', approved: 'Aprovada', failed: 'Falhou', cancelled: 'Cancelada' };
+const presets = [
+  { label: 'Produtos digitais', kind: 'text' as const, title: 'Criar uma coleção original de produtos digitais', brief: 'Produza três conceitos originais de produtos digitais para quem organiza a rotina. Entregue o conteúdo de um produto completo, textos de apresentação e um plano de validação. Não invente demanda, preços de concorrentes ou vendas.' },
+  { label: 'Thumbnails', kind: 'image' as const, title: 'Thumbnail original para YouTube', brief: 'Gere uma thumbnail original sobre montar uma central de agentes de IA. Visual tecnológico verde e preto, composição legível em celular, contraste alto e espaço para título curto. Não use marcas ou rostos de terceiros.' },
+  { label: 'Assets de jogos', kind: 'image' as const, title: 'Conceito visual de uma estação de agentes', brief: 'Gere um conceito visual original em pixel art de uma estação futurista vista de cima. Quatro salas, computadores e pequenos robôs, paleta verde escuro e luzes verdes. É uma imagem conceitual única, não um pacote de sprites separados.' },
+  { label: 'Blog', kind: 'text' as const, title: 'Artigo sobre organizar trabalho com agentes', brief: 'Escreva um artigo original de 800 palavras para iniciantes sobre organização de tarefas com agentes de IA. Inclua exemplos, limites práticos e checklist. Não invente pesquisas, links, resultados financeiros ou experiências pessoais.' },
+  { label: 'Protótipo', kind: 'text' as const, title: 'Criar um pequeno jogo de navegador', brief: 'Entregue um arquivo HTML completo, com CSS e JavaScript incorporados, de um jogo simples de coletar energia em uma estação espacial. Controles por teclado e botões de toque. Sem bibliotecas externas. Explique como salvar e abrir. Não afirme que o código foi testado.' },
 ];
+function errorMessage(error: unknown) { return error instanceof Error ? error.message : 'Não foi possível concluir a ação.'; }
+function download(blob: Blob, name: string) { const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = name; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }
+function roomFor(mission: Mission) { return mission.status === 'approved' ? 3 : mission.status === 'review' || mission.phase.includes('Revisando') ? 2 : mission.phase.includes('Planejando') || mission.status === 'queued' ? 0 : 1; }
 
-function loadWorkspace(): { workspace: Workspace; error: string } {
-  try { return { workspace: parseWorkspace(localStorage.getItem(storageKey)), error: "" }; }
-  catch { return { workspace: createWorkspace(), error: "Não foi possível ler os dados salvos. Exporte a sessão antes de sair; o armazenamento automático está suspenso." }; }
+function Artifact({ mission }: { mission: Mission }) {
+  const [image, setImage] = useState<{ id: string; url: string } | null>(null);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    let active = true, url = '';
+    agentApi.image(mission.id).then(blob => { if (!active) return; url = URL.createObjectURL(blob); setImage({ id: mission.id, url }); }).catch(error => { if (active) setError(errorMessage(error)); });
+    return () => { active = false; if (url) URL.revokeObjectURL(url); };
+  }, [mission.id]);
+  return <div className="aw-artifact">{error ? <p role="alert">{error}</p> : image?.id === mission.id ? <><img src={image.url} alt={`Imagem gerada para ${mission.title}; confira o resultado antes de usar`} /><a className="aw-button" href={image.url} download={`hubloan-${mission.id}.png`}><Download size={16} /> Baixar PNG</a></> : <p>Carregando imagem…</p>}</div>;
 }
 
 export function AgentWorkspacePage() {
-  const [initial] = useState(loadWorkspace);
-  const [workspace, setWorkspace] = useState(initial.workspace);
-  const [storageError, setStorageError] = useState(initial.error);
-  const [message, setMessage] = useState("");
-  const [title, setTitle] = useState("");
-  const [brief, setBrief] = useState("");
-  const [agentId, setAgentId] = useState("research");
-  const [agentName, setAgentName] = useState("");
-  const [agentRole, setAgentRole] = useState("");
-  const [filter, setFilter] = useState("all");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  useEffect(() => {
-    document.title = "HubLoan · Central de agentes";
+  const [workspace, setWorkspace] = useState<Workspace | null>(null);
+  const [connectionError, setConnectionError] = useState('');
+  const [message, setMessage] = useState('');
+  const [busy, setBusy] = useState(false);
+  const epoch = useRef(0);
+  const busyRef = useRef(false);
+  const [title, setTitle] = useState(''), [brief, setBrief] = useState(''), [agentId, setAgentId] = useState('research');
+  const [kind, setKind] = useState<'text' | 'image'>('text'), [execute, setExecute] = useState(true);
+  const [agentName, setAgentName] = useState(''), [agentRole, setAgentRole] = useState('');
+  const [filter, setFilter] = useState('all'), [selectedId, setSelectedId] = useState('');
+  const [apiKey, setApiKey] = useState(''), [model, setModel] = useState(''), [imageModel, setImageModel] = useState('');
+  const [restoreCode, setRestoreCode] = useState('');
+  const refresh = useCallback(async () => {
+    if (busyRef.current) return;
+    const stamp = ++epoch.current;
+    try { const data = await agentApi.workspace(); if (epoch.current === stamp) { setWorkspace(data); setConnectionError(''); } }
+    catch (error) { if (epoch.current === stamp) setConnectionError(errorMessage(error)); }
   }, []);
-
-  function commitWorkspace(next: Workspace) {
-    setWorkspace(next);
-    if (initial.error) return;
-    try { localStorage.setItem(storageKey, JSON.stringify(next)); setStorageError(""); }
-    catch { setStorageError("Não foi possível salvar no navegador. Exporte a sessão para preservar suas alterações."); }
+  useEffect(() => {
+    document.title = 'HubLoan · Central de agentes';
+    let alive = true; let timer: ReturnType<typeof setTimeout>;
+    async function poll() { await refresh(); if (alive) timer = setTimeout(poll, 4000); }
+    void poll();
+    return () => { alive = false; clearTimeout(timer);
+      // Invalidate pending network responses; this ref is a request counter, not a DOM node.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      epoch.current++;
+    };
+  }, [refresh]);
+  async function mutate(operation: () => Promise<Workspace>, success = '') {
+    if (busyRef.current) return null;
+    busyRef.current = true; setBusy(true); epoch.current++; setMessage('');
+    try { const data = await operation(); setWorkspace(data); setConnectionError(''); setMessage(success); return data; }
+    catch (error) { setMessage(errorMessage(error)); return null; }
+    finally { busyRef.current = false; setBusy(false); }
   }
-
-  function mutate(operation: (current: Workspace) => Workspace) {
-    try { const next = operation(workspace); commitWorkspace(next); setMessage(""); }
-    catch (error) { setMessage(error instanceof Error ? error.message : "Não foi possível concluir a ação."); }
-  }
-
-  function submitMission(event: FormEvent<HTMLFormElement>) {
+  async function submitMission(event: FormEvent) {
     event.preventDefault();
-    try {
-      const next = addMission(workspace, title, brief, agentId);
-      commitWorkspace(next); setSelectedId(next.missions[0].id); setTitle(""); setBrief(""); setFilter("all"); setMessage("Missão adicionada à fila.");
-    } catch (error) { setMessage(error instanceof Error ? error.message : "Falha ao criar missão."); }
+    const data = await mutate(() => agentApi.addMission(title, brief, agentId, kind, execute && Boolean(workspace?.settings.configured)), execute && workspace?.settings.configured ? 'Missão na fila. A execução começa automaticamente no servidor.' : 'Rascunho salvo. Conecte a IA para executar.');
+    if (data) { setSelectedId(data.missions[0].id); setTitle(''); setBrief(''); setFilter('all'); }
   }
-
-  function submitAgent(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!agentName.trim() || !agentRole.trim()) { setMessage("Informe o nome e a função do agente."); return; }
-    const id = crypto.randomUUID();
-    commitWorkspace({ ...workspace, agents: [...workspace.agents, { id, name: agentName.trim(), role: agentRole.trim(), enabled: true }] });
-    setAgentId(id); setAgentName(""); setAgentRole(""); setMessage("Agente cadastrado.");
-  }
-
-  function exportWorkspace() {
-    const url = URL.createObjectURL(new Blob([JSON.stringify(workspace, null, 2)], { type: "application/json" }));
-    const link = document.createElement("a"); link.href = url; link.download = "hubloan-agentes.json"; link.click(); URL.revokeObjectURL(url);
-  }
-
-  const selected = workspace.missions.find(mission => mission.id === selectedId);
-  const filtered = workspace.missions.filter(mission => filter === "all" || mission.status === filter);
-  const activeAgents = workspace.agents.filter(agent => agent.enabled).length;
-
-  return (
-    <div className="agent-workspace">
-      <aside className="aw-sidebar">
-        <a className="aw-brand" href="#overview"><span><Cpu size={22} /></span><div>HUBLOAN<small>AGENT OPERATING SYSTEM</small></div></a>
-        <p className="aw-eyebrow">WORKSPACE / 01</p>
-        <nav aria-label="Navegação da central">
-          <a href="#overview"><Layers size={18} /> Visão geral</a>
-          <a href="#agents"><Bot size={18} /> Agentes <small>{workspace.agents.length}</small></a>
-          <a href="#missions"><Activity size={18} /> Missões <small>{workspace.missions.length}</small></a>
-          <a href="#terminal"><Terminal size={18} /> Terminal</a>
-        </nav>
-        <div className="aw-sidebar-bottom"><Radio size={17} /><div>Ambiente local<small>Provedor de IA não conectado</small></div></div>
-      </aside>
-
-      <main className="aw-main" id="overview">
-        <header className="aw-topbar"><span>CENTRAL DE OPERAÇÕES <b>/</b> VISÃO GERAL</span><span className="aw-badge">MODO DEMONSTRAÇÃO</span></header>
-        <section className="aw-heading"><div><p className="aw-eyebrow">SEU TIME. UMA CENTRAL.</p><h1>Da ideia à execução<span>.</span></h1><p>Organize agentes, distribua missões e acompanhe cada entrega.</p></div><button className="aw-button aw-secondary" onClick={exportWorkspace}><Download size={16} /> Exportar sessão</button></section>
-        <div className="aw-notice"><Radio size={17} /><p><strong>Comece pelo fluxo.</strong> As execuções são simuladas, sem chamadas de IA ou custos de API. Os dados ficam neste navegador.</p></div>
-        {storageError && <p className="aw-error" role="alert">{storageError}</p>}
-        <p className="aw-feedback" role="status">{message}</p>
-
-        <section className="aw-metrics" aria-label="Indicadores">
-          {[{ label: "AGENTES DISPONÍVEIS", value: String(activeAgents).padStart(2, "0"), detail: `${workspace.agents.length} cadastrados`, icon: Bot }, { label: "MISSÕES NA FILA", value: String(workspace.missions.filter(m => m.status === "queued").length).padStart(2, "0"), detail: "Prontas para simular", icon: Layers }, { label: "AGUARDANDO REVISÃO", value: String(workspace.missions.filter(m => m.status === "review").length).padStart(2, "0"), detail: "Aprovação humana", icon: Activity }, { label: "CUSTO DE API", value: "R$ 0,00", detail: "Nenhum provedor conectado", icon: Cpu }].map(metric => <article className="aw-metric" key={metric.label}><div><span>{metric.label}</span><metric.icon size={18} /></div><strong>{metric.value}</strong><small>{metric.detail}</small></article>)}
-        </section>
-
-        <section className="aw-panel aw-flow"><div className="aw-section-title"><div><p className="aw-eyebrow">ORQUESTRAÇÃO</p><h2>Um fluxo claro para cada missão</h2></div><span className="aw-badge">SIMULAÇÃO LOCAL</span></div><ol>{["Briefing", "Agente responsável", "Revisão humana", "Entrega aprovada"].map((step, index) => <li key={step}><span>0{index + 1}</span><strong>{step}</strong><small>{["Defina o objetivo", "Simule a execução", "Confira o resultado", "Registre a conclusão"][index]}</small></li>)}</ol></section>
-
-        <div className="aw-columns">
-          <section className="aw-panel" id="agents"><div className="aw-section-title"><div><p className="aw-eyebrow">EQUIPE</p><h2>Seus agentes</h2></div><Bot size={22} /></div>
-            <div className="aw-agent-list">{workspace.agents.map((agent, index) => <article className="aw-agent" key={agent.id}><span className="aw-avatar">{agent.name.slice(0, 2).toUpperCase()}</span><div><h3>{agent.name}</h3><p>{agent.role}</p><small>AGENTE {String(index + 1).padStart(2, "0")} · {agent.enabled ? "DISPONÍVEL" : "PAUSADO"}</small></div><button className="aw-icon-button" aria-label={`${agent.enabled ? "Pausar" : "Reativar"} ${agent.name}`} onClick={() => mutate(current => ({ ...current, agents: current.agents.map(candidate => candidate.id === agent.id ? { ...candidate, enabled: !candidate.enabled } : candidate) }))}>{agent.enabled ? <Pause size={17} /> : <Play size={17} />}</button></article>)}</div>
-            <form className="aw-form aw-agent-form" onSubmit={submitAgent}><h3>Adicionar agente</h3><label>Nome<input value={agentName} onChange={event => setAgentName(event.target.value)} placeholder="Ex.: Orion" maxLength={40} required /></label><label>Função<input value={agentRole} onChange={event => setAgentRole(event.target.value)} placeholder="Ex.: Pesquisa de tendências" maxLength={100} required /></label><button className="aw-button aw-secondary" type="submit"><Plus size={16} /> Cadastrar agente</button></form>
-          </section>
-
-          <section className="aw-panel"><div className="aw-section-title"><div><p className="aw-eyebrow">NOVA MISSÃO</p><h2>O que vamos construir?</h2></div><ArrowUpRight size={22} /></div>
-            <div className="aw-presets" aria-label="Exemplos de missão">{missionPresets.map(preset => <button className="aw-button aw-secondary" key={preset.label} onClick={() => { setTitle(preset.title); setBrief(preset.brief); }}>{preset.label}</button>)}</div>
-            <form className="aw-form" onSubmit={submitMission}><label>Título da missão<input value={title} onChange={event => setTitle(event.target.value)} placeholder="Ex.: Planejar uma coleção digital" maxLength={100} required /></label><label>Briefing<textarea value={brief} onChange={event => setBrief(event.target.value)} placeholder="Descreva o objetivo, o público e o resultado esperado…" maxLength={3000} rows={5} required /><small>{brief.length}/3.000 caracteres</small></label><label>Agente responsável<select value={agentId} onChange={event => setAgentId(event.target.value)} required><option value="" disabled>Selecione um agente</option>{workspace.agents.map(agent => <option key={agent.id} value={agent.id} disabled={!agent.enabled}>{agent.name} · {agent.role}{agent.enabled ? "" : " (pausado)"}</option>)}</select></label><button className="aw-button" type="submit" disabled={activeAgents === 0}><Plus size={17} /> Adicionar à fila</button></form>
-          </section>
-        </div>
-
-        <section className="aw-panel" id="missions"><div className="aw-section-title"><div><p className="aw-eyebrow">PIPELINE</p><h2>Missões em andamento</h2></div><label className="aw-filter">Filtrar<select value={filter} onChange={event => setFilter(event.target.value)}><option value="all">Todas</option><option value="queued">Na fila</option><option value="review">Em revisão</option><option value="approved">Aprovadas</option></select></label></div>
-          {filtered.length === 0 ? <div className="aw-empty"><Layers size={28} /><h3>{workspace.missions.length ? "Nenhuma missão neste filtro" : "Sua próxima ideia começa aqui"}</h3><p>Crie uma missão com um briefing e escolha quem vai executá-la.</p></div> : <div className="aw-missions">{filtered.map(mission => <article key={mission.id} className="aw-mission"><div><h3>{mission.title}</h3><small>{workspace.agents.find(agent => agent.id === mission.agentId)?.name} · {new Date(mission.createdAt).toLocaleDateString("pt-BR")}</small></div><span className={`aw-status aw-status-${mission.status}`}>{statusLabels[mission.status]}</span><div className="aw-actions"><button className="aw-button aw-secondary" onClick={() => setSelectedId(mission.id)}>Detalhes</button>{mission.status === "queued" && <button className="aw-button" disabled={!workspace.agents.find(agent => agent.id === mission.agentId)?.enabled} onClick={() => { mutate(current => simulateMission(current, mission.id)); setSelectedId(mission.id); }}><Play size={14} /> Simular</button>}{mission.status === "review" && <button className="aw-button" onClick={() => mutate(current => approveMission(current, mission.id))}><Check size={15} /> Aprovar simulação</button>}</div></article>)}</div>}
-        </section>
-
-        <section className="aw-panel aw-terminal" id="terminal"><div className="aw-section-title"><div><p className="aw-eyebrow">SAÍDA DA MISSÃO</p><h2><Terminal size={19} /> Terminal</h2></div><span className="aw-badge">LOCAL</span></div>{selected ? <><h3>{selected.title} · {statusLabels[selected.status]}</h3><pre>{selected.output || `Briefing:\n${selected.brief}\n\nAguardando simulação. Use o botão Simular na lista de missões.`}</pre></> : <p>Selecione uma missão para ver o briefing e a saída da simulação.</p>}</section>
-        <footer className="aw-footer"><span>HubLoan / Central de agentes · primeira versão</span><a href="/admin">Abrir módulo de crédito <ArrowUpRight size={13} /></a></footer>
-      </main>
-    </div>
-  );
+  async function submitAgent(event: FormEvent) { event.preventDefault(); const data = await mutate(() => agentApi.addAgent(agentName, agentRole), 'Agente cadastrado.'); if (data) { setAgentId(data.agents[data.agents.length - 1].id); setAgentName(''); setAgentRole(''); } }
+  async function connect(event: FormEvent) { event.preventDefault(); const data = await mutate(() => agentApi.saveSettings(apiKey, model || workspace!.settings.model, imageModel || workspace!.settings.imageModel), 'Conexão salva. As novas missões podem executar automaticamente.'); if (data) setApiKey(''); }
+  async function restore(event: FormEvent) { event.preventDefault(); try { restoreAccessCode(restoreCode); epoch.current++; setWorkspace(null); setSelectedId(''); setRestoreCode(''); await refresh(); setMessage('Espaço restaurado pelo código de acesso.'); } catch (error) { setMessage(errorMessage(error)); } }
+  const selected = workspace?.missions.find(mission => mission.id === selectedId);
+  const enabled = workspace?.agents.filter(agent => agent.enabled).length || 0;
+  const running = workspace?.missions.filter(mission => mission.status === 'running') || [];
+  const filtered = workspace?.missions.filter(mission => filter === 'all' || mission.status === filter) || [];
+  return <div className="agent-workspace">
+    <aside className="aw-sidebar"><a className="aw-brand" href="#overview"><span><Cpu size={22} /></span><div>HUBLOAN<small>AGENT OPERATING SYSTEM</small></div></a><p className="aw-eyebrow">SUA ESTAÇÃO DE TRABALHO</p><nav aria-label="Navegação"><a href="#station"><Layers size={18} /> Estação</a><a href="#agents"><Bot size={18} /> Agentes</a><a href="#missions"><Activity size={18} /> Missões</a><a href="#settings"><Settings size={18} /> Conectar IA</a></nav><div className="aw-sidebar-bottom"><Radio size={17} /><div>{workspace?.settings.configured ? 'IA conectada' : 'Aguardando conexão'}<small>{running.length ? 'Missão em execução' : 'Sem execução ativa'}</small></div></div></aside>
+    <main className="aw-main" id="overview"><header className="aw-topbar"><span>CENTRAL DE OPERAÇÕES / ESTAÇÃO</span><span className="aw-badge">{connectionError ? 'SEM CONEXÃO' : workspace ? 'SERVIDOR CONECTADO' : 'CONECTANDO'}</span></header>
+      <section className="aw-heading"><div><p className="aw-eyebrow">UMA IDEIA. UMA ENTREGA REAL.</p><h1>Sua estação de agentes<span>.</span></h1><p>Planeje, produza e revise conteúdo e imagens em uma central.</p></div><button className="aw-button aw-secondary" disabled={!workspace} onClick={() => download(new Blob([JSON.stringify(workspace, null, 2)], { type: 'application/json' }), 'hubloan-entregas.json')}><Download size={16} /> Exportar histórico</button></section>
+      <div className="aw-notice"><Radio size={18} /><p>{workspace?.settings.configured ? 'Novas missões podem executar no servidor, mesmo com esta aba fechada, enquanto o servidor estiver ativo. Cada entrega exige sua revisão.' : 'Conecte uma chave da OpenAI uma vez para ativar a execução. Você já pode organizar os briefings. A API é cobrada separadamente do ChatGPT.'}</p></div>
+      {connectionError && <div className="aw-error" role="alert">{connectionError} <button className="aw-button aw-secondary" onClick={() => void refresh()}><RefreshCw size={14} /> Tentar novamente</button></div>}
+      <p className="aw-feedback" role="status">{busy ? 'Salvando no servidor…' : message}</p>
+      {!workspace && <div className="aw-panel aw-empty"><Cpu size={30} /><h2>Conectando sua central</h2><p>O primeiro acesso pode demorar se a hospedagem estiver iniciando.</p><details><summary>Restaurar espaço com código de acesso</summary><form className="aw-form" onSubmit={restore}><label>Código<input type="password" value={restoreCode} onChange={e => setRestoreCode(e.target.value)} required /></label><button className="aw-button">Restaurar</button></form></details></div>}
+      {workspace && <>
+      <section className="aw-metrics" aria-label="Indicadores reais">{[
+        { label: 'AGENTES DISPONÍVEIS', value: enabled, detail: 'Funções configuradas', icon: Bot },
+        { label: 'EXECUÇÕES ATIVAS', value: running.length, detail: `${workspace.missions.filter(m => m.status === 'queued').length} na fila`, icon: Activity },
+        { label: 'PARA SUA REVISÃO', value: workspace.missions.filter(m => m.status === 'review').length, detail: 'Entregas aguardando aprovação', icon: Check },
+        { label: 'TOKENS REGISTRADOS', value: workspace.missions.reduce((n, m) => n + m.tokens, 0).toLocaleString('pt-BR'), detail: `${workspace.missions.reduce((n, m) => n + m.images, 0)} imagens concluídas · não é valor em R$`, icon: Cpu },
+      ].map(metric => <article className="aw-metric" key={metric.label}><div><span>{metric.label}</span><metric.icon size={18} /></div><strong>{metric.value}</strong><small>{metric.detail}</small></article>)}</section>
+      <section className="aw-panel" id="station"><div className="aw-section-title"><div><p className="aw-eyebrow">VISUALIZAÇÃO DA OPERAÇÃO</p><h2>A estação</h2></div><span className="aw-badge">{running.length ? 'ATIVIDADE REAL' : 'EM ESPERA'}</span></div><div className="aw-station">{['Planejamento', 'Produção', 'Revisão', 'Entregas'].map((room, index) => {
+        const occupants = workspace.missions.filter(m => ['running', 'review', 'approved'].includes(m.status) && roomFor(m) === index);
+        const active = occupants.some(m => m.status === 'running');
+        return <article className={`aw-room ${active ? 'aw-room-active' : ''}`} key={room}><div className="aw-room-title"><span>0{index + 1} / {room}</span><i aria-label={active ? 'Em execução' : 'Sem execução nesta sala'} /></div><div className="aw-room-floor"><div className="aw-desk"><Cpu size={29} /><span /></div><div className="aw-crew">{occupants.slice(0, 4).map(m => <button key={m.id} className="aw-worker" onClick={() => setSelectedId(m.id)} title={`${m.title}: ${m.phase}`} aria-label={`Ver ${m.title}`}><Bot size={23} /><small>{workspace.agents.find(a => a.id === m.agentId)?.name}</small></button>)}</div></div><p>{active ? occupants.find(m => m.status === 'running')?.phase : occupants.length ? `${occupants.length} ${index === 3 ? 'entregas aprovadas' : 'entregas aguardando você'}` : 'Sem atividade'}</p></article>;
+      })}</div><p className="aw-caption">As salas representam etapas das missões. Os agentes são funções de IA, não pessoas. Não há vendas, publicação em marketplaces ou receita automáticas.</p></section>
+      <div className="aw-columns"><section className="aw-panel" id="agents"><div className="aw-section-title"><div><p className="aw-eyebrow">EQUIPE</p><h2>Seus agentes</h2></div><Bot size={22} /></div><div className="aw-agent-list">{workspace.agents.map(agent => <article className="aw-agent" key={agent.id}><span className="aw-avatar">{agent.name.slice(0, 2).toUpperCase()}</span><div><h3>{agent.name}</h3><p>{agent.role}</p><small>{running.some(m => m.agentId === agent.id) ? 'EXECUTANDO' : agent.enabled ? 'DISPONÍVEL' : 'NOVAS TAREFAS PAUSADAS'}</small></div><button className="aw-icon-button" disabled={busy} aria-label={`${agent.enabled ? 'Pausar novas tarefas de' : 'Reativar'} ${agent.name}`} onClick={() => void mutate(() => agentApi.toggleAgent(agent.id, !agent.enabled))}>{agent.enabled ? <Pause size={17} /> : <Play size={17} />}</button></article>)}</div><form className="aw-form aw-agent-form" onSubmit={submitAgent}><h3>Adicionar função de agente</h3><label>Nome<input value={agentName} onChange={e => setAgentName(e.target.value)} maxLength={40} required /></label><label>Função<input value={agentRole} onChange={e => setAgentRole(e.target.value)} maxLength={100} required /></label><button className="aw-button aw-secondary" disabled={busy}><Plus size={16} /> Cadastrar</button></form></section>
+      <section className="aw-panel"><div className="aw-section-title"><div><p className="aw-eyebrow">NOVA MISSÃO</p><h2>O que vamos produzir?</h2></div><Plus size={22} /></div><div className="aw-presets">{presets.map(preset => <button className="aw-button aw-secondary" key={preset.label} onClick={() => { setTitle(preset.title); setBrief(preset.brief); setKind(preset.kind); }}>{preset.label}</button>)}</div><form className="aw-form" onSubmit={submitMission}><label>Título<input value={title} onChange={e => setTitle(e.target.value)} maxLength={100} required /></label><label>Briefing<textarea value={brief} onChange={e => setBrief(e.target.value)} rows={5} maxLength={6000} placeholder="Objetivo, público e entrega esperada…" required /><small>{brief.length}/6.000</small></label><label>Entrega<select value={kind} onChange={e => setKind(e.target.value as 'text' | 'image')}><option value="text">Texto / código em Markdown</option><option value="image">Uma imagem PNG em paisagem</option></select></label><label>Responsável<select value={agentId} onChange={e => setAgentId(e.target.value)}>{workspace.agents.map(agent => <option key={agent.id} value={agent.id} disabled={!agent.enabled}>{agent.name} · {agent.role}</option>)}</select></label><label className="aw-checkbox"><input type="checkbox" checked={execute} disabled={!workspace.settings.configured} onChange={e => setExecute(e.target.checked)} /> Executar automaticamente ao criar</label><small className="aw-caption">{kind === 'image' ? 'Duas etapas de texto e uma geração de imagem.' : 'Três etapas de texto: plano, produção e revisão.'} Chamadas usam a sua chave e podem gerar custos.</small><button className="aw-button" disabled={busy || !enabled}><Play size={17} /> {workspace.settings.configured && execute ? 'Criar e executar' : 'Salvar rascunho'}</button></form></section></div>
+      <section className="aw-panel" id="missions"><div className="aw-section-title"><div><p className="aw-eyebrow">PIPELINE</p><h2>Missões e entregas</h2></div><label className="aw-filter">Filtrar<select value={filter} onChange={e => setFilter(e.target.value)}><option value="all">Todas</option>{Object.entries(labels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label></div>{!filtered.length ? <div className="aw-empty"><Layers size={28} /><h3>Nenhuma missão aqui</h3><p>Escolha um exemplo ou descreva sua própria entrega.</p></div> : <div className="aw-missions">{filtered.map(m => <article className="aw-mission" key={m.id}><div><h3>{m.title}</h3><small>{workspace.agents.find(a => a.id === m.agentId)?.name} · {m.kind === 'image' ? 'PNG' : 'Texto'} · {m.phase}</small></div><span className={`aw-status aw-status-${m.status}`}>{labels[m.status]}</span><div className="aw-actions"><button className="aw-button aw-secondary" onClick={() => setSelectedId(m.id)}>Detalhes</button>{['draft', 'failed', 'cancelled'].includes(m.status) && <button className="aw-button" disabled={busy || !workspace.settings.configured || !workspace.agents.find(a => a.id === m.agentId)?.enabled} onClick={() => void mutate(() => agentApi.action(m.id, 'run'), 'Missão na fila.')}><Play size={14} /> {m.status === 'draft' ? 'Executar' : 'Tentar novamente'}</button>}{['queued', 'running'].includes(m.status) && <button className="aw-button aw-secondary" disabled={busy} onClick={() => void mutate(() => agentApi.action(m.id, 'cancel'), 'Cancelada. Chamadas já enviadas podem ter sido cobradas.')}><X size={14} /> Cancelar</button>}{m.status === 'review' && <button className="aw-button" disabled={busy} onClick={() => void mutate(() => agentApi.action(m.id, 'approve'), 'Entrega aprovada por você.')}><Check size={14} /> Aprovar</button>}</div></article>)}</div>}</section>
+      <section className="aw-panel aw-terminal" id="terminal"><div className="aw-section-title"><div><p className="aw-eyebrow">SAÍDA DA MISSÃO</p><h2><Terminal size={19} /> Entrega e registro</h2></div>{selected?.output && <button className="aw-button aw-secondary" onClick={() => download(new Blob([selected.output], { type: 'text/markdown;charset=utf-8' }), `hubloan-${selected.id}.md`)}><Download size={15} /> Baixar texto</button>}</div>{selected ? <><h3>{selected.title} · {labels[selected.status]}</h3>{selected.error && <p className="aw-error" role="alert">{selected.error}</p>}{selected.hasArtifact && <Artifact key={selected.id} mission={selected} />}<details><summary>Briefing original</summary><pre>{selected.brief}</pre></details><pre>{selected.output || selected.phase}</pre><div className="aw-log">{selected.events.map((event, index) => <p key={index}><time>{new Date(event.at).toLocaleTimeString('pt-BR')}</time> {event.message}</p>)}</div><p className="aw-caption">{selected.tokens.toLocaleString('pt-BR')} tokens registrados · {selected.images} imagens concluídas · tentativa {selected.attempt}. O painel do provedor é a referência de cobrança.</p></> : <p>Selecione Detalhes em uma missão para ver a entrega e as etapas reais.</p>}</section>
+      <section className="aw-panel" id="settings"><div className="aw-section-title"><div><p className="aw-eyebrow">CONEXÃO</p><h2><KeyRound size={20} /> Ativar sua IA</h2></div><span className="aw-badge">{workspace.settings.configured ? 'CHAVE SALVA' : 'SEM CHAVE'}</span></div><form className="aw-form" onSubmit={connect}><label>Chave da OpenAI<input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder={workspace.settings.configured ? 'Preencha apenas para trocar a chave' : 'sk-…'} autoComplete="off" required={!workspace.settings.configured} maxLength={1000} /></label><div className="aw-columns"><label>Modelo de texto<select value={model || workspace.settings.model} onChange={e => setModel(e.target.value)}><option value="gpt-4.1-mini">GPT-4.1 mini · econômico</option><option value="gpt-4.1">GPT-4.1</option></select></label><label>Modelo de imagem<select value={imageModel || workspace.settings.imageModel} onChange={e => setImageModel(e.target.value)}><option value="gpt-image-1-mini">GPT Image 1 mini · econômico</option><option value="gpt-image-1.5">GPT Image 1.5</option></select></label></div><div className="aw-actions"><button className="aw-button" disabled={busy}><Radio size={16} /> {workspace.settings.configured ? 'Salvar conexão' : 'Conectar e ativar'}</button>{workspace.settings.configured && <button className="aw-button aw-secondary" type="button" disabled={busy} onClick={() => void mutate(agentApi.disconnect, 'Chave removida e fila cancelada.')}>Desconectar e cancelar fila</button>}<a className="aw-button aw-secondary" href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer">Criar chave</a></div></form><p className="aw-caption">A chave fica criptografada no servidor e não volta para a interface. Imagens podem exigir verificação da organização na OpenAI. Limite gastos no painel do provedor. Pesquisa na web, publicação, pagamentos e execução de código não estão conectados.</p><details className="aw-access"><summary>Acesso em outro celular e backup</summary><p>Este navegador guarda seu código de acesso. Baixe e guarde como uma senha: ele permite acessar suas missões e usar a chave conectada. Sem o código, não há recuperação deste espaço.</p><button className="aw-button aw-secondary" onClick={() => { try { download(new Blob([getAccessCode()], { type: 'text/plain' }), 'hubloan-codigo-de-acesso.txt'); } catch (error) { setMessage(errorMessage(error)); } }}><Download size={16} /> Guardar código de acesso</button><form className="aw-form" onSubmit={restore}><label>Restaurar outro espaço<input type="password" value={restoreCode} onChange={e => setRestoreCode(e.target.value)} required maxLength={64} /></label><button className="aw-button aw-secondary" disabled={busy}>Restaurar espaço</button></form></details></section>
+      <footer className="aw-footer"><span>HubLoan · dados no {workspace.storage === 'postgres' ? 'PostgreSQL' : 'servidor local SQLite'}</span><span>Servidor inativo interrompe a fila. Reabra a central após reinício.</span></footer>
+      </>}
+    </main>
+  </div>;
 }

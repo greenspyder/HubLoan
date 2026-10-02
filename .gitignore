@@ -361,3 +361,12 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# Agent runtime state and local credentials
+server/node_modules/
+data/
+server/data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+.env
+.env.*

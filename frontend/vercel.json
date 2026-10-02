@@ -1,8 +1,6 @@
 {
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/api/agents/:path*", "destination": "https://hubloan.onrender.com/api/agents/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

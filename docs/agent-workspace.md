@@ -1,37 +1,11 @@
-# Direção do projeto
+# Arquitetura da estação
 
-## Referência disponível
+React/Vite consulta uma API Node pelo mesmo domínio ou `VITE_API_BASE_URL`. Cada navegador gera 256 bits aleatórios para seu código de acesso. O hash identifica o espaço; o código, apresentado como bearer token, criptografa/descriptografa a chave OpenAI no servidor. Não se trata de login por e-mail: backup do código é responsabilidade do usuário.
 
-O vídeo fornecido tem aproximadamente 3 minutos. Foram inspecionados os quadros e extraídas as legendas visíveis ao longo do vídeo por OCR. Isso não equivale a uma transcrição verificada do áudio: há palavras e trechos ilegíveis.
+`server/domain.mjs` valida entidades e transições. `store.mjs` persiste JSON com revisão e compare-and-swap, no SQLite ou PostgreSQL. `runner.mjs` consome a fila e salva cada etapa. `provider.mjs` é o adaptador real da Responses API e Images API. `app.mjs` expõe apenas a API de agentes, protege artefatos e serve a SPA.
 
-Elementos reconhecíveis:
+Estados: rascunho → fila → executando → revisão humana → aprovado. Erros e cancelamentos permitem nova tentativa explícita. O worker nunca publica ou executa código produzido. Pausar agente impede novas execuções; para parar uma execução existente, use cancelar. Contadores de tokens são cumulativos nas tentativas; chamadas sem resposta completa podem não entrar no contador, embora sejam cobradas pelo provedor.
 
-- Central visual com vários agentes e um coordenador.
-- Pesquisa e produção organizadas em áreas ou salas.
-- Designs para lojas Etsy e impressão sob demanda.
-- Serviço de thumbnails para YouTube.
-- Pacotes de assets 2D para jogos.
-- Blogs com afiliados, protótipos de software e música.
-- Painéis com alegações de faturamento, que não foram verificadas.
+A estação mostra salas de planejamento, produção, revisão e entrega a partir do estado e da fase real. Não cria missões, pessoas, ganhos, pesquisa externa ou progresso artificial para animar a interface. A inspiração do vídeo está nos casos de uso e no painel de operações, não na promessa de faturamento.
 
-## Primeira entrega
-
-A central tem agentes configuráveis e missões persistidas no navegador. Permite testar o fluxo de atribuição, simulação, revisão e aprovação. A execução gera apenas um plano fixo, claramente identificado como simulação; ainda não produz conteúdos com IA.
-
-O módulo foi isolado em `frontend/src/features/agents`, com regras de estado em `services/workspace.ts`, interface em `pages/AgentWorkspacePage.tsx` e estilos próprios. A central é a página inicial; o módulo bancário segue em `/admin`.
-
-## Limites técnicos e próximos passos
-
-- Criar uma API própria para agentes e missões, com autenticação e persistência no servidor.
-- Integrar um provedor de modelos de texto e, posteriormente, imagens.
-- Separar coordenação, execução e revisão, mantendo histórico por missão.
-- Registrar consumo e orçamento com valores fornecidos pelo provedor.
-- Adicionar uma fila de execução real e tratar cancelamento e falhas.
-- Integrar marketplaces somente depois que o primeiro fluxo produzir entregas úteis.
-
-## Verificação desta entrega
-
-- Build de produção do frontend.
-- ESLint dos arquivos novos e do roteamento alterado.
-- Testes das transições de missões, pausa de agentes e validação da persistência.
-- A verificação visual com Playwright não pôde ser concluída: o navegador não estava instalado e o download falhou neste ambiente.
+A fila desbloqueada vive em memória por até 24 horas desde a última visita. Reinício exige nova visita para desbloquear com o código do navegador. Uma execução com lease vencido falha e requer tentativa manual. Persistência PostgreSQL sobrevive a reinícios; SQLite requer disco durável em produção. O teste automatizado usa um provedor injetado; geração real exige uma chave com saldo e acesso ao modelo.

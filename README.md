@@ -1,47 +1,61 @@
-# HubLoan · Central de agentes
+# HubLoan · Estação de agentes
 
-Primeira etapa de transformação do HubLoan em uma central para organizar agentes de IA e suas missões, inspirada no painel de operações apresentado no vídeo de referência.
+Central de produção com execução real pela API da OpenAI. O visual de salas representa as etapas reais das missões, inspirado na central do vídeo de referência. Não há receitas ou atividades inventadas.
 
-## Disponível nesta versão
+## Usar
 
-- Central na rota `/` e também em `/agentes`, com tema escuro e verde, adaptada a celulares.
-- Cadastro de agentes com nome e função, pausa e reativação.
-- Criação de missões com briefing e agente responsável.
-- Exemplos de missão para produtos digitais, thumbnails e assets 2D, baseados nos casos mostrados no vídeo.
-- Fluxo local: fila → simulação → revisão humana → aprovação.
-- Terminal para consultar o briefing e a saída de cada missão.
-- Indicadores calculados a partir das missões e agentes cadastrados.
-- Persistência no navegador e exportação da sessão em JSON.
+Abra a central, vá em **Conectar IA**, informe uma chave da OpenAI e salve. A chave é necessária uma vez por espaço. A API tem cobrança separada do ChatGPT; configure saldo e limite de gastos na OpenAI. Geração de imagens pode exigir verificação da organização.
 
-**As execuções são simulações locais com texto fixo. Não há modelo de IA conectado, agentes autônomos executando em segundo plano, integrações com marketplaces, receita ou consumo de API.** Os dados não são compartilhados entre dispositivos. A exportação preserva uma cópia; a importação ainda não está implementada.
+Escolha um exemplo ou escreva um briefing. **Criar e executar** enfileira a missão automaticamente:
 
-O módulo de crédito existente continua disponível em `/admin`. O backend .NET ainda atende esse módulo; a central de agentes não depende dele nesta primeira etapa.
+- Texto/código: planejamento → produção → revisão pelo modelo → revisão humana.
+- Imagem: planejamento → direção de arte → uma imagem PNG → revisão humana.
 
-## Executar
+Veja **Detalhes** para acompanhar as etapas e baixar Markdown ou PNG. A aprovação registra sua revisão; não publica nada externamente. A IA não executa o código que escreve. Textos podem conter erros e precisam ser conferidos.
 
-Requer Node.js 24 (também usado pelos testes com TypeScript nativo).
+A conexão é compartilhada com outros dispositivos pelo **código de acesso**, disponível para download no painel. Guarde-o como uma senha: quem tiver esse código poderá acessar o espaço e usar a chave conectada. Sem ele não há recuperação do espaço. A chave do provedor fica criptografada com AES-256-GCM no banco; ela não é devolvida ao navegador.
+
+## Disponível
+
+- Interface responsiva em `/` e `/agentes`, com salas, agentes, fila, histórico e indicadores calculados.
+- Funções de agente personalizáveis e pausa de novas tarefas.
+- Produção de textos, código e imagens, sem respostas fixas ou simulação.
+- Execução assíncrona, cancelamento, erros legíveis, tentativa manual e aprovação humana.
+- PostgreSQL existente quando configurado; SQLite para desenvolvimento sem banco externo.
+- Downloads das entregas e exportação do histórico sem chave de API.
+- Exemplos de produtos digitais, thumbnails, conceitos de assets, blog e protótipos.
+
+São funções de IA coordenadas em etapas, não trabalhadores independentes navegando na internet. Pesquisa web, Etsy, Fiverr, pagamentos, vendas, publicação e execução de código **não estão conectados**. Um conceito de assets é uma imagem única, não um pacote de sprites. As alegações financeiras do vídeo não foram verificadas.
+
+## Executar localmente
+
+Requer Node.js 24. Instale e construa:
 
 ```bash
-cd frontend
-npm ci
-npm run dev
+npm ci --prefix server
+npm ci --prefix frontend
+npm run build --prefix frontend
+npm start --prefix server
 ```
+
+Abra `http://localhost:5000`. Nenhuma configuração de banco é necessária localmente. Para desenvolvimento com recarga, execute também `npm run dev --prefix frontend`; o Vite encaminha a API para a porta 5000.
+
+## Hospedagem e persistência
+
+O Dockerfile da raiz constrói o frontend e inicia o servidor Node. A mesma hospedagem entrega a interface e a API. O frontend separado em Vercel também é suportado. Consulte [DEPLOYMENT.md](DEPLOYMENT.md).
+
+As missões continuam com a aba fechada enquanto o servidor estiver ativo. Hospedagem gratuita pode dormir ou reiniciar: não há garantia de atuação 24 horas. Após reinício, reabra a central para liberar a fila; tarefas interrompidas exigem tentativa manual para evitar cobranças duplicadas. A chave fica desbloqueada em memória por até 24 horas desde o último acesso. Limite de cinco missões pendentes, 200 missões por espaço e 30 agentes. Os contadores registram chamadas concluídas; o painel da OpenAI é a referência de cobrança, inclusive em interrupções.
+
+Com PostgreSQL os dados persistem em rede. SQLite exige disco persistente para sobreviver a redeploy na hospedagem; sem ele, use apenas desenvolvimento e exporte suas entregas.
 
 ## Verificar
 
 ```bash
-cd frontend
-npm run build
-npx eslint src/features/agents src/app/App.tsx
-node --test tests/workspace.test.mjs
+npm test --prefix server
+npm run build --prefix frontend
+cd frontend && npx eslint src/features/agents src/app/App.tsx vite.config.ts
 ```
 
-## Próximas etapas
+Os testes cobrem API, armazenamento, proteção de credenciais, isolamento entre espaços, cancelamento, falhas, imagens e formato da Responses API. Usam um provedor de teste; não consomem crédito nem substituem validação com uma chave real.
 
-1. Escolher o primeiro caso de uso real e definir os critérios de entrega.
-2. Criar API de agentes, missões e histórico com armazenamento no servidor.
-3. Conectar um provedor de IA pelo backend, com credenciais no servidor e limites de consumo.
-4. Implementar execução assíncrona, cancelamento, falhas e revisão de entregas reais.
-5. Adicionar integrações externas conforme o caso de uso escolhido.
-
-O vídeo mostra uma interface e alegações sobre operações comerciais. A implementação inicial reproduz o conceito de central, sem assumir que as receitas ou o nível de autonomia exibidos no vídeo foram verificados.
+O código .NET e do antigo simulador de crédito permanece no repositório como legado. O runtime publicado agora é a central Node; as rotas antigas de crédito não estão expostas.
