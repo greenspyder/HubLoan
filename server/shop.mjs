@@ -157,7 +157,7 @@ export function createShop(store, { masterKey = null, provider = createStripePro
     const revoked = charge && typeof charge === 'object' && (charge.refunded || charge.amount_refunded > 0 || charge.disputed);
     return store.mutate(id, current => { const o = current.shop.orders.find(o => o.id === order.id);
       if (session.payment_status === 'paid') { o.paidAt ||= new Date().toISOString(); o.paymentIntent = typeof intent === 'string' ? intent : intent?.id; }
-      if (revoked) { o.status = 'revoked'; o.refundedMinor = charge.amount_refunded || 0; }
+      if (revoked) { o.status = 'revoked'; o.refundedMinor = Math.max(o.refundedMinor || 0, charge.amount_refunded || 0); }
       else if (session.payment_status === 'paid' && o.status !== 'revoked') { o.status = 'paid'; }
       return o;
     });

@@ -43,6 +43,7 @@ export function AgentWorkspacePage() {
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const epoch = useRef(0);
+  const deepLinkHandled = useRef(false);
   const busyRef = useRef(false);
   const [title, setTitle] = useState(''), [brief, setBrief] = useState(''), [agentId, setAgentId] = useState('research');
   const [kind, setKind] = useState<ProductionKind>('text'), [execute, setExecute] = useState(true);
@@ -67,6 +68,12 @@ export function AgentWorkspacePage() {
       epoch.current++;
     };
   }, [refresh]);
+  useEffect(() => {
+    if (!workspace || deepLinkHandled.current) return;
+    deepLinkHandled.current = true;
+    const target = document.getElementById(window.location.hash.slice(1));
+    target?.scrollIntoView({ block: 'start' });
+  }, [workspace]);
   async function mutate(operation: () => Promise<Workspace>, success = '') {
     if (busyRef.current) return null;
     busyRef.current = true; setBusy(true); epoch.current++; setMessage('');
