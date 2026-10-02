@@ -11,7 +11,7 @@ const rooms = [
   { id: 'studio', name: 'ESTÚDIO', sub: 'Direção de arte & imagens', x: 3, y: 36, w: 28, h: 22, color: '#6caaff', point: { x: 17, y: 49 } },
   { id: 'archive', name: 'ARMAZÉM', sub: 'Entregas produzidas', x: 36, y: 37, w: 28, h: 24, color: '#8ae4bc', point: { x: 50, y: 51 } },
   { id: 'review', name: 'QUALIDADE', sub: 'Revisão da entrega', x: 69, y: 36, w: 28, h: 22, color: '#cd9bff', point: { x: 83, y: 49 } },
-];
+].map(room => ({ ...room, y: room.y / .64, h: room.h / .64, point: { x: room.point.x, y: room.point.y / .64 } }));
 function roomFor(mission?: Mission) {
   if (!mission) return 'factory';
   if (['review', 'approved'].includes(mission.status)) return 'archive';
@@ -30,7 +30,7 @@ function Robot({ name, color, target, active, status, onClick }: { name: string;
     position.current = { x, y };
     if (previous.x === x && previous.y === y) return;
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const path = [previous, { x: previous.x, y: 32 }, { x, y: 32 }, { x, y }];
+    const path = [previous, { x: previous.x, y: 50 }, { x, y: 50 }, { x, y }];
     node.dataset.moving = 'true';
     const animation = node.animate(path.map(point => ({ left: `${point.x}%`, top: `${point.y}%` })), { duration: 2600, easing: 'linear' });
     animation.onfinish = () => { delete node.dataset.moving; };
