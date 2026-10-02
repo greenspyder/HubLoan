@@ -109,3 +109,13 @@ Novos projetos abrem em descoberta ampla: conteúdo de nicho, serviços, softwar
 
 ### Melhorias e propostas de código
 O painel **Melhorias** reúne diagnósticos comerciais e permite autorizar Orion, Forge e Sentinel a criar uma branch e um PR rascunho no próprio HubLoan. Escopo inicial restrito à interface/documentação, com limite de três chamadas por proposta, revisão textual separada do CI e merge/deploy somente após aprovação específica sua da versão, com testes e arquivos revalidados. Não executa terminal no Codespaces. Veja [configuração e limites](docs/ENGINEERING.md).
+
+### Experimentos e resultado financeiro
+
+O painel **Experimentos** salva uma hipótese, público, canal, orçamento em BRL, prazo e metas de vendas retidas/resultado, sem consumir API ou publicar. Entregas podem ser vinculadas uma vez a um teste, inclusive depois do planejamento, antes do prazo acabar. Kits privados ficam excluídos.
+
+O servidor soma apenas pagamentos Stripe reais confirmados dos produtos vinculados, pagos dentro da janela do teste. Exclui compras de teste, outras moedas e vendas anteriores. Reembolsos posteriores continuam abatidos; valores contestados/revogados ficam retidos do resultado. Dados dos compradores não são expostos no painel.
+
+API, taxas, impostos, divulgação, trabalho, hospedagem e outros são custos declarados pelo proprietário, em centavos de reais. Recarga da API não equivale a consumo; custos compartilhados precisam de rateio informado. Estornos preservam o histórico. O resultado só é exibido como completo após revisão explícita dos custos; novas vendas, reembolsos, produção ou lançamentos invalidam a revisão. Mesmo completo, depende dos valores declarados e não é apuração contábil.
+
+Orçamento e prazo são instrumentos de acompanhamento: recomendações não bloqueiam cobranças nem pausam projetos/anúncios. Use os limites de chamadas e controles de pausa existentes. Encerrar a janela impede incluir pagamentos futuros no teste, mas não despublica produtos. Atingir o critério de um teste não garante retorno futuro.
