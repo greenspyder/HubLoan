@@ -64,6 +64,9 @@ export async function createStore({ connectionString, file = 'data/agents.sqlite
   async function marketingSpaces() {
     return pool ? (await pool.query(`SELECT id FROM agent_workspaces WHERE data::jsonb @> '{"marketing":{"enabled":true}}'::jsonb OR data::jsonb->'marketing'->'campaigns' @> '[{"status":"publishing"}]'::jsonb LIMIT 100`)).rows : sqlite.prepare("SELECT DISTINCT w.id FROM agent_workspaces w LEFT JOIN json_each(w.data, '$.marketing.campaigns') c WHERE json_extract(w.data, '$.marketing.enabled')=1 OR json_extract(c.value, '$.status')='publishing' LIMIT 100").all();
   }
+  async function engineeringSpaces() {
+    return pool ? (await pool.query(`SELECT id FROM agent_workspaces WHERE data::jsonb @> '{"engineering":{"enabled":true}}'::jsonb OR data::jsonb->'engineering'->'jobs' @> '[{"status":"queued"}]'::jsonb OR data::jsonb->'engineering'->'jobs' @> '[{"status":"running"}]'::jsonb LIMIT 100`)).rows : sqlite.prepare("SELECT DISTINCT w.id FROM agent_workspaces w LEFT JOIN json_each(w.data, '$.engineering.jobs') j WHERE json_extract(w.data, '$.engineering.enabled')=1 OR json_extract(j.value, '$.status') IN ('queued','running') LIMIT 100").all();
+  }
   async function writeSaleFile(productId, bytes, preview = null) {
     if (pool) await pool.query('INSERT INTO shop_files(product_id,data,preview) VALUES($1,$2,$3)', [productId, bytes, preview]);
     else sqlite.prepare('INSERT INTO shop_files(product_id,data,preview) VALUES(?,?,?)').run(productId, bytes, preview);
@@ -78,5 +81,5 @@ export async function createStore({ connectionString, file = 'data/agents.sqlite
     if (pool) await pool.query('DELETE FROM shop_files WHERE product_id=$1', [productId]);
     else sqlite.prepare('DELETE FROM shop_files WHERE product_id=?').run(productId);
   }
-  return { read, mutate, autonomousSpaces, commerceSpaces, shopBySlug, shopSpaces, marketingSpaces, writeSaleFile, readSaleFile, removeSaleFile, mode, close: async () => { if (pool) await pool.end(); else sqlite.close(); } };
+  return { read, mutate, autonomousSpaces, commerceSpaces, shopBySlug, shopSpaces, marketingSpaces, engineeringSpaces, writeSaleFile, readSaleFile, removeSaleFile, mode, close: async () => { if (pool) await pool.end(); else sqlite.close(); } };
 }

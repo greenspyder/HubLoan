@@ -106,3 +106,6 @@ Em **Divulgação**, conecte Mastodon ou seu canal Telegram e autorize a fila po
 ### Estratégias além de produtos
 
 Novos projetos abrem em descoberta ampla: conteúdo de nicho, serviços, software e produtos. Cada hipótese apresenta caminho de receita, custos conhecidos/desconhecidos, teste pequeno e ferramentas necessárias. A aplicação calcula os bloqueios pelas integrações reais, prioriza hipóteses executáveis e não transforma um roteiro em vídeo publicado. Opcionalmente autorize kits privados de preparação, fora da loja. [Comportamento e limitações](docs/OPPORTUNITIES.md). Projetos existentes mantêm seu escopo.
+
+### Melhorias e propostas de código
+O painel **Melhorias** reúne diagnósticos comerciais e permite autorizar Orion, Forge e Sentinel a criar uma branch e um PR rascunho no próprio HubLoan. Escopo inicial restrito à interface/documentação, com limite de três chamadas por proposta, revisão textual separada do CI e nenhuma execução de terminal, merge ou deploy automático. Veja [configuração e limites](docs/ENGINEERING.md).

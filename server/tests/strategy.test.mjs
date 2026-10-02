@@ -28,5 +28,5 @@ test('broader opportunities work without image consent and publish a truthful fu
   assert.equal(SPECIALIZATIONS.text.images, false);
   const workspace = publicWorkspace(initialWorkspace(), 'memory');
   assert.deepEqual(workspace.strategy, businessStrategy);
-  assert.equal(workspace.strategy.selfImprovement, 'planned');
+  assert.equal(workspace.strategy.selfImprovement, 'draft-pr');
 });

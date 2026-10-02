@@ -1,3 +1,5 @@
+export type EngineeringSettings = { enabled: boolean; maxJobs: number; maxCalls: number };
+export type Engineering = EngineeringSettings & { configured: boolean; authorized: boolean; repository: string; expiresAt?: number; usedCalls: number; usedJobs: number; error: string; roles: { id: string; name: string; role: string }[]; diagnostics: { id: string; priority: string; title: string; evidence: string; type: string; action?: string; files?: string[] }[]; jobs: { id: string; taskId: string; title: string; status: string; phase: string; createdAt: string; branch: string; plan?: string; edits?: { path: string; before: string; after: string }[]; review?: { approved: boolean; reason: string; testsExecuted: boolean }; prUrl?: string; checks?: { status: string; note: string; observedAt?: string }; error: string; events: { at: string; message: string }[] }[] };
 export type MarketingChannel = 'mastodon' | 'telegram';
 export type MarketingSettings = { enabled: boolean; intervalMinutes: number; maxPosts: number };
 export type Marketing = MarketingSettings & { expiresAt?: number; grantUsed: number; error: string; note: string; channels: { kind: MarketingChannel; configured: boolean; name: string }[]; campaigns: { id: string; channel: MarketingChannel; productId: string; title: string; text: string; link: string; status: string; createdAt: string; postedAt?: string; url?: string; error: string; visits: number; purchases: number; grossMinor: number; refundedMinor: number; testPurchases: number }[] };
@@ -17,7 +19,7 @@ export type ExperimentInput = { visits: number; sales: number; revenue: number; 
 export type MarketDecision = { id: string; observedAt: string; candidates: MarketOption[]; selected: MarketOption | null; report: string; sources: { title: string; url: string }[]; feedback?: ExperimentInput & { net: number; currency: string; origin: string; recordedAt: string } };
 export type Project = { id: string; name: string; goal: string; mode?: 'goal' | 'discover'; market?: { scope?: 'broad' | 'products'; allowPreparation?: boolean; allowImages?: boolean; specializations?: ProductionKind[]; market: string; channels: string; restrictions: string }; maxCalls: number; calls: number; decisions?: MarketDecision[]; kind: ProductionKind; maxDeliveries: number; intervalMinutes: number; research: boolean; status: 'active' | 'planning' | 'paused' | 'completed'; phase: string; produced: number; tokens: number; searches: number; error: string; nextRunAt: number; expiresAt: number; events: { at: string; message: string }[]; researchReport?: { output: string; sources: { title: string; url: string }[] } };
 export type ProjectInput = Pick<Project, 'name' | 'goal' | 'kind' | 'maxDeliveries' | 'intervalMinutes' | 'research'> & { start: boolean; mode?: 'goal' | 'discover'; maxCalls?: number; market?: Project['market'] };
-export type Workspace = { version: 2; marketing?: Marketing; shop?: Shop; commerce?: Commerce; autonomy: { enabled: boolean; durable: boolean; projects: Project[] }; agents: Agent[]; missions: Mission[]; settings: { model: string; imageModel: string; maxOutputTokens: number; configured: boolean }; storage: 'postgres' | 'sqlite' };
+export type Workspace = { version: 2; engineering?: Engineering; marketing?: Marketing; shop?: Shop; commerce?: Commerce; autonomy: { enabled: boolean; durable: boolean; projects: Project[] }; agents: Agent[]; missions: Mission[]; settings: { model: string; imageModel: string; maxOutputTokens: number; configured: boolean }; storage: 'postgres' | 'sqlite' };
 const accessKey = 'hubloan.workspace.access.v2';
 const configuredBase = import.meta.env.VITE_API_BASE_URL?.trim().replace(/\/+$/, '');
 const base = configuredBase ? `${configuredBase.endsWith('/api') ? configuredBase : configuredBase + '/api'}/agents` : '/api/agents';
@@ -41,6 +43,13 @@ async function request<T>(path: string, method = 'GET', body?: object): Promise<
   return data as T;
 }
 export const agentApi = {
+  connectEngineering: (apiKey: string, authorize: boolean) => request<Workspace>('/engineering/connect', 'POST', { apiKey, authorize }),
+  configureEngineering: (input: EngineeringSettings) => request<Workspace>('/engineering/configure', 'POST', input),
+  proposeImprovement: (taskId: string) => request<Workspace>('/engineering/jobs', 'POST', { taskId }),
+  acknowledgeImprovement: (id: string, checked: boolean) => request<Workspace>(`/engineering/jobs/${id}/acknowledge`, 'POST', { checked }),
+  pauseEngineering: () => request<Workspace>('/engineering/pause', 'POST'),
+  disconnectEngineering: () => request<Workspace>('/engineering', 'DELETE'),
+  checkImprovement: (id: string) => request<Workspace>(`/engineering/jobs/${id}/checks`, 'POST'),
   connectMarketing: (channel: MarketingChannel, apiKey: string, target: string, authorize: boolean) => request<Workspace>('/marketing/connect', 'POST', { channel, apiKey, target, authorize }),
   configureMarketing: (input: MarketingSettings) => request<Workspace>('/marketing/configure', 'POST', input),
   disconnectMarketing: (channel: MarketingChannel) => request<Workspace>(`/marketing/channels/${channel}`, 'DELETE'),

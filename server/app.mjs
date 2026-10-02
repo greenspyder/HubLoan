@@ -1,3 +1,4 @@
+import { createEngineering } from './engineering.mjs';
 import { createMarketing } from './marketing.mjs';
 import { createShop } from './shop.mjs';
 import { createCommerce } from './commerce.mjs';
@@ -9,10 +10,11 @@ import { recordExperiment } from './market.mjs';
 import { createRunner } from './runner.mjs';
 import { createProject, projectAction, reconcileProjects, syncAutonomy } from './autonomy.mjs';
 
-export function createApp({ store, provider, staticDirectory = '../frontend/dist', allowedOrigins = [], masterKey = null, commerceProvider, shopProvider, marketingProvider, publicOrigin, webhookOrigin }) {
+export function createApp({ store, provider, staticDirectory = '../frontend/dist', allowedOrigins = [], masterKey = null, commerceProvider, shopProvider, marketingProvider, engineeringProvider, publicOrigin, webhookOrigin }) {
   const runner = createRunner(store, provider, { masterKey });
   const commerce = createCommerce(store, { masterKey, provider: commerceProvider });
-  const shop = createShop(store, { masterKey, provider: shopProvider, marketingProvider, publicOrigin, webhookOrigin });
+  const shop = createShop(store, { masterKey, provider: shopProvider, marketingProvider, engineeringProvider, publicOrigin, webhookOrigin });
+  const engineering = createEngineering(store, provider, { masterKey, provider: engineeringProvider });
   const marketing = createMarketing(store, { masterKey, provider: marketingProvider, publicOrigin });
   const rates = new Map();
   const root = resolve(staticDirectory);
@@ -85,6 +87,15 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       rates.set(rateKey, rate);
       runner.unlock(id, token); commerce.unlock(id, token);
       const route = url.pathname.slice('/api/agents'.length);
+      if (route === '/engineering/connect' && request.method === 'POST') return send(response, 200, publicWorkspace((await engineering.connect(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
+      if (route === '/engineering/configure' && request.method === 'POST') return send(response, 200, publicWorkspace((await engineering.configure(id, token, await body(request))).workspace, store.mode, Boolean(masterKey)));
+      if (route === '/engineering/jobs' && request.method === 'POST') return send(response, 201, publicWorkspace((await engineering.enqueue(id, (await body(request)).taskId)).workspace, store.mode, Boolean(masterKey)));
+      if (route === '/engineering/pause' && request.method === 'POST') return send(response, 200, publicWorkspace((await engineering.pause(id)).workspace, store.mode, Boolean(masterKey)));
+      if (route === '/engineering' && request.method === 'DELETE') return send(response, 200, publicWorkspace((await engineering.pause(id, true)).workspace, store.mode, Boolean(masterKey)));
+      const engineeringAck = route.match(/^\/engineering\/jobs\/([a-f0-9-]+)\/acknowledge$/);
+      if (engineeringAck && request.method === 'POST') return send(response, 200, publicWorkspace((await engineering.acknowledge(id, engineeringAck[1], await body(request))).workspace, store.mode, Boolean(masterKey)));
+      const engineeringCheck = route.match(/^\/engineering\/jobs\/([a-f0-9-]+)\/checks$/);
+      if (engineeringCheck && request.method === 'POST') return send(response, 200, publicWorkspace((await engineering.sync(id, engineeringCheck[1])).workspace, store.mode, Boolean(masterKey)));
       if (route === '/marketing/connect' && request.method === 'POST') return send(response, 200, publicWorkspace((await marketing.connect(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
       if (route === '/marketing/configure' && request.method === 'POST') return send(response, 200, publicWorkspace((await marketing.configure(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
       const marketingChannel = route.match(/^\/marketing\/channels\/(mastodon|telegram)$/);
@@ -216,5 +227,5 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       send(response, error instanceof AppError ? error.status : 500, { error: error instanceof AppError ? error.message : 'O servidor não conseguiu concluir a ação. Tente novamente.' });
     }
   });
-  return { server, runner, commerce, shop, marketing, close: async () => { await marketing.close(); await shop.close(); await commerce.close(); await runner.close(); await new Promise(resolveClose => server.close(resolveClose)); } };
+  return { server, runner, commerce, shop, marketing, engineering, close: async () => { await engineering.close(); await marketing.close(); await shop.close(); await commerce.close(); await runner.close(); await new Promise(resolveClose => server.close(resolveClose)); } };
 }
