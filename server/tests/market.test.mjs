@@ -12,10 +12,10 @@ const sources = [{ url: 'https://example.com/demand', title: 'Sinal de demanda d
 const candidates = [0, 1, 2].map(i => ({ title: `Oportunidade de teste ${i}`, audience: 'Público de teste', rationale: 'Justificativa do provedor simulado, sem vendas comprovadas.', uncertainty: 'Demanda é hipótese de teste.', test: 'Publicar oferta manualmente e medir visitas e vendas por sete dias.', kind: 'text', scores: { demand: 4 - i, competition: 3, feasibility: 4, distribution: 3, evidence: 3 }, sourceUrls: [sources[i % 2].url] }));
 const input = { mode: 'discover', kind: 'text', research: true, maxDeliveries: 2, maxCalls: 12, intervalMinutes: 1, start: true };
 function providerFixture({ weak = false, unknown = false, noSearch = false, image = false } = {}) {
-  const fixture = { calls: 0, histories: [], learningInputs: [], validate: async () => {}, research: async () => { fixture.calls++; return { output: 'Pesquisa pública SIMULADA com duas fontes.', sources, searches: noSearch ? 0 : 2, tokens: 50 }; }, text: async (_key, _model, instructions, payload) => {
+  const fixture = { calls: 0, histories: [], learningInputs: [], memoryInputs: [], validate: async () => {}, research: async () => { fixture.calls++; return { output: 'Pesquisa pública SIMULADA com duas fontes.', sources, searches: noSearch ? 0 : 2, tokens: 50 }; }, text: async (_key, _model, instructions, payload) => {
     fixture.calls++;
     if (instructions.includes('candidates:')) {
-      fixture.histories.push(JSON.parse(payload).history); fixture.learningInputs.push(JSON.parse(payload).commercialLearning);
+      fixture.histories.push(JSON.parse(payload).history); fixture.learningInputs.push(JSON.parse(payload).commercialLearning); fixture.memoryInputs.push(JSON.parse(payload).memory);
       const output = structuredClone(candidates);
       if (weak) output.forEach(candidate => { candidate.scores.evidence = 0; });
       if (unknown) output[0].sourceUrls = ['https://invented.test'];
@@ -37,7 +37,7 @@ test('discovery chooses and produces without a user-supplied product; fresh rese
   const f = await setup(t);
   await f.runner.tick(); let w = await f.read(); let p = w.autonomy.projects[0];
   assert.equal(p.mode, 'discover'); assert.equal(p.name, 'Descoberta de oportunidades'); assert.equal(p.decisions[0].selected.title, candidates[0].title);
-  assert.equal(p.calls, 3); assert.equal(w.missions[0].decisionId, p.decisions[0].id); assert.ok(w.missions[0].brief.includes('Publicar oferta manualmente'));
+  assert.equal(f.provider.memoryInputs[0].notes.length,3); assert.equal(w.knowledge.notes.length,1); assert.equal(p.decisions[0].memoryUsed.length,3); assert.equal(p.calls, 3); assert.equal(w.missions[0].decisionId, p.decisions[0].id); assert.ok(w.missions[0].brief.includes('Publicar oferta manualmente'));
   await f.runner.tick(); w = await f.read(); p = w.autonomy.projects[0]; assert.equal(p.calls, 6); assert.equal(w.missions[0].status, 'review');
   await f.store.mutate(id, workspace => recordExperiment(workspace, p.id, p.decisions[0].id, { visits: 100, sales: 2, revenue: 60, cost: 20, evidence: 'Painel de teste, período informado pelo usuário.' }));
   f.advance(); await f.runner.tick(); await f.runner.tick(); w = await f.read(); p = w.autonomy.projects[0];

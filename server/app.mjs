@@ -1,3 +1,4 @@
+import { createKnowledge, knowledgeExport } from './knowledge.mjs';
 import { createExperiment, experimentAction } from './experiments.mjs';
 import { createEngineering } from './engineering.mjs';
 import { createMarketing } from './marketing.mjs';
@@ -11,8 +12,9 @@ import { recordExperiment } from './market.mjs';
 import { createRunner } from './runner.mjs';
 import { createProject, projectAction, reconcileProjects, syncAutonomy } from './autonomy.mjs';
 
-export function createApp({ store, provider, staticDirectory = '../frontend/dist', allowedOrigins = [], masterKey = null, commerceProvider, shopProvider, marketingProvider, engineeringProvider, publicOrigin, webhookOrigin }) {
-  const runner = createRunner(store, provider, { masterKey });
+export function createApp({ store, provider, staticDirectory = '../frontend/dist', allowedOrigins = [], masterKey = null, commerceProvider, shopProvider, marketingProvider, engineeringProvider, knowledgeProvider, publicOrigin, webhookOrigin }) {
+  const knowledge = createKnowledge(store, { masterKey, provider: knowledgeProvider });
+  const runner = createRunner(store, provider, { masterKey, knowledge });
   const commerce = createCommerce(store, { masterKey, provider: commerceProvider });
   const shop = createShop(store, { masterKey, provider: shopProvider, marketingProvider, engineeringProvider, publicOrigin, webhookOrigin });
   const engineering = createEngineering(store, provider, { masterKey, provider: engineeringProvider });
@@ -88,6 +90,11 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       rates.set(rateKey, rate);
       runner.unlock(id, token); commerce.unlock(id, token);
       const route = url.pathname.slice('/api/agents'.length);
+      if (route === '/knowledge/export' && request.method === 'GET') return send(response, 200, knowledgeExport((await store.read(id)).workspace));
+      if (route === '/knowledge/refresh' && request.method === 'POST') return send(response, 200, publicWorkspace((await knowledge.refresh(id)).workspace, store.mode, Boolean(masterKey)));
+      if (route === '/knowledge/connect' && request.method === 'POST') return send(response, 200, publicWorkspace((await knowledge.connect(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
+      if (route === '/knowledge/pause' && request.method === 'POST') return send(response, 200, publicWorkspace((await knowledge.pause(id)).workspace, store.mode, Boolean(masterKey)));
+      if (route === '/knowledge' && request.method === 'DELETE') return send(response, 200, publicWorkspace((await knowledge.pause(id, true)).workspace, store.mode, Boolean(masterKey)));
       if (route === '/experiments' && request.method === 'POST') { const input = await body(request); const updated = await store.mutate(id, w => createExperiment(w, input)); return send(response, 201, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey))); }
       const experimentRoute = route.match(/^\/experiments\/([a-f0-9-]+)\/(cost|void|review|close|link)$/);
       if (experimentRoute && request.method === 'POST') { const input = await body(request); const updated = await store.mutate(id, w => experimentAction(w, experimentRoute[1], experimentRoute[2], input)); return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey))); }

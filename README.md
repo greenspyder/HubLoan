@@ -127,3 +127,11 @@ Pesquisa, comparação e coordenação recebem `commercialLearning`: até dez ex
 Novas decisões guardam o resumo observado e o modelo utilizado. O painel **Astra** mostra escolha, motivo, incertezas, alternativas, próximo teste e fontes reais; decisões antigas indicam dados não registrados. Abrir o painel não gasta API. Os robôs têm ferramentas por função e animações de trabalho vinculadas à execução; movimentação decorativa permanece na prévia identificada.
 
 Vídeos continuam bloqueados: MP4, legendas sincronizadas, CapCut e publicação TikTok/YouTube não estão implementados. O painel lista o caminho de integração, OAuth, consentimento e possíveis auditorias oficiais, sem tratar roteiros privados como vídeos publicados.
+
+### Segundo cérebro / Projeto
+
+O painel **Segundo cérebro** usa o vault público `greenspyder/Projeto`, com Markdown e wikilinks compatíveis com Obsidian. Três referências iniciais ficam disponíveis sem API. O botão Atualizar importa até 20 referências (12 KB por arquivo, contexto limitado). Pesquisas e decisões são transformadas automaticamente em hipóteses com data, incertezas, teste e URLs registradas. Pesquisa/coordenação/produção consultam até seis notas relevantes por termos e data; sem treinamento e sem nova chamada de IA. Notas nunca concedem permissões. Dados de mercado antigos precisam de nova pesquisa.
+
+Token GitHub separado somente para Projeto, Contents Read/write, criptografado com a chave do servidor; consentimento específico para repositório público. Conectar inicializa somente três notas ausentes. Nunca sobrescreve referências ou notas existentes. Depois grava apenas `Cerebro/IA/Pesquisas/<id>.md`, uma nota por ciclo ativo, até 30 tentativas (incluindo reserva das três iniciais) em 72 horas. Erros pausam; reconexão exige verificar o GitHub. Remover conexão mantém memória e arquivos. Acesso local da aplicação não concede permissão GitHub ao servidor.
+
+Resultados/custos ficam privados no servidor e no backup JSON, usados pelo resumo comercial existente. Não são enviados ao vault público. Exportação JSON preserva arquivos Markdown e resumo privado; não é ZIP de vault. Não adicione dados confidenciais aos briefings autorizados para publicação.
