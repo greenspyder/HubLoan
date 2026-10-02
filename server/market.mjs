@@ -1,7 +1,7 @@
 import { SPECIALIZATIONS } from './specializations.mjs';
 import { AppError, text } from './domain.mjs';
 
-export const marketGoal = 'Descobrir oportunidades atuais de produtos digitais originais, comparar viabilidade e escolher automaticamente a próxima entrega para testar comercialmente.';
+export const marketGoal = 'Aumentar o patrimônio do proprietário buscando lucro real: descobrir oportunidades atuais de produtos digitais originais, comparar demanda, custos, viabilidade e distribuição e escolher automaticamente a próxima hipótese para testar comercialmente.';
 export function marketSettings(input = {}) {
   if (input.allowImages !== undefined && typeof input.allowImages !== 'boolean') throw new AppError('Permissão de imagens inválida.');
   const specialties = input.specializations;

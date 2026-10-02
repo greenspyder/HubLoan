@@ -51,7 +51,7 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
       }
       const plan = await stage('Planejando a entrega', 'Defina um plano curto, os critérios de qualidade e as suposições necessárias para executar a missão. Não faça perguntas: adote suposições razoáveis.', briefing, 650);
       await update(id, mission.id, current => { current.plan = plan.output; });
-      if (SPECIALIZATIONS[mission.kind]) {
+      if (['thumbnail', 'sprites', 'model3d'].includes(mission.kind)) {
         const phase = async label => update(id, mission.id, current => { current.phase = label; current.events.push({ at: new Date().toISOString(), message: label }); });
         const image = async (prompt, options) => {
           await reserveCall(id, mission.projectId);
@@ -115,7 +115,7 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
       let selected = null, decisionId;
       const discovering = project.mode === 'discover';
       const specialties = discovering ? availableSpecializations(project.market) : [];
-      if (discovering && project.market.specializations?.length && !specialties.length) throw new AppError('Autorize imagens ou habilite mobília 3D para iniciar.');
+      if (discovering && project.market.specializations?.length && !specialties.length) throw new AppError('Autorize imagens ou habilite mobília 3D ou outras oportunidades digitais para iniciar.');
       const requiredCalls = discovering ? (specialties.length ? specialties.length + 2 + Math.max(...specialties.map(productionCalls)) : 6) : (productionCalls(project.kind) + 1 + (project.research && !project.researchReport ? 1 : 0));
       if (project.maxCalls - project.calls < requiredCalls) throw new AppError('O limite restante não comporta pesquisa, coordenação e uma entrega completa. Crie um novo ciclo.');
       if (discovering || (project.research && !project.researchReport)) {
