@@ -1,3 +1,6 @@
+export type ShopProduct = { id: string; missionId?: string; title: string; description: string; kind: ProductionKind; priceMinor: number; currency: string; publishedAt: string; listed: boolean; filename: string; license: string; bytes: number; hasPreview?: boolean };
+export type ShopSettings = { name: string; contact: string; license: string; enabled: boolean; autoPublish: boolean; maxProducts: number; prices: Record<ProductionKind, number> };
+export type Shop = ShopSettings & { configured: boolean; slug: string; expiresAt?: number; livemode: boolean; error: string; products: ShopProduct[]; metrics: { purchases: number; grossMinor: number; refundedMinor: number; currency: string; netProfit: null; testPurchases: number } };
 export type StoreGame = { id: number; title: string; url: string; published: boolean; classification: string; views: number | null; purchases: number | null; downloads: number | null; earnings: { currency: string; grossMinor: number }[]; observedAt: string; origin: string; scope: string; note: string };
 export type CommerceSettings = { autoPublish: boolean; background: boolean; maxUploads: number; targets: { sprites?: number | string; model3d?: number | string }; license: string };
 export type Commerce = { configured: boolean; autoPublish: boolean; background: boolean; maxUploads: number; uploads: number; expiresAt?: number; games: StoreGame[]; targets: Record<string, { id: number; title: string; url: string }>; error: string; license: string };
@@ -11,7 +14,7 @@ export type ExperimentInput = { visits: number; sales: number; revenue: number; 
 export type MarketDecision = { id: string; observedAt: string; candidates: MarketOption[]; selected: MarketOption | null; report: string; sources: { title: string; url: string }[]; feedback?: ExperimentInput & { net: number; currency: string; origin: string; recordedAt: string } };
 export type Project = { id: string; name: string; goal: string; mode?: 'goal' | 'discover'; market?: { allowImages?: boolean; specializations?: ProductionKind[]; market: string; channels: string; restrictions: string }; maxCalls: number; calls: number; decisions?: MarketDecision[]; kind: ProductionKind; maxDeliveries: number; intervalMinutes: number; research: boolean; status: 'active' | 'planning' | 'paused' | 'completed'; phase: string; produced: number; tokens: number; searches: number; error: string; nextRunAt: number; expiresAt: number; events: { at: string; message: string }[]; researchReport?: { output: string; sources: { title: string; url: string }[] } };
 export type ProjectInput = Pick<Project, 'name' | 'goal' | 'kind' | 'maxDeliveries' | 'intervalMinutes' | 'research'> & { start: boolean; mode?: 'goal' | 'discover'; maxCalls?: number; market?: Project['market'] };
-export type Workspace = { version: 2; commerce?: Commerce; autonomy: { enabled: boolean; durable: boolean; projects: Project[] }; agents: Agent[]; missions: Mission[]; settings: { model: string; imageModel: string; maxOutputTokens: number; configured: boolean }; storage: 'postgres' | 'sqlite' };
+export type Workspace = { version: 2; shop?: Shop; commerce?: Commerce; autonomy: { enabled: boolean; durable: boolean; projects: Project[] }; agents: Agent[]; missions: Mission[]; settings: { model: string; imageModel: string; maxOutputTokens: number; configured: boolean }; storage: 'postgres' | 'sqlite' };
 const accessKey = 'hubloan.workspace.access.v2';
 const configuredBase = import.meta.env.VITE_API_BASE_URL?.trim().replace(/\/+$/, '');
 const base = configuredBase ? `${configuredBase.endsWith('/api') ? configuredBase : configuredBase + '/api'}/agents` : '/api/agents';
@@ -35,6 +38,10 @@ async function request<T>(path: string, method = 'GET', body?: object): Promise<
   return data as T;
 }
 export const agentApi = {
+  connectShop: (apiKey: string, authorizeWebhook: boolean) => request<Workspace>('/shop/connect', 'POST', { apiKey, authorizeWebhook }),
+  configureShop: (input: ShopSettings) => request<Workspace>('/shop/configure', 'POST', input),
+  publishShopProduct: (id: string) => request<Workspace>(`/shop/missions/${id}/publish`, 'POST'),
+  listShopProduct: (id: string, listed: boolean) => request<Workspace>(`/shop/products/${id}`, 'PATCH', { listed }),
   connectStore: (apiKey: string) => request<Workspace>('/commerce/connect', 'POST', { apiKey }),
   configureStore: (input: CommerceSettings) => request<Workspace>('/commerce/configure', 'POST', input),
   syncStore: () => request<Workspace>('/commerce/sync', 'POST'),
@@ -54,6 +61,24 @@ export const agentApi = {
   async image(id: string, preview = false) {
     const response = await fetch(`${base}/missions/${id}/${preview ? 'preview' : 'artifact'}`, { headers: { Authorization: `Bearer ${getAccessCode()}` } });
     if (!response.ok) throw new Error('Não foi possível carregar o arquivo.');
+    return response.blob();
+  },
+};
+export type PublicCatalog = { name: string; contact: string; enabled: boolean; livemode: boolean; products: ShopProduct[] };
+export type PurchaseReceipt = { status: string; title: string; filename: string; livemode: boolean };
+async function publicRequest<T>(slug: string, operation = '', method = 'GET', body?: object, receipt?: string): Promise<T> {
+  const response = await fetch(`${base}/storefront/${encodeURIComponent(slug)}${operation ? '/' + operation : ''}`, { method, headers: { ...(body ? { 'Content-Type': 'application/json' } : {}), ...(receipt ? { Authorization: `Bearer ${receipt}` } : {}) }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(90000) });
+  if (!response.ok) { const data = await response.json().catch(() => ({})); throw new Error(data.error || 'Não foi possível acessar esta loja.'); }
+  return response.json();
+}
+export const storefrontApi = {
+  previewUrl: (slug: string, productId: string) => `${base}/storefront/${encodeURIComponent(slug)}/preview?product=${encodeURIComponent(productId)}`,
+  catalog: (slug: string) => publicRequest<PublicCatalog>(slug),
+  checkout: (slug: string, productId: string, receiptToken: string) => publicRequest<{ url: string }>(slug, 'checkout', 'POST', { productId, receiptToken }),
+  receipt: (slug: string, receipt: string) => publicRequest<PurchaseReceipt>(slug, 'receipt', 'GET', undefined, receipt),
+  async download(slug: string, receipt: string) {
+    const response = await fetch(`${base}/storefront/${encodeURIComponent(slug)}/download`, { headers: { Authorization: `Bearer ${receipt}` }, signal: AbortSignal.timeout(90000) });
+    if (!response.ok) { const data = await response.json().catch(() => ({})); throw new Error(data.error || 'Download indisponível.'); }
     return response.blob();
   },
 };

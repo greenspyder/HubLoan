@@ -25,7 +25,7 @@ A conexão é compartilhada com outros dispositivos pelo **código de acesso**, 
 - Downloads das entregas e exportação do histórico sem chave de API.
 - Exemplos de produtos digitais, thumbnails, conceitos de assets, blog e protótipos.
 
-São funções de IA coordenadas em etapas, não trabalhadores independentes navegando na internet. Pesquisa web pode ser ativada nos projetos autônomos. Etsy, Fiverr, pagamentos, vendas, publicação e execução de código **não estão conectados**. Um conceito de assets é uma imagem única, não um pacote de sprites. As alegações financeiras do vídeo não foram verificadas.
+São funções de IA coordenadas em etapas, não trabalhadores independentes navegando na internet. Pesquisa web pode ser ativada nos projetos autônomos. Etsy e Fiverr não estão conectados. A loja própria integra publicação de todos os formatos, checkout Stripe e download protegido; o itch.io integra packs 2D/3D. Execução de código gerado continua indisponível. As alegações financeiras do vídeo não foram verificadas.
 
 ## Executar localmente
 
@@ -85,7 +85,7 @@ Um ciclo completo de descoberta e entrega utiliza seis chamadas de API, além da
 
 Na análise de cada oportunidade, **Registrar resultados do teste comercial** recebe visitas, vendas, receita e custos em BRL, com período/referência obrigatória. Resultados são declarados pelo usuário, não verificados por integração. O cálculo líquido é receita menos custos informados e não apuração contábil. O histórico de experimentos de todos os projetos do espaço é fornecido às próximas análises. Sem feedback, o coordenador não presume vendas nem fracasso.
 
-Publicação, tráfego, checkout, métricas de lojas e execução de código continuam sem integração. Canais em texto são restrições de planejamento, não conexões de contas. A IA prepara produto/oferta/teste; o usuário publica e informa resultados. A arquitetura não representa um negócio comercial totalmente autônomo antes dessas integrações.
+A loja própria publica todos os formatos com preços configurados pelo proprietário, checkout Stripe e downloads após confirmação de pagamento. O itch.io recebe packs nos destinos autorizados. Tráfego e divulgação não são automatizados; canais apenas escritos no briefing não conectam contas. Não há execução de código gerado nem garantia de vendas.
 
 ### Produção especializada
 
@@ -94,3 +94,7 @@ Thumbnails 16:9, packs 2D transparentes e mobília 3D procedural agora têm pesq
 ### Loja itch.io
 
 Conecte sua conta na central para enviar packs 2D/3D a páginas de assets já existentes e acompanhar métricas reais. [Configuração inicial e limites da integração](docs/COMMERCE.md). A publicação automática precisa de autorização explícita na interface; não cria páginas nem altera preços.
+
+### Loja automática para todos os formatos
+
+Em **Loja e vendas → Sua loja automática**, conecte a Stripe e autorize o registro automático do webhook. Defina nome, contato público, licença, preços por formato e limite de produtos. Autorize abrir a loja e publicar entregas concluídas, inclusive as existentes. A criação das páginas, o checkout e a entrega do ZIP são integrados. [Configuração e limites](docs/STOREFRONT.md). A loja não traz compradores automaticamente.

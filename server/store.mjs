@@ -17,11 +17,12 @@ export async function createStore({ connectionString, file = 'data/agents.sqlite
     const { Pool } = await import('pg');
     pool = new Pool({ ...postgresConfig(connectionString), max: 5, connectionTimeoutMillis: 10000 });
     await pool.query('CREATE TABLE IF NOT EXISTS agent_workspaces (id TEXT PRIMARY KEY, data TEXT NOT NULL, revision INTEGER NOT NULL DEFAULT 0)');
+    await pool.query('CREATE TABLE IF NOT EXISTS shop_files (product_id TEXT PRIMARY KEY, data BYTEA NOT NULL, preview BYTEA)');
   } else {
     const { DatabaseSync } = await import('node:sqlite');
     if (file !== ':memory:') mkdirSync(dirname(file), { recursive: true });
     sqlite = new DatabaseSync(file);
-    sqlite.exec('PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS agent_workspaces (id TEXT PRIMARY KEY, data TEXT NOT NULL, revision INTEGER NOT NULL DEFAULT 0)');
+    sqlite.exec('PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS agent_workspaces (id TEXT PRIMARY KEY, data TEXT NOT NULL, revision INTEGER NOT NULL DEFAULT 0); CREATE TABLE IF NOT EXISTS shop_files (product_id TEXT PRIMARY KEY, data BLOB NOT NULL, preview BLOB)');
   }
   const mode = pool ? 'postgres' : 'sqlite';
   async function read(id) {
@@ -53,5 +54,26 @@ export async function createStore({ connectionString, file = 'data/agents.sqlite
     const rows = pool ? (await pool.query(`SELECT id, data::jsonb->'commerce'->'grant' AS grant FROM agent_workspaces WHERE data::jsonb @> '{"commerce":{"background":true}}'::jsonb LIMIT 100`)).rows : sqlite.prepare("SELECT id, json_extract(data, '$.commerce.grant') AS grant FROM agent_workspaces WHERE json_extract(data, '$.commerce.background')=1 LIMIT 100").all();
     return rows.filter(row => row.grant).map(row => ({ id: row.id, grant: typeof row.grant === 'string' ? JSON.parse(row.grant) : row.grant }));
   }
-  return { read, mutate, autonomousSpaces, commerceSpaces, mode, close: async () => { if (pool) await pool.end(); else sqlite.close(); } };
+  async function shopBySlug(slug) {
+    const rows = pool ? (await pool.query("SELECT id, data FROM agent_workspaces WHERE data::jsonb->'shop'->>'slug'=$1 LIMIT 1", [slug])).rows : sqlite.prepare("SELECT id, data FROM agent_workspaces WHERE json_extract(data, '$.shop.slug')=? LIMIT 1").all(slug);
+    return rows[0] ? { id: rows[0].id, workspace: normalizeWorkspace(JSON.parse(rows[0].data)) } : null;
+  }
+  async function shopSpaces() {
+    return pool ? (await pool.query(`SELECT id FROM agent_workspaces WHERE data::jsonb @> '{"shop":{"autoPublish":true,"enabled":true}}'::jsonb LIMIT 100`)).rows : sqlite.prepare("SELECT id FROM agent_workspaces WHERE json_extract(data, '$.shop.autoPublish')=1 AND json_extract(data, '$.shop.enabled')=1 LIMIT 100").all();
+  }
+  async function writeSaleFile(productId, bytes, preview = null) {
+    if (pool) await pool.query('INSERT INTO shop_files(product_id,data,preview) VALUES($1,$2,$3)', [productId, bytes, preview]);
+    else sqlite.prepare('INSERT INTO shop_files(product_id,data,preview) VALUES(?,?,?)').run(productId, bytes, preview);
+  }
+  async function readSaleFile(productId, preview = false) {
+    const column = preview ? 'preview' : 'data';
+    const row = pool ? (await pool.query(`SELECT ${column} AS data FROM shop_files WHERE product_id=$1`, [productId])).rows[0] : sqlite.prepare(`SELECT ${column} AS data FROM shop_files WHERE product_id=?`).get(productId);
+    if (!row?.data) throw new AppError('Arquivo indisponível. Contate o vendedor.', 404);
+    return Buffer.from(row.data);
+  }
+  async function removeSaleFile(productId) {
+    if (pool) await pool.query('DELETE FROM shop_files WHERE product_id=$1', [productId]);
+    else sqlite.prepare('DELETE FROM shop_files WHERE product_id=?').run(productId);
+  }
+  return { read, mutate, autonomousSpaces, commerceSpaces, shopBySlug, shopSpaces, writeSaleFile, readSaleFile, removeSaleFile, mode, close: async () => { if (pool) await pool.end(); else sqlite.close(); } };
 }

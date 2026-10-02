@@ -1,3 +1,4 @@
+import { createShop } from './shop.mjs';
 import { createCommerce } from './commerce.mjs';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
@@ -7,19 +8,24 @@ import { recordExperiment } from './market.mjs';
 import { createRunner } from './runner.mjs';
 import { createProject, projectAction, reconcileProjects, syncAutonomy } from './autonomy.mjs';
 
-export function createApp({ store, provider, staticDirectory = '../frontend/dist', allowedOrigins = [], masterKey = null, commerceProvider }) {
+export function createApp({ store, provider, staticDirectory = '../frontend/dist', allowedOrigins = [], masterKey = null, commerceProvider, shopProvider, publicOrigin, webhookOrigin }) {
   const runner = createRunner(store, provider, { masterKey });
   const commerce = createCommerce(store, { masterKey, provider: commerceProvider });
+  const shop = createShop(store, { masterKey, provider: shopProvider, publicOrigin, webhookOrigin });
   const rates = new Map();
   const root = resolve(staticDirectory);
   function send(response, status, body, headers = {}) {
     response.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', ...headers });
     response.end(typeof body === 'string' || Buffer.isBuffer(body) ? body : JSON.stringify(body));
   }
-  async function body(request) {
+  async function rawBody(request, max = 20000) {
     let size = 0; const chunks = [];
-    for await (const chunk of request) { size += chunk.length; if (size > 20000) throw new AppError('Dados enviados excedem o limite.', 413); chunks.push(chunk); }
-    try { const parsed = JSON.parse(Buffer.concat(chunks).toString() || '{}'); if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error(); return parsed; }
+    for await (const chunk of request) { size += chunk.length; if (size > max) throw new AppError('Dados enviados excedem o limite.', 413); chunks.push(chunk); }
+    return Buffer.concat(chunks);
+  }
+  async function body(request) {
+    const raw = await rawBody(request);
+    try { const parsed = JSON.parse(raw.toString() || '{}'); if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error(); return parsed; }
     catch { throw new AppError('JSON inválido.'); }
   }
   const server = createServer(async (request, response) => {
@@ -43,6 +49,28 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       response.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
       response.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
       if (request.method === 'OPTIONS') { response.writeHead(204); response.end(); return; }
+      if (rates.size > 10000) for (const [key, entry] of rates) if (entry.reset <= Date.now()) rates.delete(key);
+      const publicRoute = url.pathname.match(/^\/api\/agents\/storefront\/([a-f0-9]{32})(?:\/(checkout|receipt|download|webhook|preview))?$/);
+      if (publicRoute) {
+        const [, slug, operation] = publicRoute;
+        const rateKey = `public:${request.socket.remoteAddress}:${operation === 'webhook' ? 'webhook' : 'store'}`;
+        const now = Date.now(), rate = rates.get(rateKey) || { count: 0, reset: now + 60000 };
+        if (rate.reset <= now) { rate.count = 0; rate.reset = now + 60000; }
+        if (++rate.count > (operation === 'webhook' ? 600 : 60)) throw new AppError('Muitas requisições. Aguarde um minuto.', 429);
+        rates.set(rateKey, rate);
+        if (operation === 'preview' && request.method === 'GET') return send(response, 200, await shop.preview(slug, url.searchParams.get('product')), { 'Content-Type': 'image/jpeg' });
+        if (!operation && request.method === 'GET') return send(response, 200, await shop.catalog(slug));
+        if (operation === 'checkout' && request.method === 'POST') { const input = await body(request); return send(response, 200, await shop.checkout(slug, input.productId, input.receiptToken)); }
+        if (operation === 'webhook' && request.method === 'POST') return send(response, 200, await shop.webhook(slug, await rawBody(request, 1000000), request.headers['stripe-signature']));
+        if (['receipt', 'download'].includes(operation) && request.method === 'GET') {
+          const receiptToken = request.headers.authorization?.replace(/^Bearer /, '') || '';
+          const result = await shop.receipt(slug, receiptToken, operation === 'download');
+          if (operation === 'download') return send(response, 200, result.bytes, { 'Content-Type': 'application/zip', 'Content-Disposition': `attachment; filename="${result.filename}"` });
+          return send(response, 200, result);
+        }
+        throw new AppError('Método inválido.', 405);
+      }
+      if (url.pathname.startsWith('/api/agents/storefront/')) throw new AppError('Loja não encontrada.', 404);
       const token = request.headers.authorization?.replace(/^Bearer /, '') || '';
       const id = workspaceId(token);
       const rateKey = `${request.socket.remoteAddress}:${id}`;
@@ -54,6 +82,12 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       rates.set(rateKey, rate);
       runner.unlock(id, token); commerce.unlock(id, token);
       const route = url.pathname.slice('/api/agents'.length);
+      if (route === '/shop/connect' && request.method === 'POST') return send(response, 200, publicWorkspace((await shop.connect(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
+      if (route === '/shop/configure' && request.method === 'POST') return send(response, 200, publicWorkspace((await shop.configure(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
+      const shopPublish = route.match(/^\/shop\/missions\/([a-f0-9-]+)\/publish$/);
+      if (shopPublish && request.method === 'POST') return send(response, 200, publicWorkspace((await shop.publish(id, shopPublish[1])).workspace, store.mode, Boolean(masterKey)));
+      const shopListing = route.match(/^\/shop\/products\/([a-f0-9-]+)$/);
+      if (shopListing && request.method === 'PATCH') return send(response, 200, publicWorkspace((await shop.listing(id, shopListing[1], (await body(request)).listed)).workspace, store.mode, Boolean(masterKey)));
       if (route === '/commerce/connect' && request.method === 'POST') {
         const updated = await commerce.connect(id, token, await body(request));
         return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
@@ -172,5 +206,5 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       send(response, error instanceof AppError ? error.status : 500, { error: error instanceof AppError ? error.message : 'O servidor não conseguiu concluir a ação. Tente novamente.' });
     }
   });
-  return { server, runner, commerce, close: async () => { await commerce.close(); await runner.close(); await new Promise(resolveClose => server.close(resolveClose)); } };
+  return { server, runner, commerce, shop, close: async () => { await shop.close(); await commerce.close(); await runner.close(); await new Promise(resolveClose => server.close(resolveClose)); } };
 }
