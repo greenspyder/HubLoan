@@ -35,7 +35,7 @@ export function knowledgeContext(w, query = '', now = Date.now()) {
 }
 export function publicKnowledge(w) {
   const k = collectKnowledge(w);
-  return { repository: BRAIN_REPO, publicRepository: true, configured: Boolean(k.secret), enabled: Boolean(k.enabled && k.expiresAt > Date.now() && k.usedWrites < k.maxWrites), expiresAt: k.expiresAt, usedWrites: k.usedWrites, maxWrites: k.maxWrites, error: k.error || '', importedAt: k.importedAt, notes: [...k.notes, ...k.imports].map(({id,title,content,observedAt,kind,path,publishedAt}) => ({id,title,content,observedAt,kind,path,publishedAt})), note: 'Pesquisas/decisões são hipóteses. Resultados financeiros ficam privados e entram separadamente nos próximos ciclos.' };
+  return { repository: BRAIN_REPO, publicRepository: true, configured: Boolean(k.secret), enabled: Boolean(k.enabled && k.expiresAt > Date.now() && k.usedWrites < k.maxWrites), expiresAt: k.expiresAt, usedWrites: k.usedWrites, maxWrites: k.maxWrites, error: k.error || '', importedAt: k.importedAt, importedCount: k.importedCount, notes: [...k.notes, ...k.imports].map(({id,title,content,observedAt,kind,path,publishedAt}) => ({id,title,content,observedAt,kind,path,publishedAt})), note: 'Pesquisas/decisões são hipóteses. Resultados financeiros ficam privados e entram separadamente nos próximos ciclos.' };
 }
 export function knowledgeExport(w) {
   const k = collectKnowledge(w), learning = commercialLearning(w);
@@ -50,7 +50,12 @@ export function createKnowledgeProvider(fetcher = fetch) {
   return {
     async connect(key) { const repo = await request('', key); if (repo.full_name !== BRAIN_REPO || repo.private !== false || repo.default_branch !== 'main' || repo.permissions?.push !== true) throw new AppError('Use um token de escrita somente para greenspyder/Projeto, público, branch main.'); },
     async read() {
-      const tree = await request('/git/trees/main?recursive=1');
+      const ref = await request('/git/ref/heads/main');
+      if (!/^[a-f0-9]{40}$/.test(ref.object?.sha || '')) throw new AppError('Branch sem versão válida.',502);
+      const commit = await request(`/git/commits/${ref.object.sha}`);
+      if (commit.tree?.sha === '4b825dc642cb6eb9a060e54bf8d69288fbee4904') return [];
+      if (!/^[a-f0-9]{40}$/.test(commit.tree?.sha || '')) throw new AppError('Vault sem árvore válida.',502);
+      const tree = await request(`/git/trees/${commit.tree.sha}?recursive=1`);
       if (tree.truncated) throw new AppError('Índice GitHub incompleto. Reduza o vault antes de importar.');
       const files = (tree.tree || []).filter(f => f.type === 'blob' && /^Cerebro\/(?:Referencias|Diretrizes|00 - Índice)[^]*\.md$/.test(f.path) && f.size <= 12000).slice(0, 20);
       const notes = [];
@@ -88,7 +93,7 @@ export function createKnowledge(store, { masterKey = null, provider = createKnow
   const flights = new Set();
   async function refresh(id) {
     const notes = await provider.read();
-    return store.mutate(id, w => { const k = init(w); k.imports = notes.length ? notes : seedNotes(); k.importedAt = new Date().toISOString(); });
+    return store.mutate(id, w => { const k = init(w); k.imports = notes.length ? notes : seedNotes(); k.importedCount = notes.length; k.importedAt = new Date().toISOString(); });
   }
   async function connect(id, input) {
     if (!masterKey) throw new AppError('Servidor sem criptografia persistente; conexão indisponível.');

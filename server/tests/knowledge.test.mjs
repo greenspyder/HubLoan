@@ -22,8 +22,8 @@ test('seed vault uses Markdown and Obsidian links; existing references are never
   await provider.initialize('token');assert.equal(writes,0);assert.equal(Object.keys(VAULT_SEED).length,3);assert.match(VAULT_SEED['Cerebro/00 - Índice.md'],/\[\[Diretrizes\]\]/);
 });
 test('provider restricts import paths and never reads secrets or program files',async()=>{
-  const urls=[];const provider=createKnowledgeProvider(async url=>{urls.push(url);return {ok:true,status:200,json:async()=>url.includes('/git/trees/')?{tree:[{type:'blob',path:'credentials.md',size:5,sha:'s1'},{type:'blob',path:'Cerebro/Referencias/original.md',size:100,sha:'s2'},{type:'blob',path:'Cerebro/Referencias/large.md',size:15000,sha:'s3'},{type:'blob',path:'Cerebro/IA/Pesquisas/private.md',size:100,sha:'s4'}]}:{encoding:'base64',size:100,content:Buffer.from('Owner reference').toString('base64')}};});
-  const notes=await provider.read();assert.equal(notes.length,1);assert.equal(notes[0].content,'Owner reference');assert.equal(urls.length,2);assert.ok(urls[1].endsWith('/git/blobs/s2'));
+  const urls=[];const provider=createKnowledgeProvider(async url=>{urls.push(url);return {ok:true,status:200,json:async()=>url.includes('/git/ref/')?{object:{sha:'a'.repeat(40)}}:url.includes('/git/commits/')?{tree:{sha:'b'.repeat(40)}}:url.includes('/git/trees/')?{tree:[{type:'blob',path:'credentials.md',size:5,sha:'s1'},{type:'blob',path:'Cerebro/Referencias/original.md',size:100,sha:'s2'},{type:'blob',path:'Cerebro/Referencias/large.md',size:15000,sha:'s3'},{type:'blob',path:'Cerebro/IA/Pesquisas/private.md',size:100,sha:'s4'}]}:{encoding:'base64',size:100,content:Buffer.from('Owner reference').toString('base64')}};});
+  const notes=await provider.read();assert.equal(notes.length,1);assert.equal(notes[0].content,'Owner reference');assert.equal(urls.length,4);assert.ok(urls[3].endsWith('/git/blobs/s2'));
 });
 test('public writes are idempotent, refuse changed owner files and reject arbitrary paths',async()=>{
   const n=collectKnowledge(fixture()).notes[0];let puts=0;
@@ -43,4 +43,9 @@ test('expired and exhausted grants collect local memory but cannot publish',asyn
   const store=await createStore({file:':memory:'});t.after(()=>store.close());let calls=0;const provider={connect:async()=>{},initialize:async()=>{},publish:async()=>{calls++;}};const brain=createKnowledge(store,{masterKey,provider});
   await store.mutate(id,w=>Object.assign(w,fixture()));await brain.connect(id,{apiKey:'x'.repeat(30),authorize:true});await store.mutate(id,w=>{w.knowledge.expiresAt=0;});await brain.sync(id);assert.equal(calls,0);assert.equal(publicKnowledge((await store.read(id)).workspace).enabled,false);
   await store.mutate(id,w=>{w.knowledge.expiresAt=Date.now()+10000;w.knowledge.usedWrites=30;});await brain.sync(id);assert.equal(calls,0);
+});
+
+test('empty Git tree is a valid vault with no references, not a permission error',async()=>{
+ const urls=[];const p=createKnowledgeProvider(async url=>{urls.push(url);return {ok:true,status:200,json:async()=>url.includes('/git/ref/')?{object:{sha:'a'.repeat(40)}}:{tree:{sha:'4b825dc642cb6eb9a060e54bf8d69288fbee4904'}}};});
+ assert.deepEqual(await p.read(),[]);assert.equal(urls.length,2);
 });
