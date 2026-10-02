@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createProvider } from '../provider.mjs';
-import { BUSINESS_DIRECTIVE, businessStrategy } from '../strategy.mjs';
+import { BUSINESS_DIRECTIVE, businessStrategy, VALIDATION_PRIORITIES } from '../strategy.mjs';
 import { marketSettings } from '../market.mjs';
 import { SPECIALIZATIONS, availableSpecializations, productionCalls } from '../specializations.mjs';
 import { initialWorkspace, publicWorkspace } from '../domain.mjs';
@@ -16,7 +16,10 @@ test('business directive reaches research, text and vision calls without replaci
   await provider.research('test', 'model', 'novas oportunidades');
   await provider.vision('test', 'model', 'Revisar transparência', 'brief', [Buffer.from('image')]);
   assert.equal(bodies.length, 3);
-  for (const body of bodies) assert.ok(body.instructions.startsWith(BUSINESS_DIRECTIVE));
+  for (const body of bodies) {
+    assert.ok(body.instructions.startsWith(BUSINESS_DIRECTIVE));
+    for (const p of VALIDATION_PRIORITIES) assert.ok(body.instructions.includes(p.instruction));
+  }
   assert.ok(bodies[0].instructions.includes('Tarefa específica'));
   assert.ok(bodies[2].instructions.includes('Revisar transparência'));
 });
@@ -29,4 +32,5 @@ test('broader opportunities work without image consent and publish a truthful fu
   const workspace = publicWorkspace(initialWorkspace(), 'memory');
   assert.deepEqual(workspace.strategy, businessStrategy);
   assert.equal(workspace.strategy.selfImprovement, 'draft-pr');
+  assert.deepEqual(workspace.strategy.validationPriorities.map(p => p.id), ['buyer-evidence','small-offer','quality-review','unit-economics','stop-early','repeat-purchase']);
 });
