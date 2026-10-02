@@ -86,3 +86,7 @@ Um ciclo completo de descoberta e entrega utiliza seis chamadas de API, além da
 Na análise de cada oportunidade, **Registrar resultados do teste comercial** recebe visitas, vendas, receita e custos em BRL, com período/referência obrigatória. Resultados são declarados pelo usuário, não verificados por integração. O cálculo líquido é receita menos custos informados e não apuração contábil. O histórico de experimentos de todos os projetos do espaço é fornecido às próximas análises. Sem feedback, o coordenador não presume vendas nem fracasso.
 
 Publicação, tráfego, checkout, métricas de lojas e execução de código continuam sem integração. Canais em texto são restrições de planejamento, não conexões de contas. A IA prepara produto/oferta/teste; o usuário publica e informa resultados. A arquitetura não representa um negócio comercial totalmente autônomo antes dessas integrações.
+
+### Produção especializada
+
+Thumbnails 16:9, packs 2D transparentes e mobília 3D procedural agora têm pesquisa própria, arquivos ZIP para download e verificações técnicas. Veja [formatos, limites e validação](docs/SPECIALIZATIONS.md).

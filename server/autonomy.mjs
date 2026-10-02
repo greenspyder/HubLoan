@@ -34,7 +34,7 @@ export function createProject(workspace, input, token, masterKey, now = Date.now
   if (!['goal', 'discover'].includes(mode)) throw new AppError('Modo de autonomia inválido.');
   const maxCalls = input.maxCalls ?? input.maxDeliveries * 7 + 1;
   if (!Number.isInteger(maxCalls) || maxCalls < 1 || maxCalls > 200) throw new AppError('Limite de chamadas deve ser de uma a duzentas.');
-  if (!['text', 'image'].includes(input.kind)) throw new AppError('Tipo de entrega inválido.');
+  if (!['text', 'image', 'thumbnail', 'sprites', 'model3d'].includes(input.kind)) throw new AppError('Tipo de entrega inválido.');
   if (!Number.isInteger(input.maxDeliveries) || input.maxDeliveries < 1 || input.maxDeliveries > 20) throw new AppError('Escolha de uma a vinte entregas por projeto.');
   if (!Number.isInteger(input.intervalMinutes) || input.intervalMinutes < 1 || input.intervalMinutes > 1440) throw new AppError('O intervalo deve ser de um a 1.440 minutos.');
   if (typeof input.research !== 'boolean' || typeof input.start !== 'boolean') throw new AppError('Configuração de autonomia inválida.');

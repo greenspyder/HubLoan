@@ -1,0 +1,7 @@
+export const SPECIALIZATIONS = {
+  thumbnail: { label: 'Thumbnails YouTube', calls: 4, images: true, research: 'Serviços e packs de thumbnails para YouTube: nichos, necessidades de criadores, briefings reais, preços anunciados e concorrência. Distinguir procura observável de vendas não verificadas. Entrega: duas variações 16:9 com texto legível e guia de teste A/B.' },
+  sprites: { label: 'Objetos e mobília 2D', calls: 7, images: true, research: 'Packs para desenvolvedores de jogos 2D: mobília, props e objetos. Investigue itch.io e lojas de assets, lacunas por tema/estilo, dimensões, perspectiva e licenças. Entrega: quatro PNGs transparentes de 512x512, atlas, manifesto e cena Godot. Não é item vendido dentro de jogo.' },
+  model3d: { label: 'Mobília 3D procedural', calls: 2, images: false, research: 'Packs de mobília low poly para desenvolvedores Godot e Unity. Investigue necessidades de mesas, cadeiras, estantes e armários originais. Produção disponível: até 60 caixas, sem animação, materiais e texturas procedurais, UVs, GLB validado e OBJ. Evite formas orgânicas e promessas de aprovação em lojas.' },
+};
+export function productionCalls(kind) { return SPECIALIZATIONS[kind]?.calls || 3; }
+export function availableSpecializations(market) { return (market?.specializations || []).filter(kind => !SPECIALIZATIONS[kind].images || market.allowImages); }

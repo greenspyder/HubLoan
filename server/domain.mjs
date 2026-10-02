@@ -28,7 +28,7 @@ export function initialWorkspace() {
   ], missions: [], settings: { model: 'gpt-4.1-mini', imageModel: 'gpt-image-1-mini', maxOutputTokens: 1800 } };
 }
 export function publicWorkspace(workspace, storage, durableAutonomy = false) {
-  return { version: 2, autonomy: { projects: workspace.autonomy?.projects || [], enabled: Boolean(workspace.autonomy?.enabled), durable: durableAutonomy }, agents: workspace.agents, missions: workspace.missions.map(({ artifact, ...mission }) => ({ ...mission, hasArtifact: Boolean(artifact) })), settings: { model: workspace.settings.model, imageModel: workspace.settings.imageModel, maxOutputTokens: workspace.settings.maxOutputTokens, configured: Boolean(workspace.secret) }, storage };
+  return { version: 2, autonomy: { projects: workspace.autonomy?.projects || [], enabled: Boolean(workspace.autonomy?.enabled), durable: durableAutonomy }, agents: workspace.agents, missions: workspace.missions.map(({ artifact, ...mission }) => ({ ...mission, hasArtifact: Boolean(artifact), hasPreview: Boolean(artifact?.preview), artifactMime: artifact?.mime, artifactFilename: artifact?.filename })), settings: { model: workspace.settings.model, imageModel: workspace.settings.imageModel, maxOutputTokens: workspace.settings.maxOutputTokens, configured: Boolean(workspace.secret) }, storage };
 }
 export function text(value, name, max) {
   if (typeof value !== 'string' || !value.trim() || value.trim().length > max) throw new AppError(`${name}: informe de 1 a ${max} caracteres.`);
@@ -41,7 +41,7 @@ export function addAgent(workspace, body) {
 export function addMission(workspace, body) {
   if (workspace.missions.length >= 200) throw new AppError('Limite de 200 missões. Exporte as entregas antes de criar outro espaço.');
   if (!workspace.agents.some(agent => agent.id === body.agentId && agent.enabled)) throw new AppError('Escolha um agente disponível.');
-  if (!['text', 'image'].includes(body.kind)) throw new AppError('Tipo de entrega inválido.');
+  if (!['text', 'image', 'thumbnail', 'sprites', 'model3d'].includes(body.kind)) throw new AppError('Tipo de entrega inválido.');
   const mission = { id: randomUUID(), title: text(body.title, 'Título', 100), brief: text(body.brief, 'Briefing', 6000), agentId: body.agentId, kind: body.kind, status: 'draft', output: '', error: '', phase: 'Pronta para executar', createdAt: new Date().toISOString(), events: [], tokens: 0, images: 0, attempt: 0 };
   workspace.missions.unshift(mission);
   return mission;

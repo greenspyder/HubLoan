@@ -1,10 +1,12 @@
+export type ProductionKind = 'text' | 'image' | 'thumbnail' | 'sprites' | 'model3d';
+export const productionLabels: Record<ProductionKind, string> = { text: 'Texto / código', image: 'Imagem PNG', thumbnail: 'Thumbnails YouTube (ZIP)', sprites: 'Pack 2D transparente (ZIP)', model3d: 'Mobília 3D GLB / OBJ (ZIP)' };
 export type Agent = { id: string; name: string; role: string; enabled: boolean };
 export type MissionStatus = 'draft' | 'queued' | 'running' | 'review' | 'approved' | 'failed' | 'cancelled';
-export type Mission = { id: string; title: string; brief: string; agentId: string; kind: 'text' | 'image'; status: MissionStatus; output: string; error: string; phase: string; createdAt: string; events: { at: string; message: string }[]; tokens: number; images: number; attempt: number; hasArtifact: boolean; projectId?: string; sequence?: number; decisionId?: string; plan?: string };
-export type MarketOption = { id: string; title: string; audience: string; rationale: string; uncertainty: string; test: string; kind: 'text' | 'image'; score: number; scores: Record<string, number>; sourceUrls: string[] };
+export type Mission = { id: string; title: string; brief: string; agentId: string; kind: ProductionKind; status: MissionStatus; output: string; error: string; phase: string; createdAt: string; events: { at: string; message: string }[]; tokens: number; images: number; attempt: number; hasArtifact: boolean; hasPreview?: boolean; artifactMime?: string; artifactFilename?: string; projectId?: string; sequence?: number; decisionId?: string; plan?: string };
+export type MarketOption = { id: string; title: string; audience: string; rationale: string; uncertainty: string; test: string; kind: ProductionKind; score: number; scores: Record<string, number>; sourceUrls: string[] };
 export type ExperimentInput = { visits: number; sales: number; revenue: number; cost: number; evidence: string };
 export type MarketDecision = { id: string; observedAt: string; candidates: MarketOption[]; selected: MarketOption | null; report: string; sources: { title: string; url: string }[]; feedback?: ExperimentInput & { net: number; currency: string; origin: string; recordedAt: string } };
-export type Project = { id: string; name: string; goal: string; mode?: 'goal' | 'discover'; market?: { allowImages?: boolean; market: string; channels: string; restrictions: string }; maxCalls: number; calls: number; decisions?: MarketDecision[]; kind: 'text' | 'image'; maxDeliveries: number; intervalMinutes: number; research: boolean; status: 'active' | 'planning' | 'paused' | 'completed'; phase: string; produced: number; tokens: number; searches: number; error: string; nextRunAt: number; expiresAt: number; events: { at: string; message: string }[]; researchReport?: { output: string; sources: { title: string; url: string }[] } };
+export type Project = { id: string; name: string; goal: string; mode?: 'goal' | 'discover'; market?: { allowImages?: boolean; specializations?: ProductionKind[]; market: string; channels: string; restrictions: string }; maxCalls: number; calls: number; decisions?: MarketDecision[]; kind: ProductionKind; maxDeliveries: number; intervalMinutes: number; research: boolean; status: 'active' | 'planning' | 'paused' | 'completed'; phase: string; produced: number; tokens: number; searches: number; error: string; nextRunAt: number; expiresAt: number; events: { at: string; message: string }[]; researchReport?: { output: string; sources: { title: string; url: string }[] } };
 export type ProjectInput = Pick<Project, 'name' | 'goal' | 'kind' | 'maxDeliveries' | 'intervalMinutes' | 'research'> & { start: boolean; mode?: 'goal' | 'discover'; maxCalls?: number; market?: Project['market'] };
 export type Workspace = { version: 2; autonomy: { enabled: boolean; durable: boolean; projects: Project[] }; agents: Agent[]; missions: Mission[]; settings: { model: string; imageModel: string; maxOutputTokens: number; configured: boolean }; storage: 'postgres' | 'sqlite' };
 const accessKey = 'hubloan.workspace.access.v2';
@@ -38,11 +40,11 @@ export const agentApi = {
   disconnect: () => request<Workspace>('/settings', 'DELETE'),
   addAgent: (name: string, role: string) => request<Workspace>('/agents', 'POST', { name, role }),
   toggleAgent: (id: string, enabled: boolean) => request<Workspace>(`/agents/${id}`, 'PATCH', { enabled }),
-  addMission: (title: string, brief: string, agentId: string, kind: 'text' | 'image', execute: boolean) => request<Workspace>('/missions', 'POST', { title, brief, agentId, kind, execute }),
+  addMission: (title: string, brief: string, agentId: string, kind: ProductionKind, execute: boolean) => request<Workspace>('/missions', 'POST', { title, brief, agentId, kind, execute }),
   action: (id: string, action: 'run' | 'cancel' | 'approve') => request<Workspace>(`/missions/${id}/${action}`, 'POST'),
-  async image(id: string) {
-    const response = await fetch(`${base}/missions/${id}/artifact`, { headers: { Authorization: `Bearer ${getAccessCode()}` } });
-    if (!response.ok) throw new Error('Não foi possível carregar a imagem.');
+  async image(id: string, preview = false) {
+    const response = await fetch(`${base}/missions/${id}/${preview ? 'preview' : 'artifact'}`, { headers: { Authorization: `Bearer ${getAccessCode()}` } });
+    if (!response.ok) throw new Error('Não foi possível carregar o arquivo.');
     return response.blob();
   },
 };

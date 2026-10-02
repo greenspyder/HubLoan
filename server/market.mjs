@@ -1,11 +1,14 @@
+import { SPECIALIZATIONS } from './specializations.mjs';
 import { AppError, text } from './domain.mjs';
 
 export const marketGoal = 'Descobrir oportunidades atuais de produtos digitais originais, comparar viabilidade e escolher automaticamente a próxima entrega para testar comercialmente.';
 export function marketSettings(input = {}) {
   if (input.allowImages !== undefined && typeof input.allowImages !== 'boolean') throw new AppError('Permissão de imagens inválida.');
-  return { allowImages: input.allowImages === true, market: text(input.market || 'Brasil, português brasileiro', 'Mercado e idioma', 200), channels: text(input.channels || 'Publicação manual em uma loja de produtos digitais', 'Canais disponíveis', 500), restrictions: text(input.restrictions || 'Sem anúncios pagos, sem compras, sem copiar produtos de terceiros.', 'Restrições', 1000) };
+  const specialties = input.specializations;
+  if (specialties !== undefined && (!Array.isArray(specialties) || !specialties.length || specialties.some(kind => !SPECIALIZATIONS[kind]))) throw new AppError('Escolha especializações válidas.');
+  return { specializations: specialties ? [...new Set(specialties)] : undefined, allowImages: input.allowImages === true, market: text(input.market || 'Brasil, português brasileiro', 'Mercado e idioma', 200), channels: text(input.channels || 'Publicação manual em uma loja de produtos digitais', 'Canais disponíveis', 500), restrictions: text(input.restrictions || 'Sem anúncios pagos, sem compras, sem copiar produtos de terceiros.', 'Restrições', 1000) };
 }
-export function parseMarketDecision(output, sources, previous = []) {
+export function parseMarketDecision(output, sources, previous = [], allowed = ['text', 'image']) {
   let parsed;
   try { parsed = JSON.parse(output.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '')); } catch { throw new AppError('Análise de mercado inválida. Ciclo pausado sem produzir.'); }
   if (!Array.isArray(parsed.candidates) || parsed.candidates.length < 3 || parsed.candidates.length > 5) throw new AppError('A análise precisa comparar de três a cinco oportunidades.');
@@ -19,7 +22,7 @@ export function parseMarketDecision(output, sources, previous = []) {
     }
     if (!Array.isArray(candidate.sourceUrls) || !candidate.sourceUrls.length || candidate.sourceUrls.some(url => !urls.has(url))) throw new AppError('A análise citou fontes que não foram retornadas pela pesquisa.');
     const score = Math.round((scores.demand * 0.25 + scores.competition * 0.15 + scores.feasibility * 0.25 + scores.distribution * 0.15 + scores.evidence * 0.2) * 20);
-    if (!['text', 'image'].includes(candidate.kind)) throw new AppError('Formato de oportunidade inválido.');
+    if (!allowed.includes(candidate.kind)) throw new AppError('Formato de oportunidade inválido.');
     return { id: `option-${index + 1}`, title: text(candidate.title, 'Oportunidade', 100), audience: text(candidate.audience, 'Público', 300), rationale: text(candidate.rationale, 'Justificativa', 1000), uncertainty: text(candidate.uncertainty, 'Incerteza', 800), test: text(candidate.test, 'Teste comercial', 800), kind: candidate.kind, scores, score, sourceUrls: [...new Set(candidate.sourceUrls)] };
   }).sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
   // Scores are model estimates. Gate production when evidence or feasibility is weak.

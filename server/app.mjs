@@ -124,15 +124,16 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
         const updated = await store.mutate(id, workspace => { const mission = addMission(workspace, input); if (input.execute === true) queueMission(workspace, mission.id); });
         return send(response, 201, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
       }
-      const action = route.match(/^\/missions\/([a-f0-9-]+)\/(run|cancel|approve|artifact)$/);
+      const action = route.match(/^\/missions\/([a-f0-9-]+)\/(run|cancel|approve|artifact|preview)$/);
       if (action) {
         const [, missionId, operation] = action;
-        if (operation === 'artifact' && request.method === 'GET') {
+        if (['artifact', 'preview'].includes(operation) && request.method === 'GET') {
           const mission = missionById((await store.read(id)).workspace, missionId);
-          if (!mission.artifact) throw new AppError('Imagem ainda não disponível.', 404);
+          if (!mission.artifact || (operation === 'preview' && !mission.artifact.preview)) throw new AppError('Arquivo ainda não disponível.', 404);
+          if (operation === 'preview') return send(response, 200, Buffer.from(mission.artifact.preview, 'base64'), { 'Content-Type': 'image/png' });
           return send(response, 200, Buffer.from(mission.artifact.base64, 'base64'), { 'Content-Type': mission.artifact.mime, 'Content-Disposition': `attachment; filename="${mission.artifact.filename}"` });
         }
-        if (request.method !== 'POST' || operation === 'artifact') throw new AppError('Método inválido.', 405);
+        if (request.method !== 'POST' || ['artifact', 'preview'].includes(operation)) throw new AppError('Método inválido.', 405);
         const updated = await store.mutate(id, workspace => {
           if (operation === 'run') queueMission(workspace, missionId);
           else if (operation === 'approve') approveMission(workspace, missionId);

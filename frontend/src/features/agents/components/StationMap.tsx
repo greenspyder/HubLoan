@@ -16,7 +16,7 @@ function roomFor(mission?: Mission) {
   if (['review', 'approved'].includes(mission.status)) return 'archive';
   if (mission.phase.includes('Planejando')) return 'research';
   if (mission.phase.includes('Revisando')) return 'review';
-  return mission.kind === 'image' ? 'studio' : 'factory';
+  return ['image', 'thumbnail', 'sprites'].includes(mission.kind) ? 'studio' : 'factory';
 }
 function Robot({ name, color, target, active, status, onClick }: { name: string; color: string; target: Point; active: boolean; status: string; onClick: () => void }) {
   const { x, y } = target;
