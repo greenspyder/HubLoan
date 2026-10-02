@@ -127,7 +127,7 @@ export function createShop(store, { masterKey = null, provider = createStripePro
     if (!w.shop.enabled || !w.shop.products.some(p => p.id === productId && p.listed && p.hasPreview)) throw new AppError('Prévia indisponível.', 404);
     return store.readSaleFile(productId, true);
   }
-  async function checkout(slug, productId, receiptToken) {
+  async function checkout(slug, productId, receiptToken, campaignId) {
     if (!/^[a-f0-9]{64}$/.test(receiptToken || '')) throw new AppError('Código de compra inválido.');
     const { id, workspace: w } = await lookup(slug), s = w.shop;
     const p = s.products.find(p => p.id === productId && p.listed);
@@ -139,6 +139,8 @@ export function createShop(store, { masterKey = null, provider = createStripePro
       if (existing) { if (existing.productId !== p.id) throw new AppError('Código de compra já utilizado.', 409); return existing; }
       if (shop.orders.length >= 5000) throw new AppError('A loja atingiu o limite de pedidos. Contate o vendedor.', 409);
       const order = { id: randomUUID(), productId: p.id, receiptHash: digest(receiptToken), priceMinor: p.priceMinor, currency: p.currency, livemode: shop.livemode, createdAt: new Date().toISOString(), status: 'pending' };
+      const campaign = current.marketing?.campaigns.find(c => c.id === campaignId && c.productId === p.id && ['posted', 'publishing', 'uncertain', 'skipped'].includes(c.status));
+      if (campaign) order.campaignId = campaign.id;
       shop.orders.push(order); return order;
     })).result;
     const result = await provider.checkout(key(s), { mode: 'payment', payment_method_types: ['card'], client_reference_id: order.id, metadata: { hubloan_order: order.id, hubloan_product: p.id }, line_items: [{ quantity: 1, price_data: { currency: p.currency, unit_amount: order.priceMinor, product_data: { name: p.title, description: p.description } } }], success_url: `${publicOrigin}/loja/${slug}#compra=${receiptToken}`, cancel_url: `${publicOrigin}/loja/${slug}#compra=${receiptToken}`, expires_at: Math.floor(Date.parse(order.createdAt) / 1000) + 3600 }, order.id);

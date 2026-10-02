@@ -1,3 +1,4 @@
+import { createMarketing } from './marketing.mjs';
 import { createShop } from './shop.mjs';
 import { createCommerce } from './commerce.mjs';
 import { createServer } from 'node:http';
@@ -8,10 +9,11 @@ import { recordExperiment } from './market.mjs';
 import { createRunner } from './runner.mjs';
 import { createProject, projectAction, reconcileProjects, syncAutonomy } from './autonomy.mjs';
 
-export function createApp({ store, provider, staticDirectory = '../frontend/dist', allowedOrigins = [], masterKey = null, commerceProvider, shopProvider, publicOrigin, webhookOrigin }) {
+export function createApp({ store, provider, staticDirectory = '../frontend/dist', allowedOrigins = [], masterKey = null, commerceProvider, shopProvider, marketingProvider, publicOrigin, webhookOrigin }) {
   const runner = createRunner(store, provider, { masterKey });
   const commerce = createCommerce(store, { masterKey, provider: commerceProvider });
-  const shop = createShop(store, { masterKey, provider: shopProvider, publicOrigin, webhookOrigin });
+  const shop = createShop(store, { masterKey, provider: shopProvider, marketingProvider, publicOrigin, webhookOrigin });
+  const marketing = createMarketing(store, { masterKey, provider: marketingProvider, publicOrigin });
   const rates = new Map();
   const root = resolve(staticDirectory);
   function send(response, status, body, headers = {}) {
@@ -50,7 +52,7 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       response.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
       if (request.method === 'OPTIONS') { response.writeHead(204); response.end(); return; }
       if (rates.size > 10000) for (const [key, entry] of rates) if (entry.reset <= Date.now()) rates.delete(key);
-      const publicRoute = url.pathname.match(/^\/api\/agents\/storefront\/([a-f0-9]{32})(?:\/(checkout|receipt|download|webhook|preview))?$/);
+      const publicRoute = url.pathname.match(/^\/api\/agents\/storefront\/([a-f0-9]{32})(?:\/(checkout|receipt|download|webhook|preview|visit))?$/);
       if (publicRoute) {
         const [, slug, operation] = publicRoute;
         const rateKey = `public:${request.socket.remoteAddress}:${operation === 'webhook' ? 'webhook' : 'store'}`;
@@ -58,9 +60,10 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
         if (rate.reset <= now) { rate.count = 0; rate.reset = now + 60000; }
         if (++rate.count > (operation === 'webhook' ? 600 : 60)) throw new AppError('Muitas requisições. Aguarde um minuto.', 429);
         rates.set(rateKey, rate);
+        if (operation === 'visit' && request.method === 'POST') return send(response, 200, await marketing.visit(slug, await body(request)));
         if (operation === 'preview' && request.method === 'GET') return send(response, 200, await shop.preview(slug, url.searchParams.get('product')), { 'Content-Type': 'image/jpeg' });
         if (!operation && request.method === 'GET') return send(response, 200, await shop.catalog(slug));
-        if (operation === 'checkout' && request.method === 'POST') { const input = await body(request); return send(response, 200, await shop.checkout(slug, input.productId, input.receiptToken)); }
+        if (operation === 'checkout' && request.method === 'POST') { const input = await body(request); return send(response, 200, await shop.checkout(slug, input.productId, input.receiptToken, input.campaignId)); }
         if (operation === 'webhook' && request.method === 'POST') return send(response, 200, await shop.webhook(slug, await rawBody(request, 1000000), request.headers['stripe-signature']));
         if (['receipt', 'download'].includes(operation) && request.method === 'GET') {
           const receiptToken = request.headers.authorization?.replace(/^Bearer /, '') || '';
@@ -82,6 +85,12 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       rates.set(rateKey, rate);
       runner.unlock(id, token); commerce.unlock(id, token);
       const route = url.pathname.slice('/api/agents'.length);
+      if (route === '/marketing/connect' && request.method === 'POST') return send(response, 200, publicWorkspace((await marketing.connect(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
+      if (route === '/marketing/configure' && request.method === 'POST') return send(response, 200, publicWorkspace((await marketing.configure(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
+      const marketingChannel = route.match(/^\/marketing\/channels\/(mastodon|telegram)$/);
+      if (marketingChannel && request.method === 'DELETE') return send(response, 200, publicWorkspace((await marketing.disconnect(id, marketingChannel[1])).workspace, store.mode, Boolean(masterKey)));
+      const marketingSkip = route.match(/^\/marketing\/campaigns\/([a-f0-9-]+)\/skip$/);
+      if (marketingSkip && request.method === 'POST') return send(response, 200, publicWorkspace((await marketing.skip(id, marketingSkip[1])).workspace, store.mode, Boolean(masterKey)));
       if (route === '/shop/connect' && request.method === 'POST') return send(response, 200, publicWorkspace((await shop.connect(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
       if (route === '/shop/configure' && request.method === 'POST') return send(response, 200, publicWorkspace((await shop.configure(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
       const shopPublish = route.match(/^\/shop\/missions\/([a-f0-9-]+)\/publish$/);
@@ -187,7 +196,8 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
         if (['artifact', 'preview'].includes(operation) && request.method === 'GET') {
           const mission = missionById((await store.read(id)).workspace, missionId);
           if (!mission.artifact || (operation === 'preview' && !mission.artifact.preview)) throw new AppError('Arquivo ainda não disponível.', 404);
-          if (operation === 'preview') return send(response, 200, Buffer.from(mission.artifact.preview, 'base64'), { 'Content-Type': 'image/png' });
+          if (operation === 'visit' && request.method === 'POST') return send(response, 200, await marketing.visit(slug, await body(request)));
+        if (operation === 'preview') return send(response, 200, Buffer.from(mission.artifact.preview, 'base64'), { 'Content-Type': 'image/png' });
           return send(response, 200, Buffer.from(mission.artifact.base64, 'base64'), { 'Content-Type': mission.artifact.mime, 'Content-Disposition': `attachment; filename="${mission.artifact.filename}"` });
         }
         if (request.method !== 'POST' || ['artifact', 'preview'].includes(operation)) throw new AppError('Método inválido.', 405);
@@ -206,5 +216,5 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       send(response, error instanceof AppError ? error.status : 500, { error: error instanceof AppError ? error.message : 'O servidor não conseguiu concluir a ação. Tente novamente.' });
     }
   });
-  return { server, runner, commerce, shop, close: async () => { await shop.close(); await commerce.close(); await runner.close(); await new Promise(resolveClose => server.close(resolveClose)); } };
+  return { server, runner, commerce, shop, marketing, close: async () => { await marketing.close(); await shop.close(); await commerce.close(); await runner.close(); await new Promise(resolveClose => server.close(resolveClose)); } };
 }

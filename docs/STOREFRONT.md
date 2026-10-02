@@ -40,3 +40,7 @@ Fontes oficiais:
 - https://docs.stripe.com/checkout/fulfillment.md?payment-ui=stripe-hosted
 - https://docs.stripe.com/api/webhook_endpoints/create
 - https://docs.stripe.com/webhooks/signature
+
+## Distribuição
+
+A divulgação pode ser automatizada nos canais Mastodon/Telegram conectados. Veja [configuração e atribuição](MARKETING.md). As publicações não garantem alcance ou demanda.

@@ -1,3 +1,6 @@
+export type MarketingChannel = 'mastodon' | 'telegram';
+export type MarketingSettings = { enabled: boolean; intervalMinutes: number; maxPosts: number };
+export type Marketing = MarketingSettings & { expiresAt?: number; grantUsed: number; error: string; note: string; channels: { kind: MarketingChannel; configured: boolean; name: string }[]; campaigns: { id: string; channel: MarketingChannel; productId: string; title: string; text: string; link: string; status: string; createdAt: string; postedAt?: string; url?: string; error: string; visits: number; purchases: number; grossMinor: number; refundedMinor: number; testPurchases: number }[] };
 export type ShopProduct = { id: string; missionId?: string; title: string; description: string; kind: ProductionKind; priceMinor: number; currency: string; publishedAt: string; listed: boolean; filename: string; license: string; bytes: number; hasPreview?: boolean };
 export type ShopSettings = { name: string; contact: string; license: string; enabled: boolean; autoPublish: boolean; maxProducts: number; prices: Record<ProductionKind, number> };
 export type Shop = ShopSettings & { configured: boolean; slug: string; expiresAt?: number; livemode: boolean; error: string; products: ShopProduct[]; metrics: { purchases: number; grossMinor: number; refundedMinor: number; currency: string; netProfit: null; testPurchases: number } };
@@ -14,7 +17,7 @@ export type ExperimentInput = { visits: number; sales: number; revenue: number; 
 export type MarketDecision = { id: string; observedAt: string; candidates: MarketOption[]; selected: MarketOption | null; report: string; sources: { title: string; url: string }[]; feedback?: ExperimentInput & { net: number; currency: string; origin: string; recordedAt: string } };
 export type Project = { id: string; name: string; goal: string; mode?: 'goal' | 'discover'; market?: { allowImages?: boolean; specializations?: ProductionKind[]; market: string; channels: string; restrictions: string }; maxCalls: number; calls: number; decisions?: MarketDecision[]; kind: ProductionKind; maxDeliveries: number; intervalMinutes: number; research: boolean; status: 'active' | 'planning' | 'paused' | 'completed'; phase: string; produced: number; tokens: number; searches: number; error: string; nextRunAt: number; expiresAt: number; events: { at: string; message: string }[]; researchReport?: { output: string; sources: { title: string; url: string }[] } };
 export type ProjectInput = Pick<Project, 'name' | 'goal' | 'kind' | 'maxDeliveries' | 'intervalMinutes' | 'research'> & { start: boolean; mode?: 'goal' | 'discover'; maxCalls?: number; market?: Project['market'] };
-export type Workspace = { version: 2; shop?: Shop; commerce?: Commerce; autonomy: { enabled: boolean; durable: boolean; projects: Project[] }; agents: Agent[]; missions: Mission[]; settings: { model: string; imageModel: string; maxOutputTokens: number; configured: boolean }; storage: 'postgres' | 'sqlite' };
+export type Workspace = { version: 2; marketing?: Marketing; shop?: Shop; commerce?: Commerce; autonomy: { enabled: boolean; durable: boolean; projects: Project[] }; agents: Agent[]; missions: Mission[]; settings: { model: string; imageModel: string; maxOutputTokens: number; configured: boolean }; storage: 'postgres' | 'sqlite' };
 const accessKey = 'hubloan.workspace.access.v2';
 const configuredBase = import.meta.env.VITE_API_BASE_URL?.trim().replace(/\/+$/, '');
 const base = configuredBase ? `${configuredBase.endsWith('/api') ? configuredBase : configuredBase + '/api'}/agents` : '/api/agents';
@@ -38,6 +41,10 @@ async function request<T>(path: string, method = 'GET', body?: object): Promise<
   return data as T;
 }
 export const agentApi = {
+  connectMarketing: (channel: MarketingChannel, apiKey: string, target: string, authorize: boolean) => request<Workspace>('/marketing/connect', 'POST', { channel, apiKey, target, authorize }),
+  configureMarketing: (input: MarketingSettings) => request<Workspace>('/marketing/configure', 'POST', input),
+  disconnectMarketing: (channel: MarketingChannel) => request<Workspace>(`/marketing/channels/${channel}`, 'DELETE'),
+  skipCampaign: (id: string) => request<Workspace>(`/marketing/campaigns/${id}/skip`, 'POST'),
   connectShop: (apiKey: string, authorizeWebhook: boolean) => request<Workspace>('/shop/connect', 'POST', { apiKey, authorizeWebhook }),
   configureShop: (input: ShopSettings) => request<Workspace>('/shop/configure', 'POST', input),
   publishShopProduct: (id: string) => request<Workspace>(`/shop/missions/${id}/publish`, 'POST'),
@@ -72,9 +79,10 @@ async function publicRequest<T>(slug: string, operation = '', method = 'GET', bo
   return response.json();
 }
 export const storefrontApi = {
+  visit: (slug: string, productId: string, campaignId: string, visitToken: string) => publicRequest<{ recorded: boolean }>(slug, 'visit', 'POST', { productId, campaignId, visitToken }),
   previewUrl: (slug: string, productId: string) => `${base}/storefront/${encodeURIComponent(slug)}/preview?product=${encodeURIComponent(productId)}`,
   catalog: (slug: string) => publicRequest<PublicCatalog>(slug),
-  checkout: (slug: string, productId: string, receiptToken: string) => publicRequest<{ url: string }>(slug, 'checkout', 'POST', { productId, receiptToken }),
+  checkout: (slug: string, productId: string, receiptToken: string, campaignId?: string) => publicRequest<{ url: string }>(slug, 'checkout', 'POST', { productId, receiptToken, campaignId }),
   receipt: (slug: string, receipt: string) => publicRequest<PurchaseReceipt>(slug, 'receipt', 'GET', undefined, receipt),
   async download(slug: string, receipt: string) {
     const response = await fetch(`${base}/storefront/${encodeURIComponent(slug)}/download`, { headers: { Authorization: `Bearer ${receipt}` }, signal: AbortSignal.timeout(90000) });

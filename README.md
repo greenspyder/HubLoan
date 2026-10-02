@@ -85,7 +85,7 @@ Um ciclo completo de descoberta e entrega utiliza seis chamadas de API, além da
 
 Na análise de cada oportunidade, **Registrar resultados do teste comercial** recebe visitas, vendas, receita e custos em BRL, com período/referência obrigatória. Resultados são declarados pelo usuário, não verificados por integração. O cálculo líquido é receita menos custos informados e não apuração contábil. O histórico de experimentos de todos os projetos do espaço é fornecido às próximas análises. Sem feedback, o coordenador não presume vendas nem fracasso.
 
-A loja própria publica todos os formatos com preços configurados pelo proprietário, checkout Stripe e downloads após confirmação de pagamento. O itch.io recebe packs nos destinos autorizados. Tráfego e divulgação não são automatizados; canais apenas escritos no briefing não conectam contas. Não há execução de código gerado nem garantia de vendas.
+A loja própria publica todos os formatos com preços configurados pelo proprietário, checkout Stripe e downloads após confirmação de pagamento. O itch.io recebe packs nos destinos autorizados. A divulgação automática integra Mastodon (mastodon.social) e canais Telegram após conexão e autorização. Canais apenas escritos no briefing não conectam contas. Não há execução de código gerado nem garantia de vendas.
 
 ### Produção especializada
 
@@ -98,3 +98,7 @@ Conecte sua conta na central para enviar packs 2D/3D a páginas de assets já ex
 ### Loja automática para todos os formatos
 
 Em **Loja e vendas → Sua loja automática**, conecte a Stripe e autorize o registro automático do webhook. Defina nome, contato público, licença, preços por formato e limite de produtos. Autorize abrir a loja e publicar entregas concluídas, inclusive as existentes. A criação das páginas, o checkout e a entrega do ZIP são integrados. [Configuração e limites](docs/STOREFRONT.md). A loja não traz compradores automaticamente.
+
+### Divulgação automática
+
+Em **Divulgação**, conecte Mastodon ou seu canal Telegram e autorize a fila por até 72 horas. Produtos da loja real geram anúncios com links rastreáveis, frequência limitada e resultados de compras confirmadas fornecidos às análises das IAs. [Configuração, limites e métricas](docs/MARKETING.md). Falhas de confirmação pausam envios; não há garantia de alcance ou vendas.
