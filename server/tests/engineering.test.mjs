@@ -82,3 +82,46 @@ test('encrypted GitHub grant and queued proposal survive durable restart', async
   await worker.close(); await store.close(); store = await createStore({ file: join(folder, 'db.sqlite') }); worker = createEngineering(store, {}, { masterKey, provider: external }); t.after(async () => { await worker.close(); await store.close(); });
   const raw = (await store.read(id)).workspace; assert.ok(!JSON.stringify(raw).includes(githubKey)); assert.ok(!JSON.stringify(raw.engineering).includes(token)); assert.equal((await store.engineeringSpaces()).length, 1); await worker.tick(); assert.equal((await store.read(id)).workspace.engineering.jobs[0].status, 'failed');
 });
+test('owner approval is explicit, bound to both SHAs, isolated and single use under concurrency', async t => {
+  let merges = 0;
+  const f = await fixture(t, { prepareMerge: async () => ({}), merge: async () => { merges++; return { mergeSha: '1'.repeat(40) }; }, deployment: async () => ({ mergeSha: '1'.repeat(40), deployment: { vercel: 'success', backend: 'unknown', note: 'Frontend only' } }) });
+  await f.start(); await f.call('/engineering/jobs', { taskId: 'onboarding-guide' }); await f.app.engineering.tick(); const j = (await f.call('/workspace')).data.engineering.jobs[0];
+  const approval = { approve: true, headSha: j.headSha, baseSha: j.baseSha }, path = `/engineering/jobs/${j.id}/approve`;
+  for (const input of [{ ...approval, approve: false }, { ...approval, headSha: baseSha }, { ...approval, baseSha: headSha }]) assert.equal((await f.call(path, input)).status, 409);
+  assert.equal((await f.call(path, approval, '9'.repeat(64))).status, 409);
+  await Promise.all([f.call(path, approval), f.call(path, approval)]); assert.equal(merges, 1);
+  const release = (await f.call('/workspace')).data.engineering.jobs[0].release; assert.equal(release.status, 'merged'); assert.equal(release.headSha, headSha); assert.equal(release.deployment.vercel, 'pending'); assert.equal((await f.call(path, approval)).status, 409);
+  const synced = await f.call(`/engineering/jobs/${j.id}/deployment`, {}); assert.equal(synced.data.engineering.jobs[0].release.deployment.vercel, 'success'); assert.equal(synced.data.engineering.jobs[0].release.deployment.backend, 'unknown'); assert.equal(f.calls.length, 3);
+});
+test('failed CI never records approval; ambiguous merge is reconciled read-only without repeat', async t => {
+  let failChecks = true, merges = 0;
+  const f = await fixture(t, { prepareMerge: async () => { if (failChecks) throw new (await import('../domain.mjs')).AppError('CI failed', 409); return {}; }, merge: async () => { merges++; throw new Error(githubKey); }, deployment: async () => ({ mergeSha: '1'.repeat(40), deployment: { vercel: 'pending', backend: 'unknown', note: 'Pending' } }) });
+  await f.start(); await f.call('/engineering/jobs', { taskId: 'onboarding-guide' }); await f.app.engineering.tick(); const j = (await f.call('/workspace')).data.engineering.jobs[0], body = { approve: true, headSha, baseSha }, path = `/engineering/jobs/${j.id}/approve`;
+  assert.equal((await f.call(path, body)).status, 409); assert.equal(merges, 0); assert.equal((await f.call('/workspace')).data.engineering.jobs[0].release, undefined);
+  failChecks = false; const uncertain = await f.call(path, body); assert.equal(uncertain.data.engineering.jobs[0].release.status, 'uncertain'); assert.ok(!JSON.stringify(uncertain.data).includes(githubKey)); await f.app.engineering.tick(); assert.equal(merges, 1); assert.equal((await f.call(path, body)).status, 409);
+  await f.call(`/engineering/jobs/${j.id}/deployment`, {}); assert.equal((await f.call('/workspace')).data.engineering.jobs[0].release.status, 'merged'); assert.equal(merges, 1);
+});
+test('GitHub merge revalidates exact files, commits and CI before ready/merge with SHA guard', async () => {
+  const writes = []; let head = headSha, ci = true, content = '# Guia', master = baseSha, extra = false, draft = true;
+  const job = { branch: 'hubloan/ai-12345678-1234-1234-1234-123456789012', prNumber: 1, headSha, baseSha, taskId: 'onboarding-guide', title: 'Guia', review: { approved: true }, edits: [{ path: file, before: '', after: '# Guia' }] };
+  const provider = createEngineeringProvider(async (url, opts) => {
+    let data; if (opts.method !== 'GET') writes.push({ url, body: JSON.parse(opts.body) });
+    if (url.endsWith('/graphql')) { draft = false; data = { data: { markPullRequestReadyForReview: { pullRequest: { isDraft: false, headRefOid: headSha } } } }; }
+    else if (url.endsWith('/merge')) data = { merged: true, sha: '1'.repeat(40) };
+    else if (url.endsWith('/pulls/1')) data = { head: { sha: head, ref: job.branch, repo: { full_name: 'greenspyder/HubLoan' } }, base: { sha: baseSha, ref: 'master', repo: { full_name: 'greenspyder/HubLoan' } }, state: 'open', merged: false, mergeable: true, draft, node_id: 'PR_fixture', changed_files: extra ? 2 : 1 };
+    else if (url.includes('/pulls/1/files')) data = [{ filename: file, status: 'added' }, ...(extra ? [{ filename: 'server/app.mjs', status: 'modified' }] : [])];
+    else if (url.includes('/git/ref/heads/master')) data = { object: { sha: master } };
+    else if (url.includes('/git/commits/')) data = { tree: { sha: 'f'.repeat(40) } };
+    else if (url.includes('/contents/')) { if (url.endsWith(`ref=${baseSha}`)) return new Response('', { status: 404 }); data = { type: 'file', encoding: 'base64', content: Buffer.from(content).toString('base64') }; }
+    else if (url.includes('/actions/runs')) data = { workflow_runs: [{ name: 'Agent checks', path: '.github/workflows/agent-checks.yml', head_sha: headSha, check_suite_id: 7 }] };
+    else if (url.includes('/check-runs')) data = { check_runs: [{ name: 'verify', id: 1, head_sha: headSha, status: 'completed', conclusion: ci ? 'success' : 'failure', app: { slug: 'github-actions' }, check_suite: { id: 7 } }] };
+    return Response.json(data);
+  });
+  head = baseSha; await assert.rejects(provider.prepareMerge(githubKey, job)); head = headSha;
+  master = headSha; await assert.rejects(provider.prepareMerge(githubKey, job)); master = baseSha;
+  extra = true; await assert.rejects(provider.prepareMerge(githubKey, job)); extra = false;
+  content = 'changed'; await assert.rejects(provider.prepareMerge(githubKey, job)); content = '# Guia';
+  ci = false; await assert.rejects(provider.prepareMerge(githubKey, job)); ci = true; assert.equal(writes.length, 0);
+  const prepared = await provider.prepareMerge(githubKey, job); await provider.merge(githubKey, job, prepared);
+  assert.equal(writes.length, 2); assert.equal(writes[0].url, 'https://api.github.com/graphql'); assert.deepEqual(writes[1].body, { sha: headSha, merge_method: 'squash', commit_title: 'Approved AI proposal: Guia' });
+});

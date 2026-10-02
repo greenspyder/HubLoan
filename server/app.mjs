@@ -94,6 +94,8 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if (route === '/engineering' && request.method === 'DELETE') return send(response, 200, publicWorkspace((await engineering.pause(id, true)).workspace, store.mode, Boolean(masterKey)));
       const engineeringAck = route.match(/^\/engineering\/jobs\/([a-f0-9-]+)\/acknowledge$/);
       if (engineeringAck && request.method === 'POST') return send(response, 200, publicWorkspace((await engineering.acknowledge(id, engineeringAck[1], await body(request))).workspace, store.mode, Boolean(masterKey)));
+      const engineeringRelease = route.match(/^\/engineering\/jobs\/([a-f0-9-]+)\/(approve|deployment)$/);
+      if (engineeringRelease && request.method === 'POST') return send(response, 200, publicWorkspace((await (engineeringRelease[2] === 'approve' ? engineering.approve(id, engineeringRelease[1], await body(request)) : engineering.deployment(id, engineeringRelease[1]))).workspace, store.mode, Boolean(masterKey)));
       const engineeringCheck = route.match(/^\/engineering\/jobs\/([a-f0-9-]+)\/checks$/);
       if (engineeringCheck && request.method === 'POST') return send(response, 200, publicWorkspace((await engineering.sync(id, engineeringCheck[1])).workspace, store.mode, Boolean(masterKey)));
       if (route === '/marketing/connect' && request.method === 'POST') return send(response, 200, publicWorkspace((await marketing.connect(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
