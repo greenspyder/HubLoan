@@ -54,7 +54,7 @@ export function createCommerce(store, { masterKey = null, provider = createItchP
     const games = await provider.games(key);
     return store.mutate(id, workspace => { workspace.commerce = { ...(workspace.commerce || {}), secret: encryptKey(key, token), games, autoPublish: false, background: false, targets: {}, error: '', maxUploads: 3, uploads: 0 }; });
   }
-  function unlock(id, token) { unlocked.set(id, token); }
+  function unlock(id, token) { unlocked.set(id, { token, expires: Date.now() + 30000 }); }
   async function configure(id, token, input) {
     const current = (await store.read(id)).workspace.commerce;
     if (!current?.secret) throw new AppError('Conecte itch.io primeiro.');
@@ -114,7 +114,9 @@ export function createCommerce(store, { masterKey = null, provider = createItchP
     if (masterKey) for (const space of await store.commerceSpaces()) {
       try { const token = decryptKey(space.grant, masterKey); if (workspaceId(token) === space.id) unlock(space.id, token); } catch { /* An invalid grant cannot authorize requests. */ }
     }
-    for (const [id, token] of unlocked) {
+    for (const [id, entry] of unlocked) {
+      if (entry.expires < Date.now()) { unlocked.delete(id); continue; }
+      const token = entry.token;
       const w = (await store.read(id)).workspace, c = w.commerce;
       if (!c?.secret || (!c.expiresAt || c.expiresAt < Date.now())) { unlocked.delete(id); continue; }
       if (c.autoPublish && c.uploads < c.maxUploads) {
