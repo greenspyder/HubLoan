@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Mission, Workspace } from '../services/agentApi';
 import './station.css';
+import { RobotSprite } from './RobotSprite';
 import { StationScenery } from './StationScenery';
 
 type Point = { x: number; y: number };
@@ -19,7 +20,7 @@ function roomFor(mission?: Mission) {
   if (mission.phase.includes('Revisando')) return 'review';
   return ['image', 'thumbnail', 'sprites'].includes(mission.kind) ? 'studio' : 'factory';
 }
-function Robot({ name, color, target, active, status, onClick }: { name: string; color: string; target: Point; active: boolean; status: string; onClick: () => void }) {
+function Robot({ id, name, color, target, active, status, onClick }: { id: string; name: string; color: string; target: Point; active: boolean; status: string; onClick: () => void }) {
   const { x, y } = target;
   const element = useRef<HTMLButtonElement>(null);
   const position = useRef(target);
@@ -32,12 +33,12 @@ function Robot({ name, color, target, active, status, onClick }: { name: string;
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const path = [previous, { x: previous.x, y: 50 }, { x, y: 50 }, { x, y }];
     node.dataset.moving = 'true';
-    const animation = node.animate(path.map(point => ({ left: `${point.x}%`, top: `${point.y}%` })), { duration: 2600, easing: 'linear' });
+    const animation = node.animate(path.map(point => ({ left: `${point.x}%`, top: `${point.y}%` })), { duration: 3200, easing: 'linear' });
     animation.onfinish = () => { delete node.dataset.moving; };
     return () => { animation.cancel(); delete node.dataset.moving; };
   }, [x, y]);
-  return <button ref={element} className={`sm-robot ${active ? 'sm-robot-working' : ''}`} style={{ left: `${target.x}%`, top: `${target.y}%`, '--robot-color': color } as React.CSSProperties} onClick={onClick} title={`${name}: ${status}`} aria-label={`${name}: ${status}`}>
-    <svg viewBox="0 0 30 36" aria-hidden="true" shapeRendering="crispEdges"><ellipse cx="15" cy="34" rx="13" ry="2" fill="#030b17" opacity=".7" /><path fill="#fff2bd" d="M13 0h4v3h-4z" /><path fill="var(--robot-color)" d="M14 1h2v5h-2zM7 6h16v3h3v13h-3v3H7v-3H4V9h3z" /><path fill="#152820" d="M8 10h14v10H8z" /><path className="sm-eyes" fill="#d5ffaf" d="M10 12h3v4h-3zm7 0h3v4h-3z" /><path fill="#d5ffaf" d="M12 18h6v1h-6z" /><path fill="var(--robot-color)" d="M9 25h12v5H9zM1 15h3v11H1zm25 0h3v11h-3z" /><path fill="#658674" d="M8 24h14v2H8z" /><path className="sm-leg-left" fill="var(--robot-color)" d="M8 30h5v5H8z" /><path className="sm-leg-right" fill="var(--robot-color)" d="M17 30h5v5h-5z" /></svg><span>{name}</span><i /></button>;
+  return <button ref={element} className={`sm-robot ${id === 'coordinator' ? 'sm-robot-commander' : ''} ${active ? 'sm-robot-working' : ''}`} style={{ left: `${target.x}%`, top: `${target.y}%`, '--robot-color': color } as React.CSSProperties} onClick={onClick} title={`${name}: ${status}`} aria-label={`${name}: ${status}`}>
+    <RobotSprite commander={id === 'coordinator'} /><span>{name}</span><i /></button>;
 }
 export function StationMap({ workspace, onSelect }: { workspace: Workspace; onSelect: (id: string) => void }) {
   const [focused, setFocused] = useState('');
@@ -62,7 +63,7 @@ export function StationMap({ workspace, onSelect }: { workspace: Workspace; onSe
     return { id: agent.id, name: agent.name, target, color: room.color, roomId: room.id, active: mission?.status === 'running', mission, status: mission?.status === 'running' ? mission.phase : !agent.enabled ? 'Novas tarefas pausadas' : mission ? 'Entrega disponível no armazém' : 'Aguardando uma missão' };
   });
   const coordinatorRoom = rooms.find(room => room.id === (planning?.phase.includes('Pesquisando') ? 'research' : 'command'))!;
-  const coordinator = { id: 'coordinator', name: 'Orion', target: coordinatorRoom.point, color: '#bdff70', roomId: coordinatorRoom.id, active: Boolean(planning), mission: undefined, status: planning?.phase || (workspace.autonomy?.enabled ? 'Monitorando o próximo ciclo' : 'Coordenador em espera') };
+  const coordinator = { id: 'coordinator', name: 'Astra', target: coordinatorRoom.point, color: '#68d9f0', roomId: coordinatorRoom.id, active: Boolean(planning), mission: undefined, status: planning?.phase || (workspace.autonomy?.enabled ? 'Monitorando o próximo ciclo' : 'Coordenador em espera') };
   const engineerRoom = rooms.find(room => room.id === (engineeringJob?.phase.toLowerCase().includes('revis') ? 'review' : 'factory'))!;
   const engineer = { id: 'engineer', name: 'Forge', target: { x: engineerRoom.point.x + 5, y: engineerRoom.point.y + 2.4 }, color: '#efc46b', roomId: engineerRoom.id, active: Boolean(engineeringJob), mission: undefined, status: engineeringJob?.phase || 'Engenharia em espera; melhorias exigem autorização' };
   const allRobots = [coordinator, ...robots, engineer].map((robot, index) => previewing ? { ...robot, roomId: rooms[(previewStep + index) % rooms.length].id, target: rooms[(previewStep + index) % rooms.length].point, status: 'Prévia visual do movimento; nenhuma execução de IA', active: false } : robot);
@@ -79,8 +80,8 @@ export function StationMap({ workspace, onSelect }: { workspace: Workspace; onSe
       {allRobots.map(robot => <Robot key={robot.id} {...robot} onClick={() => selectRobot(robot.id)} />)}
       <div className="sm-map-caption">{workspace.settings.configured ? 'API CONECTADA' : 'SEM CHAVE DE API'} · {workspace.missions.filter(m => ['review', 'approved'].includes(m.status)).length} ENTREGAS REAIS</div>
     </div></div>
-    <div className="sm-crew" aria-label="Selecionar robô">{allRobots.map(robot => <button key={robot.id} className={focused === robot.id ? 'is-selected' : ''} aria-pressed={focused === robot.id} onClick={() => selectRobot(robot.id)}><i style={{ background: robot.color }} /><strong>{robot.name}</strong><span>{previewing ? 'Prévia' : robot.active ? 'Em execução' : 'Em espera'}</span></button>)}</div>
-    <div className="sm-inspector"><div><strong>{selected ? selected.name : 'Sua equipe de robôs'}</strong><p>{selected ? selected.status : 'Escolha um robô no mapa ou na lista. As mudanças de sala acompanham etapas registradas no servidor; a prévia é apenas visual.'}</p>{selected?.mission && <button className="aw-button aw-secondary" onClick={() => { onSelect(selected.mission!.id); document.getElementById('terminal')?.scrollIntoView({ behavior: 'smooth' }); }}>Abrir tarefa e entrega</button>}{selected?.id === 'engineer' && <a href="#improvements">Abrir melhorias da aplicação →</a>}</div><span className="aw-badge">{previewing ? 'CUSTO DA PRÉVIA: ZERO' : operating ? 'EXECUÇÃO REAL' : 'SEM EXECUÇÃO'}</span></div>
+    <div className="sm-crew" aria-label="Selecionar robô">{allRobots.map(robot => <button key={robot.id} className={focused === robot.id ? 'is-selected' : ''} aria-pressed={focused === robot.id} onClick={() => selectRobot(robot.id)}><i style={{ background: robot.color }} /><strong>{robot.name}</strong>{robot.id === 'coordinator' && <b className="sm-commander-tag">ORQUESTRADOR</b>}<span>{previewing ? 'Prévia' : robot.active ? 'Em execução' : 'Em espera'}</span></button>)}</div>
+    <div className="sm-inspector"><div><strong>{selected ? selected.name : 'Sua equipe de robôs'}</strong><p>{selected ? selected.status : 'Escolha um robô no mapa ou na lista. As mudanças de sala acompanham etapas registradas no servidor; a prévia é apenas visual.'}</p>{selected?.mission && <button className="aw-button aw-secondary" onClick={() => { onSelect(selected.mission!.id); document.getElementById('terminal')?.scrollIntoView({ behavior: 'smooth' }); }}>Abrir tarefa e entrega</button>}{selected?.id === 'coordinator' && <p>Astra é a identidade visual do orquestrador Orion. Usa o modelo configurado na conexão de IA, sem adicionar outro provedor.</p>}{selected?.id === 'engineer' && <a href="#improvements">Abrir melhorias da aplicação →</a>}</div><span className="aw-badge">{previewing ? 'CUSTO DA PRÉVIA: ZERO' : operating ? 'EXECUÇÃO REAL' : 'SEM EXECUÇÃO'}</span></div>
     <div className="sm-feed">{latestEvents.length ? latestEvents.map((event, index) => <p key={index}><time>{new Date(event.at).toLocaleTimeString('pt-BR')}</time><span>{event.message}</span></p>) : <p><span>Nenhum evento de execução registrado. Conecte a IA e crie seu primeiro teste no início da página.</span></p>}</div>
   </div>;
 }
