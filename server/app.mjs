@@ -1,3 +1,4 @@
+import { createCommerce } from './commerce.mjs';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { resolve, sep, extname } from 'node:path';
@@ -6,8 +7,9 @@ import { recordExperiment } from './market.mjs';
 import { createRunner } from './runner.mjs';
 import { createProject, projectAction, reconcileProjects, syncAutonomy } from './autonomy.mjs';
 
-export function createApp({ store, provider, staticDirectory = '../frontend/dist', allowedOrigins = [], masterKey = null }) {
+export function createApp({ store, provider, staticDirectory = '../frontend/dist', allowedOrigins = [], masterKey = null, commerceProvider }) {
   const runner = createRunner(store, provider, { masterKey });
+  const commerce = createCommerce(store, { masterKey, provider: commerceProvider });
   const rates = new Map();
   const root = resolve(staticDirectory);
   function send(response, status, body, headers = {}) {
@@ -50,9 +52,30 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if (rate.reset <= now) { rate.count = 0; rate.reset = now + 60000; }
       if (++rate.count > 120) throw new AppError('Muitas requisições. Aguarde um minuto.', 429);
       rates.set(rateKey, rate);
-      runner.unlock(id, token);
+      runner.unlock(id, token); commerce.unlock(id, token);
       const route = url.pathname.slice('/api/agents'.length);
-      if (route === '/workspace' && request.method === 'GET') {
+      if (route === '/commerce/connect' && request.method === 'POST') {
+        const updated = await commerce.connect(id, token, await body(request));
+        return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
+      }
+      if (route === '/commerce/configure' && request.method === 'POST') {
+        const updated = await commerce.configure(id, token, await body(request));
+        return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
+      }
+      if (route === '/commerce/sync' && request.method === 'POST') {
+        const updated = await commerce.sync(id, token);
+        return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
+      }
+      if (route === '/commerce' && request.method === 'DELETE') {
+        const updated = await commerce.disconnect(id);
+        return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
+      }
+      const shipping = route.match(/^\/commerce\/missions\/([a-f0-9-]+)\/(publish|recover)$/);
+      if (shipping && request.method === 'POST') {
+        const updated = shipping[2] === 'recover' ? await commerce.recover(id, shipping[1]) : await commerce.publish(id, token, shipping[1]);
+        return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
+      }
+      if (route === '/workspace'  && request.method === 'GET') {
         const snapshot = await store.read(id);
         if (snapshot.workspace.missions.some(item => item.status === 'running' && item.leaseUntil < now) || snapshot.workspace.autonomy.projects.some(project => ['active', 'planning'].includes(project.status) && (project.expiresAt < now || (project.status === 'planning' && project.leaseUntil < now)))) {
           const updated = await store.mutate(id, workspace => { recoverStale(workspace); reconcileProjects(workspace); });
@@ -149,5 +172,5 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       send(response, error instanceof AppError ? error.status : 500, { error: error instanceof AppError ? error.message : 'O servidor não conseguiu concluir a ação. Tente novamente.' });
     }
   });
-  return { server, runner, close: async () => { await runner.close(); await new Promise(resolveClose => server.close(resolveClose)); } };
+  return { server, runner, commerce, close: async () => { await commerce.close(); await runner.close(); await new Promise(resolveClose => server.close(resolveClose)); } };
 }

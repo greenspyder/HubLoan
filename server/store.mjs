@@ -49,5 +49,9 @@ export async function createStore({ connectionString, file = 'data/agents.sqlite
     const rows = pool ? (await pool.query(`SELECT id, data::jsonb->'autonomy'->'grant' AS grant FROM agent_workspaces WHERE id > $1 AND data::jsonb @> '{"autonomy":{"enabled":true}}'::jsonb ORDER BY id LIMIT 100`, [after])).rows : sqlite.prepare("SELECT id, json_extract(data, '$.autonomy.grant') AS grant FROM agent_workspaces WHERE id > ? AND json_extract(data, '$.autonomy.enabled')=1 ORDER BY id LIMIT 100").all(after);
     return rows.map(row => ({ id: row.id, grant: typeof row.grant === 'string' ? JSON.parse(row.grant) : row.grant }));
   }
-  return { read, mutate, autonomousSpaces, mode, close: async () => { if (pool) await pool.end(); else sqlite.close(); } };
+  async function commerceSpaces() {
+    const rows = pool ? (await pool.query(`SELECT id, data::jsonb->'commerce'->'grant' AS grant FROM agent_workspaces WHERE data::jsonb @> '{"commerce":{"background":true}}'::jsonb LIMIT 100`)).rows : sqlite.prepare("SELECT id, json_extract(data, '$.commerce.grant') AS grant FROM agent_workspaces WHERE json_extract(data, '$.commerce.background')=1 LIMIT 100").all();
+    return rows.filter(row => row.grant).map(row => ({ id: row.id, grant: typeof row.grant === 'string' ? JSON.parse(row.grant) : row.grant }));
+  }
+  return { read, mutate, autonomousSpaces, commerceSpaces, mode, close: async () => { if (pool) await pool.end(); else sqlite.close(); } };
 }

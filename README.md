@@ -90,3 +90,7 @@ Publicação, tráfego, checkout, métricas de lojas e execução de código con
 ### Produção especializada
 
 Thumbnails 16:9, packs 2D transparentes e mobília 3D procedural agora têm pesquisa própria, arquivos ZIP para download e verificações técnicas. Veja [formatos, limites e validação](docs/SPECIALIZATIONS.md).
+
+### Loja itch.io
+
+Conecte sua conta na central para enviar packs 2D/3D a páginas de assets já existentes e acompanhar métricas reais. [Configuração inicial e limites da integração](docs/COMMERCE.md). A publicação automática precisa de autorização explícita na interface; não cria páginas nem altera preços.

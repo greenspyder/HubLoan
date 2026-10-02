@@ -1,14 +1,17 @@
+export type StoreGame = { id: number; title: string; url: string; published: boolean; classification: string; views: number | null; purchases: number | null; downloads: number | null; earnings: { currency: string; grossMinor: number }[]; observedAt: string; origin: string; scope: string; note: string };
+export type CommerceSettings = { autoPublish: boolean; background: boolean; maxUploads: number; targets: { sprites?: number | string; model3d?: number | string }; license: string };
+export type Commerce = { configured: boolean; autoPublish: boolean; background: boolean; maxUploads: number; uploads: number; expiresAt?: number; games: StoreGame[]; targets: Record<string, { id: number; title: string; url: string }>; error: string; license: string };
 export type ProductionKind = 'text' | 'image' | 'thumbnail' | 'sprites' | 'model3d';
 export const productionLabels: Record<ProductionKind, string> = { text: 'Texto / código', image: 'Imagem PNG', thumbnail: 'Thumbnails YouTube (ZIP)', sprites: 'Pack 2D transparente (ZIP)', model3d: 'Mobília 3D GLB / OBJ (ZIP)' };
 export type Agent = { id: string; name: string; role: string; enabled: boolean };
 export type MissionStatus = 'draft' | 'queued' | 'running' | 'review' | 'approved' | 'failed' | 'cancelled';
-export type Mission = { id: string; title: string; brief: string; agentId: string; kind: ProductionKind; status: MissionStatus; output: string; error: string; phase: string; createdAt: string; events: { at: string; message: string }[]; tokens: number; images: number; attempt: number; hasArtifact: boolean; hasPreview?: boolean; artifactMime?: string; artifactFilename?: string; projectId?: string; sequence?: number; decisionId?: string; plan?: string };
+export type Mission = { id: string; title: string; brief: string; agentId: string; kind: ProductionKind; status: MissionStatus; output: string; error: string; phase: string; createdAt: string; events: { at: string; message: string }[]; tokens: number; images: number; attempt: number; hasArtifact: boolean; hasPreview?: boolean; artifactMime?: string; artifactFilename?: string; projectId?: string; sequence?: number; decisionId?: string; plan?: string; publication?: { status: string; error?: string; target: { url: string; title: string }; channel?: string; note?: string } };
 export type MarketOption = { id: string; title: string; audience: string; rationale: string; uncertainty: string; test: string; kind: ProductionKind; score: number; scores: Record<string, number>; sourceUrls: string[] };
 export type ExperimentInput = { visits: number; sales: number; revenue: number; cost: number; evidence: string };
 export type MarketDecision = { id: string; observedAt: string; candidates: MarketOption[]; selected: MarketOption | null; report: string; sources: { title: string; url: string }[]; feedback?: ExperimentInput & { net: number; currency: string; origin: string; recordedAt: string } };
 export type Project = { id: string; name: string; goal: string; mode?: 'goal' | 'discover'; market?: { allowImages?: boolean; specializations?: ProductionKind[]; market: string; channels: string; restrictions: string }; maxCalls: number; calls: number; decisions?: MarketDecision[]; kind: ProductionKind; maxDeliveries: number; intervalMinutes: number; research: boolean; status: 'active' | 'planning' | 'paused' | 'completed'; phase: string; produced: number; tokens: number; searches: number; error: string; nextRunAt: number; expiresAt: number; events: { at: string; message: string }[]; researchReport?: { output: string; sources: { title: string; url: string }[] } };
 export type ProjectInput = Pick<Project, 'name' | 'goal' | 'kind' | 'maxDeliveries' | 'intervalMinutes' | 'research'> & { start: boolean; mode?: 'goal' | 'discover'; maxCalls?: number; market?: Project['market'] };
-export type Workspace = { version: 2; autonomy: { enabled: boolean; durable: boolean; projects: Project[] }; agents: Agent[]; missions: Mission[]; settings: { model: string; imageModel: string; maxOutputTokens: number; configured: boolean }; storage: 'postgres' | 'sqlite' };
+export type Workspace = { version: 2; commerce?: Commerce; autonomy: { enabled: boolean; durable: boolean; projects: Project[] }; agents: Agent[]; missions: Mission[]; settings: { model: string; imageModel: string; maxOutputTokens: number; configured: boolean }; storage: 'postgres' | 'sqlite' };
 const accessKey = 'hubloan.workspace.access.v2';
 const configuredBase = import.meta.env.VITE_API_BASE_URL?.trim().replace(/\/+$/, '');
 const base = configuredBase ? `${configuredBase.endsWith('/api') ? configuredBase : configuredBase + '/api'}/agents` : '/api/agents';
@@ -32,6 +35,12 @@ async function request<T>(path: string, method = 'GET', body?: object): Promise<
   return data as T;
 }
 export const agentApi = {
+  connectStore: (apiKey: string) => request<Workspace>('/commerce/connect', 'POST', { apiKey }),
+  configureStore: (input: CommerceSettings) => request<Workspace>('/commerce/configure', 'POST', input),
+  syncStore: () => request<Workspace>('/commerce/sync', 'POST'),
+  disconnectStore: () => request<Workspace>('/commerce', 'DELETE'),
+  publishPack: (id: string) => request<Workspace>(`/commerce/missions/${id}/publish`, 'POST'),
+  recoverUpload: (id: string) => request<Workspace>(`/commerce/missions/${id}/recover`, 'POST'),
   workspace: () => request<Workspace>('/workspace'),
   addProject: (input: ProjectInput) => request<Workspace>('/projects', 'POST', input),
   experiment: (projectId: string, decisionId: string, input: ExperimentInput) => request<Workspace>(`/projects/${projectId}/decisions/${decisionId}/feedback`, 'POST', input),

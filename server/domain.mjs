@@ -1,3 +1,4 @@
+import { publicCommerce } from './commerce.mjs';
 import { createHash, createCipheriv, createDecipheriv, randomBytes, randomUUID } from 'node:crypto';
 
 export class AppError extends Error {
@@ -28,7 +29,7 @@ export function initialWorkspace() {
   ], missions: [], settings: { model: 'gpt-4.1-mini', imageModel: 'gpt-image-1-mini', maxOutputTokens: 1800 } };
 }
 export function publicWorkspace(workspace, storage, durableAutonomy = false) {
-  return { version: 2, autonomy: { projects: workspace.autonomy?.projects || [], enabled: Boolean(workspace.autonomy?.enabled), durable: durableAutonomy }, agents: workspace.agents, missions: workspace.missions.map(({ artifact, ...mission }) => ({ ...mission, hasArtifact: Boolean(artifact), hasPreview: Boolean(artifact?.preview), artifactMime: artifact?.mime, artifactFilename: artifact?.filename })), settings: { model: workspace.settings.model, imageModel: workspace.settings.imageModel, maxOutputTokens: workspace.settings.maxOutputTokens, configured: Boolean(workspace.secret) }, storage };
+  return { version: 2, commerce: publicCommerce(workspace), autonomy: { projects: workspace.autonomy?.projects || [], enabled: Boolean(workspace.autonomy?.enabled), durable: durableAutonomy }, agents: workspace.agents, missions: workspace.missions.map(({ artifact, ...mission }) => ({ ...mission, hasArtifact: Boolean(artifact), hasPreview: Boolean(artifact?.preview), artifactMime: artifact?.mime, artifactFilename: artifact?.filename })), settings: { model: workspace.settings.model, imageModel: workspace.settings.imageModel, maxOutputTokens: workspace.settings.maxOutputTokens, configured: Boolean(workspace.secret) }, storage };
 }
 export function text(value, name, max) {
   if (typeof value !== 'string' || !value.trim() || value.trim().length > max) throw new AppError(`${name}: informe de 1 a ${max} caracteres.`);
