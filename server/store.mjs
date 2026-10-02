@@ -1,6 +1,7 @@
 import { mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { initialWorkspace, AppError } from './domain.mjs';
+import { normalizeWorkspace } from './autonomy.mjs';
 
 export function postgresConfig(value) {
   if (/^postgres(ql)?:\/\//i.test(value)) return { connectionString: value };
@@ -25,7 +26,7 @@ export async function createStore({ connectionString, file = 'data/agents.sqlite
   const mode = pool ? 'postgres' : 'sqlite';
   async function read(id) {
     const row = pool ? (await pool.query('SELECT data, revision FROM agent_workspaces WHERE id=$1', [id])).rows[0] : sqlite.prepare('SELECT data, revision FROM agent_workspaces WHERE id=?').get(id);
-    return row ? { workspace: JSON.parse(row.data), revision: row.revision } : { workspace: initialWorkspace(), revision: -1 };
+    return row ? { workspace: normalizeWorkspace(JSON.parse(row.data)), revision: row.revision } : { workspace: normalizeWorkspace(initialWorkspace()), revision: -1 };
   }
   async function mutate(id, operation) {
     for (let attempt = 0; attempt < 12; attempt++) {
@@ -44,5 +45,9 @@ export async function createStore({ connectionString, file = 'data/agents.sqlite
     }
     throw new AppError('O espaço está ocupado. Tente novamente.', 409);
   }
-  return { read, mutate, mode, close: async () => { if (pool) await pool.end(); else sqlite.close(); } };
+  async function autonomousSpaces(after = '') {
+    const rows = pool ? (await pool.query(`SELECT id, data::jsonb->'autonomy'->'grant' AS grant FROM agent_workspaces WHERE id > $1 AND data::jsonb @> '{"autonomy":{"enabled":true}}'::jsonb ORDER BY id LIMIT 100`, [after])).rows : sqlite.prepare("SELECT id, json_extract(data, '$.autonomy.grant') AS grant FROM agent_workspaces WHERE id > ? AND json_extract(data, '$.autonomy.enabled')=1 ORDER BY id LIMIT 100").all(after);
+    return rows.map(row => ({ id: row.id, grant: typeof row.grant === 'string' ? JSON.parse(row.grant) : row.grant }));
+  }
+  return { read, mutate, autonomousSpaces, mode, close: async () => { if (pool) await pool.end(); else sqlite.close(); } };
 }

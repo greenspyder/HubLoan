@@ -26,4 +26,12 @@ Chamadas podem gerar custos. Conectar valida o acesso ao modelo de texto, mas sa
 
 ## Limites operacionais
 
-Um worker executa as etapas em sequência, com no máximo cinco missões pendentes por espaço. Cancelamento interrompe a conexão local; chamadas já enviadas podem ser cobradas. Não há tentativas automáticas após interrupção. Serviços gratuitos podem dormir, portanto não há atuação contínua garantida. Após reinício, reabra o app; após uma interrupção longa, aguarde o prazo de dez minutos ou use cancelar antes de tentar novamente.
+Um worker executa as etapas em sequência, com no máximo cinco missões pendentes por espaço. Cancelamento interrompe a conexão local; chamadas já enviadas podem ser cobradas. Não há tentativas automáticas após interrupção. Serviços gratuitos podem dormir, portanto não há atuação contínua garantida. Após reinício, projetos autorizados retomam a fila; para a fila manual, reabra o app; após uma interrupção longa, aguarde o prazo de dez minutos ou use cancelar antes de tentar novamente.
+
+## Autonomia persistente
+
+O servidor descobre projetos ativos no banco e retoma tarefas pendentes após reinício. A autorização do navegador é armazenada encapsulada com AES-GCM e uma chave de servidor. Preferencialmente configure `AGENT_ENCRYPTION_KEY` com um segredo aleatório de pelo menos 32 bytes; sem variável nova, a senha da conexão PostgreSQL existente alimenta uma derivação HKDF com domínio exclusivo. A senha precisa ter ao menos 12 caracteres. A API informa `autonomy.durable` para a interface. Se não houver segredo estável suficiente, a ativação autônoma é bloqueada explicitamente.
+
+No desenvolvimento SQLite, `autonomy.key` é gerada automaticamente com permissão 0600 no diretório do banco. Preserve ambos no volume persistente. Não faça commit da chave ou do banco. Alterar o segredo do servidor pausa projetos cuja autorização anterior não pode ser aberta; o usuário precisa retomar pela interface.
+
+Não execute múltiplas réplicas para aumentar o paralelismo sem um scheduler distribuído dedicado. As revisões de banco protegem os claims de tarefas e projetos, mas esta versão foi projetada para um worker por serviço. A descoberta percorre páginas de espaços ativos e a fila alterna entre usuários.

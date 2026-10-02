@@ -1,7 +1,9 @@
 export type Agent = { id: string; name: string; role: string; enabled: boolean };
 export type MissionStatus = 'draft' | 'queued' | 'running' | 'review' | 'approved' | 'failed' | 'cancelled';
-export type Mission = { id: string; title: string; brief: string; agentId: string; kind: 'text' | 'image'; status: MissionStatus; output: string; error: string; phase: string; createdAt: string; events: { at: string; message: string }[]; tokens: number; images: number; attempt: number; hasArtifact: boolean; plan?: string };
-export type Workspace = { version: 2; agents: Agent[]; missions: Mission[]; settings: { model: string; imageModel: string; maxOutputTokens: number; configured: boolean }; storage: 'postgres' | 'sqlite' };
+export type Mission = { id: string; title: string; brief: string; agentId: string; kind: 'text' | 'image'; status: MissionStatus; output: string; error: string; phase: string; createdAt: string; events: { at: string; message: string }[]; tokens: number; images: number; attempt: number; hasArtifact: boolean; projectId?: string; sequence?: number; plan?: string };
+export type Project = { id: string; name: string; goal: string; kind: 'text' | 'image'; maxDeliveries: number; intervalMinutes: number; research: boolean; status: 'active' | 'planning' | 'paused' | 'completed'; phase: string; produced: number; tokens: number; searches: number; error: string; nextRunAt: number; expiresAt: number; events: { at: string; message: string }[]; researchReport?: { output: string; sources: { title: string; url: string }[] } };
+export type ProjectInput = Pick<Project, 'name' | 'goal' | 'kind' | 'maxDeliveries' | 'intervalMinutes' | 'research'> & { start: boolean };
+export type Workspace = { version: 2; autonomy: { enabled: boolean; durable: boolean; projects: Project[] }; agents: Agent[]; missions: Mission[]; settings: { model: string; imageModel: string; maxOutputTokens: number; configured: boolean }; storage: 'postgres' | 'sqlite' };
 const accessKey = 'hubloan.workspace.access.v2';
 const configuredBase = import.meta.env.VITE_API_BASE_URL?.trim().replace(/\/+$/, '');
 const base = configuredBase ? `${configuredBase.endsWith('/api') ? configuredBase : configuredBase + '/api'}/agents` : '/api/agents';
@@ -26,6 +28,8 @@ async function request<T>(path: string, method = 'GET', body?: object): Promise<
 }
 export const agentApi = {
   workspace: () => request<Workspace>('/workspace'),
+  addProject: (input: ProjectInput) => request<Workspace>('/projects', 'POST', input),
+  projectAction: (id: string, action: 'pause' | 'resume') => request<Workspace>(`/projects/${id}/${action}`, 'POST'),
   saveSettings: (apiKey: string, model: string, imageModel: string) => request<Workspace>('/settings', 'POST', { apiKey, model, imageModel }),
   disconnect: () => request<Workspace>('/settings', 'DELETE'),
   addAgent: (name: string, role: string) => request<Workspace>('/agents', 'POST', { name, role }),

@@ -3,9 +3,10 @@ import { readFile } from 'node:fs/promises';
 import { resolve, sep, extname } from 'node:path';
 import { AppError, workspaceId, publicWorkspace, encryptKey, text, TEXT_MODELS, IMAGE_MODELS, addAgent, addMission, missionById, queueMission, approveMission, cancelMission, recoverStale } from './domain.mjs';
 import { createRunner } from './runner.mjs';
+import { createProject, projectAction, reconcileProjects, syncAutonomy } from './autonomy.mjs';
 
-export function createApp({ store, provider, staticDirectory = '../frontend/dist', allowedOrigins = [] }) {
-  const runner = createRunner(store, provider);
+export function createApp({ store, provider, staticDirectory = '../frontend/dist', allowedOrigins = [], masterKey = null }) {
+  const runner = createRunner(store, provider, { masterKey });
   const rates = new Map();
   const root = resolve(staticDirectory);
   function send(response, status, body, headers = {}) {
@@ -52,11 +53,11 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       const route = url.pathname.slice('/api/agents'.length);
       if (route === '/workspace' && request.method === 'GET') {
         const snapshot = await store.read(id);
-        if (snapshot.workspace.missions.some(item => item.status === 'running' && item.leaseUntil < now)) {
-          const updated = await store.mutate(id, workspace => recoverStale(workspace));
-          return send(response, 200, publicWorkspace(updated.workspace, store.mode));
+        if (snapshot.workspace.missions.some(item => item.status === 'running' && item.leaseUntil < now) || snapshot.workspace.autonomy.projects.some(project => ['active', 'planning'].includes(project.status) && (project.expiresAt < now || (project.status === 'planning' && project.leaseUntil < now)))) {
+          const updated = await store.mutate(id, workspace => { recoverStale(workspace); reconcileProjects(workspace); });
+          return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
         }
-        return send(response, 200, publicWorkspace(snapshot.workspace, store.mode));
+        return send(response, 200, publicWorkspace(snapshot.workspace, store.mode, Boolean(masterKey)));
       }
       if (route === '/settings' && request.method === 'POST') {
         const input = await body(request);
@@ -72,19 +73,33 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
           workspace.settings = { model: input.model, imageModel: input.imageModel, maxOutputTokens: 1800 };
           if (key) workspace.secret = encryptKey(key, token);
         });
-        return send(response, 200, publicWorkspace(updated.workspace, store.mode));
+        return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
       }
       if (route === '/settings' && request.method === 'DELETE') {
         const updated = await store.mutate(id, workspace => {
           delete workspace.secret;
+          for (const project of workspace.autonomy.projects) { project.status = 'paused'; project.phase = 'Conexão removida'; }
+          syncAutonomy(workspace);
+          runner.cancelPlanning(id);
           for (const mission of workspace.missions) if (['queued', 'running'].includes(mission.status)) { runner.cancel(id, mission.id); mission.status = 'cancelled'; mission.phase = 'Conexão removida'; }
         });
-        return send(response, 200, publicWorkspace(updated.workspace, store.mode));
+        return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
+      }
+      if (route === '/projects' && request.method === 'POST') {
+        const input = await body(request);
+        const updated = await store.mutate(id, workspace => createProject(workspace, input, token, masterKey));
+        return send(response, 201, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
+      }
+      const projectRoute = route.match(/^\/projects\/([a-f0-9-]+)\/(pause|resume)$/);
+      if (projectRoute && request.method === 'POST') {
+        const updated = await store.mutate(id, workspace => projectAction(workspace, projectRoute[1], projectRoute[2], token, masterKey));
+        if (projectRoute[2] === 'pause') runner.cancelPlanning(id);
+        return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
       }
       if (route === '/agents' && request.method === 'POST') {
         const input = await body(request);
         const updated = await store.mutate(id, workspace => addAgent(workspace, input));
-        return send(response, 201, publicWorkspace(updated.workspace, store.mode));
+        return send(response, 201, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
       }
       const agentRoute = route.match(/^\/agents\/([a-zA-Z0-9-]+)$/);
       if (agentRoute && request.method === 'PATCH') {
@@ -95,12 +110,12 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
           if (!agent) throw new AppError('Agente não encontrado.', 404);
           agent.enabled = input.enabled;
         });
-        return send(response, 200, publicWorkspace(updated.workspace, store.mode));
+        return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
       }
       if (route === '/missions' && request.method === 'POST') {
         const input = await body(request);
         const updated = await store.mutate(id, workspace => { const mission = addMission(workspace, input); if (input.execute === true) queueMission(workspace, mission.id); });
-        return send(response, 201, publicWorkspace(updated.workspace, store.mode));
+        return send(response, 201, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
       }
       const action = route.match(/^\/missions\/([a-f0-9-]+)\/(run|cancel|approve|artifact)$/);
       if (action) {
@@ -117,7 +132,7 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
           else cancelMission(workspace, missionId);
         });
         if (operation === 'cancel') runner.cancel(id, missionId);
-        return send(response, 200, publicWorkspace(updated.workspace, store.mode));
+        return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
       }
       throw new AppError('Rota não encontrada.', 404);
     } catch (error) {
@@ -126,5 +141,5 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       send(response, error instanceof AppError ? error.status : 500, { error: error instanceof AppError ? error.message : 'O servidor não conseguiu concluir a ação. Tente novamente.' });
     }
   });
-  return { server, runner, close: async () => { runner.close(); await new Promise(resolveClose => server.close(resolveClose)); } };
+  return { server, runner, close: async () => { await runner.close(); await new Promise(resolveClose => server.close(resolveClose)); } };
 }
