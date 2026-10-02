@@ -6,13 +6,15 @@ import { AdminContractDetailsPage } from "../features/admin/pages/AdminContractD
 import { ClientDashboardPage } from "../features/client/pages/ClientDashboardPage";
 import { ClientContractDetailsPage } from "../features/client/pages/ClientContractDetailsPage";
 import { SimulationPage } from "../features/simulation/pages/SimulationPage";
+import { AgentWorkspacePage } from "../features/agents/pages/AgentWorkspacePage";
 
 function App() {
   return (
     <ImpersonationProvider>
       <Routes>
+        <Route path="/" element={<AgentWorkspacePage />} />
+        <Route path="/agentes" element={<AgentWorkspacePage />} />
         <Route element={<DashboardLayout />}>
-          <Route index element={<Navigate to="/admin" replace />} />
           <Route path="admin" element={<AdminDashboardPage />} />
           <Route path="admin/contratos/:contractId" element={<AdminContractDetailsPage />} />
           <Route path="cliente" element={<ClientDashboardPage />} />
