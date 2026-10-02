@@ -1,3 +1,4 @@
+import { marketGoal, marketSettings } from './market.mjs';
 import { hkdfSync } from 'node:crypto';
 import { AppError, text, encryptKey, decryptKey, workspaceId, addMission, queueMission } from './domain.mjs';
 
@@ -9,6 +10,7 @@ export function autonomyMasterKey({ encryptionKey, connectionString } = {}) {
 }
 export function normalizeWorkspace(workspace) {
   workspace.autonomy ||= { enabled: false, projects: [] };
+  for (const project of workspace.autonomy.projects) { project.mode ||= 'goal'; project.calls ||= 0; project.maxCalls ??= project.maxDeliveries * 7 + 1; project.decisions ||= []; }
   return workspace;
 }
 export function syncAutonomy(workspace) {
@@ -28,13 +30,17 @@ export function unlockGrant(id, secret, masterKey) {
 export function createProject(workspace, input, token, masterKey, now = Date.now()) {
   normalizeWorkspace(workspace);
   if (workspace.autonomy.projects.length >= 10) throw new AppError('Limite de dez projetos por espaço.');
+  const mode = input.mode || 'goal';
+  if (!['goal', 'discover'].includes(mode)) throw new AppError('Modo de autonomia inválido.');
+  const maxCalls = input.maxCalls ?? input.maxDeliveries * 7 + 1;
+  if (!Number.isInteger(maxCalls) || maxCalls < 1 || maxCalls > 200) throw new AppError('Limite de chamadas deve ser de uma a duzentas.');
   if (!['text', 'image'].includes(input.kind)) throw new AppError('Tipo de entrega inválido.');
   if (!Number.isInteger(input.maxDeliveries) || input.maxDeliveries < 1 || input.maxDeliveries > 20) throw new AppError('Escolha de uma a vinte entregas por projeto.');
   if (!Number.isInteger(input.intervalMinutes) || input.intervalMinutes < 1 || input.intervalMinutes > 1440) throw new AppError('O intervalo deve ser de um a 1.440 minutos.');
   if (typeof input.research !== 'boolean' || typeof input.start !== 'boolean') throw new AppError('Configuração de autonomia inválida.');
   if (input.start && workspace.autonomy.enabled) throw new AppError('Pause o projeto atual antes de iniciar outro.');
   if (input.start) grant(workspace, token, masterKey);
-  const project = { id: crypto.randomUUID(), name: text(input.name, 'Nome do projeto', 100), goal: text(input.goal, 'Objetivo', 4000), kind: input.kind, maxDeliveries: input.maxDeliveries, intervalMinutes: input.intervalMinutes, research: input.research, status: input.start ? 'active' : 'paused', phase: input.start ? 'Coordenador aguardando o próximo ciclo' : 'Projeto pausado', produced: 0, tokens: 0, searches: 0, events: [], createdAt: new Date(now).toISOString(), nextRunAt: now, expiresAt: now + 72 * 3600000, error: '' };
+  const project = { id: crypto.randomUUID(), name: text(input.name || (mode === 'discover' ? 'Descoberta de oportunidades' : ''), 'Nome do projeto', 100), goal: mode === 'discover' ? marketGoal : text(input.goal, 'Objetivo', 4000), mode, market: mode === 'discover' ? marketSettings(input.market) : undefined, maxCalls, calls: 0, decisions: [], kind: input.kind, maxDeliveries: input.maxDeliveries, intervalMinutes: input.intervalMinutes, research: mode === 'discover' || input.research, status: input.start ? 'active' : 'paused', phase: input.start ? 'Coordenador aguardando o próximo ciclo' : 'Projeto pausado', produced: 0, tokens: 0, searches: 0, events: [], createdAt: new Date(now).toISOString(), nextRunAt: now, expiresAt: now + 72 * 3600000, error: '' };
   workspace.autonomy.projects.unshift(project); syncAutonomy(workspace); return project;
 }
 export function projectById(workspace, id) {
@@ -46,6 +52,7 @@ export function projectAction(workspace, id, action, token, masterKey, now = Dat
   const project = projectById(workspace, id);
   if (action === 'pause') { project.status = 'paused'; project.phase = 'Próximas tarefas pausadas'; }
   else {
+    if (project.calls >= project.maxCalls) throw new AppError('Limite de chamadas atingido. Crie um novo ciclo com um novo limite.');
     if (project.produced >= project.maxDeliveries) throw new AppError('Este projeto já atingiu seu limite. Crie outro com um novo objetivo.');
     if (workspace.autonomy.projects.some(other => other.id !== id && ['active', 'planning'].includes(other.status))) throw new AppError('Já existe um projeto ativo.');
     if (workspace.missions.some(mission => mission.projectId === id && ['failed', 'cancelled'].includes(mission.status))) throw new AppError('Há uma tarefa interrompida. Revise e tente novamente antes de retomar.');
@@ -74,7 +81,8 @@ export function parseAssignment(output) {
 export function enqueueAssignment(workspace, project, assignment, now = Date.now()) {
   const agent = workspace.agents.find(agent => agent.id === 'creator' && agent.enabled) || workspace.agents.find(agent => agent.enabled);
   if (!agent) throw new AppError('Todos os agentes estão pausados.');
-  const mission = addMission(workspace, { ...assignment, kind: project.kind, agentId: agent.id });
+  const mission = addMission(workspace, { ...assignment, kind: assignment.kind || project.kind, agentId: agent.id });
+  if (assignment.decisionId) mission.decisionId = assignment.decisionId;
   mission.projectId = project.id; mission.sequence = project.produced + 1; queueMission(workspace, mission.id);
   project.produced++; project.status = 'active'; project.phase = 'Tarefa distribuída para produção'; project.nextRunAt = now + project.intervalMinutes * 60000;
   project.events.push({ at: new Date(now).toISOString(), message: `Tarefa ${project.produced}/${project.maxDeliveries} criada: ${mission.title}` });

@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { resolve, sep, extname } from 'node:path';
 import { AppError, workspaceId, publicWorkspace, encryptKey, text, TEXT_MODELS, IMAGE_MODELS, addAgent, addMission, missionById, queueMission, approveMission, cancelMission, recoverStale } from './domain.mjs';
+import { recordExperiment } from './market.mjs';
 import { createRunner } from './runner.mjs';
 import { createProject, projectAction, reconcileProjects, syncAutonomy } from './autonomy.mjs';
 
@@ -89,6 +90,12 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
         const input = await body(request);
         const updated = await store.mutate(id, workspace => createProject(workspace, input, token, masterKey));
         return send(response, 201, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
+      }
+      const feedbackRoute = route.match(/^\/projects\/([a-f0-9-]+)\/decisions\/([a-f0-9-]+)\/feedback$/);
+      if (feedbackRoute && request.method === 'POST') {
+        const input = await body(request);
+        const updated = await store.mutate(id, workspace => recordExperiment(workspace, feedbackRoute[1], feedbackRoute[2], input));
+        return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
       }
       const projectRoute = route.match(/^\/projects\/([a-f0-9-]+)\/(pause|resume)$/);
       if (projectRoute && request.method === 'POST') {
