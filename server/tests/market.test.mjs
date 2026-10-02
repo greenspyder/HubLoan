@@ -1,3 +1,4 @@
+import { createExperiment, experimentAction } from '../experiments.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createStore } from '../store.mjs';
@@ -11,10 +12,10 @@ const sources = [{ url: 'https://example.com/demand', title: 'Sinal de demanda d
 const candidates = [0, 1, 2].map(i => ({ title: `Oportunidade de teste ${i}`, audience: 'Público de teste', rationale: 'Justificativa do provedor simulado, sem vendas comprovadas.', uncertainty: 'Demanda é hipótese de teste.', test: 'Publicar oferta manualmente e medir visitas e vendas por sete dias.', kind: 'text', scores: { demand: 4 - i, competition: 3, feasibility: 4, distribution: 3, evidence: 3 }, sourceUrls: [sources[i % 2].url] }));
 const input = { mode: 'discover', kind: 'text', research: true, maxDeliveries: 2, maxCalls: 12, intervalMinutes: 1, start: true };
 function providerFixture({ weak = false, unknown = false, noSearch = false, image = false } = {}) {
-  const fixture = { calls: 0, histories: [], validate: async () => {}, research: async () => { fixture.calls++; return { output: 'Pesquisa pública SIMULADA com duas fontes.', sources, searches: noSearch ? 0 : 2, tokens: 50 }; }, text: async (_key, _model, instructions, payload) => {
+  const fixture = { calls: 0, histories: [], learningInputs: [], validate: async () => {}, research: async () => { fixture.calls++; return { output: 'Pesquisa pública SIMULADA com duas fontes.', sources, searches: noSearch ? 0 : 2, tokens: 50 }; }, text: async (_key, _model, instructions, payload) => {
     fixture.calls++;
     if (instructions.includes('candidates:')) {
-      fixture.histories.push(JSON.parse(payload).history);
+      fixture.histories.push(JSON.parse(payload).history); fixture.learningInputs.push(JSON.parse(payload).commercialLearning);
       const output = structuredClone(candidates);
       if (weak) output.forEach(candidate => { candidate.scores.evidence = 0; });
       if (unknown) output[0].sourceUrls = ['https://invented.test'];
@@ -75,4 +76,12 @@ test('experiment API enforces workspace isolation and cannot invent marketplace 
   const url = `http://127.0.0.1:${app.server.address().port}/api/agents/projects/${p.id}/decisions/${p.decisions[0].id}/feedback`;
   const send = access => fetch(url, { method: 'POST', headers: { Authorization: `Bearer ${access}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ visits: 20, sales: 1, revenue: 25, cost: 5, evidence: 'Resultado declarado para teste.' }) });
   assert.equal((await send(other)).status, 404); const response = await send(token); assert.equal(response.status, 200); const w = await response.json(); assert.equal(w.autonomy.projects[0].decisions[0].feedback.origin, 'user_report');
+});
+
+test('next market analysis receives actual experiment evidence with explicit provenance, without extra model calls', async t => {
+  const f = await setup(t);
+  await f.store.mutate(id, w => { const e = createExperiment(w, { name: 'Teste anterior', hypothesis: 'Hipótese limitada', audience: 'Freelancers', channel: 'Canal próprio', days: 7, budgetMinor: 1000, minSales: 1, minNetMinor: 100, missionIds: [] }); experimentAction(w, e.id, 'cost', { category: 'api', amountMinor: 200, note: 'PRIVATE COST REFERENCE' }); experimentAction(w, e.id, 'review', { complete: true }); });
+  await f.runner.tick(); const learning = f.provider.learningInputs[0];
+  assert.equal(learning.experiments[0].metrics.costMinor, 200); assert.equal(learning.experiments[0].costOrigin, 'owner-declared'); assert.equal(learning.experiments[0].paymentOrigin, 'confirmed-stripe'); assert.equal(learning.experiments[0].evidenceState, 'observing'); assert.ok(!JSON.stringify(learning).includes('PRIVATE COST REFERENCE'));
+  const w = await f.read(); assert.deepEqual(w.autonomy.projects[0].decisions[0].learning, learning); assert.equal(w.autonomy.projects[0].decisions[0].model, 'gpt-4.1-mini'); assert.equal(f.provider.calls, 3);
 });

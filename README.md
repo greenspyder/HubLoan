@@ -119,3 +119,11 @@ O servidor soma apenas pagamentos Stripe reais confirmados dos produtos vinculad
 API, taxas, impostos, divulgação, trabalho, hospedagem e outros são custos declarados pelo proprietário, em centavos de reais. Recarga da API não equivale a consumo; custos compartilhados precisam de rateio informado. Estornos preservam o histórico. O resultado só é exibido como completo após revisão explícita dos custos; novas vendas, reembolsos, produção ou lançamentos invalidam a revisão. Mesmo completo, depende dos valores declarados e não é apuração contábil.
 
 Orçamento e prazo são instrumentos de acompanhamento: recomendações não bloqueiam cobranças nem pausam projetos/anúncios. Use os limites de chamadas e controles de pausa existentes. Encerrar a janela impede incluir pagamentos futuros no teste, mas não despublica produtos. Atingir o critério de um teste não garante retorno futuro.
+
+### Evidências para os próximos ciclos e painel Astra
+
+Pesquisa, comparação e coordenação recebem `commercialLearning`: até dez experimentos recentes e dez campanhas, com pagamentos Stripe confirmados separados de custos declarados e visitas não verificadas. Resultados incompletos não comprovam sucesso ou fracasso; sem distribuição, zero vendas não invalida a hipótese. O resumo não duplica receitas de campanhas e experimentos e não inclui notas de custo, credenciais ou dados dos compradores. Não muda os limites autorizados nem adiciona chamadas de modelo. É contexto para decisões futuras, não treinamento do modelo ou garantia de melhoria.
+
+Novas decisões guardam o resumo observado e o modelo utilizado. O painel **Astra** mostra escolha, motivo, incertezas, alternativas, próximo teste e fontes reais; decisões antigas indicam dados não registrados. Abrir o painel não gasta API. Os robôs têm ferramentas por função e animações de trabalho vinculadas à execução; movimentação decorativa permanece na prévia identificada.
+
+Vídeos continuam bloqueados: MP4, legendas sincronizadas, CapCut e publicação TikTok/YouTube não estão implementados. O painel lista o caminho de integração, OAuth, consentimento e possíveis auditorias oficiais, sem tratar roteiros privados como vídeos publicados.

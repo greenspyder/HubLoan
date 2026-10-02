@@ -1,5 +1,5 @@
-type Props = { commander: boolean };
-export function RobotSprite({ commander }: Props) {
+type Props = { commander: boolean; role: string; delivery: boolean };
+export function RobotSprite({ commander, role, delivery }: Props) {
   return <svg className="sm-mech" viewBox="0 0 64 86" aria-hidden="true">
     <ellipse cx="32" cy="79" rx={commander ? 29 : 24} ry="5" fill="#020918" opacity=".65" />
     {commander && <g className="sm-command-ring" fill="none" stroke="#89eaff"><ellipse cx="32" cy="78" rx="29" ry="6" strokeWidth="1.5" /><path d="M3 76h8m42 0h8M32 70v4m0 8v3" strokeWidth="2" /></g>}
@@ -13,5 +13,13 @@ export function RobotSprite({ commander }: Props) {
       <path d="M23 14h18l5 6-2 12H20l-2-12z" fill="#809baa" stroke="#0b1727" strokeWidth="2" /><path d="M22 17h20l1 8-4 3H25l-4-3z" fill="#081d30" /><path d="M24 21h6v3h-6m10-3h6v3h-6" stroke="#a9f8ff" strokeWidth="2" /><path d="M27 30h10" stroke="#cfdee2" strokeWidth="2" />
       {!commander && <><path d="M21 16 19 9m24 7 2-7" stroke="#bed1dc" strokeWidth="2" /><path d="M17 7h4v4h-4m22-4h4v4h-4" fill="var(--robot-color)" /></>}
     </g>
+    <g className="sm-role-tool" stroke="#071c30" strokeWidth="1.5">
+      {role === 'research' && <g><path d="M48 40h13v18H48z" fill="#8fded2" /><path d="M51 44h7m-7 4h7m-7 4h4" stroke="#0b4451" /><circle className="sm-scan" cx="55" cy="47" r="10" fill="none" stroke="#b9ffff" strokeDasharray="3 3" /></g>}
+      {role === 'creator' && <g><path d="m50 40 7-9 4 4-8 10z" fill="#f8cf80" /><path d="m50 43 4 2-5 6-3-3z" fill="#fff2c3" /></g>}
+      {role === 'reviewer' && <g><path d="M48 38h13v20H48z" fill="#d4c5ff" /><path className="sm-check" d="m50 46 3 3 6-7" fill="none" stroke="#235253" strokeWidth="2.5" /><path d="M51 53h7" stroke="#685c95" /></g>}
+      {role === 'engineer' && <g><path d="m51 36 3 6-8 13 4 3 9-15 4-1-1-7-3 5-4-1-1-5z" fill="#ced6de" /></g>}
+      {commander && <g><path d="M45 39h17v17H45z" fill="#3e7388" /><path d="M48 42h11v11H48z" fill="#78ddeb" opacity=".75" /><path d="M50 45h7m-7 4h5" stroke="#ebffff" /></g>}
+    </g>
+    {delivery && <g className="sm-delivery" stroke="#0b1727" strokeWidth="1.5"><path d="M1 54h15v14H1z" fill="#e9c68a" /><path d="M1 54h15l-4-5H5z" fill="#ffe7b2" /><path d="M7 50v18" stroke="#a07b4c" /><path d="m5 61 3 3 5-6" fill="none" stroke="#225044" strokeWidth="2" /></g>}
   </svg>;
 }
