@@ -102,3 +102,7 @@ Em **Loja e vendas → Sua loja automática**, conecte a Stripe e autorize o reg
 ### Divulgação automática
 
 Em **Divulgação**, conecte Mastodon ou seu canal Telegram e autorize a fila por até 72 horas. Produtos da loja real geram anúncios com links rastreáveis, frequência limitada e resultados de compras confirmadas fornecidos às análises das IAs. [Configuração, limites e métricas](docs/MARKETING.md). Falhas de confirmação pausam envios; não há garantia de alcance ou vendas.
+
+### Estratégias além de produtos
+
+Novos projetos abrem em descoberta ampla: conteúdo de nicho, serviços, software e produtos. Cada hipótese apresenta caminho de receita, custos conhecidos/desconhecidos, teste pequeno e ferramentas necessárias. A aplicação calcula os bloqueios pelas integrações reais, prioriza hipóteses executáveis e não transforma um roteiro em vídeo publicado. Opcionalmente autorize kits privados de preparação, fora da loja. [Comportamento e limitações](docs/OPPORTUNITIES.md). Projetos existentes mantêm seu escopo.

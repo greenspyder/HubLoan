@@ -29,6 +29,7 @@ export function publicShop(workspace) {
   return { configured: Boolean(s.secret && s.webhookSecret), enabled: s.enabled === true, autoPublish: s.autoPublish === true, name: s.name || '', slug: s.slug || '', contact: s.contact || '', license: s.license || '', prices: s.prices || {}, maxProducts: s.maxProducts || 20, expiresAt: s.expiresAt, livemode: s.livemode === true, error: s.error || '', products: (s.products || []).map(publicProduct), metrics: { purchases: paid.length, grossMinor: paid.reduce((n, o) => n + o.priceMinor, 0), refundedMinor: paid.reduce((n, o) => n + (o.refundedMinor || 0), 0), currency: 'BRL', netProfit: null, testPurchases: orders.filter(o => o.paidAt && !o.livemode).length } };
 }
 export function salePackage(mission, license) {
+  if (mission.purpose === 'experiment-preparation') throw new AppError('Kit de experimento privado não é produto da loja.');
   if (!['review', 'approved'].includes(mission.status) || !kinds.includes(mission.kind)) throw new AppError('A entrega precisa estar concluída para publicar.');
   const files = { 'LICENSE.txt': strToU8(license), 'README.md': strToU8(`# ${mission.title}\n\n${kindDescriptions[mission.kind]}\n\nProduzido com IA. Confira a adequação ao seu uso. Não são prometidos vendas, visualizações ou retorno financeiro.\n`) };
   if (mission.artifact) {
@@ -205,7 +206,7 @@ export function createShop(store, { masterKey = null, provider = createStripePro
       if (s.expiresAt < Date.now()) { await store.mutate(id, w => { w.shop.autoPublish = false; }); continue; }
       const workspace = (await store.read(id)).workspace;
       const published = new Set(s.products.map(p => p.missionId));
-      const missions = [...workspace.missions].reverse().filter(m => ['review', 'approved'].includes(m.status) && !published.has(m.id));
+      const missions = [...workspace.missions].reverse().filter(m => m.purpose !== 'experiment-preparation' && ['review', 'approved'].includes(m.status) && !published.has(m.id));
       for (const m of missions) {
         if (closed) break;
         try { await publish(id, m.id, true); }

@@ -5,4 +5,4 @@ export const SPECIALIZATIONS = {
   model3d: { label: 'Mobília 3D procedural', calls: 2, images: false, research: 'Packs de mobília low poly para desenvolvedores Godot e Unity. Investigue necessidades de mesas, cadeiras, estantes e armários originais. Produção disponível: até 60 caixas, sem animação, materiais e texturas procedurais, UVs, GLB validado e OBJ. Evite formas orgânicas e promessas de aprovação em lojas.' },
 };
 export function productionCalls(kind) { return SPECIALIZATIONS[kind]?.calls || 3; }
-export function availableSpecializations(market) { return (market?.specializations || []).filter(kind => !SPECIALIZATIONS[kind].images || market.allowImages); }
+export function availableSpecializations(market) { return [...new Set([...(market?.specializations || []), ...(market?.scope === 'broad' ? ['text'] : [])])].filter(kind => !SPECIALIZATIONS[kind].images || market.allowImages); }

@@ -82,6 +82,7 @@ export function enqueueAssignment(workspace, project, assignment, now = Date.now
   const agent = workspace.agents.find(agent => agent.id === 'creator' && agent.enabled) || workspace.agents.find(agent => agent.enabled);
   if (!agent) throw new AppError('Todos os agentes estão pausados.');
   const mission = addMission(workspace, { ...assignment, kind: assignment.kind || project.kind, agentId: agent.id });
+  if (assignment.purpose === 'experiment-preparation') { mission.purpose = assignment.purpose; mission.phase = 'Preparando materiais; estratégia não executada'; }
   if (assignment.decisionId) mission.decisionId = assignment.decisionId;
   mission.projectId = project.id; mission.sequence = project.produced + 1; queueMission(workspace, mission.id);
   project.produced++; project.status = 'active'; project.phase = 'Tarefa distribuída para produção'; project.nextRunAt = now + project.intervalMinutes * 60000;
