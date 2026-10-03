@@ -1,3 +1,4 @@
+import { requireFactoryProduction, factoryContext } from './factories.mjs';
 import { marketGoal, marketSettings } from './market.mjs';
 import { hkdfSync } from 'node:crypto';
 import { AppError, text, encryptKey, decryptKey, workspaceId, addMission, queueMission } from './domain.mjs';
@@ -30,6 +31,8 @@ export function unlockGrant(id, secret, masterKey) {
 export function createProject(workspace, input, token, masterKey, now = Date.now()) {
   normalizeWorkspace(workspace);
   if (workspace.autonomy.projects.length >= 10) throw new AppError('Limite de dez projetos por espaço.');
+  const factory = input.factoryId ? requireFactoryProduction(workspace, input.factoryId, input.kind) : null;
+  if (factory && input.mode && input.mode !== 'goal') throw new AppError('Use objetivo definido para uma fábrica específica; descoberta ampla distribui por formato.');
   const mode = input.mode || 'goal';
   if (!['goal', 'discover'].includes(mode)) throw new AppError('Modo de autonomia inválido.');
   const maxCalls = input.maxCalls ?? input.maxDeliveries * 7 + 1;
@@ -41,6 +44,7 @@ export function createProject(workspace, input, token, masterKey, now = Date.now
   if (input.start && workspace.autonomy.enabled) throw new AppError('Pause o projeto atual antes de iniciar outro.');
   if (input.start) grant(workspace, token, masterKey);
   const project = { id: crypto.randomUUID(), name: text(input.name || (mode === 'discover' ? 'Descoberta de oportunidades' : ''), 'Nome do projeto', 100), goal: mode === 'discover' ? marketGoal : text(input.goal, 'Objetivo', 4000), mode, market: mode === 'discover' ? marketSettings(input.market) : undefined, maxCalls, calls: 0, decisions: [], kind: input.kind, maxDeliveries: input.maxDeliveries, intervalMinutes: input.intervalMinutes, research: mode === 'discover' || input.research, status: input.start ? 'active' : 'paused', phase: input.start ? 'Coordenador aguardando o próximo ciclo' : 'Projeto pausado', produced: 0, tokens: 0, searches: 0, events: [], createdAt: new Date(now).toISOString(), nextRunAt: now, expiresAt: now + 72 * 3600000, error: '' };
+  if (factory) { project.factoryId = factory.id; project.goal = `${factoryContext(workspace, { factoryId: factory.id })}\nObjetivo: ${project.goal}`; }
   workspace.autonomy.projects.unshift(project); syncAutonomy(workspace); return project;
 }
 export function projectById(workspace, id) {
@@ -81,7 +85,7 @@ export function parseAssignment(output) {
 export function enqueueAssignment(workspace, project, assignment, now = Date.now()) {
   const agent = workspace.agents.find(agent => agent.id === 'creator' && agent.enabled) || workspace.agents.find(agent => agent.enabled);
   if (!agent) throw new AppError('Todos os agentes estão pausados.');
-  const mission = addMission(workspace, { ...assignment, kind: assignment.kind || project.kind, agentId: agent.id });
+  const mission = addMission(workspace, { ...assignment, kind: assignment.kind || project.kind, factoryId: project.factoryId, agentId: agent.id });
   if (assignment.purpose === 'experiment-preparation') { mission.purpose = assignment.purpose; mission.phase = 'Preparando materiais; estratégia não executada'; }
   if (assignment.decisionId) mission.decisionId = assignment.decisionId;
   mission.projectId = project.id; mission.sequence = project.produced + 1; queueMission(workspace, mission.id);

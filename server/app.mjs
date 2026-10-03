@@ -1,3 +1,4 @@
+import { createFactory } from './factories.mjs';
 import { configureCosts } from './ai-costs.mjs';
 import { createKnowledge, knowledgeExport } from './knowledge.mjs';
 import { createExperiment, experimentAction } from './experiments.mjs';
@@ -91,6 +92,7 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       rates.set(rateKey, rate);
       runner.unlock(id, token); commerce.unlock(id, token);
       const route = url.pathname.slice('/api/agents'.length);
+      if (route === '/factories' && request.method === 'POST') { const input = await body(request); const updated = await store.mutate(id, w => createFactory(w, input)); return send(response, 201, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey))); }
       if (route === '/ai-costs' && request.method === 'POST') { const input = await body(request); const updated = await store.mutate(id, w => configureCosts(w, input)); return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey))); }
       if (route === '/knowledge/export' && request.method === 'GET') return send(response, 200, knowledgeExport((await store.read(id)).workspace));
       if (route === '/knowledge/refresh' && request.method === 'POST') return send(response, 200, publicWorkspace((await knowledge.refresh(id)).workspace, store.mode, Boolean(masterKey)));

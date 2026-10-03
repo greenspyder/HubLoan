@@ -145,3 +145,13 @@ As seis orientações em `VALIDATION_PRIORITIES` são incluídas em todas as cha
 Em **Experimentos**, ative “validação antes de produzir” num plano aberto sem entregas. Registre pedido/problema com URL e data, oferta/preço/prazo e critérios; crie um único rascunho e execute explicitamente em Missões. A amostra exige revisão humana e liberação vinculadas à versão antes de publicar na loja própria. O preço deve coincidir com a oferta; publicação no itch.io fica bloqueada para esse modo. Gate vale tanto para API manual quanto para worker automático. Outros projetos mantêm as autorizações existentes.
 
 O checklist mostra o que falta comprovar. Interesse, rejeição e silêncio ficam como relatos privados do proprietário; nunca aumentam receita. Relatos entram no contexto comercial dos próximos ciclos. Recomendação de repetir exige qualidade, pagamentos retidos, custos revisados e resultado positivo; não cria projetos nem aumenta limites. Encerrar o teste não remove ofertas já publicadas. Auditoria e limites em `docs/FIRST-SALE-AUDIT.md`.
+
+### Fábricas por atividade
+
+O painel **Fábricas** organiza produtos editoriais, thumbnails, assets 2D, mobília procedural 3D e ilustrações. Cada unidade possui responsabilidade, público, canal pretendido, tarefas e projetos vinculados. Essas definições entram no contexto real de coordenação, produção e revisão; o formato determina o pipeline implementado. Missões anteriores e descobertas amplas são agrupadas pela especialidade do formato. Kits privados de preparação ficam fora desses produtos.
+
+É possível cadastrar até vinte fábricas e preparar projetos pausados para uma unidade específica. Criar uma fábrica não executa chamadas nem conecta canais. O cadastro de vídeos, serviços e software registra futuras atividades, com execução bloqueada até implementar as integrações ausentes. Hipóteses pesquisadas com capacidades pendentes podem preencher um novo cadastro.
+
+Astra e os agentes são compartilhados, com um projeto autônomo ativo por vez e os limites existentes de chamadas, orçamento, duração, revisão e publicação. As salas da estação representam etapas compartilhadas; as fábricas representam atividades comerciais. O movimento dos robôs de cada fábrica depende de missões em execução.
+
+As reservas de API são agrupadas por missões e projetos explicitamente vinculados; não equivalem a faturas. Receitas e custos declarados vêm de experimentos exclusivos da fábrica. Testes mistos ou com entregas repetidas entre experimentos ficam fora, e resultado financeiro permanece “A apurar” sem revisão completa de custos ou quando existem testes mistos. Custos da descoberta ampla não são rateados. Não se presume lucro, demanda ou execução externa.
