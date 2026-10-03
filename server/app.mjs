@@ -113,9 +113,10 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if (engineeringRelease && request.method === 'POST') return send(response, 200, publicWorkspace((await (engineeringRelease[2] === 'approve' ? engineering.approve(id, engineeringRelease[1], await body(request)) : engineering.deployment(id, engineeringRelease[1]))).workspace, store.mode, Boolean(masterKey)));
       const engineeringCheck = route.match(/^\/engineering\/jobs\/([a-f0-9-]+)\/checks$/);
       if (engineeringCheck && request.method === 'POST') return send(response, 200, publicWorkspace((await engineering.sync(id, engineeringCheck[1])).workspace, store.mode, Boolean(masterKey)));
+      if (route === '/marketing/prepare' && request.method === 'POST') return send(response, 200, publicWorkspace((await marketing.prepare(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
       if (route === '/marketing/connect' && request.method === 'POST') return send(response, 200, publicWorkspace((await marketing.connect(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
       if (route === '/marketing/configure' && request.method === 'POST') return send(response, 200, publicWorkspace((await marketing.configure(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
-      const marketingChannel = route.match(/^\/marketing\/channels\/(mastodon|telegram)$/);
+      const marketingChannel = route.match(/^\/marketing\/channels\/(mastodon|telegram|bluesky)$/);
       if (marketingChannel && request.method === 'DELETE') return send(response, 200, publicWorkspace((await marketing.disconnect(id, marketingChannel[1])).workspace, store.mode, Boolean(masterKey)));
       const marketingSkip = route.match(/^\/marketing\/campaigns\/([a-f0-9-]+)\/skip$/);
       if (marketingSkip && request.method === 'POST') return send(response, 200, publicWorkspace((await marketing.skip(id, marketingSkip[1])).workspace, store.mode, Boolean(masterKey)));

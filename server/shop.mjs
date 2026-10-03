@@ -143,7 +143,7 @@ export function createShop(store, { masterKey = null, provider = createStripePro
       if (existing) { if (existing.productId !== p.id) throw new AppError('Código de compra já utilizado.', 409); return existing; }
       if (shop.orders.length >= 5000) throw new AppError('A loja atingiu o limite de pedidos. Contate o vendedor.', 409);
       const order = { id: randomUUID(), productId: p.id, receiptHash: digest(receiptToken), priceMinor: p.priceMinor, currency: p.currency, livemode: shop.livemode, createdAt: new Date().toISOString(), status: 'pending' };
-      const campaign = current.marketing?.campaigns.find(c => c.id === campaignId && c.productId === p.id && ['posted', 'publishing', 'uncertain', 'skipped'].includes(c.status));
+      const campaign = current.marketing?.campaigns.find(c => c.id === campaignId && c.productId === p.id && ['posted', 'publishing', 'uncertain', 'skipped', 'prepared'].includes(c.status));
       if (campaign) order.campaignId = campaign.id;
       shop.orders.push(order); return order;
     })).result;

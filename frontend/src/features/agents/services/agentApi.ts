@@ -4,9 +4,10 @@ export type BusinessExperimentInput = { name: string; hypothesis: string; audien
 export type BusinessExperiment = Omit<BusinessExperimentInput, 'days'> & { id: string; validation?: Validation; validationReadiness?: { checks:{id:string;label:string;met:boolean}[]; qualityCurrent:boolean; canConsiderRepeating:boolean; publicationAllowed:boolean; note:string }; createdAt: string; endsAt: string; closedAt?: string; reviewedAt?: string; ended: boolean; currency: string; costs: { id: string; amountMinor: number; category: string; note: string; recordedAt: string; voidedAt?: string }[]; metrics: { grossMinor: number; refundedMinor: number; heldMinor: number; sales: number; costMinor: number; balanceMinor: number; costComplete: boolean; resultMinor: number | null; recommendation: string; budgetRemainingMinor: number } };
 export type EngineeringSettings = { enabled: boolean; maxJobs: number; maxCalls: number };
 export type Engineering = EngineeringSettings & { configured: boolean; authorized: boolean; repository: string; expiresAt?: number; usedCalls: number; usedJobs: number; error: string; roles: { id: string; name: string; role: string }[]; diagnostics: { id: string; priority: string; title: string; evidence: string; type: string; action?: string; files?: string[] }[]; jobs: { id: string; taskId: string; title: string; status: string; phase: string; createdAt: string; branch: string; headSha?: string; baseSha?: string; release?: { status: string; approvedAt: string; mergeSha?: string; error?: string; deployment?: { vercel: string; backend: string; note: string } }; plan?: string; edits?: { path: string; before: string; after: string }[]; review?: { approved: boolean; reason: string; testsExecuted: boolean }; prUrl?: string; checks?: { status: string; note: string; observedAt?: string }; error: string; events: { at: string; message: string }[] }[] };
-export type MarketingChannel = 'mastodon' | 'telegram';
+export type MarketingChannel = 'mastodon' | 'telegram' | 'bluesky';
+export type SharingChannel = 'whatsapp' | 'linkedin' | 'reddit' | 'instagram' | 'tiktok';
 export type MarketingSettings = { enabled: boolean; intervalMinutes: number; maxPosts: number };
-export type Marketing = MarketingSettings & { expiresAt?: number; grantUsed: number; error: string; note: string; channels: { kind: MarketingChannel; configured: boolean; name: string }[]; campaigns: { id: string; channel: MarketingChannel; productId: string; title: string; text: string; link: string; status: string; createdAt: string; postedAt?: string; url?: string; error: string; visits: number; purchases: number; grossMinor: number; refundedMinor: number; testPurchases: number }[] };
+export type Marketing = MarketingSettings & { expiresAt?: number; grantUsed: number; error: string; note: string; channels: { kind: MarketingChannel; configured: boolean; name: string }[]; campaigns: { id: string; channel: MarketingChannel | SharingChannel; productId: string; title: string; text: string; link: string; status: string; createdAt: string; postedAt?: string; url?: string; error: string; visits: number; purchases: number; grossMinor: number; refundedMinor: number; testPurchases: number }[] };
 export type ShopProduct = { id: string; missionId?: string; title: string; description: string; kind: ProductionKind; priceMinor: number; currency: string; publishedAt: string; listed: boolean; filename: string; license: string; bytes: number; hasPreview?: boolean };
 export type ShopSettings = { name: string; contact: string; license: string; enabled: boolean; autoPublish: boolean; maxProducts: number; prices: Record<ProductionKind, number> };
 export type Shop = ShopSettings & { configured: boolean; slug: string; expiresAt?: number; livemode: boolean; error: string; products: ShopProduct[]; metrics: { purchases: number; grossMinor: number; refundedMinor: number; currency: string; netProfit: null; testPurchases: number } };
@@ -41,7 +42,8 @@ export function restoreAccessCode(value: string) {
   localStorage.setItem(accessKey, token);
 }
 async function request<T>(path: string, method = 'GET', body?: object): Promise<T> {
-  const response = await fetch(`${base}${path}`, { method, headers: { Authorization: `Bearer ${getAccessCode()}`, ...(body ? { 'Content-Type': 'application/json' } : {}) }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(200000) });
+  let response: Response;
+  try { response = await fetch(`${base}${path}`, { method, headers: { Authorization: `Bearer ${getAccessCode()}`, ...(body ? { 'Content-Type': 'application/json' } : {}) }, body: body ? JSON.stringify(body) : undefined, signal: AbortSignal.timeout(60000) }); } catch { throw new Error(method === 'GET' ? 'Servidor indisponível ou conexão lenta. Tente atualizar em instantes.' : 'Sem confirmação do servidor. Confira o estado atualizado antes de repetir a operação.'); }
   const contentType = response.headers.get('content-type') || '';
   if (!contentType.includes('application/json')) throw new Error('A API ainda não está pronta. Aguarde o deploy do backend e tente novamente.');
   const data = await response.json();
@@ -49,6 +51,7 @@ async function request<T>(path: string, method = 'GET', body?: object): Promise<
   return data as T;
 }
 export const agentApi = {
+  prepareCampaign: (productId: string, channel: SharingChannel) => request<Workspace>('/marketing/prepare','POST',{productId,channel}),
   refreshKnowledge: () => request<Workspace>('/knowledge/refresh', 'POST'),
   connectKnowledge: (apiKey: string, authorize: boolean) => request<Workspace>('/knowledge/connect', 'POST', { apiKey, authorize }),
   pauseKnowledge: () => request<Workspace>('/knowledge/pause', 'POST'),

@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { addFactory, agentApi, productionLabels, type Factory, type ProductionKind, type Workspace } from '../services/agentApi';
-import { RobotSprite } from './RobotSprite';
 const kinds = { ...productionLabels, video: 'Vídeos de nicho · integração pendente', service: 'Serviços · integração pendente', software: 'Software publicado · integração pendente' };
 const money = (n: number) => (n / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-type Props = { workspace: Workspace; busy: boolean; mutate: (op: () => Promise<Workspace>, success?: string) => Promise<Workspace | null> };
-export function FactoriesPanel({ workspace, busy, mutate }: Props) {
-  const [selected, setSelected] = useState('');
+type Props = { selectedId: string; onSelect: (id:string)=>void; workspace: Workspace; busy: boolean; mutate: (op: () => Promise<Workspace>, success?: string) => Promise<Workspace | null> };
+export function FactoriesPanel({ selectedId, onSelect, workspace, busy, mutate }: Props) {
+  const selected = selectedId, setSelected = onSelect;
   const [creating, setCreating] = useState(false);
   const [draft, setDraft] = useState<Pick<Factory, 'name' | 'kind' | 'role' | 'audience' | 'channel'>>({ name: '', kind: 'text', role: '', audience: '', channel: '' });
   const [goal, setGoal] = useState('');
@@ -15,8 +14,6 @@ export function FactoriesPanel({ workspace, busy, mutate }: Props) {
   const suggestions = (workspace.autonomy?.projects || []).flatMap(p => (p.decisions || []).flatMap(d => d.candidates)).filter(c => c.businessModel && c.execution?.status !== 'executable').slice(0, 5);
   return <section className="aw-panel" id="factories"><div className="aw-section-title"><div><p className="aw-eyebrow">UNIDADES DE NEGÓCIO / PRODUÇÃO REAL</p><h2>Suas fábricas</h2></div><span className="aw-badge">{factories.length} UNIDADES</span></div>
     <p>Cada fábrica tem uma especialidade, público e responsabilidade que orientam a produção e a revisão. Astra distribui descobertas pelos formatos disponíveis. Os agentes e os limites de IA são compartilhados, com um projeto autônomo ativo por vez; uma fábrica cadastrada não inicia gastos.</p>
-    <div className="aw-factory-hub"><strong>ASTRA · ORQUESTRADOR</strong><span>Pesquisa → escolha da oportunidade → fábrica especializada → revisão → canais autorizados</span></div>
-    <div className="aw-factory-grid" aria-label="Selecionar fábrica">{factories.map((f, index) => <button key={f.id} className={`aw-factory-building ${f.running ? 'is-working' : ''}`} aria-pressed={current?.id === f.id} onClick={() => { setSelected(f.id); setGoal(''); }}><span className="aw-factory-roof" aria-hidden="true">▥ ▥ ▥</span><span className="aw-factory-worker" aria-hidden="true"><RobotSprite commander={false} role={index % 2 ? 'creator' : 'research'} delivery={false} /></span><strong>{f.name}</strong><span>{f.blocker ? 'Integração pendente' : f.running ? `${f.running} em produção` : f.queued ? `${f.queued} na fila` : 'Em espera'}</span><small>{f.delivered} entregas · {f.projects} projetos vinculados</small></button>)}</div>
     {!factories.length && <p>Aguardando o servidor carregar as fábricas.</p>}
     {current && <article className="aw-factory-detail"><h3>{current.name}</h3><p>{current.role}</p><p><strong>Público:</strong> {current.audience}<br /><strong>Canal pretendido:</strong> {current.channel}</p><p className="aw-caption">O canal é contexto comercial. A publicação segue as conexões e autorizações da loja e do itch.io; escrever um canal aqui não o conecta.</p>
       <div className="aw-experiment-metrics"><div><small>Entregas produzidas</small><strong>{current.delivered}</strong></div><div><small>Reservas de API</small><strong>{money(current.reservedMinor)}</strong></div><div><small>Receita de testes exclusivos</small><strong>{money(current.grossMinor)}</strong></div><div><small>Resultado com custos declarados</small><strong>{current.resultMinor === null ? 'A apurar' : money(current.resultMinor)}</strong></div></div>
