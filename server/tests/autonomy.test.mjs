@@ -1,3 +1,4 @@
+import { configureCosts } from '../ai-costs.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, rm, readFile } from 'node:fs/promises';
@@ -18,7 +19,7 @@ function fakeProvider() {
 }
 async function setup(t, { provider = fakeProvider(), file = ':memory:', maxDeliveries = 2, research = false } = {}) {
   const store = await createStore({ file }); let clock = Date.now();
-  await store.mutate(id, workspace => { workspace.secret = encryptKey(key, token); createProject(workspace, { ...input, maxDeliveries, research }, token, masterKey, clock); });
+  await store.mutate(id, workspace => { workspace.secret = encryptKey(key, token);configureCosts(workspace, {enabled:true,dailyMinor:1000000,monthlyMinor:1000000,callMinor:10000,ceilings:{text:100,research:200,vision:200,image:500}});  createProject(workspace, { ...input, maxDeliveries, research }, token, masterKey, clock); });
   const runner = createRunner(store, provider, { masterKey, now: () => clock, intervalMs: 100000 });
   t.after(async () => { await runner.close(); await store.close(); });
   return { store, runner, provider, advance: () => { clock += 61000; }, workspace: async () => (await store.read(id)).workspace };
@@ -26,7 +27,7 @@ async function setup(t, { provider = fakeProvider(), file = ':memory:', maxDeliv
 test('grant can resume unattended work after process restart without receiving access token again', async t => {
   const directory = await mkdtemp(join(tmpdir(), 'hubloan-grant-')); t.after(() => rm(directory, { recursive: true }));
   const file = join(directory, 'store.sqlite'); let store = await createStore({ file });
-  await store.mutate(id, workspace => { workspace.secret = encryptKey(key, token); createProject(workspace, { ...input, maxDeliveries: 1 }, token, masterKey); });
+  await store.mutate(id, workspace => { workspace.secret = encryptKey(key, token);configureCosts(workspace, {enabled:true,dailyMinor:1000000,monthlyMinor:1000000,callMinor:10000,ceilings:{text:100,research:200,vision:200,image:500}});  createProject(workspace, { ...input, maxDeliveries: 1 }, token, masterKey); });
   const grant = (await store.read(id)).workspace.autonomy.grant;
   assert.equal(unlockGrant(id, grant, masterKey), token); assert.throws(() => unlockGrant(workspaceId('e'.repeat(64)), grant, masterKey));
   await store.close(); store = await createStore({ file });
@@ -69,7 +70,7 @@ test('web research happens once and keeps actual tool sources separate from gene
   const project = (await f.workspace()).autonomy.projects[0]; assert.equal(searches, 1); assert.equal(project.searches, 1); assert.equal(project.researchReport.sources[0].url, 'https://example.com');
 });
 test('expiry pauses future work and creation validates execution volume and durable grant support', async t => {
-  const w = normalizeWorkspace(initialWorkspace()); w.secret = encryptKey(key, token);
+  const w = normalizeWorkspace(initialWorkspace()); w.secret = encryptKey(key, token);configureCosts(w, {enabled:true,dailyMinor:1000000,monthlyMinor:1000000,callMinor:10000,ceilings:{text:100,research:200,vision:200,image:500}});
   assert.throws(() => createProject(w, { ...input, maxDeliveries: 21 }, token, masterKey), /vinte/);
   assert.throws(() => createProject(w, input, token, null), /estável/);
   const f = await setup(t); await f.store.mutate(id, w => { w.autonomy.projects[0].expiresAt = 0; });

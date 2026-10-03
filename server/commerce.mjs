@@ -1,3 +1,4 @@
+import { assertValidationPublication, validationPublicationAllowed } from './validation.mjs';
 import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -80,6 +81,7 @@ export function createCommerce(store, { masterKey = null, provider = createItchP
   async function publish(id, token, missionId, automatic = false) {
     const claim = await store.mutate(id, workspace => {
       const mission = missionById(workspace, missionId), c = workspace.commerce;
+      assertValidationPublication(workspace,mission,'itchio');
       if (!c?.secret || !c.targets?.[mission.kind] || !c.license) throw new AppError('Configure loja, destino e licença primeiro.');
       if (automatic && (!c.autoPublish || c.expiresAt < Date.now())) throw new AppError('Publicação automática pausada.');
       if (!['review', 'approved'].includes(mission.status) || mission.artifact?.mime !== 'application/zip') throw new AppError('O pack precisa estar produzido antes de publicar.');
@@ -120,7 +122,7 @@ export function createCommerce(store, { masterKey = null, provider = createItchP
       const w = (await store.read(id)).workspace, c = w.commerce;
       if (!c?.secret || (!c.expiresAt || c.expiresAt < Date.now())) { unlocked.delete(id); continue; }
       if (c.autoPublish && c.uploads < c.maxUploads) {
-        const mission = [...w.missions].reverse().find(m => ['review', 'approved'].includes(m.status) && c.targets[m.kind] && !m.publication);
+        const mission = [...w.missions].reverse().find(m => validationPublicationAllowed(w,m,'itchio') && ['review', 'approved'].includes(m.status) && c.targets[m.kind] && !m.publication);
         if (mission) { try { await publish(id, token, mission.id, true); } catch { /* recorded, no automatic retry */ } }
       }
       if (c.background && Date.now() - (c.lastSync || 0) > 300000 && !c.syncFailed) {

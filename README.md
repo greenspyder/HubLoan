@@ -139,3 +139,9 @@ Resultados/custos ficam privados no servidor e no backup JSON, usados pelo resum
 ### Política de validação comercial
 
 As seis orientações em `VALIDATION_PRIORITIES` são incluídas em todas as chamadas reais de pesquisa, raciocínio e revisão visual pelo provedor compartilhado: pedidos públicos reais, oferta/amostra pequena, revisão humana, custos por entrega, critérios de parar/continuar e recompra com evidências. O painel Autonomia mostra a mesma política recebida do servidor; referências iniciais do segundo cérebro também a incluem. Novos experimentos devem propor público/escopo/preço/prazo, qualidade e custos desconhecidos. Estas são instruções, não controles financeiros adicionais, revisão humana automática ou integração de serviços. Não ampliam autorizações, geração de imagens, limites, prospecção privada, cobrança ou publicação.
+
+### Modo primeira venda
+
+Em **Experimentos**, ative “validação antes de produzir” num plano aberto sem entregas. Registre pedido/problema com URL e data, oferta/preço/prazo e critérios; crie um único rascunho e execute explicitamente em Missões. A amostra exige revisão humana e liberação vinculadas à versão antes de publicar na loja própria. O preço deve coincidir com a oferta; publicação no itch.io fica bloqueada para esse modo. Gate vale tanto para API manual quanto para worker automático. Outros projetos mantêm as autorizações existentes.
+
+O checklist mostra o que falta comprovar. Interesse, rejeição e silêncio ficam como relatos privados do proprietário; nunca aumentam receita. Relatos entram no contexto comercial dos próximos ciclos. Recomendação de repetir exige qualidade, pagamentos retidos, custos revisados e resultado positivo; não cria projetos nem aumenta limites. Encerrar o teste não remove ofertas já publicadas. Auditoria e limites em `docs/FIRST-SALE-AUDIT.md`.

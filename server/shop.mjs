@@ -1,3 +1,4 @@
+import { assertValidationPublication, validationPublicationAllowed } from './validation.mjs';
 import sharp from 'sharp';
 import Stripe from 'stripe';
 import { randomBytes, randomUUID, createHash, timingSafeEqual } from 'node:crypto';
@@ -84,6 +85,7 @@ export function createShop(store, { masterKey = null, provider = createStripePro
   async function publish(id, missionId, automatic = false) {
     const snapshot = (await store.read(id)).workspace;
     const mission = missionById(snapshot, missionId);
+    assertValidationPublication(snapshot,mission);
     if (!snapshot.shop?.license) throw new AppError('Configure a licença antes de publicar.');
     const bytes = salePackage(mission, snapshot.shop.license), productId = randomUUID();
     let preview = null;
@@ -102,6 +104,7 @@ export function createShop(store, { masterKey = null, provider = createStripePro
       if (s.products.some(p => p.missionId === missionId)) throw new AppError('Esta entrega já tem um produto; publicação duplicada bloqueada.', 409);
       if (s.products.length >= s.maxProducts) throw new AppError('Limite de produtos atingido.');
       const m = missionById(w, missionId);
+      assertValidationPublication(w,m);
       if (m.attempt !== mission.attempt || !['review', 'approved'].includes(m.status) || m.output !== mission.output || m.artifact?.base64 !== mission.artifact?.base64 || s.license !== snapshot.shop.license) throw new AppError('Entrega ou licença mudou. Tente publicar novamente.', 409);
       const product = { id: productId, missionId, title: m.title, description: kindDescriptions[m.kind], kind: m.kind, priceMinor: s.prices[m.kind], currency: 'brl', publishedAt: new Date().toISOString(), listed: true, filename: `hubloan-${m.id}.zip`, license: s.license, bytes: bytes.length, hasPreview: Boolean(preview) };
       if (!Number.isInteger(product.priceMinor) || product.priceMinor < 500) throw new AppError('Preço deste formato não configurado.');
@@ -206,7 +209,7 @@ export function createShop(store, { masterKey = null, provider = createStripePro
       if (s.expiresAt < Date.now()) { await store.mutate(id, w => { w.shop.autoPublish = false; }); continue; }
       const workspace = (await store.read(id)).workspace;
       const published = new Set(s.products.map(p => p.missionId));
-      const missions = [...workspace.missions].reverse().filter(m => m.purpose !== 'experiment-preparation' && ['review', 'approved'].includes(m.status) && !published.has(m.id));
+      const missions = [...workspace.missions].reverse().filter(m => validationPublicationAllowed(workspace,m) && m.purpose !== 'experiment-preparation' && ['review', 'approved'].includes(m.status) && !published.has(m.id));
       for (const m of missions) {
         if (closed) break;
         try { await publish(id, m.id, true); }

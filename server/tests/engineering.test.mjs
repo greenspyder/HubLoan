@@ -1,3 +1,4 @@
+import { configureCosts } from '../ai-costs.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createStore } from '../store.mjs';
@@ -12,7 +13,7 @@ async function fixture(t, options = {}) {
   const provider = { text: async (key, model, instructions, input) => { assert.equal(key, aiKey); calls.push({ instructions, input }); const output = calls.length % 3 === 1 ? 'Plano pequeno' : calls.length % 3 === 2 ? JSON.stringify({ summary: 'Guia de ativação', edits: [{ path: file, before: '', after: '# Começar\nUse limites de chamadas e custos reais.' }] }) : JSON.stringify({ approved: true, reason: 'Texto no escopo.' }); return { output }; } };
   const app = createApp({ store, provider, masterKey, engineeringProvider }); await new Promise(r => app.server.listen(0, '127.0.0.1', r));
   t.after(async () => { await app.close(); await store.close(); });
-  await store.mutate(id, w => { w.secret = encryptKey(aiKey, token); });
+  await store.mutate(id, w => { w.secret = encryptKey(aiKey, token);configureCosts(w, {enabled:true,dailyMinor:1000000,monthlyMinor:1000000,callMinor:10000,ceilings:{text:100,research:200,vision:200,image:500}});  });
   async function call(path, input, access = token, method = input ? 'POST' : 'GET') { const r = await fetch(`http://127.0.0.1:${app.server.address().port}/api/agents${path}`, { method, headers: { Authorization: `Bearer ${access}`, 'Content-Type': 'application/json' }, body: input ? JSON.stringify(input) : undefined }); return { status: r.status, data: await r.json() }; }
   async function start(enabled = false) { assert.equal((await call('/engineering/connect', { apiKey: githubKey, authorize: true })).status, 200); assert.equal((await call('/engineering/configure', { enabled, maxJobs: 1, maxCalls: 3 })).status, 200); }
   return { store, app, calls, publications, provider, call, start };
@@ -78,7 +79,7 @@ test('encrypted GitHub grant and queued proposal survive durable restart', async
   const { mkdtemp, rm } = await import('node:fs/promises'), { tmpdir } = await import('node:os'), { join } = await import('node:path'), { createEngineering } = await import('../engineering.mjs');
   const folder = await mkdtemp(join(tmpdir(), 'engineering-')); t.after(() => rm(folder, { recursive: true, force: true }));
   let store = await createStore({ file: join(folder, 'db.sqlite') }); const external = { connect: async () => ({}), source: async () => { throw new Error('do not resend'); } };
-  let worker = createEngineering(store, {}, { masterKey, provider: external }); await store.mutate(id, w => { w.secret = encryptKey(aiKey, token); }); await worker.connect(id, { apiKey: githubKey, authorize: true }); await worker.configure(id, token, { enabled: false, maxJobs: 1, maxCalls: 3 }); await worker.enqueue(id, 'onboarding-guide');
+  let worker = createEngineering(store, {}, { masterKey, provider: external }); await store.mutate(id, w => { w.secret = encryptKey(aiKey, token);configureCosts(w, {enabled:true,dailyMinor:1000000,monthlyMinor:1000000,callMinor:10000,ceilings:{text:100,research:200,vision:200,image:500}});  }); await worker.connect(id, { apiKey: githubKey, authorize: true }); await worker.configure(id, token, { enabled: false, maxJobs: 1, maxCalls: 3 }); await worker.enqueue(id, 'onboarding-guide');
   await worker.close(); await store.close(); store = await createStore({ file: join(folder, 'db.sqlite') }); worker = createEngineering(store, {}, { masterKey, provider: external }); t.after(async () => { await worker.close(); await store.close(); });
   const raw = (await store.read(id)).workspace; assert.ok(!JSON.stringify(raw).includes(githubKey)); assert.ok(!JSON.stringify(raw.engineering).includes(token)); assert.equal((await store.engineeringSpaces()).length, 1); await worker.tick(); assert.equal((await store.read(id)).workspace.engineering.jobs[0].status, 'failed');
 });

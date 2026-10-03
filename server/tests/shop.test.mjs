@@ -136,3 +136,17 @@ test('public preview is a reduced JPEG; original bytes stay behind payment and w
   await f.call(`/shop/products/${p.id}`, 'PATCH', { listed: false });
   assert.equal((await f.call(`/storefront/${slug}/preview?product=${p.id}`, 'GET', undefined, '')).status, 404);
 });
+
+test('first-sale samples cannot bypass review through manual or automatic publishing, without blocking unrelated products', async t => {
+  const {createExperiment,experimentAction}=await import('../experiments.mjs');
+  const f=await fixture(t);await f.configure();
+  let experimentId,sampleId;
+  await f.store.mutate(id,w=>{const e=createExperiment(w,{name:'Amostra',hypothesis:'Validar',audience:'Freelancers',channel:'Canal próprio',days:7,budgetMinor:6000,minSales:1,minNetMinor:1000,missionIds:[]});experimentId=e.id;const a=(action,input={})=>experimentAction(w,e.id,`validation-${action}`,input);a('enable');a('evidence',{url:'https://example.org/request',summary:'Pedido observado',observedAt:new Date().toISOString()});a('offer',{scope:'Template',criteria:'Legível',priceMinor:1500,deliveryDays:3});a('sample',{kind:'text',agentId:'creator'});const m=w.missions[0];sampleId=m.id;m.status='review';m.output='Amostra original';});
+  assert.equal((await f.call(`/shop/missions/${sampleId}/publish`,'POST',{})).status,409);
+  await f.mission('text');await f.app.shop.tick();let w=(await f.call('/workspace')).data;assert.equal(w.shop.products.length,1);assert.equal(w.shop.autoPublish,true);
+  assert.equal((await f.call(`/experiments/${experimentId}/validation-quality`,'POST',{approved:true,reason:'Li a amostra'},other)).status,404);
+  assert.equal((await f.call(`/experiments/${experimentId}/validation-quality`,'POST',{approved:true,reason:'Li a amostra'})).status,200);
+  assert.equal((await f.call(`/shop/missions/${sampleId}/publish`,'POST',{})).status,409);
+  assert.equal((await f.call(`/experiments/${experimentId}/validation-release`,'POST',{authorize:true})).status,200);
+  await f.app.shop.tick();w=(await f.call('/workspace')).data;assert.equal(w.shop.products.filter(p=>p.missionId===sampleId).length,1);
+});

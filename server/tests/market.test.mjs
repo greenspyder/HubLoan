@@ -1,3 +1,4 @@
+import { configureCosts } from '../ai-costs.mjs';
 import { createExperiment, experimentAction } from '../experiments.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -28,7 +29,7 @@ function providerFixture({ weak = false, unknown = false, noSearch = false, imag
 }
 async function setup(t, options = {}) {
   const store = await createStore({ file: ':memory:' }); const provider = providerFixture(options); let clock = Date.now();
-  await store.mutate(id, workspace => { workspace.secret = encryptKey('sk-test-key-not-real-market', token); createProject(workspace, { ...input, ...options.input }, token, masterKey, clock); });
+  await store.mutate(id, workspace => { workspace.secret = encryptKey('sk-test-key-not-real-market', token);configureCosts(workspace, {enabled:true,dailyMinor:1000000,monthlyMinor:1000000,callMinor:10000,ceilings:{text:100,research:200,vision:200,image:500}});  createProject(workspace, { ...input, ...options.input }, token, masterKey, clock); });
   const runner = createRunner(store, provider, { masterKey, now: () => clock, intervalMs: 100000 });
   t.after(async () => { await runner.close(); await store.close(); });
   return { store, runner, provider, read: async () => (await store.read(id)).workspace, advance: () => { clock += 61000; } };

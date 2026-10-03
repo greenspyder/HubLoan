@@ -1,3 +1,4 @@
+import { configureCosts } from '../ai-costs.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { executionCapabilities, assessOpportunity } from '../opportunities.mjs';
@@ -35,7 +36,7 @@ test('executable lower-score strategy outranks blocked or preparation strategies
 async function fixture(t, allowPreparation) {
  const store = await createStore({ file: ':memory:' }), payloads = [];
  const provider = { research: async (_key, _model, input) => { const q = JSON.parse(input); assert.ok(q.capabilities.includes('vídeos curtos')); return { output: 'SIMULATED market research', sources, searches: 2, tokens: 10 }; }, text: async (_key, _model, instructions, input) => { payloads.push(JSON.parse(input.startsWith('{') ? input : '{}')); return { output: instructions.includes('candidates:') ? JSON.stringify({ candidates: options }) : instructions.includes('somente JSON') ? JSON.stringify({ title: 'Roteiros de teste originais', brief: 'Preparar materiais' }) : 'MATERIAIS SIMULADOS. Sem edição ou publicação.', tokens: 10 }; } };
- await store.mutate(id, w => { w.secret = encryptKey('sk-fixture-not-real', token); createProject(w, { mode: 'discover', kind: 'text', market: { scope: 'broad', allowPreparation, specializations: ['text'] }, maxDeliveries: 1, maxCalls: 6, intervalMinutes: 1, start: true, research: true }, token, masterKey); });
+ await store.mutate(id, w => { w.secret = encryptKey('sk-fixture-not-real', token);configureCosts(w, {enabled:true,dailyMinor:1000000,monthlyMinor:1000000,callMinor:10000,ceilings:{text:100,research:200,vision:200,image:500}});  createProject(w, { mode: 'discover', kind: 'text', market: { scope: 'broad', allowPreparation, specializations: ['text'] }, maxDeliveries: 1, maxCalls: 6, intervalMinutes: 1, start: true, research: true }, token, masterKey); });
  const runner = createRunner(store, provider, { masterKey, intervalMs: 100000 }); t.after(async () => { await runner.close(); await store.close(); }); return { store, runner, payloads };
 }
 test('broad cycle records blocked insights without producing, spending on unsupported tools or inventing publication', async t => {

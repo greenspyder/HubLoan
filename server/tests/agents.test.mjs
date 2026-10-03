@@ -52,7 +52,7 @@ test('SQLite persists data across restart and concurrent writes retain both chan
   assert.equal(postgresConfig('Host=host;Port=5433;Username=user;Password=pass;Database=db;SSL Mode=Require').ssl.rejectUnauthorized, true);
 });
 test('API runs real workflow through injected provider, isolates users and requires human approval', async t => {
-  const f = await fixture(t); await f.connect();
+  const f = await fixture(t); await f.connect(); await f.request('/ai-costs', 'POST', {enabled:true,dailyMinor:1000000,monthlyMinor:1000000,callMinor:10000,ceilings:{text:100,research:200,vision:200,image:500}});
   const created = await f.request('/missions', 'POST', missionInput); assert.equal(created.status, 201);
   const id = created.data.missions[0].id; assert.equal(created.data.missions[0].status, 'queued');
   await f.app.runner.tick();
@@ -68,7 +68,7 @@ test('API runs real workflow through injected provider, isolates users and requi
   assert.equal((await f.request('/workspace', 'GET', undefined, token, { Origin: 'https://untrusted.test' })).status, 403);
 });
 test('image bytes are protected and downloaded separately from public mission history', async t => {
-  const f = await fixture(t); await f.connect();
+  const f = await fixture(t); await f.connect(); await f.request('/ai-costs', 'POST', {enabled:true,dailyMinor:1000000,monthlyMinor:1000000,callMinor:10000,ceilings:{text:100,research:200,vision:200,image:500}});
   const created = await f.request('/missions', 'POST', { ...missionInput, kind: 'image' }); const id = created.data.missions[0].id;
   await f.app.runner.tick();
   const data = (await f.request('/workspace')).data;
@@ -79,13 +79,13 @@ test('image bytes are protected and downloaded separately from public mission hi
 test('cancel aborts provider request and never resurrects a cancelled mission', async t => {
   let started; const ready = new Promise(resolve => { started = resolve; });
   const provider = { validate: async () => {}, text: async (_key, _model, _instructions, _input, _limit, signal) => { started(); return new Promise((_resolve, reject) => signal.addEventListener('abort', () => reject(new Error('aborted')), { once: true })); } };
-  const f = await fixture(t, provider); await f.connect(); const created = await f.request('/missions', 'POST', missionInput); const id = created.data.missions[0].id;
+  const f = await fixture(t, provider); await f.connect(); await f.request('/ai-costs', 'POST', {enabled:true,dailyMinor:1000000,monthlyMinor:1000000,callMinor:10000,ceilings:{text:100,research:200,vision:200,image:500}}); const created = await f.request('/missions', 'POST', missionInput); const id = created.data.missions[0].id;
   const running = f.app.runner.tick(); await ready;
   assert.equal((await f.request(`/missions/${id}/cancel`, 'POST')).data.missions[0].status, 'cancelled');
   await running; assert.equal((await f.request('/workspace')).data.missions[0].status, 'cancelled');
 });
 test('provider failure is visible without exposing raw secrets; disconnected queue cannot run', async t => {
-  const f = await fixture(t, { validate: async () => {}, text: async () => { throw new AppError('Saldo insuficiente', 422); } }); await f.connect();
+  const f = await fixture(t, { validate: async () => {}, text: async () => { throw new AppError('Saldo insuficiente', 422); } }); await f.connect(); await f.request('/ai-costs', 'POST', {enabled:true,dailyMinor:1000000,monthlyMinor:1000000,callMinor:10000,ceilings:{text:100,research:200,vision:200,image:500}});
   await f.request('/missions', 'POST', missionInput); await f.app.runner.tick();
   const data = (await f.request('/workspace')).data; assert.equal(data.missions[0].status, 'failed'); assert.equal(data.missions[0].error, 'Saldo insuficiente');
   await f.request(`/missions/${data.missions[0].id}/run`, 'POST');

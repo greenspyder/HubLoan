@@ -1,3 +1,4 @@
+import { configureCosts } from './ai-costs.mjs';
 import { createKnowledge, knowledgeExport } from './knowledge.mjs';
 import { createExperiment, experimentAction } from './experiments.mjs';
 import { createEngineering } from './engineering.mjs';
@@ -90,13 +91,14 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       rates.set(rateKey, rate);
       runner.unlock(id, token); commerce.unlock(id, token);
       const route = url.pathname.slice('/api/agents'.length);
+      if (route === '/ai-costs' && request.method === 'POST') { const input = await body(request); const updated = await store.mutate(id, w => configureCosts(w, input)); return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey))); }
       if (route === '/knowledge/export' && request.method === 'GET') return send(response, 200, knowledgeExport((await store.read(id)).workspace));
       if (route === '/knowledge/refresh' && request.method === 'POST') return send(response, 200, publicWorkspace((await knowledge.refresh(id)).workspace, store.mode, Boolean(masterKey)));
       if (route === '/knowledge/connect' && request.method === 'POST') return send(response, 200, publicWorkspace((await knowledge.connect(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
       if (route === '/knowledge/pause' && request.method === 'POST') return send(response, 200, publicWorkspace((await knowledge.pause(id)).workspace, store.mode, Boolean(masterKey)));
       if (route === '/knowledge' && request.method === 'DELETE') return send(response, 200, publicWorkspace((await knowledge.pause(id, true)).workspace, store.mode, Boolean(masterKey)));
       if (route === '/experiments' && request.method === 'POST') { const input = await body(request); const updated = await store.mutate(id, w => createExperiment(w, input)); return send(response, 201, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey))); }
-      const experimentRoute = route.match(/^\/experiments\/([a-f0-9-]+)\/(cost|void|review|close|link)$/);
+      const experimentRoute = route.match(/^\/experiments\/([a-f0-9-]+)\/(cost|void|review|close|link|validation-enable|validation-evidence|validation-offer|validation-sample|validation-quality|validation-release|validation-feedback)$/);
       if (experimentRoute && request.method === 'POST') { const input = await body(request); const updated = await store.mutate(id, w => experimentAction(w, experimentRoute[1], experimentRoute[2], input)); return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey))); }
       if (route === '/engineering/connect' && request.method === 'POST') return send(response, 200, publicWorkspace((await engineering.connect(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
       if (route === '/engineering/configure' && request.method === 'POST') return send(response, 200, publicWorkspace((await engineering.configure(id, token, await body(request))).workspace, store.mode, Boolean(masterKey)));
