@@ -1,4 +1,4 @@
-import { EconomicOverview } from '../components/EconomicOverview';
+import { BusinessHome } from '../components/BusinessHome';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { screens, sectionScreen, sectionUrl } from '../services/navigation';
 import { ConnectionsPanel } from '../components/ConnectionsPanel';
@@ -7,13 +7,12 @@ import { AiCostsPanel } from '../components/AiCostsPanel';
 import { KnowledgePanel } from '../components/KnowledgePanel';
 import { AstraConsole } from '../components/AstraConsole';
 import { ExperimentsPanel } from '../components/ExperimentsPanel';
-import { GettingStarted } from '../components/GettingStarted';
 import { EngineeringPanel } from '../components/EngineeringPanel';
 import { MarketingPanel } from '../components/MarketingPanel';
 import { ShopPanel } from '../components/ShopPanel';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
-import { Activity, Bot, Check, Cpu, Download, Layers, Pause, Play, Plus, Radio, Terminal, KeyRound, RefreshCw, X } from 'lucide-react';
+import { Bot, Check, Cpu, Download, Layers, Pause, Play, Plus, Radio, Terminal, KeyRound, RefreshCw, X } from 'lucide-react';
 import { agentApi, getAccessCode, restoreAccessCode, productionLabels } from '../services/agentApi';
 import type { Workspace, Mission, MissionStatus, ProductionKind } from '../services/agentApi';
 import '../workspace.css';
@@ -90,7 +89,7 @@ export function AgentWorkspacePage() {
     if (legacy && !location.pathname.startsWith('/agentes/')) { navigate(sectionUrl(section), {replace:true}); return; }
     document.title = `HubLoan · ${screen.title}`;
     if (loaded) { const target = document.getElementById(section); if (target) target.scrollIntoView({block:'start'}); else window.scrollTo(0,0); }
-  }, [location.pathname, section, screen.title, navigate, loaded]);
+  }, [location.pathname, location.search, section, screen.title, navigate, loaded]);
   async function mutate(operation: () => Promise<Workspace>, success = '') {
     if (busyRef.current) return null;
     busyRef.current = true; setBusy(true); epoch.current++; setMessage(''); setMessageError(false);
@@ -107,26 +106,22 @@ export function AgentWorkspacePage() {
   async function connect(event: FormEvent) { event.preventDefault(); const data = await mutate(() => agentApi.saveSettings(apiKey, model || workspace!.settings.model, imageModel || workspace!.settings.imageModel,decisionModel || workspace!.settings.decisionModel || workspace!.settings.model), 'Chave validada e salva. Confira o orçamento antes de iniciar a produção.'); if (data) setApiKey(''); }
   async function restore(event: FormEvent) { event.preventDefault(); try { restoreAccessCode(restoreCode); epoch.current++; setWorkspace(null); setSelectedId(''); setRestoreCode(''); await refresh(); setMessage('Espaço restaurado pelo código de acesso.'); } catch (error) { setMessage(errorMessage(error)); } }
   const [factoryId, setFactoryId] = useState('');
-  const selected = workspace?.missions.find(mission => mission.id === selectedId);
   const enabled = workspace?.agents.filter(agent => agent.enabled).length || 0;
+  const activeFactoryId = new URLSearchParams(location.search).get('factory') || factoryId;
+  const selected = workspace?.missions.find(mission => mission.id === selectedId);
   const running = workspace?.missions.filter(mission => mission.status === 'running') || [];
   const filtered = workspace?.missions.filter(mission => filter === 'all' || mission.status === filter) || [];
   return <div className="agent-workspace" onClickCapture={e => { const a = (e.target as HTMLElement).closest('a'); const href = a?.getAttribute('href'); if (href?.startsWith('#') && sectionScreen[href.slice(1)] && !e.ctrlKey && !e.metaKey) { e.preventDefault(); navigate(sectionUrl(href.slice(1))); } }}>
-    <aside className="aw-sidebar"><a className="aw-brand" href="#overview"><span><Cpu size={22} /></span><div>HUBLOAN<small>AGENT OPERATING SYSTEM</small></div></a><p className="aw-eyebrow">SUA ESTAÇÃO DE TRABALHO</p><nav aria-label="Navegação">{screens.map(s => <Link key={s.id} to={`/agentes/${s.id}`} aria-current={screen.id === s.id ? 'page' : undefined}><Layers size={18} /> {s.title}</Link>)}</nav><div className="aw-sidebar-bottom"><Radio size={17} /><div>{workspace?.settings.configured ? 'IA conectada' : 'Aguardando conexão'}<small>{running.length ? 'Missão em execução' : 'Sem execução ativa'}</small></div></div></aside>
-    <main className="aw-main" id="overview"><header className="aw-topbar"><span>CENTRAL DE OPERAÇÕES / {screen.title.toUpperCase()}</span><span className="aw-badge">{connectionError ? 'SEM CONEXÃO' : workspace ? 'SERVIDOR CONECTADO' : 'CONECTANDO'}</span></header>
-      <section className="aw-heading"><div><p className="aw-eyebrow">UMA IDEIA. UMA ENTREGA REAL.</p><h1>{screen.title}<span>.</span></h1><p>{screen.description}</p></div><button className="aw-button aw-secondary" disabled={!workspace} onClick={() => download(new Blob([JSON.stringify(workspace, null, 2)], { type: 'application/json' }), 'hubloan-entregas.json')}><Download size={16} /> Exportar histórico</button></section>
+    <aside className="aw-sidebar"><a className="aw-brand" href="#overview"><span><Cpu size={22} /></span><div>HUBLOAN<small>SEUS NEGÓCIOS COM IA</small></div></a><p className="aw-eyebrow">SEU DISTRITO DE NEGÓCIOS</p><nav aria-label="Seus negócios">{screens.filter(s => !['conexoes', 'avancado'].includes(s.id)).map(s => <Link key={s.id} to={`/agentes/${s.id}`} aria-current={screen.id === s.id ? 'page' : undefined}><Layers size={18} /> {s.title}</Link>)}</nav><details className="aw-technical-nav"><summary>Configurações e ferramentas</summary><nav aria-label="Configurações">{screens.filter(s => ['conexoes', 'avancado'].includes(s.id)).map(s => <Link key={s.id} to={`/agentes/${s.id}`} aria-current={screen.id === s.id ? 'page' : undefined}>{s.title}</Link>)}</nav></details><div className="aw-sidebar-bottom"><Radio size={17} /><div>{workspace?.settings.configured ? 'IA conectada' : 'Aguardando conexão'}<small>{running.length ? 'Missão em execução' : 'Sem execução ativa'}</small></div></div></aside>
+    <main className="aw-main" id="overview"><header className="aw-topbar"><span>HUBLOAN / {screen.title.toUpperCase()}</span><span className="aw-badge">{connectionError ? 'SEM CONEXÃO' : workspace ? 'SERVIDOR CONECTADO' : 'CONECTANDO'}</span></header>
+      {screen.id !== 'inicio' && <section className="aw-heading"><div><p className="aw-eyebrow">UMA IDEIA. UMA ENTREGA REAL.</p><h1>{screen.title}<span>.</span></h1><p>{screen.description}</p></div><button className="aw-button aw-secondary" disabled={!workspace} onClick={() => download(new Blob([JSON.stringify(workspace, null, 2)], { type: 'application/json' }), 'hubloan-entregas.json')}><Download size={16} /> Exportar histórico</button></section>}
       {connectionError && <div className="aw-error" role="alert">{connectionError} <button className="aw-button aw-secondary" onClick={() => void refresh()}><RefreshCw size={14} /> Tentar novamente</button></div>}
       {(busy || message) && <div className={`aw-feedback aw-toast ${messageError ? 'is-error' : ''}`} role={messageError ? 'alert' : 'status'} aria-live="polite"><span>{busy ? 'Processando… Aguarde a confirmação do servidor.' : message}</span>{!busy && <button className="aw-icon-button" aria-label="Fechar mensagem" onClick={() => setMessage('')}><X size={18} /></button>}</div>}
       {!workspace && <div className="aw-panel aw-empty"><Cpu size={30} /><h2>Conectando sua central</h2><p>O primeiro acesso pode demorar se a hospedagem estiver iniciando.</p><details><summary>Restaurar espaço com código de acesso</summary><form className="aw-form" onSubmit={restore}><label>Código<input type="password" value={restoreCode} onChange={e => setRestoreCode(e.target.value)} required /></label><button className="aw-button">Restaurar</button></form></details></div>}
       {workspace && <>
-      {screen.id === 'inicio' && <><EconomicOverview workspace={workspace} /><GettingStarted workspace={workspace} busy={busy} mutate={mutate} onSelect={openMission} /><section className="aw-metrics" aria-label="Indicadores reais">{[
-        { label: 'AGENTES DISPONÍVEIS', value: enabled, detail: 'Funções configuradas', icon: Bot },
-        { label: 'EXECUÇÕES ATIVAS', value: running.length, detail: `${workspace.missions.filter(m => m.status === 'queued').length} na fila`, icon: Activity },
-        { label: 'PARA SUA REVISÃO', value: workspace.missions.filter(m => m.status === 'review').length, detail: 'Entregas aguardando aprovação', icon: Check },
-        { label: 'TOKENS REGISTRADOS', value: (workspace.missions.reduce((n, m) => n + m.tokens, 0) + (workspace.autonomy?.projects || []).reduce((n, p) => n + p.tokens, 0)).toLocaleString('pt-BR'), detail: `${workspace.missions.reduce((n, m) => n + m.images, 0)} imagens concluídas · não é valor em R$`, icon: Cpu },
-      ].map(metric => <article className="aw-metric" key={metric.label}><div><span>{metric.label}</span><metric.icon size={18} /></div><strong>{metric.value}</strong><small>{metric.detail}</small></article>)}</section></>}
-      {screen.id === 'base' && <><section className="aw-panel" id="station"><div className="aw-section-title"><div><p className="aw-eyebrow">VISUALIZAÇÃO DA OPERAÇÃO</p><h2>A estação</h2></div><span className="aw-badge">{running.length ? 'ATIVIDADE REAL' : 'EM ESPERA'}</span></div><StationMap workspace={workspace} onSelect={openMission} onFactory={id => { setFactoryId(id); document.getElementById('factories')?.scrollIntoView({behavior:'smooth'}); }} /><p className="aw-caption">Cada robô representa uma função de IA. Ele muda de sala quando a tarefa muda de etapa; sem atividade, aguarda. A estação não registra vendas ou receitas sem integração.</p></section>
-      <FactoriesPanel selectedId={factoryId} onSelect={setFactoryId} workspace={workspace} busy={busy} mutate={mutate} /></>}
+      {screen.id === 'inicio' && <BusinessHome workspace={workspace} onSelect={openMission} />}
+      {screen.id === 'base' && <><section className="aw-panel" id="station"><div className="aw-section-title"><div><p className="aw-eyebrow">VISUALIZAÇÃO DA OPERAÇÃO</p><h2>A estação</h2></div><span className="aw-badge">{running.length ? 'ATIVIDADE REAL' : 'EM ESPERA'}</span></div><StationMap workspace={workspace} onSelect={openMission} onFactory={id => { setFactoryId(id); navigate(`/agentes/base?factory=${encodeURIComponent(id)}#factories`); }} /><p className="aw-caption">Cada robô representa uma função de IA. Ele muda de sala quando a tarefa muda de etapa; sem atividade, aguarda. A estação não registra vendas ou receitas sem integração.</p></section>
+      <FactoriesPanel selectedId={activeFactoryId} onSelect={id => { setFactoryId(id); navigate(`/agentes/base?factory=${encodeURIComponent(id)}#factories`); }} workspace={workspace} busy={busy} mutate={mutate} /></>}
       {screen.id === 'producao' && <AutonomousProjects workspace={workspace} busy={busy} mutate={mutate} />}
       {screen.id === 'vendas' && <><ShopPanel workspace={workspace} busy={busy} mutate={mutate} /><ExperimentsPanel workspace={workspace} busy={busy} mutate={mutate} /></>}
       {screen.id === 'divulgacao' && <MarketingPanel workspace={workspace} busy={busy} mutate={mutate} />}

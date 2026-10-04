@@ -1,6 +1,6 @@
 export const screens = [
-  {id:'inicio', title:'Início', description:'Seu próximo passo e o que precisa de atenção.'},
-  {id:'base', title:'Base 2D', description:'Fábricas, equipe e armazém ligados à operação real.'},
+  {id:'inicio', title:'Meus negócios', description:'Seu próximo passo e o que precisa de atenção.'},
+  {id:'base', title:'Distrito 2D', description:'Fábricas, equipe e armazém ligados à operação real.'},
   {id:'producao', title:'Produção', description:'Escolha uma entrega ou autorize a pesquisa de oportunidades.'},
   {id:'armazem', title:'Armazém', description:'Revise, baixe e acompanhe suas entregas.'},
   {id:'vendas', title:'Vendas e custos', description:'Produtos publicados, pagamentos e resultados dos testes.'},

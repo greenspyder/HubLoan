@@ -1,14 +1,21 @@
 import { Link } from 'react-router-dom';
+import { ArrowUpRight, Wallet, Receipt, ShoppingBag, Scale } from 'lucide-react';
 import type { Workspace } from '../services/agentApi';
-const money=(n:number)=>(n/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-export function EconomicOverview({workspace:w}:{workspace:Workspace}) {
- const experiments=w.experiments||[];
- const external=experiments.filter(e=>e.marketplace);
- const revenue=external.reduce((n,e)=>n+(e.marketplaceMetrics?.grossMinor||0),0);
- const costs=experiments.reduce((n,e)=>n+e.metrics.costMinor,0);
- const complete=experiments.length>0&&experiments.every(e=>e.metrics.costComplete&&(!e.marketplace||e.marketplaceMetrics));
- const result=complete?experiments.reduce((n,e)=>n+(e.marketplace?e.marketplaceMetrics!.resultMinor!:e.metrics.resultMinor!),0):null;
- const best=(w.factories||[]).filter(f=>f.resultMinor!==null&&f.resultMinor>0).sort((a,b)=>b.resultMinor!-a.resultMinor!)[0];
- const metrics=[['Receita Stripe confirmada',money(w.shop?.metrics.grossMinor||0),'Loja inteira; não somar novamente aos experimentos'],['Receita externa declarada',money(revenue),'Fiverr/Etsy/itch.io; sem verificação pela API'],['Custos registrados',money(costs),'Somente experimentos; não inclui reservas de IA'],['Resultado dos experimentos',result===null?'A apurar':money(result),'Escopo dos testes; não é lucro total da aplicação'],['Vendas registradas',String((w.shop?.metrics.purchases||0)+external.reduce((n,e)=>n+(e.marketplaceMetrics?.sales||0),0)),'Stripe + relatos externos separados nos testes'],['Experimentos ativos',String(experiments.filter(e=>!e.ended).length),'Uma hipótese pequena antes de expandir']];
- return <section className="aw-panel"><h2>Primeira venda, depois escala</h2><p>Demanda → oferta pequena → distribuição → venda → resultado → próximo teste.</p><div className="aw-metrics">{metrics.map(([label,value,detail])=><article className="aw-metric" key={label}><span>{label}</span><strong>{value}</strong><small>{detail}</small></article>)}</div><p>Melhor resultado positivo registrado: <strong>{best?best.name:'A apurar'}</strong>. Compare também período, canal e confiança dos dados.</p><Link className="aw-button" to="/agentes/vendas#experiments">Preparar primeira oferta / registrar resultado</Link></section>;
+import { brl, economicView } from '../services/businessView';
+
+export function EconomicOverview({ workspace }: { workspace: Workspace }) {
+  const e = economicView(workspace);
+  const stripeBRL = e.confirmed?.currency?.toLowerCase() === 'brl';
+  const revenue = e.declared + (stripeBRL ? e.confirmed!.grossMinor : 0);
+  const observed = Boolean(e.confirmed || (workspace.experiments || []).some(t => t.marketplaceMetrics));
+  const cards = [
+    { label: 'Receita registrada', value: observed ? brl(revenue) : 'Sem dados', detail: 'Confirmada + declarada em R$', icon: Wallet },
+    { label: 'Custos registrados', value: brl(e.costs), detail: 'Despesas declaradas nos testes', icon: Receipt },
+    { label: 'Resultado dos testes', value: e.result === null ? 'A apurar' : brl(e.result), detail: e.result === null ? 'Depende de dados e custos completos' : 'Após reembolsos e custos revisados', icon: Scale },
+    { label: 'Vendas registradas', value: String(e.sales), detail: `${e.active} teste${e.active === 1 ? '' : 's'} em observação`, icon: ShoppingBag },
+  ];
+  return <section className="bh-economy" aria-label="Finanças reais">
+    <div className="bh-finances">{cards.map(c => <article key={c.label}><div><span>{c.label}</span><c.icon size={19} /></div><strong className={c.label === 'Resultado dos testes' && e.result !== null ? e.result > 0 ? 'bh-positive' : e.result < 0 ? 'bh-negative' : '' : ''}>{c.value}</strong><small>{c.detail}</small></article>)}</div>
+    <details className="bh-data-note"><summary>De onde vêm os valores?</summary><p>Receita bruta da loja Stripe: {e.confirmed ? (e.confirmed.grossMinor / 100).toLocaleString('pt-BR', { style: 'currency', currency: e.confirmed.currency || 'BRL' }) : 'Sem dados'}. Receita externa declarada por você: {brl(e.declared)}; não verificada por API. Moedas diferentes não são somadas. Compras de teste não contam.</p><p>Custos e resultado cobrem somente os experimentos registrados, não toda a aplicação. Reservas de API não são despesas faturadas. Sem revisão completa, o resultado fica “A apurar”. {e.pendingObservations > 0 && `${e.pendingObservations} teste(s) externo(s) ainda sem observação de vendas.`}</p><Link to="/agentes/vendas#experiments">Conferir lançamentos <ArrowUpRight size={14} /></Link></details>
+  </section>;
 }
