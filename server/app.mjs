@@ -1,3 +1,5 @@
+import { createEtsy } from './etsy.mjs';
+import { createReferenceResearch, createOfferPreparation } from './reference-research.mjs';
 import { createFactory } from './factories.mjs';
 import { configureCosts } from './ai-costs.mjs';
 import { createKnowledge, knowledgeExport } from './knowledge.mjs';
@@ -14,11 +16,14 @@ import { recordExperiment } from './market.mjs';
 import { createRunner } from './runner.mjs';
 import { createProject, projectAction, reconcileProjects, syncAutonomy } from './autonomy.mjs';
 
-export function createApp({ store, provider, staticDirectory = '../frontend/dist', allowedOrigins = [], masterKey = null, commerceProvider, shopProvider, marketingProvider, engineeringProvider, knowledgeProvider, publicOrigin, webhookOrigin }) {
+export function createApp({ store, provider, staticDirectory = '../frontend/dist', allowedOrigins = [], masterKey = null, commerceProvider, shopProvider, marketingProvider, engineeringProvider, knowledgeProvider, publicOrigin, webhookOrigin, etsyProvider }) {
+  const etsy = createEtsy(store,{masterKey,provider:etsyProvider,callbackOrigin:webhookOrigin});
+  const prepareOffer = createOfferPreparation(store,provider);
+  const referenceResearch = createReferenceResearch(store,provider);
   const knowledge = createKnowledge(store, { masterKey, provider: knowledgeProvider });
   const runner = createRunner(store, provider, { masterKey, knowledge });
   const commerce = createCommerce(store, { masterKey, provider: commerceProvider });
-  const shop = createShop(store, { masterKey, provider: shopProvider, marketingProvider, engineeringProvider, publicOrigin, webhookOrigin });
+  const shop = createShop(store, { masterKey, provider: shopProvider, marketingProvider, engineeringProvider, publicOrigin, webhookOrigin, etsyProvider });
   const engineering = createEngineering(store, provider, { masterKey, provider: engineeringProvider });
   const marketing = createMarketing(store, { masterKey, provider: marketingProvider, publicOrigin });
   const rates = new Map();
@@ -52,6 +57,7 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
         return send(response, 200, request.method === 'HEAD' ? '' : data, { 'Content-Type': mime + (['.html', '.js', '.css'].includes(extension) ? '; charset=utf-8' : ''), 'Cache-Control': url.pathname.startsWith('/assets/') ? 'public,max-age=31536000,immutable' : 'no-cache' });
       }
       if (!url.pathname.startsWith('/api/agents')) throw new AppError('Este servidor agora atende a central de agentes.', 404);
+      if(url.pathname==='/api/agents/etsy/callback' && request.method==='GET'){await etsy.callback(url.searchParams.get('state'),url.searchParams.get('code'));return send(response,200,'<!doctype html><meta charset=utf-8><title>Etsy conectada</title><p>Etsy conectada. Feche esta janela e atualize Conexões no HubLoan.</p>',{'Content-Type':'text/html; charset=utf-8','Referrer-Policy':'no-referrer'});}
       const origin = request.headers.origin;
       if (origin && !allowedOrigins.includes(origin) && origin !== `https://${request.headers.host}` && origin !== `http://${request.headers.host}`) throw new AppError('Origem não autorizada.', 403);
       if (origin) { response.setHeader('Access-Control-Allow-Origin', origin); response.setHeader('Vary', 'Origin'); }
@@ -100,7 +106,16 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if (route === '/knowledge/pause' && request.method === 'POST') return send(response, 200, publicWorkspace((await knowledge.pause(id)).workspace, store.mode, Boolean(masterKey)));
       if (route === '/knowledge' && request.method === 'DELETE') return send(response, 200, publicWorkspace((await knowledge.pause(id, true)).workspace, store.mode, Boolean(masterKey)));
       if (route === '/experiments' && request.method === 'POST') { const input = await body(request); const updated = await store.mutate(id, w => createExperiment(w, input)); return send(response, 201, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey))); }
-      const experimentRoute = route.match(/^\/experiments\/([a-f0-9-]+)\/(marketplace-offer|marketplace-results|cost|void|review|close|link|validation-enable|validation-evidence|validation-offer|validation-sample|validation-quality|validation-release|validation-feedback)$/);
+      if(route==='/etsy/configure'&&request.method==='POST')return send(response,200,publicWorkspace((await etsy.configure(id,await body(request))).workspace,store.mode,Boolean(masterKey)));
+      if(route==='/etsy/authorize'&&request.method==='POST')return send(response,200,await etsy.authorize(id));
+      if(route==='/etsy'&&request.method==='DELETE')return send(response,200,publicWorkspace((await etsy.disconnect(id)).workspace,store.mode,Boolean(masterKey)));
+      const etsyRoute=route.match(/^\/experiments\/([a-f0-9-]+)\/etsy-(publish|reconcile|sync)$/);
+      if(etsyRoute && request.method==='POST')return send(response,200,publicWorkspace((await etsy[etsyRoute[2]](id,etsyRoute[1],await body(request))).workspace,store.mode,Boolean(masterKey)));
+      const prepareRoute=route.match(/^\/experiments\/([a-f0-9-]+)\/prepare-offer$/);
+      if(prepareRoute&&request.method==='POST')return send(response,200,publicWorkspace((await prepareOffer(id,token,prepareRoute[1],await body(request))).workspace,store.mode,Boolean(masterKey)));
+      const researchRoute=route.match(/^\/experiments\/([a-f0-9-]+)\/reference-research$/);
+      if(researchRoute && request.method==='POST') return send(response,200,publicWorkspace((await referenceResearch(id,token,researchRoute[1],await body(request))).workspace,store.mode,Boolean(masterKey)));
+      const experimentRoute = route.match(/^\/experiments\/([a-f0-9-]+)\/(market-reference|originality-review|marketplace-offer|marketplace-results|marketplace-published|cost|void|review|close|link|validation-enable|validation-evidence|validation-offer|validation-sample|validation-quality|validation-release|validation-itch-release|validation-feedback)$/);
       if (experimentRoute && request.method === 'POST') { const input = await body(request); const updated = await store.mutate(id, w => experimentAction(w, experimentRoute[1], experimentRoute[2], input)); return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey))); }
       if (route === '/engineering/connect' && request.method === 'POST') return send(response, 200, publicWorkspace((await engineering.connect(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
       if (route === '/engineering/configure' && request.method === 'POST') return send(response, 200, publicWorkspace((await engineering.configure(id, token, await body(request))).workspace, store.mode, Boolean(masterKey)));

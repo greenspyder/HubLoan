@@ -10,7 +10,9 @@ import { parseMarketDecision, recordExperiment } from '../market.mjs';
 import { initialWorkspace, encryptKey, workspaceId } from '../domain.mjs';
 const token = 'a'.repeat(64), other = 'b'.repeat(64), masterKey = 'f'.repeat(64), id = workspaceId(token);
 const sources = [{ url: 'https://example.com/demand', title: 'Sinal de demanda de teste' }, { url: 'https://example.org/prices', title: 'Preço anunciado de teste' }];
-const candidates = [0, 1, 2].map(i => ({ title: `Oportunidade de teste ${i}`, audience: 'Público de teste', rationale: 'Justificativa do provedor simulado, sem vendas comprovadas.', uncertainty: 'Demanda é hipótese de teste.', test: 'Publicar oferta manualmente e medir visitas e vendas por sete dias.', kind: 'text', scores: { demand: 4 - i, competition: 3, feasibility: 4, distribution: 3, evidence: 3 }, sourceUrls: [sources[i % 2].url] }));
+sources.push({url:'https://example.net/product',title:'Terceira oferta simulada'});
+const refs=sources.map((s,i)=>({marketplace:'Test',seller:`Seller ${i}`,category:'Templates',product:`Product ${i}`,url:s.url,observedAt:new Date().toISOString(),observedPrice:'BRL 10',signals:[{kind:'review',value:'One product review (fixture)',scope:'product',sourceUrl:s.url}],features:['Editable template'],inference:'May solve a recurring need',hypothesis:'Test original template',ipRisk:'unknown',opportunity:'Original template with distinct composition'}));
+const candidates = [0, 1, 2].map(i => ({ title: `Oportunidade de teste ${i}`, audience: 'Público de teste', rationale: 'Justificativa do provedor simulado, sem vendas comprovadas.', uncertainty: 'Demanda é hipótese de teste.', test: 'Publicar oferta manualmente e medir visitas e vendas por sete dias.', kind: 'text', scores: { demand: 4 - i, competition: 3, feasibility: 4, distribution: 3, evidence: 3 }, referenceUrls:sources.map(s=>s.url),sourceUrls: [sources[i % 2].url] }));
 const input = { mode: 'discover', kind: 'text', research: true, maxDeliveries: 2, maxCalls: 12, intervalMinutes: 1, start: true };
 function providerFixture({ weak = false, unknown = false, noSearch = false, image = false } = {}) {
   const fixture = { calls: 0, histories: [], learningInputs: [], memoryInputs: [], validate: async () => {}, research: async () => { fixture.calls++; return { output: 'Pesquisa pública SIMULADA com duas fontes.', sources, searches: noSearch ? 0 : 2, tokens: 50 }; }, text: async (_key, _model, instructions, payload) => {
@@ -21,7 +23,7 @@ function providerFixture({ weak = false, unknown = false, noSearch = false, imag
       if (weak) output.forEach(candidate => { candidate.scores.evidence = 0; });
       if (unknown) output[0].sourceUrls = ['https://invented.test'];
       if (image) output[0].kind = 'image';
-      return { output: JSON.stringify({ candidates: output }), tokens: 60 };
+      return { output: JSON.stringify({ references:refs,candidates: output }), tokens: 60 };
     }
     return { output: instructions.includes('somente JSON') ? JSON.stringify({ title: 'Produto original escolhido', brief: 'Entregue o produto completo e a oferta para o teste definido, sem afirmar publicação.' }) : 'Conteúdo SIMULADO para teste automatizado.', tokens: 20 };
   } };
@@ -34,7 +36,7 @@ async function setup(t, options = {}) {
   t.after(async () => { await runner.close(); await store.close(); });
   return { store, runner, provider, read: async () => (await store.read(id)).workspace, advance: () => { clock += 61000; } };
 }
-test('discovery chooses and produces without a user-supplied product; fresh research and feedback influence next analysis', async t => {
+test('discovery chooses and produces without a user-supplied product; pending undistributed inventory blocks another paid cycle', async t => {
   const f = await setup(t);
   await f.runner.tick(); let w = await f.read(); let p = w.autonomy.projects[0];
   assert.equal(p.mode, 'discover'); assert.equal(p.name, 'Descoberta de oportunidades'); assert.equal(p.decisions[0].selected.title, candidates[0].title);
@@ -42,9 +44,8 @@ test('discovery chooses and produces without a user-supplied product; fresh rese
   await f.runner.tick(); w = await f.read(); p = w.autonomy.projects[0]; assert.equal(p.calls, 6); assert.equal(w.missions[0].status, 'review');
   await f.store.mutate(id, workspace => recordExperiment(workspace, p.id, p.decisions[0].id, { visits: 100, sales: 2, revenue: 60, cost: 20, evidence: 'Painel de teste, período informado pelo usuário.' }));
   f.advance(); await f.runner.tick(); await f.runner.tick(); w = await f.read(); p = w.autonomy.projects[0];
-  assert.equal(p.decisions.length, 2); assert.notEqual(p.decisions[0].selected.title, p.decisions[1].selected.title); assert.notEqual(p.decisions[0].id, p.decisions[1].id); assert.equal(p.calls, 12); assert.equal(f.provider.calls, 12); assert.equal(p.searches, 4); assert.equal(p.status, 'completed');
-  assert.equal(f.provider.histories[1][0].feedback.net, 40); assert.equal(f.provider.histories[1][0].feedback.origin, 'user_report');
-  f.advance(); await f.runner.tick(); assert.equal(f.provider.calls, 12);
+  assert.equal(p.decisions.length,1);assert.equal(p.status,'paused');assert.match(p.error,/estoque produzido sem distribuição/);assert.equal(f.provider.calls,6);
+  f.advance();await f.runner.tick();assert.equal(f.provider.calls,6);
 });
 test('discovery fails closed on fabricated citations, weak evidence, missing search or unauthorized image', async t => {
   for (const flags of [{ weak: true }, { unknown: true }, { noSearch: true }, { image: true }]) {
@@ -59,10 +60,10 @@ test('hard API call allowance blocks incomplete cycles and prevents automatic re
   await failure.runner.tick(); await failure.runner.tick(); assert.equal((await failure.read()).autonomy.projects[0].calls, 1); assert.equal(failure.provider.calls, 1);
 });
 test('ranking is deterministic and bounds model scores instead of accepting claimed best-return choice', () => {
-  const result = parseMarketDecision(JSON.stringify({ candidates, selected: 'option-3', profit: 999999 }), sources);
+  const result = parseMarketDecision(JSON.stringify({ references:refs,candidates, selected: 'option-3', profit: 999999 }), sources);
   assert.equal(result.selected.id, 'option-1'); assert.equal(result.selected.score, 70); assert.equal(result.profit, undefined);
   const invalid = structuredClone(candidates); invalid[0].scores.evidence = 100;
-  assert.throws(() => parseMarketDecision(JSON.stringify({ candidates: invalid }), sources), /Pontuação/);
+  assert.throws(() => parseMarketDecision(JSON.stringify({ references:refs,candidates: invalid }), sources), /Pontuação/);
 });
 test('reported commercial results reject inconsistent numbers and preserve explicit provenance', () => {
   const w = initialWorkspace(); w.autonomy = { enabled: false, projects: [{ id: 'test', status: 'paused', events: [], decisions: [{ id: 'decision', selected: candidates[0] }] }] };

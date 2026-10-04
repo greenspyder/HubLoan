@@ -1,3 +1,5 @@
+import { channelState, existingOffer, factoryChannels, marketplaceNames, offerUrl, publicationState } from '../services/salesChannels';
+import '../marketplaces.css';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Box, Check, Film, Image, MonitorPlay, Palette, FileText, Wrench, Code } from 'lucide-react';
 import type { Workspace, Factory } from '../services/agentApi';
@@ -16,16 +18,17 @@ export function FactoryCards({ workspace }: { workspace: Workspace }) {
   const factories = workspace.factories || [];
   return <div className="bh-factory-grid">{factories.map(f => {
     const v = factoryView(f, workspace);
+    const channels = factoryChannels(f), primary=channels[0], existing=primary ? existingOffer(workspace,f.id,primary) : undefined;
     return <article className={`bh-factory bh-kind-${f.kind}`} key={f.id}>
       <div className="bh-factory-top"><span className={`bh-state bh-state-${v.state}`}><i />{v.status}</span><Link to={factoryUrl(f.id)} aria-label={`Ver detalhes de ${f.name}`} className="bh-detail-link">Detalhes <ArrowRight size={14} /></Link></div>
       <Building kind={f.kind} />
       <h3><Link to={factoryUrl(f.id)}>{f.name}</Link></h3><p className="bh-product">{product[f.kind]}</p>
-      <p className="bh-channel">{f.channel}</p>
+      <div className="sc-factory-outlets" aria-label={`Canais de ${f.name}`}>{channels.length ? channels.map(c=>{const state=channelState(workspace,c,f);return <Link key={c} to={offerUrl(f.id,c,existingOffer(workspace,f.id,c)?.id)} className={`sc-outlet sc-${state.tone}`}><strong>{marketplaceNames[c]}</strong><span>{state.label}</span></Link>;}) : <p className="bh-channel">{f.channel}</p>}</div>{primary && <p className="sc-offer-state">{publicationState(existing)}</p>}
       <div className="bh-factory-finances"><div><span>Receita dos testes</span><strong>{v.hasObservation ? brl(f.grossMinor) : 'Sem dados'}</strong></div><div><span>Resultado</span><strong className={f.resultMinor !== null && f.resultMinor > 0 ? 'bh-positive' : f.resultMinor !== null && f.resultMinor < 0 ? 'bh-negative' : ''}>{f.resultMinor === null ? 'A apurar' : brl(f.resultMinor)}</strong></div></div>
       <div className="bh-operation-counts"><span>{v.sales} venda{v.sales === 1 ? '' : 's'} registrada{v.sales === 1 ? '' : 's'}</span><span>{f.delivered} entrega{f.delivered === 1 ? '' : 's'}</span></div>
       <ol className="bh-milestones" aria-label={`Marcos registrados de ${f.name}`}>{v.milestones.map(m => <li key={m.label} className={m.met ? 'is-met' : ''}><span>{m.met ? <Check size={11} /> : <i />}</span>{m.label}<span className="bh-sr-only">: {m.met ? 'registrado' : 'ainda não registrado'}</span></li>)}</ol>
       {f.mixedExperiments > 0 && <small className="bh-excluded">{f.mixedExperiments} teste(s) sem atribuição exclusiva; fora destes valores.</small>}
-      <Link className="bh-card-action" to={v.action.href}>{v.action.label}<ArrowRight size={17} /></Link>
+      <Link className="bh-card-action" to={primary?offerUrl(f.id,primary,existing?.id):v.action.href}>{primary ? existing ? 'Continuar minha oferta' : primary==='fiverr' ? 'Preparar primeiro Gig' : 'Preparar primeiro listing' : v.action.label}<ArrowRight size={17} /></Link>
     </article>;
   })}{!factories.length && <p className="aw-notice">Nenhuma fábrica carregada. Seus negócios aparecerão aqui quando disponíveis.</p>}</div>;
 }
