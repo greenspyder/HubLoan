@@ -11,7 +11,7 @@ export function AutonomousProjects({ workspace, busy, mutate }: Props) {
   const [scope, setScope] = useState<'broad' | 'products'>('broad');
   const [allowPreparation, setAllowPreparation] = useState(false);
   const [market, setMarket] = useState('Brasil, português brasileiro');
-  const [channels, setChannels] = useState('Usar integrações conectadas; investigar também conteúdo de nicho e serviços');
+  const [channels, setChannels] = useState('Fiverr manual para thumbnails; Etsy manual para assets originais elegíveis; itch.io adicional; comparar outros canais por evidência');
   const [restrictions, setRestrictions] = useState('Sem anúncios pagos, sem compras, sem copiar produtos de terceiros.');
   const [specializations, setSpecializations] = useState<ProductionKind[]>(['thumbnail', 'sprites', 'model3d', 'text']);
   const [allowImages, setAllowImages] = useState(false);
@@ -19,7 +19,7 @@ export function AutonomousProjects({ workspace, busy, mutate }: Props) {
   const [name, setName] = useState('');
   const [goal, setGoal] = useState('');
   const [kind, setKind] = useState<ProductionKind>('text');
-  const [maxDeliveries, setMaxDeliveries] = useState(3);
+  const [maxDeliveries, setMaxDeliveries] = useState(1);
   const [intervalMinutes, setIntervalMinutes] = useState(5);
   const [research, setResearch] = useState(false);
   const [start, setStart] = useState(true);
@@ -30,7 +30,7 @@ export function AutonomousProjects({ workspace, busy, mutate }: Props) {
     const result = await mutate(() => agentApi.addProject({ name, goal, kind, maxDeliveries, intervalMinutes, research: mode === 'discover' || research, mode, maxCalls, market: { scope, allowPreparation, market, channels, restrictions, allowImages, specializations }, start: active }), active ? 'Projeto iniciado. O coordenador criará e distribuirá as tarefas automaticamente.' : 'Projeto salvo e pausado. Conecte sua IA e inicie quando estiver pronto.');
     if (result) { setName(''); setGoal(''); }
   }
-  return <section className="aw-panel aw-autonomy" id="autonomy"><div className="aw-section-title"><div><p className="aw-eyebrow">COORDENADOR / ORION</p><h2><Cpu size={21} /> Descobrir → escolher → produzir</h2></div><span className="aw-badge">{autonomy.enabled ? 'CICLO AUTÔNOMO ATIVO' : 'AGUARDANDO OBJETIVO'}</span></div><p>Deixe Astra pesquisar oportunidades ou escolha um objetivo. Comece com uma entrega e revise antes de publicar.</p><p className="aw-caption">Produção usa sua API e respeita o orçamento autorizado. Um projeto ativo por vez; sem garantia de vendas.</p>
+  return <section className="aw-panel aw-autonomy" id="autonomy"><div className="aw-section-title"><div><p className="aw-eyebrow">COORDENADOR / ORION</p><h2><Cpu size={21} /> Demanda → hipótese → teste pequeno</h2></div><span className="aw-badge">{autonomy.enabled ? 'CICLO AUTÔNOMO ATIVO' : 'AGUARDANDO OBJETIVO'}</span></div><p>Deixe Astra pesquisar oportunidades ou escolha um objetivo. Comece com uma entrega e revise antes de publicar.</p><p className="aw-caption">Produção usa sua API e respeita o orçamento autorizado. Um projeto ativo por vez; sem garantia de vendas.</p>
     <div className="aw-projects">{autonomy.projects.map(project => {
       const missions = workspace.missions.filter(mission => mission.projectId === project.id);
       const delivered = missions.filter(mission => ['review', 'approved'].includes(mission.status)).length;

@@ -10,7 +10,8 @@ const definitions = [
 export const factoryKinds = ['text', 'thumbnail', 'sprites', 'model3d', 'image', 'video', 'service', 'software'];
 const blockers = { video: 'Renderização, legendas sincronizadas e publicação de vídeos não integradas.', service: 'Contratação, recebimento de material e entrega ao cliente não integrados.', software: 'Execução e deploy de software produzido não integrados.' };
 export function factories(w) {
-  w.factories ||= definitions.map(([kind, name, role]) => ({ id: `factory-${kind}`, kind, name, role, audience: 'Público definido no briefing de cada teste', channel: kind === 'sprites' || kind === 'model3d' ? 'Loja própria / itch.io, conforme autorizações' : 'Loja própria, conforme autorização', createdAt: null }));
+  w.factories ||= definitions.map(([kind, name, role]) => ({ id: `factory-${kind}`, kind, name, role, audience: 'Público definido no briefing de cada teste', channel: kind === 'thumbnail' ? 'Fiverr (serviço, publicação manual)' : ['sprites','model3d'].includes(kind) ? 'Etsy (manual) / itch.io; loja complementar' : kind === 'image' ? 'Etsy (manual, conforme elegibilidade)' : 'Canal definido pela demanda; loja complementar', createdAt: null }));
+  for(const f of w.factories) if(f.id===`factory-${f.kind}` && ['Loja própria / itch.io, conforme autorizações','Loja própria, conforme autorização'].includes(f.channel)) f.channel=f.kind==='thumbnail'?'Fiverr (serviço, publicação manual)':['sprites','model3d'].includes(f.kind)?'Etsy (manual) / itch.io; loja complementar':f.kind==='image'?'Etsy (manual, conforme elegibilidade)':'Canal definido pela demanda; loja complementar';
   return w.factories;
 }
 export function factoryById(w, id) {
@@ -44,12 +45,12 @@ export function publicFactories(w, experiments = []) {
     const ids = new Set(missions.map(m => m.id));
     const projects = (w.autonomy?.projects || []).filter(p => p.factoryId === f.id);
     const taskIds = new Set([...ids, ...projects.map(p => p.id)]);
-    const candidates = experiments.filter(e => e.missionIds.length && e.missionIds.every(id => ids.has(id)));
+    const candidates = experiments.filter(e => e.marketplace ? e.marketplace.factoryId === f.id : e.missionIds.length && e.missionIds.every(id => ids.has(id)));
     const mixed = experiments.filter(e => e.missionIds.some(id => ids.has(id)) && !e.missionIds.every(id => ids.has(id)));
     const overlapping = candidates.filter(e => candidates.some(other => other.id !== e.id && other.missionIds.some(id => e.missionIds.includes(id))));
     const exclusive = candidates.filter(e => !overlapping.includes(e));
     const excluded = mixed.length + overlapping.length;
-    const sum = key => exclusive.reduce((n, e) => n + (e.metrics[key] || 0), 0);
-    return { ...f, blocker: blockers[f.kind] || null, missions: missions.length, running: missions.filter(m => m.status === 'running').length, queued: missions.filter(m => m.status === 'queued').length, delivered: missions.filter(m => ['review', 'approved'].includes(m.status)).length, projects: projects.length, reservedMinor: (w.aiCosts?.entries || []).filter(e => taskIds.has(e.taskId)).reduce((n, e) => n + e.reservedMinor, 0), experimentIds: exclusive.map(e => e.id), mixedExperiments: excluded, grossMinor: sum('grossMinor'), costMinor: sum('costMinor'), resultMinor: exclusive.length && exclusive.every(e => e.metrics.costComplete) && !excluded ? sum('resultMinor') : null };
+    const sum = key => exclusive.reduce((n, e) => n + ((key==='costMinor'?e.metrics:e.marketplace ? e.marketplaceMetrics : e.metrics)?.[key] || 0), 0);
+    return { ...f, blocker: blockers[f.kind] || null, missions: missions.length, running: missions.filter(m => m.status === 'running').length, queued: missions.filter(m => m.status === 'queued').length, delivered: missions.filter(m => ['review', 'approved'].includes(m.status)).length, projects: projects.length, reservedMinor: (w.aiCosts?.entries || []).filter(e => taskIds.has(e.taskId)).reduce((n, e) => n + e.reservedMinor, 0), experimentIds: exclusive.map(e => e.id), mixedExperiments: excluded, grossMinor: sum('grossMinor'), costMinor: sum('costMinor'), resultMinor: exclusive.length && exclusive.every(e => e.metrics.costComplete && (!e.marketplace || e.marketplaceMetrics)) && !excluded ? sum('resultMinor') : null };
   });
 }

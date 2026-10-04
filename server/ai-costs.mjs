@@ -1,3 +1,4 @@
+import { selectedModel, estimatedTextUsd } from './models.mjs';
 import { randomUUID, createHash } from 'node:crypto';
 import { AppError } from './domain.mjs';
 const init = w => w.aiCosts ||= { enabled:false, dailyMinor:500, monthlyMinor:5000, callMinor:100, taskMinor:500, ceilings:{text:100,research:200,vision:200,image:500}, entries:[], cache:[] };
@@ -13,7 +14,7 @@ export function publicCosts(w,now=Date.now()) {
 }
 export function costProvider(store,provider,id,taskId,agentId) {
  return Object.fromEntries(['text','research','vision','image'].map(kind=>[kind,async(...args)=>{
- if(kind!=='image') args[1]='gpt-4.1-mini';
+ if(kind!=='image') { const {result:model}=await store.mutate(id,w=>selectedModel(w,agentId,kind)); args[1]=model; }
  const hash=createHash('sha256').update(JSON.stringify([kind,args[1],args.slice(2).map(v=>v instanceof AbortSignal?null:v)])).digest('hex'),entryId=randomUUID();
  const {result:cached}=await store.mutate(id,w=>{
  const c=init(w); if(!c.enabled) throw new AppError('Configure e ative o orçamento de IA antes de executar.');
@@ -23,7 +24,7 @@ export function costProvider(store,provider,id,taskId,agentId) {
  c.entries.push({id:entryId,at:new Date().toISOString(),taskId,agentId,model:args[1],kind,reservedMinor:reserve,status:'pending',tokens:0});
  });
  if(cached) return {...cached,tokens:0,cached:true};
- try {const result=await provider[kind](...args); await store.mutate(id,w=>{const c=init(w);Object.assign(c.entries.find(e=>e.id===entryId),{status:'completed',tokens:result.tokens||0});if(kind==='text'&&!result.truncated){c.cache=c.cache.filter(e=>Date.now()-e.time<86400000).slice(-49);c.cache.push({hash,time:Date.now(),result});}});return result;}
+ try {const result=await provider[kind](...args); await store.mutate(id,w=>{const c=init(w);Object.assign(c.entries.find(e=>e.id===entryId),{status:'completed',tokens:result.tokens||0,actualModel:result.model || args[1],usage:result.usage,estimatedTextUsd:kind==='image'?null:estimatedTextUsd(args[1],result.usage),searches:result.searches||0});if(kind==='text'&&!result.truncated){c.cache=c.cache.filter(e=>Date.now()-e.time<86400000).slice(-49);c.cache.push({hash,time:Date.now(),result});}});return result;}
  catch(error){await store.mutate(id,w=>{init(w).entries.find(e=>e.id===entryId).status='uncertain';});throw error;}
  }]));
 }

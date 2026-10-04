@@ -1,3 +1,4 @@
+import { commercialAction, marketplaceMetrics } from './commercial.mjs';
 import { validationAction, validationReadiness } from './validation.mjs';
 import { randomUUID, createHash } from 'node:crypto';
 import { AppError, text } from './domain.mjs';
@@ -7,9 +8,9 @@ function find(w, id) { const e = w.experiments?.find(e => e.id === id); if (!e) 
 function scope(w, e) {
   const products = new Set((w.shop?.products || []).filter(p => e.missionIds.includes(p.missionId)).map(p => p.id));
   const end = Date.parse(e.closedAt || e.endsAt);
-  const orders = (w.shop?.orders || []).filter(o => products.has(o.productId) && o.paidAt && o.livemode === true && o.currency === 'brl' && Date.parse(o.paidAt) >= Date.parse(e.createdAt) && Date.parse(o.paidAt) <= end);
+  const orders = (w.shop?.orders || []).filter(o => !e.marketplace && products.has(o.productId) && o.paidAt && o.livemode === true && o.currency === 'brl' && Date.parse(o.paidAt) >= Date.parse(e.createdAt) && Date.parse(o.paidAt) <= end);
   const missions = w.missions.filter(m => e.missionIds.includes(m.id));
-  const fingerprint = createHash('sha256').update(JSON.stringify({ orders: orders.map(o => [o.id, o.priceMinor, o.refundedMinor || 0, o.status]), missions: missions.map(m => [m.id, m.attempt, m.tokens, m.images, m.status, m.events.length]), costs: e.costs.map(c => [c.id, c.voidedAt || '']) })).digest('hex');
+  const fingerprint = createHash('sha256').update(JSON.stringify({ marketplace: e.marketplace, orders: orders.map(o => [o.id, o.priceMinor, o.refundedMinor || 0, o.status]), missions: missions.map(m => [m.id, m.attempt, m.tokens, m.images, m.status, m.events.length]), costs: e.costs.map(c => [c.id, c.voidedAt || '']) })).digest('hex');
   return { orders, missions, fingerprint };
 }
 export function createExperiment(w, input, now = Date.now()) {
@@ -24,6 +25,7 @@ export function createExperiment(w, input, now = Date.now()) {
 }
 export function experimentAction(w, id, action, input = {}, now = Date.now()) {
   const e = find(w, id);
+  if (action.startsWith('marketplace-')) return commercialAction(w,e,action,input,now);
   if (action.startsWith('validation-')) return validationAction(w,e,action,input,now);
   if (action === 'cost') {
     if (e.costs.length >= 500) throw new AppError('Limite de 500 lançamentos.');
@@ -49,6 +51,6 @@ export function publicExperiments(w, now = Date.now()) {
     const recommendation = costMinor >= e.budgetMinor ? 'budget' : !costComplete ? 'incomplete' : sales >= e.minSales && balanceMinor >= e.minNetMinor ? 'validated' : ended ? 'stop' : 'observe';
     const { review, ...safe } = e;
     const metrics = { grossMinor, refundedMinor, heldMinor, sales, costMinor, balanceMinor, costComplete, resultMinor: costComplete ? balanceMinor : null, recommendation, budgetRemainingMinor: e.budgetMinor - costMinor };
-    return { ...safe, reviewedAt: review?.at, currency: 'BRL', ended, metrics, validationReadiness: validationReadiness(w,e,metrics,now) };
+    return { ...safe, reviewedAt: review?.at, currency: 'BRL', ended, metrics, marketplaceMetrics: marketplaceMetrics(e,costComplete,costMinor), validationReadiness: validationReadiness(w,e,metrics,now) };
   });
 }

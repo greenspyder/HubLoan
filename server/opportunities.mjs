@@ -3,6 +3,8 @@ export const opportunityResearch = 'Investigue estratégias atuais de lucro alé
 export function executionCapabilities(w, market = {}) {
   const shop = w.shop, marketing = w.marketing, now = Date.now();
   return {
+    fiverr_publish: {available:false,detail:'Fiverr: preparar Gig e amostra; publicação, pedidos e entrega manuais. API pública adequada não verificada.'},
+    etsy_publish: {available:false,detail:'Etsy: API oficial exige app e OAuth; integração ainda não configurada. Preparar listing original e publicar manualmente.'},
     text: { available: true, detail: 'Texto/código em Markdown; código não é executado.' },
     image: { available: market.allowImages === true, detail: 'Imagem PNG; requer autorização de geração.' },
     thumbnail: { available: market.allowImages === true, detail: 'Thumbnails 16:9; requer autorização de geração.' },
@@ -23,14 +25,14 @@ export function executionCapabilities(w, market = {}) {
 }
 export function assessOpportunity(candidate, capabilities, allowPreparation = false) {
   if (!['digital_product', 'content_channel', 'service', 'software'].includes(candidate.businessModel)) throw new AppError('Modelo de negócio inválido.');
-  if (!['storefront', 'itchio', 'mastodon', 'telegram', 'tiktok', 'youtube', 'website', 'other'].includes(candidate.platform)) throw new AppError('Plataforma da estratégia inválida.');
+  if (!['fiverr', 'etsy', 'storefront', 'itchio', 'mastodon', 'telegram', 'tiktok', 'youtube', 'website', 'other'].includes(candidate.platform)) throw new AppError('Plataforma da estratégia inválida.');
   if (!Array.isArray(candidate.requiredCapabilities) || !candidate.requiredCapabilities.length || candidate.requiredCapabilities.length > 10 || candidate.requiredCapabilities.some(c => typeof c !== 'string' || !/^[a-z][a-z0-9_]{0,49}$/.test(c))) throw new AppError('Informe ferramentas necessárias para a estratégia.');
   const required = new Set([...candidate.requiredCapabilities, candidate.kind]);
   // Server rules prevent a model from disguising a video/service as an executable text product.
   if (candidate.businessModel === 'content_channel') { required.add('video_render'); required.add('video_caption'); }
   if (candidate.businessModel === 'service') required.add('service_fulfillment');
   if (candidate.businessModel === 'software') required.add('software_deploy');
-  const publication = { storefront: 'storefront_publish', itchio: 'itchio_publish', mastodon: 'mastodon_publish', telegram: 'telegram_publish', tiktok: 'tiktok_publish', youtube: 'youtube_publish', website: 'website_publish', other: 'external_publish' };
+  const publication = { fiverr:'fiverr_publish',etsy:'etsy_publish',storefront: 'storefront_publish', itchio: 'itchio_publish', mastodon: 'mastodon_publish', telegram: 'telegram_publish', tiktok: 'tiktok_publish', youtube: 'youtube_publish', website: 'website_publish', other: 'external_publish' };
   required.add(publication[candidate.platform]);
   if (candidate.platform === 'tiktok' || candidate.platform === 'youtube') { required.add('video_render'); required.add('video_caption'); }
   if (candidate.platform === 'itchio' && !capabilities.itchio_publish?.targets?.includes(candidate.kind)) required.add('itchio_target');

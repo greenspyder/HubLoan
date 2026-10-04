@@ -1,3 +1,4 @@
+import { modelCatalog } from './models.mjs';
 import { publicFactories, missionFactoryId, requireFactoryProduction } from './factories.mjs';
 import { publicCosts } from './ai-costs.mjs';
 import { publicKnowledge } from './knowledge.mjs';
@@ -12,7 +13,7 @@ import { createHash, createCipheriv, createDecipheriv, randomBytes, randomUUID }
 export class AppError extends Error {
   constructor(message, status = 400) { super(message); this.status = status; }
 }
-export const TEXT_MODELS = ['gpt-4.1-mini', 'gpt-4.1'];
+export const TEXT_MODELS = modelCatalog.map(m => m.id);
 export const IMAGE_MODELS = ['gpt-image-1-mini', 'gpt-image-1.5'];
 export function workspaceId(token) {
   if (!/^[a-f0-9]{64}$/.test(token ?? '')) throw new AppError('Código de acesso inválido.', 401);
@@ -37,7 +38,7 @@ export function initialWorkspace() {
   ], missions: [], settings: { model: 'gpt-4.1-mini', imageModel: 'gpt-image-1-mini', maxOutputTokens: 1800 } };
 }
 export function publicWorkspace(workspace, storage, durableAutonomy = false) {
-  return { version: 2, factories: publicFactories(workspace, publicExperiments(workspace)), aiCosts: publicCosts(workspace), knowledge: publicKnowledge(workspace), experiments: publicExperiments(workspace), engineering: publicEngineering(workspace), strategy: businessStrategy, marketing: publicMarketing(workspace), shop: publicShop(workspace), commerce: publicCommerce(workspace), autonomy: { projects: workspace.autonomy?.projects || [], enabled: Boolean(workspace.autonomy?.enabled), durable: durableAutonomy }, agents: workspace.agents, missions: workspace.missions.map(({ artifact, ...mission }) => ({ ...mission, factoryId: missionFactoryId(workspace, mission), hasArtifact: Boolean(artifact), hasPreview: Boolean(artifact?.preview), artifactMime: artifact?.mime, artifactFilename: artifact?.filename })), settings: { model: workspace.settings.model, imageModel: workspace.settings.imageModel, maxOutputTokens: workspace.settings.maxOutputTokens, configured: Boolean(workspace.secret) }, storage };
+  return { version: 2, factories: publicFactories(workspace, publicExperiments(workspace)), aiCosts: publicCosts(workspace), knowledge: publicKnowledge(workspace), experiments: publicExperiments(workspace), engineering: publicEngineering(workspace), strategy: businessStrategy, marketing: publicMarketing(workspace), shop: publicShop(workspace), commerce: publicCommerce(workspace), autonomy: { projects: workspace.autonomy?.projects || [], enabled: Boolean(workspace.autonomy?.enabled), durable: durableAutonomy }, agents: workspace.agents, missions: workspace.missions.map(({ artifact, ...mission }) => ({ ...mission, factoryId: missionFactoryId(workspace, mission), hasArtifact: Boolean(artifact), hasPreview: Boolean(artifact?.preview), artifactMime: artifact?.mime, artifactFilename: artifact?.filename })), settings: { model: workspace.settings.model, workerModel: workspace.settings.workerModel || 'gpt-4.1-mini', decisionModel: workspace.settings.decisionModel || 'gpt-4.1-mini', modelCatalog, availableModels: workspace.settings.availableModels || [], modelsCheckedAt: workspace.settings.modelsCheckedAt, imageModel: workspace.settings.imageModel, maxOutputTokens: workspace.settings.maxOutputTokens, configured: Boolean(workspace.secret) }, storage };
 }
 export function text(value, name, max) {
   if (typeof value !== 'string' || !value.trim() || value.trim().length > max) throw new AppError(`${name}: informe de 1 a ${max} caracteres.`);

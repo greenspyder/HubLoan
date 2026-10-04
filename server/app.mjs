@@ -9,7 +9,7 @@ import { createCommerce } from './commerce.mjs';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { resolve, sep, extname } from 'node:path';
-import { AppError, workspaceId, publicWorkspace, encryptKey, text, TEXT_MODELS, IMAGE_MODELS, addAgent, addMission, missionById, queueMission, approveMission, cancelMission, recoverStale } from './domain.mjs';
+import { AppError, decryptKey, workspaceId, publicWorkspace, encryptKey, text, TEXT_MODELS, IMAGE_MODELS, addAgent, addMission, missionById, queueMission, approveMission, cancelMission, recoverStale } from './domain.mjs';
 import { recordExperiment } from './market.mjs';
 import { createRunner } from './runner.mjs';
 import { createProject, projectAction, reconcileProjects, syncAutonomy } from './autonomy.mjs';
@@ -100,7 +100,7 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if (route === '/knowledge/pause' && request.method === 'POST') return send(response, 200, publicWorkspace((await knowledge.pause(id)).workspace, store.mode, Boolean(masterKey)));
       if (route === '/knowledge' && request.method === 'DELETE') return send(response, 200, publicWorkspace((await knowledge.pause(id, true)).workspace, store.mode, Boolean(masterKey)));
       if (route === '/experiments' && request.method === 'POST') { const input = await body(request); const updated = await store.mutate(id, w => createExperiment(w, input)); return send(response, 201, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey))); }
-      const experimentRoute = route.match(/^\/experiments\/([a-f0-9-]+)\/(cost|void|review|close|link|validation-enable|validation-evidence|validation-offer|validation-sample|validation-quality|validation-release|validation-feedback)$/);
+      const experimentRoute = route.match(/^\/experiments\/([a-f0-9-]+)\/(marketplace-offer|marketplace-results|cost|void|review|close|link|validation-enable|validation-evidence|validation-offer|validation-sample|validation-quality|validation-release|validation-feedback)$/);
       if (experimentRoute && request.method === 'POST') { const input = await body(request); const updated = await store.mutate(id, w => experimentAction(w, experimentRoute[1], experimentRoute[2], input)); return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey))); }
       if (route === '/engineering/connect' && request.method === 'POST') return send(response, 200, publicWorkspace((await engineering.connect(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
       if (route === '/engineering/configure' && request.method === 'POST') return send(response, 200, publicWorkspace((await engineering.configure(id, token, await body(request))).workspace, store.mode, Boolean(masterKey)));
@@ -158,15 +158,19 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if (route === '/settings' && request.method === 'POST') {
         const input = await body(request);
         if (!TEXT_MODELS.includes(input.model) || !IMAGE_MODELS.includes(input.imageModel)) throw new AppError('Modelo inválido.');
+        const workerModel=input.workerModel || input.model, decisionModel=input.decisionModel || input.model;
+        if(!TEXT_MODELS.includes(workerModel)||!TEXT_MODELS.includes(decisionModel)) throw new AppError('Modelo por função inválido.');
         const current = (await store.read(id)).workspace;
         const key = typeof input.apiKey === 'string' ? input.apiKey.trim() : '';
         if (!key && !current.secret) throw new AppError('Informe sua chave da OpenAI.');
         if (key) {
           if (!key.startsWith('sk-') || key.length < 20 || key.length > 1000 || /\s/.test(key)) throw new AppError('Formato de chave inválido.');
-          await provider.validate(key, input.model);
         }
+        const connectedKey=key || decryptKey(current.secret,token);
+        const availableModels=provider.models ? (await provider.models(connectedKey)).filter(m=>TEXT_MODELS.includes(m)) : [];
+        for(const model of new Set([workerModel,decisionModel])) await provider.validate(connectedKey,model);
         const updated = await store.mutate(id, workspace => {
-          workspace.settings = { model: input.model, imageModel: input.imageModel, maxOutputTokens: 1800 };
+          workspace.settings = { model: workerModel, workerModel, decisionModel, availableModels, modelsCheckedAt:new Date().toISOString(), imageModel: input.imageModel, maxOutputTokens: 1800 };
           if (key) workspace.secret = encryptKey(key, token);
         });
         return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));

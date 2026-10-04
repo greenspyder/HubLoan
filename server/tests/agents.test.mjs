@@ -95,7 +95,7 @@ test('provider failure is visible without exposing raw secrets; disconnected que
 test('Responses API payload and parsing handle actual output structure and token truncation', async () => {
   let request;
   const provider = createProvider(async (url, options) => { request = { url, options }; return new Response(JSON.stringify({ status: 'incomplete', output: [{ type: 'message', content: [{ type: 'output_text', text: 'Entrega' }] }], usage: { total_tokens: 123 } })); });
-  assert.deepEqual(await provider.text(key, 'gpt-4.1-mini', 'regras', 'briefing', 1800), { output: 'Entrega', tokens: 123, truncated: true });
+  assert.deepEqual(await provider.text(key, 'gpt-4.1-mini', 'regras', 'briefing', 1800), { output: 'Entrega', model:undefined, usage:{total_tokens:123}, tokens: 123, truncated: true });
   assert.equal(request.url, 'https://api.openai.com/v1/responses'); const payload = JSON.parse(request.options.body); assert.equal(payload.store, false); assert.equal(payload.max_output_tokens, 1800);
   const failing = createProvider(async () => new Response(JSON.stringify({ error: { code: 'insufficient_quota', message: key } }), { status: 429 }));
   await assert.rejects(() => failing.text(key, 'gpt-4.1-mini', '', '', 100), error => /saldo/.test(error.message) && !error.message.includes(key));
