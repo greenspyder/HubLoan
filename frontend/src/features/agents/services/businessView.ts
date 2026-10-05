@@ -7,9 +7,9 @@ export const experimentUrl = (id?: string) => `/agentes/vendas#${id ? `experimen
 // Only persisted observations count as commercial milestones. No time-based income or XP.
 export function factoryView(factory: Factory, workspace: Workspace) {
   const experiments = (workspace.experiments || []).filter(e => factory.experimentIds.includes(e.id));
-  const sales = experiments.reduce((n, e) => n + (e.marketplace ? e.marketplaceMetrics?.sales || 0 : e.metrics.sales), 0);
-  const hasObservation = experiments.some(e => !e.marketplace || e.marketplaceMetrics);
-  const allObserved = experiments.length > 0 && experiments.every(e => !e.marketplace || e.marketplaceMetrics);
+  const sales = experiments.reduce((n, e) => n + ((e.marketplace || e.salesChannel) ? e.marketplaceMetrics?.sales || 0 : e.metrics.sales), 0);
+  const hasObservation = experiments.some(e => !(e.marketplace || e.salesChannel) || e.marketplaceMetrics);
+  const allObserved = experiments.length > 0 && experiments.every(e => !(e.marketplace || e.salesChannel) || e.marketplaceMetrics);
   const milestones = [
     { label: 'Teste definido', met: experiments.length > 0 },
     { label: 'Oferta preparada', met: experiments.some(e => Boolean(e.marketplace || e.validation?.offer)) },
@@ -26,13 +26,14 @@ export function factoryView(factory: Factory, workspace: Workspace) {
 
 export function economicView(workspace: Workspace) {
   const experiments = workspace.experiments || [];
-  const external = experiments.filter(e => e.marketplace);
-  const declared = external.reduce((n, e) => n + (e.marketplaceMetrics?.grossMinor || 0), 0);
+  const external = experiments.filter(e => e.marketplace || e.salesChannel);
+  const etsyConfirmed=external.filter(e=>e.marketplace?.observation?.origin==='etsy-api').reduce((n,e)=>n+(e.marketplaceMetrics?.grossMinor||0),0);
+  const declared = external.filter(e=>e.marketplace?.observation?.origin!=='etsy-api').reduce((n, e) => n + (e.marketplaceMetrics?.grossMinor || 0), 0);
   const confirmed = workspace.shop?.metrics;
-  const complete = experiments.length > 0 && experiments.every(e => e.metrics.costComplete && (e.marketplace ? e.marketplaceMetrics?.resultMinor != null : e.metrics.resultMinor != null));
-  const result = complete ? experiments.reduce((n, e) => n + (e.marketplace ? e.marketplaceMetrics!.resultMinor! : e.metrics.resultMinor!), 0) : null;
+  const complete = experiments.length > 0 && experiments.every(e => e.metrics.costComplete && ((e.marketplace || e.salesChannel) ? e.marketplaceMetrics?.resultMinor != null : e.metrics.resultMinor != null));
+  const result = complete ? experiments.reduce((n, e) => n + ((e.marketplace || e.salesChannel) ? e.marketplaceMetrics!.resultMinor! : e.metrics.resultMinor!), 0) : null;
   return {
-    declared, confirmed,
+    declared, confirmed, etsyConfirmed,
     costs: experiments.reduce((n, e) => n + e.metrics.costMinor, 0),
     result,
     sales: (confirmed?.purchases || 0) + external.reduce((n, e) => n + (e.marketplaceMetrics?.sales || 0), 0),

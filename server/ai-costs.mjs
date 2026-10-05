@@ -19,6 +19,8 @@ export function costProvider(store,provider,id,taskId,agentId) {
  const {result:cached}=await store.mutate(id,w=>{
  const c=init(w); if(!c.enabled) throw new AppError('Configure e ative o orçamento de IA antes de executar.');
  const cache=kind==='text' && c.cache.find(e=>e.hash===hash && Date.now()-e.time<86400000); if(cache) return cache.result;
+ const e=(w.experiments||[]).find(e=>e.id===taskId||e.missionIds.includes(taskId));
+ if(e){const tasks=new Set([e.id,...e.missionIds]),spent=e.costs.filter(x=>!x.voidedAt).reduce((n,x)=>n+x.amountMinor,0)+c.entries.filter(x=>tasks.has(x.taskId)).reduce((n,x)=>n+x.reservedMinor,0);if(e.closedAt||Date.parse(e.endsAt)<=Date.now()||spent+c.ceilings[kind]>e.budgetMinor)throw new AppError('Janela ou orçamento do experimento bloqueou a chamada antes do envio.');}
  const s=publicCosts(w),reserve=c.ceilings[kind],taskSpend=c.entries.filter(e=>e.taskId===taskId).reduce((n,e)=>n+e.reservedMinor,0);
  if(taskSpend+reserve>(c.taskMinor || c.dailyMinor) || reserve>c.callMinor || s.dayMinor+reserve>c.dailyMinor || s.monthMinor+reserve>c.monthlyMinor) throw new AppError('Orçamento de IA insuficiente. Chamada bloqueada antes do envio.');
  c.entries.push({id:entryId,at:new Date().toISOString(),taskId,agentId,model:args[1],kind,reservedMinor:reserve,status:'pending',tokens:0});

@@ -122,7 +122,7 @@ export function createCommerce(store, { masterKey = null, provider = createItchP
       const w = (await store.read(id)).workspace, c = w.commerce;
       if (!c?.secret || (!c.expiresAt || c.expiresAt < Date.now())) { unlocked.delete(id); continue; }
       if (c.autoPublish && c.uploads < c.maxUploads) {
-        const mission = [...w.missions].reverse().find(m => validationPublicationAllowed(w,m,'itchio') && ['review', 'approved'].includes(m.status) && c.targets[m.kind] && !m.publication);
+        const mission = [...w.missions].reverse().find(m => !m.validationExperimentId && validationPublicationAllowed(w,m,'itchio') && ['review', 'approved'].includes(m.status) && c.targets[m.kind] && !m.publication);
         if (mission) { try { await publish(id, token, mission.id, true); } catch { /* recorded, no automatic retry */ } }
       }
       if (c.background && Date.now() - (c.lastSync || 0) > 300000 && !c.syncFailed) {

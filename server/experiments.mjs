@@ -1,4 +1,5 @@
-import { commercialAction, marketplaceMetrics } from './commercial.mjs';
+import { referenceAction, originalityCurrent } from './market-references.mjs';
+import { commercialAction, marketplaceMetrics, salesChannel } from './commercial.mjs';
 import { validationAction, validationReadiness } from './validation.mjs';
 import { randomUUID, createHash } from 'node:crypto';
 import { AppError, text } from './domain.mjs';
@@ -8,7 +9,7 @@ function find(w, id) { const e = w.experiments?.find(e => e.id === id); if (!e) 
 function scope(w, e) {
   const products = new Set((w.shop?.products || []).filter(p => e.missionIds.includes(p.missionId)).map(p => p.id));
   const end = Date.parse(e.closedAt || e.endsAt);
-  const orders = (w.shop?.orders || []).filter(o => !e.marketplace && products.has(o.productId) && o.paidAt && o.livemode === true && o.currency === 'brl' && Date.parse(o.paidAt) >= Date.parse(e.createdAt) && Date.parse(o.paidAt) <= end);
+  const orders = (w.shop?.orders || []).filter(o => !e.marketplace && !e.salesChannel && products.has(o.productId) && o.paidAt && o.livemode === true && o.currency === 'brl' && Date.parse(o.paidAt) >= Date.parse(e.createdAt) && Date.parse(o.paidAt) <= end);
   const missions = w.missions.filter(m => e.missionIds.includes(m.id));
   const fingerprint = createHash('sha256').update(JSON.stringify({ marketplace: e.marketplace, orders: orders.map(o => [o.id, o.priceMinor, o.refundedMinor || 0, o.status]), missions: missions.map(m => [m.id, m.attempt, m.tokens, m.images, m.status, m.events.length]), costs: e.costs.map(c => [c.id, c.voidedAt || '']) })).digest('hex');
   return { orders, missions, fingerprint };
@@ -21,10 +22,18 @@ export function createExperiment(w, input, now = Date.now()) {
   if (!Array.isArray(ids) || ids.length > 30 || ids.some(id => typeof id !== 'string') || new Set(ids).size !== ids.length) throw new AppError('Seleção de entregas inválida.');
   for (const id of ids) { if (!w.missions.some(m => m.id === id && m.purpose !== 'experiment-preparation')) throw new AppError('Escolha entregas deste espaço, sem kits privados.'); if (w.experiments.some(e => e.missionIds.includes(id))) throw new AppError('Uma entrega só pode pertencer a um experimento.', 409); }
   const e = { id: randomUUID(), name: text(input.name, 'Nome', 100), hypothesis: text(input.hypothesis, 'Hipótese', 1000), audience: text(input.audience, 'Público', 300), channel: text(input.channel, 'Canal', 200), budgetMinor: integer(input.budgetMinor, 'Orçamento', 1), minSales: integer(input.minSales, 'Meta de vendas', 1, 10000), minNetMinor: integer(input.minNetMinor, 'Meta de resultado'), missionIds: ids, createdAt: new Date(now).toISOString(), endsAt: new Date(now + days * 86400000).toISOString(), costs: [], review: null };
+  if(input.salesChannel) {
+    if(ids.length) throw new AppError('Prepare a primeira oferta sem entregas anteriores.');
+    e.salesChannel=salesChannel(w,input.salesChannel);
+    const pending=w.experiments.find(other=>!other.closedAt && Date.parse(other.endsAt)>now && (other.salesChannel || other.marketplace)?.factoryId===e.salesChannel.factoryId && (other.salesChannel || other.marketplace)?.channel===e.salesChannel.channel);
+    if(pending) throw new AppError('Já existe uma oferta em andamento nesta fábrica e canal. Abra a oferta existente.',409);
+    validationAction(w,e,'validation-enable',{},now);
+  }
   w.experiments.unshift(e); return e;
 }
 export function experimentAction(w, id, action, input = {}, now = Date.now()) {
   const e = find(w, id);
+  if (['market-reference','originality-review'].includes(action)) return referenceAction(w,e,action,input,now);
   if (action.startsWith('marketplace-')) return commercialAction(w,e,action,input,now);
   if (action.startsWith('validation-')) return validationAction(w,e,action,input,now);
   if (action === 'cost') {
@@ -51,6 +60,6 @@ export function publicExperiments(w, now = Date.now()) {
     const recommendation = costMinor >= e.budgetMinor ? 'budget' : !costComplete ? 'incomplete' : sales >= e.minSales && balanceMinor >= e.minNetMinor ? 'validated' : ended ? 'stop' : 'observe';
     const { review, ...safe } = e;
     const metrics = { grossMinor, refundedMinor, heldMinor, sales, costMinor, balanceMinor, costComplete, resultMinor: costComplete ? balanceMinor : null, recommendation, budgetRemainingMinor: e.budgetMinor - costMinor };
-    return { ...safe, reviewedAt: review?.at, currency: 'BRL', ended, metrics, marketplaceMetrics: marketplaceMetrics(e,costComplete,costMinor), validationReadiness: validationReadiness(w,e,metrics,now) };
+    return { ...safe, originalityCurrent: originalityCurrent(w,e), reviewedAt: review?.at, currency: 'BRL', ended, metrics, marketplaceMetrics: marketplaceMetrics(e,costComplete,costMinor), validationReadiness: validationReadiness(w,e,metrics,now) };
   });
 }

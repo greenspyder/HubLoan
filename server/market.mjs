@@ -1,3 +1,4 @@
+import { normalizeReferences, referenceComparison } from './market-references.mjs';
 import { assessOpportunity } from './opportunities.mjs';
 import { SPECIALIZATIONS } from './specializations.mjs';
 import { AppError, text } from './domain.mjs';
@@ -16,6 +17,8 @@ export function parseMarketDecision(output, sources, previous = [], allowed = ['
   try { parsed = JSON.parse(output.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '')); } catch { throw new AppError('Análise de mercado inválida. Ciclo pausado sem produzir.'); }
   if (!Array.isArray(parsed.candidates) || parsed.candidates.length < 3 || parsed.candidates.length > 5) throw new AppError('A análise precisa comparar de três a cinco oportunidades.');
   const urls = new Set(sources.map(source => source.url));
+  const references=normalizeReferences(parsed.references||[],sources);
+
   const candidates = parsed.candidates.map((candidate, index) => {
     const scores = {};
     for (const criterion of ['demand', 'competition', 'feasibility', 'distribution', 'evidence']) {
@@ -24,9 +27,11 @@ export function parseMarketDecision(output, sources, previous = [], allowed = ['
       scores[criterion] = value;
     }
     if (!Array.isArray(candidate.sourceUrls) || !candidate.sourceUrls.length || candidate.sourceUrls.some(url => !urls.has(url))) throw new AppError('A análise citou fontes que não foram retornadas pela pesquisa.');
+    const referenceUrls=candidate.referenceUrls||[];if(!Array.isArray(referenceUrls)||referenceUrls.some(url=>!references.some(r=>r.url===url)))throw new AppError('Referências do candidato inválidas.');
+    const marketReferences=references.filter(r=>referenceUrls.includes(r.url)),marketComparison=referenceComparison(marketReferences);
     const score = Math.round((scores.demand * 0.25 + scores.competition * 0.15 + scores.feasibility * 0.25 + scores.distribution * 0.15 + scores.evidence * 0.2) * 20);
     if (!allowed.includes(candidate.kind)) throw new AppError('Formato de oportunidade inválido.');
-    return { id: `option-${index + 1}`, title: text(candidate.title, 'Oportunidade', 100), audience: text(candidate.audience, 'Público', 300), rationale: text(candidate.rationale, 'Justificativa', 1000), uncertainty: text(candidate.uncertainty, 'Incerteza', 800), test: text(candidate.test, 'Teste comercial', 800), kind: candidate.kind, ...(execution ? assessOpportunity(candidate, execution.capabilities, execution.allowPreparation) : {}), scores, score, sourceUrls: [...new Set(candidate.sourceUrls)] };
+    return { marketReferences,marketComparison,id: `option-${index + 1}`, title: text(candidate.title, 'Oportunidade', 100), audience: text(candidate.audience, 'Público', 300), rationale: text(candidate.rationale, 'Justificativa', 1000), uncertainty: text(candidate.uncertainty, 'Incerteza', 800), test: text(candidate.test, 'Teste comercial', 800), kind: candidate.kind, ...(execution ? assessOpportunity(candidate, execution.capabilities, execution.allowPreparation) : {}), scores, score, sourceUrls: [...new Set(candidate.sourceUrls)] };
   }).sort((a, b) => b.score - a.score || a.id.localeCompare(b.id));
   // Scores are model estimates. Gate production when evidence or feasibility is weak.
   const signature = candidate => `${candidate.title} ${candidate.audience}`.normalize('NFKC').toLocaleLowerCase('pt-BR').replace(/\s+/g, ' ').trim();
@@ -34,7 +39,7 @@ export function parseMarketDecision(output, sources, previous = [], allowed = ['
   const eligible = candidates.filter(candidate => !candidate.execution || candidate.execution.status !== 'blocked');
   // Prefer fully executable strategies over preparation, regardless of claimed scores.
   const prioritized = [...eligible.filter(c => c.execution?.status !== 'preparation'), ...eligible.filter(c => c.execution?.status === 'preparation')];
-  const best = prioritized.find(candidate => !produced.has(signature(candidate)) && candidate.scores.evidence >= 2 && candidate.scores.feasibility >= 3 && candidate.scores.distribution >= 2 && candidate.score >= 50);
+  const best = prioritized.find(candidate => !produced.has(signature(candidate)) && candidate.scores.evidence >= 2 && candidate.scores.feasibility >= 3 && candidate.scores.distribution >= 2 && candidate.score >= 50 && (!references.length || candidate.marketComparison.sufficient || candidate.execution?.status==='preparation'));
   return { candidates, selected: best && best.scores.evidence >= 2 && best.scores.feasibility >= 3 && best.scores.distribution >= 2 && best.score >= 50 ? best : null };
 }
 export function recordExperiment(workspace, projectId, decisionId, input, now = Date.now()) {

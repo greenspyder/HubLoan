@@ -34,3 +34,17 @@ test('reasoning request preserves policy and bounded output while worker disable
  await p.text('key','gpt-6-astra','rules','input',900);await p.text('key','gpt-5.6-luna','rules','input',900);
  assert.equal(bodies[0].max_output_tokens,4000);assert.equal(bodies[0].reasoning.effort,'medium');assert.equal(bodies[1].reasoning.effort,'none');assert.match(bodies[0].instructions,/Fiverr/);
 });
+test('factory entry creates one validation plan, rejects incompatible channels and consumes no production',()=>{
+ const w=initialWorkspace(), input={name:'First Gig',hypothesis:'Small offer',audience:'Creators',channel:'Fiverr',budgetMinor:2000,days:7,minSales:1,minNetMinor:1,missionIds:[],salesChannel:{factoryId:'factory-thumbnail',channel:'fiverr'}};
+ const e=createExperiment(w,input,now);assert.ok(e.validation);assert.deepEqual(e.salesChannel,input.salesChannel);assert.equal(w.missions.length,0);assert.equal(publicExperiments(w,now)[0].marketplaceMetrics,null);
+ assert.throws(()=>createExperiment(w,input,now),/andamento/);assert.throws(()=>createExperiment(w,{...input,salesChannel:{factoryId:'factory-thumbnail',channel:'itchio'}},now),/2D/);
+ const channels=commercialLearning(w,now).salesChannels.find(f=>f.factoryId==='factory-thumbnail').channels;assert.equal(channels[0].mode,'assisted-manual');assert.equal(channels[0].offers[0].state,'no-offer');assert.equal(channels[0].offers[0].sales,null);
+});
+test('publication report is not revenue and URLs cannot duplicate or migrate observed offers',()=>{
+ const {w,e,action}=setup();assert.throws(()=>action('marketplace-published',{listing:report.listing}),/Confirme/);
+ action('marketplace-published',{listing:report.listing,confirm:true});assert.equal(publicExperiments(w,now)[0].marketplaceMetrics,null);assert.equal(commercialLearning(w,now).experiments[0].publicationState,'published-reported');
+ const other=setup(w);assert.throws(()=>other.action('marketplace-published',{listing:report.listing,confirm:true}),/duplicar/);
+ assert.throws(()=>action('marketplace-results',{...report,listing:'https://fiverr.com/other/gig'}),/mesma URL/);
+ action('marketplace-results',report);assert.equal(e.marketplace.observation.sales,1);assert.equal(publicExperiments(w,now)[0].metrics.sales,0);
+ experimentAction(w,e.id,'close',{},now);assert.equal(commercialLearning(w,now).salesChannels.find(f=>f.factoryId==='factory-thumbnail').channels[0].offers.find(o=>o.id===e.id).ended,true);
+});
