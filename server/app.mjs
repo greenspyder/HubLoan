@@ -137,6 +137,8 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if (marketingSkip && request.method === 'POST') return send(response, 200, publicWorkspace((await marketing.skip(id, marketingSkip[1])).workspace, store.mode, Boolean(masterKey)));
       if (route === '/shop/connect' && request.method === 'POST') return send(response, 200, publicWorkspace((await shop.connect(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
       if (route === '/shop/configure' && request.method === 'POST') return send(response, 200, publicWorkspace((await shop.configure(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
+      const shopRelease = route.match(/^\/shop\/missions\/([a-f0-9-]+)\/release$/);
+      if (shopRelease && request.method === 'POST') return send(response, 200, publicWorkspace((await shop.authorize(id, shopRelease[1], await body(request))).workspace, store.mode, Boolean(masterKey)));
       const shopPublish = route.match(/^\/shop\/missions\/([a-f0-9-]+)\/publish$/);
       if (shopPublish && request.method === 'POST') return send(response, 200, publicWorkspace((await shop.publish(id, shopPublish[1])).workspace, store.mode, Boolean(masterKey)));
       const shopListing = route.match(/^\/shop\/products\/([a-f0-9-]+)$/);

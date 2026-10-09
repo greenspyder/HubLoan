@@ -16,7 +16,7 @@ export function validationPublicationAllowed(w,m,channel='shop',now=Date.now()) 
   }
   if(e.marketplace || e.salesChannel || channel!=='shop') return false;
   const hash=sampleFingerprint(m);
-  return v.quality?.approved===true && v.quality.fingerprint===hash && v.release?.fingerprint===hash && w.shop?.prices?.[m.kind]===v.offer?.priceMinor;
+  return v.quality?.approved===true && v.quality.fingerprint===hash && v.release?.fingerprint===hash && m.shopRelease?.priceMinor===v.offer?.priceMinor;
 }
 export function assertValidationPublication(w,m,channel='shop') {
   if(!validationPublicationAllowed(w,m,channel)) throw new AppError('Amostra de validação bloqueada: confira revisão, liberação, prazo e preço da loja. Envio itch.io exige liberação específica da amostra e do destino.',409);
@@ -63,7 +63,7 @@ export function validationAction(w,e,action,input,now=Date.now()) {
     const m=w.missions.find(m=>m.id===v.sampleId);
     if(e.marketplace || e.salesChannel)throw new AppError('Oferta externa: publique manualmente no marketplace; não há liberação para a loja.',409);
     if(input.authorize!==true||!m||v.quality?.approved!==true||v.quality.fingerprint!==sampleFingerprint(m)||!evidenceFresh(v,now))throw new AppError('Confirme liberação da versão revisada e evidência recente.',409);
-    if(w.shop?.prices?.[m.kind]!==v.offer.priceMinor)throw new AppError('Configure o preço deste formato na loja igual ao preço proposto.',409);
+
     v.release={fingerprint:sampleFingerprint(m),at:new Date(now).toISOString()};
   } else throw new AppError('Ação de validação inválida.');
 }
@@ -80,7 +80,7 @@ export function validationReadiness(w,e,metrics,now=Date.now()) {
     {id:'offer',label:'Oferta, preço proposto e prazo definidos',met:Boolean(v.offer)},
     {id:'sample',label:'Uma amostra produzida e revisada por você',met:quality},
     {id:'shop',label:'Loja com recebimento real conectada',met:shop},
-    {id:'price',label:'Preço da loja corresponde à oferta',met:Boolean(m&&w.shop?.prices?.[m.kind]===v.offer?.priceMinor)},
+    {id:'price',label:'Preço da loja corresponde à oferta',met:Boolean(m&&m.shopRelease?.priceMinor===v.offer?.priceMinor)},
     {id:'release',label:'Versão atual liberada por você dentro do prazo',met:Boolean(m&&validationPublicationAllowed(w,m,'shop',now))},
     {id:'distribution',label:'Canal de divulgação automática ativo (ou divulgar manualmente)',met:distribution},
     {id:'sales',label:(e.marketplace || e.salesChannel)?'Meta de vendas externas declaradas atingida':'Meta de pagamentos reais retidos atingida',met:metrics.sales>=e.minSales},

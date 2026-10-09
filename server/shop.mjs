@@ -1,3 +1,4 @@
+import { approveShopRelease, assertShopRelease, shopReleaseCurrent } from './shop-release.mjs';
 import { assertValidationPublication, validationPublicationAllowed } from './validation.mjs';
 import sharp from 'sharp';
 import Stripe from 'stripe';
@@ -31,7 +32,7 @@ export function publicShop(workspace) {
 }
 export function salePackage(mission, license) {
   if (mission.purpose === 'experiment-preparation') throw new AppError('Kit de experimento privado não é produto da loja.');
-  if (!['review', 'approved'].includes(mission.status) || !kinds.includes(mission.kind)) throw new AppError('A entrega precisa estar concluída para publicar.');
+  if (mission.status !== 'approved' || !kinds.includes(mission.kind)) throw new AppError('A entrega precisa estar aprovada para publicar.');
   const files = { 'LICENSE.txt': strToU8(license), 'README.md': strToU8(`# ${mission.title}\n\n${kindDescriptions[mission.kind]}\n\nProduzido com IA. Confira a adequação ao seu uso. Não são prometidos vendas, visualizações ou retorno financeiro.\n`) };
   if (mission.artifact) {
     if (!['image/png', 'application/zip'].includes(mission.artifact.mime)) throw new AppError('Formato não suportado pela loja.');
@@ -82,9 +83,13 @@ export function createShop(store, { masterKey = null, provider = createStripePro
     for (const kind of kinds) { const value = input.prices?.[kind]; if (!Number.isInteger(value) || value < 500 || value > 1000000) throw new AppError('Defina preços por formato entre R$ 5 e R$ 10.000, em centavos.'); prices[kind] = value; }
     return store.mutate(id, w => { const s = w.shop; if (!s?.secret || !s.webhookSecret) throw new AppError('Conecte a Stripe primeiro.'); Object.assign(s, { name, contact, license, prices, maxProducts: input.maxProducts, enabled: input.enabled, autoPublish: input.autoPublish, expiresAt: Date.now() + 72 * 3600000, error: '' }); });
   }
+  async function authorize(id, missionId, input) {
+    return store.mutate(id, w => approveShopRelease(w, missionById(w, missionId), input));
+  }
   async function publish(id, missionId, automatic = false) {
     const snapshot = (await store.read(id)).workspace;
     const mission = missionById(snapshot, missionId);
+    assertShopRelease(snapshot,mission);
     assertValidationPublication(snapshot,mission);
     if (!snapshot.shop?.license) throw new AppError('Configure a licença antes de publicar.');
     const bytes = salePackage(mission, snapshot.shop.license), productId = randomUUID();
@@ -104,9 +109,11 @@ export function createShop(store, { masterKey = null, provider = createStripePro
       if (s.products.some(p => p.missionId === missionId)) throw new AppError('Esta entrega já tem um produto; publicação duplicada bloqueada.', 409);
       if (s.products.length >= s.maxProducts) throw new AppError('Limite de produtos atingido.');
       const m = missionById(w, missionId);
+      assertShopRelease(w,m);
       assertValidationPublication(w,m);
-      if (m.attempt !== mission.attempt || !['review', 'approved'].includes(m.status) || m.output !== mission.output || m.artifact?.base64 !== mission.artifact?.base64 || s.license !== snapshot.shop.license) throw new AppError('Entrega ou licença mudou. Tente publicar novamente.', 409);
-      const product = { id: productId, missionId, title: m.title, description: kindDescriptions[m.kind], kind: m.kind, priceMinor: s.prices[m.kind], currency: 'brl', publishedAt: new Date().toISOString(), listed: true, filename: `hubloan-${m.id}.zip`, license: s.license, bytes: bytes.length, hasPreview: Boolean(preview) };
+      if (JSON.stringify(m.shopRelease) !== JSON.stringify(mission.shopRelease)) throw new AppError('Autorização mudou durante a publicação. Confira novamente.',409);
+      if (m.attempt !== mission.attempt || m.status !== 'approved' || m.output !== mission.output || m.artifact?.base64 !== mission.artifact?.base64 || s.license !== snapshot.shop.license) throw new AppError('Entrega ou licença mudou. Tente publicar novamente.', 409);
+      const product = { id: productId, missionId, title: m.title, description: kindDescriptions[m.kind], kind: m.kind, priceMinor: m.shopRelease.priceMinor, currency: 'brl', publishedAt: new Date().toISOString(), listed: true, filename: `hubloan-${m.id}.zip`, license: s.license, bytes: bytes.length, hasPreview: Boolean(preview) };
       if (!Number.isInteger(product.priceMinor) || product.priceMinor < 500) throw new AppError('Preço deste formato não configurado.');
       s.products.push(product);
       m.storePublication = { status: 'published', productId: product.id, at: product.publishedAt, url: `${publicOrigin}/loja/${s.slug}?produto=${product.id}` };
@@ -209,7 +216,7 @@ export function createShop(store, { masterKey = null, provider = createStripePro
       if (s.expiresAt < Date.now()) { await store.mutate(id, w => { w.shop.autoPublish = false; }); continue; }
       const workspace = (await store.read(id)).workspace;
       const published = new Set(s.products.map(p => p.missionId));
-      const missions = [...workspace.missions].reverse().filter(m => validationPublicationAllowed(workspace,m) && m.purpose !== 'experiment-preparation' && ['review', 'approved'].includes(m.status) && !published.has(m.id));
+      const missions = [...workspace.missions].reverse().filter(m => shopReleaseCurrent(workspace,m) && validationPublicationAllowed(workspace,m) && m.purpose !== 'experiment-preparation' && ['review', 'approved'].includes(m.status) && !published.has(m.id));
       for (const m of missions) {
         if (closed) break;
         try { await publish(id, m.id, true); }
@@ -219,5 +226,5 @@ export function createShop(store, { masterKey = null, provider = createStripePro
   }
   function tick() { if (flight || closed) return flight || Promise.resolve(); flight = run().finally(() => { flight = null; }); return flight; }
   const timer = setInterval(() => { tick().catch(() => console.error('Falha ao publicar na loja própria.')); }, intervalMs); timer.unref();
-  return { connect, configure, publish, listing, catalog, preview, checkout, receipt, webhook, tick, close: async () => { closed = true; clearInterval(timer); await flight; } };
+  return { connect, configure, authorize, publish, listing, catalog, preview, checkout, receipt, webhook, tick, close: async () => { closed = true; clearInterval(timer); await flight; } };
 }
