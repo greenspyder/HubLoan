@@ -1,3 +1,4 @@
+import { approveShopRelease, releaseVersion } from '../shop-release.mjs';
 import sharp from 'sharp';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -39,7 +40,7 @@ async function fixture(t) {
     return { status: r.status, data: r.headers.get('content-type')?.includes('json') ? await r.json() : Buffer.from(await r.arrayBuffer()) };
   }
   async function configure() { assert.equal((await call('/shop/connect', 'POST', { apiKey, authorizeWebhook: true })).status, 200); const result = await call('/shop/configure', 'POST', config); assert.equal(result.status, 200); return result.data.shop.slug; }
-  async function mission(kind = 'text') { return (await store.mutate(id, w => { const m = addMission(w, { kind, title: `Produto ${kind}`, brief: 'PRIVATE BRIEF MUST NOT LEAK', agentId: 'creator' }); m.status = 'review'; m.output = 'CONTEÚDO PAGO DE TESTE'; if (kind !== 'text') m.artifact = { mime: kind === 'image' ? 'image/png' : 'application/zip', base64: Buffer.from('paid binary').toString('base64') }; return m.id; })).result; }
+  async function mission(kind = 'text') { return (await store.mutate(id, w => { const m = addMission(w, { kind, title: `Produto ${kind}`, brief: 'PRIVATE BRIEF MUST NOT LEAK', agentId: 'creator' }); m.status = 'approved'; m.output = 'CONTEÚDO PAGO DE TESTE'; if (kind !== 'text') m.artifact = { mime: kind === 'image' ? 'image/png' : 'application/zip', base64: Buffer.from('paid binary').toString('base64') }; approveShopRelease(w,m,{authorize:true,version:releaseVersion(m),priceMinor:config.prices[m.kind],rationale:'Preço de teste com provider simulado'}); return m.id; })).result; }
   async function event(slug, session, type = 'checkout.session.completed', changes = {}) { const raw = JSON.stringify({ id: 'evt_fixture', livemode: false, type, data: { object: { ...session, ...changes } } }); const signature = Stripe.webhooks.generateTestHeaderString({ payload: raw, secret: webhookSecret }); return call(`/storefront/${slug}/webhook`, 'POST', raw, '', { 'stripe-signature': signature }); }
   return { store, provider, app, call, configure, mission, event };
 }
@@ -101,7 +102,7 @@ test('concurrent publication and checkout use one product/order; grants and purc
   const directory = await mkdtemp(join(tmpdir(), 'hubloan-shop-')); t.after(() => rm(directory, { recursive: true, force: true }));
   const file = join(directory, 'shop.sqlite'), provider = fakeProvider(); let store = await createStore({ file }); let shop = createShop(store, { masterKey: master, provider, intervalMs: 100000 });
   await shop.connect(id, { apiKey, authorizeWebhook: true }); await shop.configure(id, config);
-  const m = (await store.mutate(id, w => { const m = addMission(w, { title: 'Original', brief: 'Teste', agentId: 'creator', kind: 'text' }); m.output = 'Original file'; m.status = 'review'; return m.id; })).result;
+  const m = (await store.mutate(id, w => { const m = addMission(w, { title: 'Original', brief: 'Teste', agentId: 'creator', kind: 'text' }); m.output = 'Original file'; m.status = 'approved'; approveShopRelease(w,m,{authorize:true,version:releaseVersion(m),priceMinor:config.prices[m.kind],rationale:'Preço de teste com provider simulado'}); return m.id; })).result;
   const published = await Promise.allSettled([shop.publish(id, m), shop.publish(id, m)]); assert.equal(published.filter(r => r.status === 'fulfilled').length, 1);
   const s = (await store.read(id)).workspace.shop, p = s.products[0], receipt = 'c'.repeat(64);
   await Promise.all([shop.checkout(s.slug, p.id, receipt), shop.checkout(s.slug, p.id, receipt)]); assert.equal(provider.creates(), 1); assert.equal((await store.read(id)).workspace.shop.orders.length, 1);
@@ -129,6 +130,7 @@ test('public preview is a reduced JPEG; original bytes stay behind payment and w
   const f = await fixture(t), slug = await f.configure(), m = await f.mission('image');
   const original = await sharp({ create: { width: 1000, height: 800, channels: 4, background: '#ef5588' } }).png().toBuffer();
   await f.store.mutate(id, w => { w.missions[0].artifact.base64 = original.toString('base64'); });
+  await f.store.mutate(id,w=>approveShopRelease(w,w.missions[0],{authorize:true,version:releaseVersion(w.missions[0]),priceMinor:2000,rationale:'Versão com preview revisada'}));
   await f.app.shop.publish(id, m);
   const p = (await f.call('/workspace')).data.shop.products[0]; assert.equal(p.hasPreview, true);
   const r = await f.call(`/storefront/${slug}/preview?product=${p.id}`, 'GET', undefined, '');
@@ -148,5 +150,32 @@ test('first-sale samples cannot bypass review through manual or automatic publis
   assert.equal((await f.call(`/experiments/${experimentId}/validation-quality`,'POST',{approved:true,reason:'Li a amostra'})).status,200);
   assert.equal((await f.call(`/shop/missions/${sampleId}/publish`,'POST',{})).status,409);
   assert.equal((await f.call(`/experiments/${experimentId}/validation-release`,'POST',{authorize:true})).status,200);
+  await f.store.mutate(id,w=>{const m=w.missions.find(m=>m.id===sampleId);m.status='approved';approveShopRelease(w,m,{authorize:true,version:releaseVersion(m),priceMinor:1500,rationale:'Oferta do experimento revisada'});});
   await f.app.shop.tick();w=(await f.call('/workspace')).data;assert.equal(w.shop.products.filter(p=>p.missionId===sampleId).length,1);
+});
+
+test('review and generic automation never authorize release; price is individual and binds version and license', async t => {
+  const f=await fixture(t);await f.configure();const mid=await f.mission();
+  await f.store.mutate(id,w=>{const m=w.missions[0];delete m.shopRelease;m.status='review';});
+  await f.app.shop.tick();assert.equal((await f.store.read(id)).workspace.shop.products.length,0);
+  assert.equal((await f.call(`/shop/missions/${mid}/publish`,'POST',{})).status,409);
+  const authorize=async(priceMinor=700,version)=>{const w=(await f.call('/workspace')).data;return f.call(`/shop/missions/${mid}/release`,'POST',{authorize:true,version:version||w.missions[0].releaseVersion,priceMinor,rationale:'Comparáveis e alternativa gratuita; hipótese de preço ainda não validada'});};
+  assert.equal((await authorize()).status,409);
+  await f.store.mutate(id,w=>{w.missions[0].status='approved';});
+  assert.equal((await authorize(700,'stale')).status,409);
+  assert.equal((await authorize(0)).status,400);
+  assert.equal((await authorize()).status,200);
+  await f.store.mutate(id,w=>{w.missions[0].output+=' nova versão';});
+  assert.equal((await f.call(`/shop/missions/${mid}/publish`,'POST',{})).status,409);
+  await authorize();await f.store.mutate(id,w=>{w.shop.license+=' Alterada';});
+  assert.equal((await f.call(`/shop/missions/${mid}/publish`,'POST',{})).status,409);
+  await authorize();await f.app.shop.tick();
+  const w=(await f.store.read(id)).workspace;assert.equal(w.shop.products.length,1);assert.equal(w.shop.products[0].priceMinor,700);assert.equal(w.shop.prices.text,1500);
+});
+test('release endpoint isolates tenants and expired per-offer authorization blocks automation',async t=>{
+  const f=await fixture(t);await f.configure();const mid=await f.mission();
+  assert.equal((await f.call(`/shop/missions/${mid}/release`,'POST',{authorize:true},other)).status,404);
+  await f.store.mutate(id,w=>{w.missions[0].shopRelease.expiresAt=Date.now()-1;});
+  await f.app.shop.tick();assert.equal((await f.store.read(id)).workspace.shop.products.length,0);
+  assert.equal((await f.call(`/shop/missions/${mid}/publish`,'POST',{})).status,409);
 });
