@@ -18,20 +18,26 @@ export function configureCosts(w,input) {
  }
  Object.assign(init(w),{taskMinor,enabled:input.enabled===true,dailyMinor:input.dailyMinor,monthlyMinor:input.monthlyMinor,callMinor:input.callMinor,ceilings:{...input.ceilings}});
 }
-function totals(entries) {
+export function costTotals(entries) {
  return { hasConfirmedCosts:entries.some(e=>e.confirmedMinor!=null), confirmedMinor:entries.reduce((n,e)=>n+(e.confirmedMinor ?? 0),0), reservedMinor:entries.filter(e=>e.status==='pending').reduce((n,e)=>n+e.reservedMinor,0), unknownMinor:entries.filter(e=>e.status!=='pending' && e.status!=='not_sent' && e.confirmedMinor==null).reduce((n,e)=>n+e.reservedMinor,0), exposureMinor:entries.reduce((n,e)=>n+costExposure(e),0) };
 }
 export function publicCosts(w,now=Date.now()) {
  const c=init(w),date=new Date(now).toISOString();
- const day=totals(c.entries.filter(e=>e.at.startsWith(date.slice(0,10)))),month=totals(c.entries.filter(e=>e.at.startsWith(date.slice(0,7))));
+ const day=costTotals(c.entries.filter(e=>e.at.startsWith(date.slice(0,10)))),month=costTotals(c.entries.filter(e=>e.at.startsWith(date.slice(0,7))));
  return {...c,cache:undefined,dayMinor:day.exposureMinor,monthMinor:month.exposureMinor,day,month,entries:c.entries.slice(-100).map(e=>({...e,exposureMinor:costExposure(e)}))};
 }
 function budgetError(dimension,used,reserved,limit,required,kind,operation='chamada') {
- const labels={call:'por chamada',task:'da tarefa',day:'diário',month:'mensal',experiment:'do experimento'};
+ const labels={call:'por chamada',task:'da tarefa',day:'diário',month:'mensal',experiment:'do experimento',project:'do projeto'};
  const money=n=>`R$ ${(n/100).toFixed(2)}`;
  const error=new AppError(`${dimension==='experiment'?'Limite de orçamento do experimento':'Orçamento'} insuficiente: limite ${labels[dimension] || dimension}. Exposição existente ${money(used+reserved)}, limite ${money(limit)}, necessário ${money(required)}. Operação ${operation} (${kind}) bloqueada antes do envio.`);
  error.budgetBlock={dimension,usedMinor:used,reservedMinor:reserved,limitMinor:limit,requiredMinor:required,operation,kind,sent:false};
  return error;
+}
+// One lifetime scope shared by coordination, experiments, production and retries.
+export function projectCostScope(w, projectId) {
+ const experiments=(w.experiments || []).filter(e=>e.projectId===projectId);
+ const ids=new Set([projectId,...(w.missions || []).filter(m=>m.projectId===projectId).map(m=>m.id),...experiments.flatMap(e=>[e.id,...e.missionIds])]);
+ return { ...costTotals((w.aiCosts?.entries || []).filter(e=>ids.has(e.taskId))), declaredMinor:experiments.flatMap(e=>e.costs || []).filter(c=>!c.voidedAt).reduce((n,c)=>n+c.amountMinor,0), ids };
 }
 export function preflightCosts(w,taskId,operations,now=Date.now()) {
  if(!operations.length)return {requiredMinor:0,operations};
@@ -46,7 +52,13 @@ export function preflightCosts(w,taskId,operations,now=Date.now()) {
   const ids=new Set([experiment.id,...experiment.missionIds]);
   scopes.push(['experiment',c.entries.filter(e=>ids.has(e.taskId)),experiment.budgetMinor-experiment.costs.filter(e=>!e.voidedAt).reduce((n,e)=>n+e.amountMinor,0)]);
  }
- for(const [dimension,entries,limit] of scopes){const t=totals(entries);if(t.exposureMinor+required>limit)throw budgetError(dimension,t.confirmedMinor+t.unknownMinor,t.reservedMinor,limit,required,operations.join('+'),'preflight');}
+ const projectId=(w.autonomy?.projects || []).find(p=>p.id===taskId)?.id || (w.missions || []).find(m=>m.id===taskId)?.projectId || experiment?.projectId;
+ const project=(w.autonomy?.projects || []).find(p=>p.id===projectId);
+ if(project?.budgetMinor!=null) {
+  const scope=projectCostScope(w,project.id);
+  scopes.push(['project',c.entries.filter(e=>scope.ids.has(e.taskId)),project.budgetMinor-scope.declaredMinor]);
+ }
+ for(const [dimension,entries,limit] of scopes){const t=costTotals(entries);if(t.exposureMinor+required>limit)throw budgetError(dimension,t.confirmedMinor+t.unknownMinor,t.reservedMinor,limit,required,operations.join('+'),'preflight');}
  return {requiredMinor:required,operations};
 }
 export function costProvider(store,provider,id,taskId,agentId,{beforeSend=async()=>{}}={}) {

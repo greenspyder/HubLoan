@@ -1,3 +1,5 @@
+import { authorizeItchRelease } from '../itch-release.mjs';
+import { releaseVersion } from '../shop-release.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
@@ -14,7 +16,7 @@ async function fixture(t){const store=await createStore({file:':memory:'});let p
  const app=createApp({store,provider:{},commerceProvider:provider,masterKey:master});await new Promise(resolve=>app.server.listen(0,'127.0.0.1',resolve));t.after(async()=>{await app.close();await store.close();});
  const base=`http://127.0.0.1:${app.server.address().port}/api/agents`;
  async function call(path,method='GET',body,access=token){const r=await fetch(base+path,{method,headers:{Authorization:`Bearer ${access}`,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});return{status:r.status,data:await r.json()};}
- async function mission(){const r=await store.mutate(id,w=>{const m=addMission(w,{title:'Pack',brief:'Fixture de publicação',agentId:'creator',kind:'sprites'});m.status='review';m.attempt=1;m.artifact={mime:'application/zip',base64:Buffer.from(zipSync({'README.md':strToU8('Pack original de teste')})).toString('base64')};return m.id;});return r.result;}
+ async function mission(){const r=await store.mutate(id,w=>{const m=addMission(w,{title:'Pack',brief:'Fixture de publicação',agentId:'creator',kind:'sprites'});m.status='approved';m.attempt=1;m.artifact={mime:'application/zip',base64:Buffer.from(zipSync({'README.md':strToU8('Pack original de teste')})).toString('base64')};authorizeItchRelease(w,m,{authorize:true,version:releaseVersion(m),priceMinor:500,currency:'USD',rationale:'Fixture; price not market validated'});return m.id;});return r.result;}
  return{store,app,provider,call,mission,pushes:()=>pushes,setFail:()=>{fail=true;}};}
 test('catalog aggregates real page values without buyer data, currency conversion or invented profit',()=>{
  const g=summarizeGame({...game,buyer_email:'private@example.test',net:999});assert.equal(g.earnings[0].grossMinor,1250);assert.equal(g.scope,'page_lifetime');assert.equal(g.net,undefined);assert.equal(g.buyer_email,undefined);assert.equal(summarizeGame({id:1,title:'no metrics'}).views,null);
@@ -45,4 +47,26 @@ test('butler launch uses fixed binary, argument array, private temporary files, 
  let launchArgs;const provider=createItchProvider({binary:'/trusted/butler',launch:(binary,args,options)=>{launchArgs={binary,args,options};const child=new EventEmitter();child.kill=()=>{};setImmediate(async()=>{assert.ok((await readFile(args[1])).length);child.emit('close',0);});return child;}});
  const mission={id:'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',attempt:1,artifact:{base64:Buffer.from('fixture ZIP').toString('base64')}};
  const r=await provider.push(key,'example/furniture',mission);assert.equal(r.channel,`pack-${mission.id}`);assert.equal(launchArgs.options.env.ITCHIO_API_KEY,key);assert.ok(!launchArgs.args.includes(key));assert.equal(launchArgs.options.stdio,'ignore');assert.equal(launchArgs.options.shell,undefined);await assert.rejects(()=>readFile(launchArgs.args[1]));
+});
+
+test('readiness and specific releases are workspace isolated; review never uploads and reconnect resets declarations',async t=>{
+ const f=await fixture(t);await f.call('/commerce/connect','POST',{apiKey:key});await f.call('/commerce/configure','POST',config);
+ const checks={seller:'confirmed',taxInterview:'confirmed',taxApproval:'pending',payoutDestination:'unknown',acceptsPayments:'confirmed'};
+ const response=await f.call('/commerce/readiness','POST',{checks,note:'Test fixture owner report'});
+ assert.equal(response.status,200);assert.equal(response.data.commerce.readiness.paymentReadiness,'owner-reported-ready');
+ assert.equal((await f.call('/commerce/readiness','POST',{checks,note:'foreign'},other)).status,400);
+ const m=await f.mission();await f.store.mutate(id,w=>{w.missions[0].status='review';});
+ assert.equal((await f.call(`/commerce/missions/${m}/publish`,'POST',{})).status,409);assert.equal(f.pushes(),0);
+ const version=(await f.call('/workspace')).data.missions[0].releaseVersion;
+ assert.equal((await f.call(`/commerce/missions/${m}/release`,'POST',{version,authorize:true,priceMinor:500,currency:'USD',rationale:'Test'})).status,409);
+ await f.store.mutate(id,w=>{w.missions[0].status='approved';});
+ assert.equal((await f.call(`/commerce/missions/${m}/release`,'POST',{version,authorize:true,priceMinor:500,currency:'USD',rationale:'Test'},other)).status,404);
+ assert.equal((await f.call(`/commerce/missions/${m}/release`,'POST',{version,authorize:true,priceMinor:500,currency:'USD',rationale:'Test'})).status,200);
+ await f.call('/commerce/connect','POST',{apiKey:key});assert.equal((await f.call('/workspace')).data.commerce.readiness.paymentReadiness,'needs-check');
+});
+
+test('authorized upload can target an owned draft without claiming public visibility or payment readiness',async t=>{
+ const f=await fixture(t);f.provider.games=async()=>[summarizeGame({...game,published:false})];await f.call('/commerce/connect','POST',{apiKey:key});
+ assert.equal((await f.call('/commerce/configure','POST',config)).status,200);const m=await f.mission();
+ const r=await f.call(`/commerce/missions/${m}/publish`,'POST',{});assert.equal(r.status,200);assert.equal(r.data.commerce.games[0].published,false);assert.equal(r.data.commerce.readiness.paymentReadiness,'needs-check');assert.equal(f.pushes(),1);
 });

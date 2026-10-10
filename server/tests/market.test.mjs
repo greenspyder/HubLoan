@@ -87,3 +87,10 @@ test('next market analysis receives actual experiment evidence with explicit pro
   assert.equal(learning.experiments[0].metrics.costMinor, 200); assert.equal(learning.experiments[0].costOrigin, 'owner-declared'); assert.equal(learning.experiments[0].paymentOrigin, 'confirmed-stripe'); assert.equal(learning.experiments[0].evidenceState, 'observing'); assert.ok(!JSON.stringify(learning).includes('PRIVATE COST REFERENCE'));
   const w = await f.read(); assert.deepEqual(w.autonomy.projects[0].decisions[0].learning, learning); assert.equal(w.autonomy.projects[0].decisions[0].model, 'gpt-4.1-mini'); assert.equal(f.provider.calls, 3);
 });
+
+test('first-sale discovery persists one decision, pauses before production and does not research again', async t => {
+ const f=await setup(t,{input:{firstSale:true,name:'Primeira Venda Autônoma',goal:'Primeira venda independente',budgetMinor:1000}});
+ await f.runner.tick();let w=await f.read();const p=w.autonomy.projects[0];
+ assert.equal(p.status,'paused');assert.equal(p.goal,'Primeira venda independente');assert.equal(p.decisions.length,1);assert.equal(w.missions.length,0);assert.equal(p.calls,2);
+ f.advance();await f.runner.tick();assert.equal(f.provider.calls,2);assert.equal((await f.read()).autonomy.enabled,false);
+});
