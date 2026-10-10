@@ -55,6 +55,12 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
           if (current.execution) (current.executionHistory ||= []).push(current.execution);
           current.execution = { fingerprint, briefing: freshBriefing, checkpoints: [] };
         }
+        if (current.kind === 'sprites' && current.execution.sentinelVersion !== 1) {
+          // Preserve the paid legacy review, but preflight the new review contract.
+          current.execution.previousReviews = current.execution.checkpoints.filter(c => c.kind === 'vision');
+          current.execution.checkpoints = current.execution.checkpoints.filter(c => c.kind !== 'vision');
+          current.execution.sentinelVersion = 1;
+        }
         const remaining = remainingOperations(current.kind, current.execution.checkpoints);
         preflightCosts(w, current.id, remaining);
         if (current.projectId) {
@@ -79,13 +85,14 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
         };
         const vision = async (instructions, brief, images) => {
           const result = await checkpoint('vision', 'Revisão visual', [instructions, brief, images.map(bytes => bytes.toString('base64'))], () => budgeted.vision(key, workspace.settings.model, instructions, brief, images, controller.signal));
-          if (result.truncated) throw new AppError('Revisão visual incompleta. Pacote não entregue.');
+          if (result.truncated && mission.kind !== 'sprites') throw new AppError('Revisão visual incompleta. Pacote não entregue.');
+          if (result.truncated) return { ...result, output: '' };
           return result;
         };
         const result = await produceSpecialized({ kind: mission.kind, brief: briefing, plan: plan.output, stage, image, vision, phase, corrections: mission.execution?.corrections || {} });
         await update(id, mission.id, current => {
           current.artifact = { base64: result.base64, preview: result.preview, mime: result.mime, filename: `hubloan-${mission.id}.zip` };
-          current.output = result.output; current.status = 'review'; current.phase = 'Pacote pronto para revisão';
+          current.output = result.output; current.qualityReview = result.qualityReview; current.status = 'review'; current.phase = result.qualityReview?.decision === 'REGENERATE_PARTIAL' ? 'Sentinel recomenda ajustes parciais' : result.qualityReview?.decision === 'REJECT' ? 'Sentinel bloqueou aprovação automática; revisão necessária' : 'Pacote pronto para revisão';
           current.events.push({ at: new Date().toISOString(), message: 'Arquivos produzidos e verificações registradas no manifesto.' });
         });
       } else if (mission.kind === 'image') {

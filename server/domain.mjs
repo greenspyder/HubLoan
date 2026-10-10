@@ -76,9 +76,14 @@ export function queueMission(workspace, id) {
   Object.assign(mission, { status: 'queued', phase: 'Na fila para retomar', error: '', budgetBlock: undefined, executionId: randomUUID(), attempt: (mission.attempt || 0) + 1 });
   mission.events.push({ at: new Date().toISOString(), message: `Tentativa ${mission.attempt}: etapas concluídas serão preservadas.` });
 }
-export function approveMission(workspace, id) {
+export function approveMission(workspace, id, body = {}) {
   const mission = missionById(workspace, id);
   if (mission.status !== 'review') throw new AppError('Somente entregas em revisão podem ser aprovadas.', 409);
+  if (mission.qualityReview && mission.qualityReview.decision !== 'APPROVE') {
+    if (body.override !== true || body.version !== releaseVersion(mission)) throw new AppError('Sentinel não aprovou a qualidade. Corrija os objetos ou justifique uma revisão humana explícita da versão atual.', 409);
+    const reason = text(body.reason, 'Justificativa da revisão humana', 2000);
+    (mission.reviews ||= []).push({ decision:'HUMAN_OVERRIDE', feedback:reason, at:new Date().toISOString() });
+  }
   mission.status = 'approved'; mission.phase = 'Entrega aprovada';
 }
 export function reviewMission(workspace, id, body) {
@@ -102,7 +107,7 @@ export function reviewMission(workspace, id, body) {
   if (mission.execution.fingerprint !== intent) throw new AppError('O briefing mudou desde a produção. Nenhum ajuste parcial foi iniciado.', 409);
   // Verify all source outputs before removing any checkpoint or queueing paid work.
   for (const c of mission.execution.checkpoints) if (createHash('sha256').update(JSON.stringify(c.result)).digest('hex') !== c.resultHash) throw new AppError('Checkpoint inválido. Nenhum ajuste foi iniciado.', 409);
-  (mission.revisions ||= []).push({ id:randomUUID(), at:new Date().toISOString(), feedback, components, artifact:mission.artifact, output:mission.output, execution:structuredClone(mission.execution) });
+  (mission.revisions ||= []).push({ id:randomUUID(), at:new Date().toISOString(), feedback, components, artifact:mission.artifact, output:mission.output, qualityReview:mission.qualityReview, execution:structuredClone(mission.execution) });
   images.forEach((c,i) => { c.componentId ||= `sprites/object-${i+1}.png`; });
   mission.execution.corrections ||= {};
   for (const c of components) mission.execution.corrections[c] = feedback;

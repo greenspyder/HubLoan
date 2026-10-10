@@ -263,10 +263,10 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
           return send(response, 200, Buffer.from(artifact.base64, 'base64'), { 'Content-Type': artifact.mime, 'Content-Disposition': `attachment; filename="${artifact.filename}"` });
         }
         if (request.method !== 'POST' || ['artifact', 'preview'].includes(operation)) throw new AppError('Método inválido.', 405);
-        const reviewInput = operation === 'review' ? await body(request) : null;
+        const reviewInput = ['review','approve'].includes(operation) ? await body(request) : null;
         const updated = await store.mutate(id, workspace => {
           if (operation === 'run') queueMission(workspace, missionId);
-          else if (operation === 'approve') approveMission(workspace, missionId);
+          else if (operation === 'approve') approveMission(workspace, missionId, reviewInput);
           else if (operation === 'review') reviewMission(workspace, missionId, reviewInput);
           else cancelMission(workspace, missionId);
         });
