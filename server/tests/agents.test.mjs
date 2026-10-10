@@ -4,8 +4,9 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createStore, postgresConfig } from '../store.mjs';
-import { createApp } from '../app.mjs';
+import { createApp, shouldUnlockBackgroundWorkers } from '../app.mjs';
 import { createProvider } from '../provider.mjs';
+import { createRunner } from '../runner.mjs';
 import { workspaceId, encryptKey, decryptKey, initialWorkspace, addMission, queueMission, recoverStale, AppError } from '../domain.mjs';
 const token = 'a'.repeat(64), otherToken = 'b'.repeat(64), key = 'sk-test-only-not-a-real-provider-key';
 const missionInput = { title: 'Entrega de teste', brief: 'Conteúdo original de teste', agentId: 'creator', kind: 'text', execute: true };
@@ -66,6 +67,26 @@ test('API runs real workflow through injected provider, isolates users and requi
   assert.equal((await f.request(`/missions/${id}/run`, 'POST')).status, 409);
   assert.equal((await f.request('/workspace', 'GET', undefined, 'bad')).status, 401);
   assert.equal((await f.request('/workspace', 'GET', undefined, token, { Origin: 'https://untrusted.test' })).status, 403);
+});
+test('read-only endpoints do not unlock workers and idle workspaces leave the poll loop', async () => {
+  assert.equal(shouldUnlockBackgroundWorkers('GET'), false);
+  assert.equal(shouldUnlockBackgroundWorkers('HEAD'), false);
+  assert.equal(shouldUnlockBackgroundWorkers('POST'), true);
+  let reads = 0;
+  const store = {
+    read: async () => { reads++; return { workspace: { secret: null } }; },
+    autonomousSpaces: async () => [],
+    mutate: async () => { throw new Error('No mutation expected'); },
+  };
+  const runner = createRunner(store, {}, { intervalMs: 60000 });
+  try {
+    runner.unlock('workspace', token);
+    await runner.tick();
+    await runner.tick();
+    assert.equal(reads, 1);
+  } finally {
+    await runner.close();
+  }
 });
 test('image bytes are protected and downloaded separately from public mission history', async t => {
   const f = await fixture(t); await f.connect(); await f.request('/ai-costs', 'POST', {enabled:true,dailyMinor:1000000,monthlyMinor:1000000,callMinor:10000,ceilings:{text:100,research:200,vision:200,image:500}});

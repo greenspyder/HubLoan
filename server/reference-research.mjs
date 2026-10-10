@@ -1,3 +1,4 @@
+import { costExposure } from './ai-costs.mjs';
 import { commercialAction } from './commercial.mjs';
 import { randomUUID } from 'node:crypto';
 import { AppError, decryptKey, text } from './domain.mjs';
@@ -13,7 +14,7 @@ export function createReferenceResearch(store, provider) {
    if(e.closedAt||Date.parse(e.endsAt)<=Date.now()||e.validation?.sampleId||e.marketplace?.publication||(e.referenceResearch?.status==='running'&&e.referenceResearch.expiresAt>Date.now()))throw new AppError('Pesquisa indisponível neste teste.',409);
    if(!w.secret)throw new AppError('Conecte a chave de IA.');
    if((e.marketReferences||[]).length)throw new AppError('Este teste já tem referências; preserve-as ou abra outro teste.');
-   const spent=e.costs.filter(c=>!c.voidedAt).reduce((n,c)=>n+c.amountMinor,0)+(w.aiCosts?.entries||[]).filter(c=>c.taskId===e.id).reduce((n,c)=>n+c.reservedMinor,0);
+   const spent=e.costs.filter(c=>!c.voidedAt).reduce((n,c)=>n+c.amountMinor,0)+(w.aiCosts?.entries||[]).filter(c=>c.taskId===e.id).reduce((n,c)=>n+costExposure(c),0);
    const reserve=(w.aiCosts?.ceilings?.research||200)+(w.aiCosts?.ceilings?.text||100);
    if(spent+reserve>e.budgetMinor)throw new AppError('O orçamento restante do experimento não comporta pesquisa e análise.');
    e.referenceResearch={status:'running',job,expiresAt:Date.now()+120000,at:new Date().toISOString()};

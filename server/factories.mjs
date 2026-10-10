@@ -1,3 +1,4 @@
+import { costExposure } from './ai-costs.mjs';
 import { randomUUID } from 'node:crypto';
 import { AppError, text } from './domain.mjs';
 const definitions = [
@@ -51,6 +52,6 @@ export function publicFactories(w, experiments = []) {
     const exclusive = candidates.filter(e => !overlapping.includes(e));
     const excluded = mixed.length + overlapping.length;
     const sum = key => exclusive.reduce((n, e) => n + ((key==='costMinor'?e.metrics:(e.marketplace || e.salesChannel) ? e.marketplaceMetrics : e.metrics)?.[key] || 0), 0);
-    return { ...f, blocker: blockers[f.kind] || null, missions: missions.length, running: missions.filter(m => m.status === 'running').length, queued: missions.filter(m => m.status === 'queued').length, delivered: missions.filter(m => ['review', 'approved'].includes(m.status)).length, projects: projects.length, reservedMinor: (w.aiCosts?.entries || []).filter(e => taskIds.has(e.taskId)).reduce((n, e) => n + e.reservedMinor, 0), experimentIds: exclusive.map(e => e.id), mixedExperiments: excluded, grossMinor: sum('grossMinor'), costMinor: sum('costMinor'), resultMinor: exclusive.length && exclusive.every(e => e.metrics.costComplete && (!(e.marketplace || e.salesChannel) || e.marketplaceMetrics)) && !excluded ? sum('resultMinor') : null };
+    return { ...f, blocker: blockers[f.kind] || null, missions: missions.length, running: missions.filter(m => m.status === 'running').length, queued: missions.filter(m => m.status === 'queued').length, delivered: missions.filter(m => ['review', 'approved'].includes(m.status)).length, projects: projects.length, reservedMinor: (w.aiCosts?.entries || []).filter(e => taskIds.has(e.taskId)).reduce((n, e) => n + costExposure(e), 0), experimentIds: exclusive.map(e => e.id), mixedExperiments: excluded, grossMinor: sum('grossMinor'), costMinor: sum('costMinor'), resultMinor: exclusive.length && exclusive.every(e => e.metrics.costComplete && (!(e.marketplace || e.salesChannel) || e.marketplaceMetrics)) && !excluded ? sum('resultMinor') : null };
   });
 }

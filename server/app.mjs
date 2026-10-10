@@ -16,6 +16,10 @@ import { recordExperiment } from './market.mjs';
 import { createRunner } from './runner.mjs';
 import { createProject, projectAction, reconcileProjects, syncAutonomy } from './autonomy.mjs';
 
+export function shouldUnlockBackgroundWorkers(method) {
+  return method !== 'GET' && method !== 'HEAD';
+}
+
 export function createApp({ store, provider, staticDirectory = '../frontend/dist', allowedOrigins = [], masterKey = null, commerceProvider, shopProvider, marketingProvider, engineeringProvider, knowledgeProvider, publicOrigin, webhookOrigin, etsyProvider }) {
   const etsy = createEtsy(store,{masterKey,provider:etsyProvider,callbackOrigin:webhookOrigin});
   const prepareOffer = createOfferPreparation(store,provider);
@@ -96,8 +100,12 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if (rate.reset <= now) { rate.count = 0; rate.reset = now + 60000; }
       if (++rate.count > 120) throw new AppError('Muitas requisições. Aguarde um minuto.', 429);
       rates.set(rateKey, rate);
-      runner.unlock(id, token); commerce.unlock(id, token);
       const route = url.pathname.slice('/api/agents'.length);
+      // Read-only polling must not keep background workers awake. Mutations can
+      // unlock the workspace; persisted grants are restored by the workers.
+      if (shouldUnlockBackgroundWorkers(request.method)) {
+        runner.unlock(id, token); commerce.unlock(id, token);
+      }
       if (route === '/factories' && request.method === 'POST') { const input = await body(request); const updated = await store.mutate(id, w => createFactory(w, input)); return send(response, 201, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey))); }
       if (route === '/ai-costs' && request.method === 'POST') { const input = await body(request); const updated = await store.mutate(id, w => configureCosts(w, input)); return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey))); }
       if (route === '/knowledge/export' && request.method === 'GET') return send(response, 200, knowledgeExport((await store.read(id)).workspace));
@@ -263,7 +271,7 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
     } catch (error) {
       if (response.headersSent) { response.end(); return; }
       if (!(error instanceof AppError)) console.error('Falha interna ao atender a central de agentes.');
-      send(response, error instanceof AppError ? error.status : 500, { error: error instanceof AppError ? error.message : 'O servidor não conseguiu concluir a ação. Tente novamente.' });
+      send(response, error instanceof AppError ? error.status : 500, { error: error instanceof AppError ? error.message : 'O servidor não conseguiu concluir a ação. Tente novamente.', budgetBlock: error instanceof AppError ? error.budgetBlock : undefined });
     }
   });
   return { server, runner, commerce, shop, marketing, engineering, close: async () => { await engineering.close(); await marketing.close(); await shop.close(); await commerce.close(); await runner.close(); await new Promise(resolveClose => server.close(resolveClose)); } };

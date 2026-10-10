@@ -1,32 +1,74 @@
 import { selectedModel, estimatedTextUsd } from './models.mjs';
 import { randomUUID, createHash } from 'node:crypto';
 import { AppError } from './domain.mjs';
-const init = w => w.aiCosts ||= { enabled:false, dailyMinor:500, monthlyMinor:5000, callMinor:100, taskMinor:500, ceilings:{text:100,research:200,vision:200,image:500}, entries:[], cache:[] };
+const kinds = ['text', 'research', 'vision', 'image'];
+const init = w => w.aiCosts ||= { enabled:false, dailyMinor:500, monthlyMinor:5000, callMinor:500, taskMinor:500, ceilings:{text:100,research:200,vision:200,image:500}, entries:[], cache:[] };
+// Unknown charges retain conservative budget exposure; they are never labelled actual spend.
+export function costExposure(entry) {
+ if (entry.status === 'not_sent') return 0;
+ return Number.isSafeInteger(entry.confirmedMinor) && entry.confirmedMinor >= 0 ? entry.confirmedMinor : entry.reservedMinor;
+}
 export function configureCosts(w,input) {
  for(const k of ['dailyMinor','monthlyMinor','callMinor']) if(!Number.isSafeInteger(input[k]) || input[k]<1 || input[k]>10000000) throw new AppError('Limites devem ser centavos positivos.');
- for(const k of ['text','research','vision','image']) if(!Number.isSafeInteger(input.ceilings?.[k]) || input.ceilings[k]<1 || input.ceilings[k]>10000000) throw new AppError('Informe a reserva por chamada em centavos.');
+ for(const k of kinds) if(!Number.isSafeInteger(input.ceilings?.[k]) || input.ceilings[k]<1 || input.ceilings[k]>10000000) throw new AppError('Informe a reserva por chamada em centavos.');
  if(input.taskMinor !== undefined && (!Number.isSafeInteger(input.taskMinor) || input.taskMinor < 1 || input.taskMinor > 10000000)) throw new AppError('Limite por tarefa inválido.');
- Object.assign(init(w),{taskMinor:input.taskMinor || input.dailyMinor,enabled:input.enabled===true,dailyMinor:input.dailyMinor,monthlyMinor:input.monthlyMinor,callMinor:input.callMinor,ceilings:{...input.ceilings}});
+ const taskMinor=input.taskMinor || input.dailyMinor;
+ for(const kind of kinds) for(const [dimension,limit] of Object.entries({call:input.callMinor,task:taskMinor,day:input.dailyMinor,month:input.monthlyMinor})) {
+  if(input.ceilings[kind]>limit) throw budgetError(dimension,0,0,limit,input.ceilings[kind],kind,'configuração');
+ }
+ Object.assign(init(w),{taskMinor,enabled:input.enabled===true,dailyMinor:input.dailyMinor,monthlyMinor:input.monthlyMinor,callMinor:input.callMinor,ceilings:{...input.ceilings}});
+}
+function totals(entries) {
+ return { hasConfirmedCosts:entries.some(e=>e.confirmedMinor!=null), confirmedMinor:entries.reduce((n,e)=>n+(e.confirmedMinor ?? 0),0), reservedMinor:entries.filter(e=>e.status==='pending').reduce((n,e)=>n+e.reservedMinor,0), unknownMinor:entries.filter(e=>e.status!=='pending' && e.status!=='not_sent' && e.confirmedMinor==null).reduce((n,e)=>n+e.reservedMinor,0), exposureMinor:entries.reduce((n,e)=>n+costExposure(e),0) };
 }
 export function publicCosts(w,now=Date.now()) {
- const c=init(w),date=new Date(now).toISOString(),sum=p=>c.entries.filter(e=>e.at.startsWith(p)).reduce((n,e)=>n+e.reservedMinor,0);
- return {...c,cache:undefined,dayMinor:sum(date.slice(0,10)),monthMinor:sum(date.slice(0,7)),entries:c.entries.slice(-100)};
+ const c=init(w),date=new Date(now).toISOString();
+ const day=totals(c.entries.filter(e=>e.at.startsWith(date.slice(0,10)))),month=totals(c.entries.filter(e=>e.at.startsWith(date.slice(0,7))));
+ return {...c,cache:undefined,dayMinor:day.exposureMinor,monthMinor:month.exposureMinor,day,month,entries:c.entries.slice(-100).map(e=>({...e,exposureMinor:costExposure(e)}))};
 }
-export function costProvider(store,provider,id,taskId,agentId) {
- return Object.fromEntries(['text','research','vision','image'].map(kind=>[kind,async(...args)=>{
+function budgetError(dimension,used,reserved,limit,required,kind,operation='chamada') {
+ const labels={call:'por chamada',task:'da tarefa',day:'diário',month:'mensal',experiment:'do experimento'};
+ const money=n=>`R$ ${(n/100).toFixed(2)}`;
+ const error=new AppError(`${dimension==='experiment'?'Limite de orçamento do experimento':'Orçamento'} insuficiente: limite ${labels[dimension] || dimension}. Exposição existente ${money(used+reserved)}, limite ${money(limit)}, necessário ${money(required)}. Operação ${operation} (${kind}) bloqueada antes do envio.`);
+ error.budgetBlock={dimension,usedMinor:used,reservedMinor:reserved,limitMinor:limit,requiredMinor:required,operation,kind,sent:false};
+ return error;
+}
+export function preflightCosts(w,taskId,operations,now=Date.now()) {
+ if(!operations.length)return {requiredMinor:0,operations};
+ const c=init(w);if(!c.enabled)throw new AppError('Configure e ative o orçamento de IA antes de executar.');
+ for(const kind of operations) if(!kinds.includes(kind))throw new AppError('Operação de IA inválida.');
+ const required=operations.reduce((n,k)=>n+c.ceilings[k],0),date=new Date(now).toISOString();
+ for(const kind of operations)if(c.ceilings[kind]>c.callMinor)throw budgetError('call',0,0,c.callMinor,c.ceilings[kind],kind);
+ const scopes=[['task',c.entries.filter(e=>e.taskId===taskId),c.taskMinor || c.dailyMinor],['day',c.entries.filter(e=>e.at.startsWith(date.slice(0,10))),c.dailyMinor],['month',c.entries.filter(e=>e.at.startsWith(date.slice(0,7))),c.monthlyMinor]];
+ const experiment=(w.experiments||[]).find(e=>e.id===taskId||e.missionIds?.includes(taskId));
+ if(experiment){
+  if(experiment.closedAt||Date.parse(experiment.endsAt)<=now)throw new AppError('Janela ou orçamento do experimento bloqueou a chamada antes do envio.');
+  const ids=new Set([experiment.id,...experiment.missionIds]);
+  scopes.push(['experiment',c.entries.filter(e=>ids.has(e.taskId)),experiment.budgetMinor-experiment.costs.filter(e=>!e.voidedAt).reduce((n,e)=>n+e.amountMinor,0)]);
+ }
+ for(const [dimension,entries,limit] of scopes){const t=totals(entries);if(t.exposureMinor+required>limit)throw budgetError(dimension,t.confirmedMinor+t.unknownMinor,t.reservedMinor,limit,required,operations.join('+'),'preflight');}
+ return {requiredMinor:required,operations};
+}
+export function costProvider(store,provider,id,taskId,agentId,{beforeSend=async()=>{}}={}) {
+ return Object.fromEntries(kinds.map(kind=>[kind,async(...args)=>{
  if(kind!=='image') { const {result:model}=await store.mutate(id,w=>selectedModel(w,agentId,kind)); args[1]=model; }
  const hash=createHash('sha256').update(JSON.stringify([kind,args[1],args.slice(2).map(v=>v instanceof AbortSignal?null:v)])).digest('hex'),entryId=randomUUID();
  const {result:cached}=await store.mutate(id,w=>{
- const c=init(w); if(!c.enabled) throw new AppError('Configure e ative o orçamento de IA antes de executar.');
+ const c=init(w);if(!c.enabled)throw new AppError('Configure e ative o orçamento de IA antes de executar.');
  const cache=kind==='text' && c.cache.find(e=>e.hash===hash && Date.now()-e.time<86400000); if(cache) return cache.result;
- const e=(w.experiments||[]).find(e=>e.id===taskId||e.missionIds.includes(taskId));
- if(e){const tasks=new Set([e.id,...e.missionIds]),spent=e.costs.filter(x=>!x.voidedAt).reduce((n,x)=>n+x.amountMinor,0)+c.entries.filter(x=>tasks.has(x.taskId)).reduce((n,x)=>n+x.reservedMinor,0);if(e.closedAt||Date.parse(e.endsAt)<=Date.now()||spent+c.ceilings[kind]>e.budgetMinor)throw new AppError('Janela ou orçamento do experimento bloqueou a chamada antes do envio.');}
- const s=publicCosts(w),reserve=c.ceilings[kind],taskSpend=c.entries.filter(e=>e.taskId===taskId).reduce((n,e)=>n+e.reservedMinor,0);
- if(taskSpend+reserve>(c.taskMinor || c.dailyMinor) || reserve>c.callMinor || s.dayMinor+reserve>c.dailyMinor || s.monthMinor+reserve>c.monthlyMinor) throw new AppError('Orçamento de IA insuficiente. Chamada bloqueada antes do envio.');
- c.entries.push({id:entryId,at:new Date().toISOString(),taskId,agentId,model:args[1],kind,reservedMinor:reserve,status:'pending',tokens:0});
+ preflightCosts(w,taskId,[kind]);
+ c.entries.push({id:entryId,at:new Date().toISOString(),taskId,executionId:w.missions?.find(m=>m.id===taskId)?.executionId,agentId,model:args[1],kind,reservedMinor:c.ceilings[kind],confirmedMinor:null,status:'pending',tokens:0,sentAt:null});
  });
  if(cached) return {...cached,tokens:0,cached:true};
- try {const result=await provider[kind](...args); await store.mutate(id,w=>{const c=init(w);Object.assign(c.entries.find(e=>e.id===entryId),{status:'completed',tokens:result.tokens||0,actualModel:result.model || args[1],usage:result.usage,estimatedTextUsd:kind==='image'?null:estimatedTextUsd(args[1],result.usage),searches:result.searches||0});if(kind==='text'&&!result.truncated){c.cache=c.cache.filter(e=>Date.now()-e.time<86400000).slice(-49);c.cache.push({hash,time:Date.now(),result});}});return result;}
- catch(error){await store.mutate(id,w=>{init(w).entries.find(e=>e.id===entryId).status='uncertain';});throw error;}
+ let sent=false;
+ try {
+  // Cancellation or project call limits must not consume a reservation or a call.
+  if(args.some(v=>v instanceof AbortSignal && v.aborted))throw new AppError('Execução cancelada antes do envio.',409);
+  await beforeSend(kind);
+  await store.mutate(id,w=>{init(w).entries.find(e=>e.id===entryId).sentAt=new Date().toISOString();});
+  sent=true;
+  const result=await provider[kind](...args);
+  await store.mutate(id,w=>{const c=init(w);Object.assign(c.entries.find(e=>e.id===entryId),{status:'completed',tokens:result.tokens||0,actualModel:result.model || args[1],usage:result.usage,estimatedTextUsd:kind==='image'?null:estimatedTextUsd(args[1],result.usage),searches:result.searches||0});if(kind==='text'&&!result.truncated){c.cache=c.cache.filter(e=>Date.now()-e.time<86400000).slice(-49);c.cache.push({hash,time:Date.now(),result});}});return result;
+ } catch(error){await store.mutate(id,w=>{init(w).entries.find(e=>e.id===entryId).status=sent?'uncertain':'not_sent';});throw error;}
  }]));
 }
