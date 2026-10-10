@@ -11,7 +11,7 @@ export function remainingOperations(kind,checkpoints=[]) {
 // Persist provider outputs before dependent processing (normalization, atlas, ZIP).
 // A reused result has zero incremental tokens/images; original accounting remains in the ledger.
 export function checkpointCall(store,id,missionId) {
- return async (kind,label,input,invoke)=>{
+ return async (kind,label,input,invoke,componentId)=>{
   const key=digest([kind,label,input]);
   const {result:existing}=await store.mutate(id,w=>{
    const m=missionById(w,missionId);if(m.status!=='running')throw new AppError('Execução encerrada.',409);
@@ -25,7 +25,7 @@ export function checkpointCall(store,id,missionId) {
   // Keep paid results even if the user cancelled while the response was in flight.
   await store.mutate(id,w=>{
    const m=missionById(w,missionId);
-   m.execution.checkpoints.push({key,kind,label,result,resultHash:digest(result),executionId:m.executionId,completedAt:new Date().toISOString()});
+   m.execution.checkpoints.push({key,kind,label,result,resultHash:digest(result),executionId:m.executionId,componentId,completedAt:new Date().toISOString()});
    m.tokens+=(result.tokens||0);if(kind==='image')m.images++;
   });
   return result;

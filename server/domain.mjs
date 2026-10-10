@@ -40,7 +40,7 @@ export function initialWorkspace() {
   ], missions: [], settings: { model: 'gpt-4.1-mini', imageModel: 'gpt-image-1-mini', maxOutputTokens: 1800 } };
 }
 export function publicWorkspace(workspace, storage, durableAutonomy = false) {
-  return { version: 2, salesJourneyVersion: 2, etsy:publicEtsy(workspace), factories: publicFactories(workspace, publicExperiments(workspace)), aiCosts: publicCosts(workspace), knowledge: publicKnowledge(workspace), experiments: publicExperiments(workspace), engineering: publicEngineering(workspace), strategy: businessStrategy, marketing: publicMarketing(workspace), shop: publicShop(workspace), commerce: publicCommerce(workspace), autonomy: { projects: workspace.autonomy?.projects || [], enabled: Boolean(workspace.autonomy?.enabled), durable: durableAutonomy }, agents: workspace.agents, missions: workspace.missions.map(({ artifact, execution, executionHistory, ...mission }) => ({ ...mission, completedSteps: execution?.checkpoints?.length || 0, releaseVersion: releaseVersion({ ...mission, artifact }), factoryId: missionFactoryId(workspace, mission), hasArtifact: Boolean(artifact), hasPreview: Boolean(artifact?.preview), artifactMime: artifact?.mime, artifactFilename: artifact?.filename })), settings: { model: workspace.settings.model, workerModel: workspace.settings.workerModel || 'gpt-4.1-mini', decisionModel: workspace.settings.decisionModel || 'gpt-4.1-mini', modelCatalog, availableModels: workspace.settings.availableModels || [], modelsCheckedAt: workspace.settings.modelsCheckedAt, imageModel: workspace.settings.imageModel, maxOutputTokens: workspace.settings.maxOutputTokens, configured: Boolean(workspace.secret) }, storage };
+  return { version: 2, salesJourneyVersion: 2, etsy:publicEtsy(workspace), factories: publicFactories(workspace, publicExperiments(workspace)), aiCosts: publicCosts(workspace), knowledge: publicKnowledge(workspace), experiments: publicExperiments(workspace), engineering: publicEngineering(workspace), strategy: businessStrategy, marketing: publicMarketing(workspace), shop: publicShop(workspace), commerce: publicCommerce(workspace), autonomy: { projects: workspace.autonomy?.projects || [], enabled: Boolean(workspace.autonomy?.enabled), durable: durableAutonomy }, agents: workspace.agents, missions: workspace.missions.map(({ artifact, execution, executionHistory, revisions, ...mission }) => ({ ...mission, completedSteps: execution?.checkpoints?.length || 0, reviewVersions: (revisions || []).map(r => ({ id:r.id, at:r.at, feedback:r.feedback, components:r.components })), reviewComponents: mission.kind === 'sprites' && execution?.checkpoints?.filter(c => c.kind === 'image').length === 4 ? [1,2,3,4].map(i => `sprites/object-${i}.png`) : [], releaseVersion: releaseVersion({ ...mission, artifact }), factoryId: missionFactoryId(workspace, mission), hasArtifact: Boolean(artifact), hasPreview: Boolean(artifact?.preview), artifactMime: artifact?.mime, artifactFilename: artifact?.filename })), settings: { model: workspace.settings.model, workerModel: workspace.settings.workerModel || 'gpt-4.1-mini', decisionModel: workspace.settings.decisionModel || 'gpt-4.1-mini', modelCatalog, availableModels: workspace.settings.availableModels || [], modelsCheckedAt: workspace.settings.modelsCheckedAt, imageModel: workspace.settings.imageModel, maxOutputTokens: workspace.settings.maxOutputTokens, configured: Boolean(workspace.secret) }, storage };
 }
 export function text(value, name, max) {
   if (typeof value !== 'string' || !value.trim() || value.trim().length > max) throw new AppError(`${name}: informe de 1 a ${max} caracteres.`);
@@ -80,6 +80,38 @@ export function approveMission(workspace, id) {
   const mission = missionById(workspace, id);
   if (mission.status !== 'review') throw new AppError('Somente entregas em revisão podem ser aprovadas.', 409);
   mission.status = 'approved'; mission.phase = 'Entrega aprovada';
+}
+export function reviewMission(workspace, id, body) {
+  const mission = missionById(workspace, id);
+  if (!['review', 'approved', 'rejected'].includes(mission.status)) throw new AppError('Aguarde a entrega antes de revisá-la.', 409);
+  if (body.version !== releaseVersion(mission)) throw new AppError('A entrega mudou. Atualize e revise a versão atual.', 409);
+  const feedback = text(body.feedback, 'Feedback', 2000);
+  if (!['reject', 'adjust'].includes(body.decision)) throw new AppError('Decisão de revisão inválida.');
+  if (body.decision === 'reject') {
+    mission.status = 'rejected'; mission.phase = 'Entrega rejeitada';
+    (mission.reviews ||= []).push({ decision:'REJECT', feedback, at:new Date().toISOString() });
+    mission.events.push({ at:new Date().toISOString(), message:`Entrega rejeitada: ${feedback}` });
+    delete mission.shopRelease;
+    return;
+  }
+  if (!Array.isArray(body.components)) throw new AppError('Informe uma lista de objetos para ajustar.');
+  const components = [...new Set(body.components)];
+  const images = mission.execution?.checkpoints.filter(c => c.kind === 'image') || [];
+  if (mission.kind !== 'sprites' || images.length !== 4 || !components.length || components.some(c => !/^sprites\/object-[1-4]\.png$/.test(c))) throw new AppError('Selecione objetos de um pack com quatro checkpoints de imagem válidos. Entregas antigas precisam de revisão manual.', 409);
+  const intent = createHash('sha256').update(JSON.stringify(['production-v1', mission.title, mission.brief, mission.kind, mission.agentId])).digest('hex');
+  if (mission.execution.fingerprint !== intent) throw new AppError('O briefing mudou desde a produção. Nenhum ajuste parcial foi iniciado.', 409);
+  // Verify all source outputs before removing any checkpoint or queueing paid work.
+  for (const c of mission.execution.checkpoints) if (createHash('sha256').update(JSON.stringify(c.result)).digest('hex') !== c.resultHash) throw new AppError('Checkpoint inválido. Nenhum ajuste foi iniciado.', 409);
+  (mission.revisions ||= []).push({ id:randomUUID(), at:new Date().toISOString(), feedback, components, artifact:mission.artifact, output:mission.output, execution:structuredClone(mission.execution) });
+  images.forEach((c,i) => { c.componentId ||= `sprites/object-${i+1}.png`; });
+  mission.execution.corrections ||= {};
+  for (const c of components) mission.execution.corrections[c] = feedback;
+  mission.execution.checkpoints = mission.execution.checkpoints.filter(c => c.kind !== 'vision' && !components.includes(c.componentId));
+  delete mission.shopRelease;
+  mission.status = 'failed';
+  queueMission(workspace, id);
+  (mission.reviews ||= []).push({ decision:'REGENERATE_PARTIAL', feedback, components, at:new Date().toISOString() });
+  mission.events.push({ at:new Date().toISOString(), message:`Ajustes solicitados: ${components.join(', ')}. Demais objetos preservados.` });
 }
 export function cancelMission(workspace, id) {
   const mission = missionById(workspace, id);
