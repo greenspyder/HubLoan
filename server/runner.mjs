@@ -73,8 +73,8 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
       await update(id, mission.id, current => { current.plan = plan.output; });
       if (['thumbnail', 'sprites', 'model3d'].includes(mission.kind)) {
         const phase = async label => update(id, mission.id, current => { current.phase = label; current.events.push({ at: new Date().toISOString(), message: label }); });
-        const image = async (prompt, options) => {
-          const result = await checkpoint('image', 'Gerar imagem', [prompt, options], () => budgeted.image(key, workspace.settings.imageModel, prompt, controller.signal, options));
+        const image = async (prompt, options, componentId) => {
+          const result = await checkpoint('image', 'Gerar imagem', [prompt, options], () => budgeted.image(key, workspace.settings.imageModel, prompt, controller.signal, options), componentId);
           return result;
         };
         const vision = async (instructions, brief, images) => {
@@ -82,7 +82,7 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
           if (result.truncated) throw new AppError('Revisão visual incompleta. Pacote não entregue.');
           return result;
         };
-        const result = await produceSpecialized({ kind: mission.kind, brief: briefing, plan: plan.output, stage, image, vision, phase });
+        const result = await produceSpecialized({ kind: mission.kind, brief: briefing, plan: plan.output, stage, image, vision, phase, corrections: mission.execution?.corrections || {} });
         await update(id, mission.id, current => {
           current.artifact = { base64: result.base64, preview: result.preview, mime: result.mime, filename: `hubloan-${mission.id}.zip` };
           current.output = result.output; current.status = 'review'; current.phase = 'Pacote pronto para revisão';

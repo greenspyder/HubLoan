@@ -11,7 +11,7 @@ import { createCommerce } from './commerce.mjs';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { resolve, sep, extname } from 'node:path';
-import { AppError, decryptKey, workspaceId, publicWorkspace, encryptKey, text, TEXT_MODELS, IMAGE_MODELS, addAgent, addMission, missionById, queueMission, approveMission, cancelMission, recoverStale } from './domain.mjs';
+import { AppError, decryptKey, workspaceId, publicWorkspace, encryptKey, text, TEXT_MODELS, IMAGE_MODELS, addAgent, addMission, missionById, queueMission, approveMission, reviewMission, cancelMission, recoverStale } from './domain.mjs';
 import { recordExperiment } from './market.mjs';
 import { createRunner } from './runner.mjs';
 import { createProject, projectAction, reconcileProjects, syncAutonomy } from './autonomy.mjs';
@@ -248,20 +248,26 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
         const updated = await store.mutate(id, workspace => { const mission = addMission(workspace, input); if (input.execute === true) queueMission(workspace, mission.id); });
         return send(response, 201, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
       }
-      const action = route.match(/^\/missions\/([a-f0-9-]+)\/(run|cancel|approve|artifact|preview)$/);
+      const action = route.match(/^\/missions\/([a-f0-9-]+)\/(run|cancel|approve|review|artifact|preview)$/);
       if (action) {
         const [, missionId, operation] = action;
         if (['artifact', 'preview'].includes(operation) && request.method === 'GET') {
           const mission = missionById((await store.read(id)).workspace, missionId);
-          if (!mission.artifact || (operation === 'preview' && !mission.artifact.preview)) throw new AppError('Arquivo ainda não disponível.', 404);
+          const version = url.searchParams.get('version');
+          const archived = version ? mission.revisions?.find(r => r.id === version) : null;
+          if (version && !archived) throw new AppError('Versão não encontrada.', 404);
+          const artifact = archived ? archived.artifact : mission.artifact;
+          if (!artifact || (operation === 'preview' && !artifact.preview)) throw new AppError('Arquivo ainda não disponível.', 404);
           if (operation === 'visit' && request.method === 'POST') return send(response, 200, await marketing.visit(slug, await body(request)));
-        if (operation === 'preview') return send(response, 200, Buffer.from(mission.artifact.preview, 'base64'), { 'Content-Type': 'image/png' });
-          return send(response, 200, Buffer.from(mission.artifact.base64, 'base64'), { 'Content-Type': mission.artifact.mime, 'Content-Disposition': `attachment; filename="${mission.artifact.filename}"` });
+        if (operation === 'preview') return send(response, 200, Buffer.from(artifact.preview, 'base64'), { 'Content-Type': 'image/png' });
+          return send(response, 200, Buffer.from(artifact.base64, 'base64'), { 'Content-Type': artifact.mime, 'Content-Disposition': `attachment; filename="${artifact.filename}"` });
         }
         if (request.method !== 'POST' || ['artifact', 'preview'].includes(operation)) throw new AppError('Método inválido.', 405);
+        const reviewInput = operation === 'review' ? await body(request) : null;
         const updated = await store.mutate(id, workspace => {
           if (operation === 'run') queueMission(workspace, missionId);
           else if (operation === 'approve') approveMission(workspace, missionId);
+          else if (operation === 'review') reviewMission(workspace, missionId, reviewInput);
           else cancelMission(workspace, missionId);
         });
         if (operation === 'cancel') runner.cancel(id, missionId);

@@ -7,8 +7,10 @@ import sharp from 'sharp';
 import { unzipSync } from 'fflate';
 import { createStore } from '../store.mjs';
 import { createRunner } from '../runner.mjs';
-import { initialWorkspace, addMission, queueMission, encryptKey, publicWorkspace } from '../domain.mjs';
+import { initialWorkspace, addMission, queueMission, encryptKey, publicWorkspace, reviewMission as reviewWithVersion } from '../domain.mjs';
 import { configureCosts, preflightCosts, publicCosts, costProvider } from '../ai-costs.mjs';
+import { releaseVersion } from '../shop-release.mjs';
+function reviewMission(w,id,body){return reviewWithVersion(w,id,{...body,version:releaseVersion(w.missions.find(m=>m.id===id))});}
 const limits={enabled:true,dailyMinor:10000,monthlyMinor:20000,callMinor:100,taskMinor:10000,ceilings:{text:10,research:20,vision:20,image:100}};
 const token='a'.repeat(64);
 
@@ -90,4 +92,44 @@ test('daily, monthly and experiment preflight diagnostics identify their own res
   if(dimension==='experiment')w.experiments=[{id:'e',missionIds:['m'],costs:[],budgetMinor:5,endsAt:new Date(Date.now()+60000).toISOString()}];
   assert.throws(()=>preflightCosts(w,'m',['text']),error=>error.budgetBlock.dimension===dimension && error.budgetBlock.requiredMinor===10);
  }
+});
+
+
+test('partial review preserves other sprites, versions and costs and resumes a failed adjustment', async t => {
+ const directory=await mkdtemp(join(tmpdir(),'hubloan-review-'));t.after(()=>rm(directory,{recursive:true,force:true}));
+ const store=await createStore({file:join(directory,'w.sqlite')});
+ const sprite=await sharp({create:{width:1024,height:1024,channels:4,background:{r:0,g:0,b:0,alpha:0}}}).composite([{input:await sharp({create:{width:400,height:400,channels:4,background:'#88aa66'}}).png().toBuffer(),left:312,top:312}]).png().toBuffer();
+ let images=0,texts=0,visions=0,failReview=false;const prompts=[];
+ const provider={text:async(_k,_m,instructions)=>{texts++;return {output:instructions.includes('objects')?JSON.stringify({style:'Top-down green',objects:['desk','chair','cabinet','terminal']}):'plan',tokens:5};},image:async(_k,_m,prompt)=>{images++;prompts.push(prompt);return {base64:sprite.toString('base64'),tokens:7};},vision:async()=>{visions++;if(failReview)throw Error('review timeout');return {output:'Fixture assessment',tokens:3};}};
+ let id;await store.mutate('w',w=>{w.secret=encryptKey('sk-fixture',token);configureCosts(w,limits);id=addMission(w,{title:'Pack',brief:'Four top-down props',kind:'sprites',agentId:'creator'}).id;queueMission(w,id);});
+ async function run(){const r=createRunner(store,provider);r.unlock('w',token);await r.tick();await r.close();}
+ await run();let w=(await store.read('w')).workspace;const oldArtifact=w.missions[0].artifact.base64;const oldFiles=unzipSync(Buffer.from(oldArtifact,'base64'));const oldEntries=w.aiCosts.entries.length;
+ await store.mutate('w',w=>reviewMission(w,id,{decision:'adjust',feedback:'Corrigir perspectiva da mesa',components:['sprites/object-1.png']}));
+ failReview=true;await run();w=(await store.read('w')).workspace;assert.equal(w.missions[0].status,'failed');assert.equal(images,5);assert.equal(texts,2);
+ failReview=false;await store.mutate('w',w=>queueMission(w,id));await run();w=(await store.read('w')).workspace;let m=w.missions[0];
+ assert.equal(images,5);assert.equal(texts,2);assert.equal(m.status,'review');assert.equal(m.revisions[0].artifact.base64,oldArtifact);assert.equal(m.reviews[0].feedback,'Corrigir perspectiva da mesa');assert.match(prompts[4],/Corrigir perspectiva/);assert.equal(w.aiCosts.entries.length,oldEntries+3);
+ const files=unzipSync(Buffer.from(m.artifact.base64,'base64'));for(const i of [2,3,4])assert.deepEqual(files[`sprites/object-${i}.png`],oldFiles[`sprites/object-${i}.png`]);assert.ok(files['atlas.png']);
+ const pub=publicWorkspace(w,'sqlite').missions[0];assert.equal(pub.revisions,undefined);assert.equal(pub.reviewVersions.length,1);assert.equal(pub.reviewComponents.length,4);
+ await store.mutate('w',w=>reviewMission(w,id,{decision:'adjust',feedback:'Corrigir armário',components:['sprites/object-3.png']}));await run();assert.equal(images,6);assert.equal(texts,2);
+ await store.mutate('w',w=>reviewMission(w,id,{decision:'reject',feedback:'Perspectiva ainda inconsistente'}));w=(await store.read('w')).workspace;m=w.missions[0];assert.equal(m.status,'rejected');assert.ok(m.artifact);assert.equal(m.revisions.length,2);assert.equal(m.images,6);await store.close();
+});
+
+test('invalid review scope and legacy checkpoints cannot silently regenerate paid work',()=>{
+ const w=initialWorkspace();w.secret=encryptKey('sk-fixture',token);const m=addMission(w,{title:'Legacy',brief:'Old pack',kind:'sprites',agentId:'creator'});m.status='review';m.artifact={base64:'keep'};
+ assert.throws(()=>reviewMission(w,m.id,{decision:'adjust',feedback:'Fix',components:['sprites/object-1.png']}),/checkpoints/);assert.equal(m.status,'review');assert.equal(m.artifact.base64,'keep');
+ assert.throws(()=>reviewWithVersion(w,m.id,{decision:'reject',feedback:'Stale',version:'old'}),/mudou/);
+ assert.throws(()=>reviewMission(w,m.id,{decision:'reject',feedback:''}),/Feedback/);assert.equal(m.status,'review');
+});
+
+
+test('archived downloads require workspace authentication and rejection blocks shop release',async t=>{
+ const {createApp}=await import('../app.mjs');const {workspaceId}=await import('../domain.mjs');const {approveShopRelease}=await import('../shop-release.mjs');
+ const store=await createStore({file:':memory:'});const app=createApp({store,provider:{}});await new Promise(r=>app.server.listen(0,'127.0.0.1',r));t.after(async()=>{await app.close();await store.close();});
+ let id;await store.mutate(workspaceId(token),w=>{const m=addMission(w,{title:'Versioned',brief:'Pack',kind:'sprites',agentId:'creator'});id=m.id;m.status='review';m.artifact={base64:Buffer.from('current').toString('base64'),mime:'application/zip',filename:'pack.zip'};m.revisions=[{id:'prior',artifact:{...m.artifact,base64:Buffer.from('previous').toString('base64')}}];});
+ const base=`http://127.0.0.1:${app.server.address().port}/api/agents/missions/${id}`;
+ const get=(path,access=token)=>fetch(base+path,{headers:{Authorization:`Bearer ${access}`}});
+ assert.equal((await get('/artifact?version=prior','b'.repeat(64))).status,404);assert.equal((await get('/artifact?version=missing')).status,404);assert.equal(await (await get('/artifact?version=prior')).text(),'previous');assert.equal(await (await get('/artifact')).text(),'current');
+ const w=(await store.read(workspaceId(token))).workspace;const version=releaseVersion(w.missions[0]);
+ const response=await fetch(base+'/review',{method:'POST',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({decision:'reject',feedback:'Perspectiva inconsistente',version})});assert.equal(response.status,200);assert.equal((await response.json()).missions[0].status,'rejected');
+ const rejected=(await store.read(workspaceId(token))).workspace;assert.throws(()=>approveShopRelease(rejected,rejected.missions[0],{authorize:true,version}),/qualidade/);
 });
