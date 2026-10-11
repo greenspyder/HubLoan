@@ -1,3 +1,5 @@
+import { itchReadiness } from './itch-readiness.mjs';
+import { itchReleaseCurrent } from './itch-release.mjs';
 import { assertValidationPublication, validationPublicationAllowed } from './validation.mjs';
 import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -46,14 +48,14 @@ export function createItchProvider({ fetcher = fetch, binary = process.env.BUTLE
 }
 export function publicCommerce(workspace) {
   const commerce = workspace.commerce || {};
-  return { configured: Boolean(commerce.secret), autoPublish: commerce.autoPublish === true, background: commerce.background === true, maxUploads: commerce.maxUploads || 3, uploads: commerce.uploads || 0, expiresAt: commerce.expiresAt, games: commerce.games || [], targets: commerce.targets || {}, error: commerce.error || '', license: commerce.license || '' };
+  return { readiness: itchReadiness(workspace), configured: Boolean(commerce.secret), autoPublish: commerce.autoPublish === true, background: commerce.background === true, maxUploads: commerce.maxUploads || 3, uploads: commerce.uploads || 0, expiresAt: commerce.expiresAt, games: commerce.games || [], targets: commerce.targets || {}, error: commerce.error || '', license: commerce.license || '' };
 }
 export function createCommerce(store, { masterKey = null, provider = createItchProvider(), intervalMs = 15000 } = {}) {
   const unlocked = new Map(); let busy = false, closed = false, flight;
   async function connect(id, token, input) {
     const key = text(input.apiKey, 'Chave itch.io', 1000); if (/\s/.test(key)) throw new AppError('Chave inválida.');
     const games = await provider.games(key);
-    return store.mutate(id, workspace => { workspace.commerce = { ...(workspace.commerce || {}), secret: encryptKey(key, token), games, autoPublish: false, background: false, targets: {}, error: '', maxUploads: 3, uploads: 0 }; });
+    return store.mutate(id, workspace => { workspace.commerce = { ...(workspace.commerce || {}), secret: encryptKey(key, token), readiness: undefined, games, autoPublish: false, background: false, targets: {}, error: '', maxUploads: 3, uploads: 0 }; });
   }
   function unlock(id, token) { unlocked.set(id, { token, expires: Date.now() + 30000 }); }
   async function configure(id, token, input) {
@@ -64,7 +66,7 @@ export function createCommerce(store, { masterKey = null, provider = createItchP
     for (const kind of ['sprites', 'model3d']) {
       const value = input.targets?.[kind]; if (!value) continue;
       const game = games.find(item => item.id === Number(value));
-      if (!game || !game.published || game.classification !== 'assets') throw new AppError('Escolha uma página pública de assets da sua conta.');
+      if (!game || game.classification !== 'assets') throw new AppError('Escolha uma página de assets acessível pela sua conta, publicada ou em rascunho.');
       targets[kind] = { id: game.id, target: itchTarget(game.url), url: game.url, title: game.title };
     }
     if (input.autoPublish && !Object.keys(targets).length) throw new AppError('Selecione um destino para publicação automática.');
@@ -82,6 +84,7 @@ export function createCommerce(store, { masterKey = null, provider = createItchP
     const claim = await store.mutate(id, workspace => {
       const mission = missionById(workspace, missionId), c = workspace.commerce;
       assertValidationPublication(workspace,mission,'itchio');
+      if (!itchReleaseCurrent(workspace,mission)) throw new AppError('Upload bloqueado: aprove a qualidade e autorize esta versão, destino, preço e licença.',409);
       if (!c?.secret || !c.targets?.[mission.kind] || !c.license) throw new AppError('Configure loja, destino e licença primeiro.');
       if (automatic && (!c.autoPublish || c.expiresAt < Date.now())) throw new AppError('Publicação automática pausada.');
       if (!['review', 'approved'].includes(mission.status) || mission.artifact?.mime !== 'application/zip') throw new AppError('O pack precisa estar produzido antes de publicar.');
@@ -122,7 +125,7 @@ export function createCommerce(store, { masterKey = null, provider = createItchP
       const w = (await store.read(id)).workspace, c = w.commerce;
       if (!c?.secret || (!c.expiresAt || c.expiresAt < Date.now())) { unlocked.delete(id); continue; }
       if (c.autoPublish && c.uploads < c.maxUploads) {
-        const mission = [...w.missions].reverse().find(m => !m.validationExperimentId && validationPublicationAllowed(w,m,'itchio') && ['review', 'approved'].includes(m.status) && c.targets[m.kind] && !m.publication);
+        const mission = [...w.missions].reverse().find(m => !m.validationExperimentId && validationPublicationAllowed(w,m,'itchio') && itchReleaseCurrent(w,m) && c.targets[m.kind] && !m.publication);
         if (mission) { try { await publish(id, token, mission.id, true); } catch { /* recorded, no automatic retry */ } }
       }
       if (c.background && Date.now() - (c.lastSync || 0) > 300000 && !c.syncFailed) {

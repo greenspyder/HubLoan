@@ -1,3 +1,5 @@
+import { recordItchReadiness } from './itch-readiness.mjs';
+import { authorizeItchRelease } from './itch-release.mjs';
 import { createEtsy } from './etsy.mjs';
 import { createReferenceResearch, createOfferPreparation } from './reference-research.mjs';
 import { createFactory } from './factories.mjs';
@@ -151,6 +153,9 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if (shopPublish && request.method === 'POST') return send(response, 200, publicWorkspace((await shop.publish(id, shopPublish[1])).workspace, store.mode, Boolean(masterKey)));
       const shopListing = route.match(/^\/shop\/products\/([a-f0-9-]+)$/);
       if (shopListing && request.method === 'PATCH') return send(response, 200, publicWorkspace((await shop.listing(id, shopListing[1], (await body(request)).listed)).workspace, store.mode, Boolean(masterKey)));
+      if (route === '/commerce/readiness' && request.method === 'POST') { const input=await body(request); const updated=await store.mutate(id,w=>recordItchReadiness(w,input)); return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey))); }
+      const itchReleaseRoute=route.match(/^\/commerce\/missions\/([a-f0-9-]+)\/release$/);
+      if (itchReleaseRoute && request.method === 'POST') { const input=await body(request); const updated=await store.mutate(id,w=>authorizeItchRelease(w,missionById(w,itchReleaseRoute[1]),input)); return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey))); }
       if (route === '/commerce/connect' && request.method === 'POST') {
         const updated = await commerce.connect(id, token, await body(request));
         return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));

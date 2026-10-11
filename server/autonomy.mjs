@@ -33,7 +33,8 @@ export function createProject(workspace, input, token, masterKey, now = Date.now
   if (workspace.autonomy.projects.length >= 10) throw new AppError('Limite de dez projetos por espaço.');
   const factory = input.factoryId ? requireFactoryProduction(workspace, input.factoryId, input.kind) : null;
   if (factory && input.mode && input.mode !== 'goal') throw new AppError('Use objetivo definido para uma fábrica específica; descoberta ampla distribui por formato.');
-  const mode = input.mode || 'goal';
+  const mode = input.firstSale === true ? 'discover' : input.mode || 'goal';
+  if ((input.firstSale === true || input.budgetMinor != null) && (!Number.isSafeInteger(input.budgetMinor) || input.budgetMinor < 1 || input.budgetMinor > 10000000)) throw new AppError('Defina um teto monetário positivo em centavos para o projeto.');
   if (!['goal', 'discover'].includes(mode)) throw new AppError('Modo de autonomia inválido.');
   const maxCalls = input.maxCalls ?? input.maxDeliveries * 7 + 1;
   if (!Number.isInteger(maxCalls) || maxCalls < 1 || maxCalls > 200) throw new AppError('Limite de chamadas deve ser de uma a duzentas.');
@@ -43,7 +44,9 @@ export function createProject(workspace, input, token, masterKey, now = Date.now
   if (typeof input.research !== 'boolean' || typeof input.start !== 'boolean') throw new AppError('Configuração de autonomia inválida.');
   if (input.start && workspace.autonomy.enabled) throw new AppError('Pause o projeto atual antes de iniciar outro.');
   if (input.start) grant(workspace, token, masterKey);
-  const project = { id: crypto.randomUUID(), name: text(input.name || (mode === 'discover' ? 'Descoberta de oportunidades' : ''), 'Nome do projeto', 100), goal: mode === 'discover' ? marketGoal : text(input.goal, 'Objetivo', 4000), mode, market: mode === 'discover' ? marketSettings(input.market) : undefined, maxCalls, calls: 0, decisions: [], kind: input.kind, maxDeliveries: input.maxDeliveries, intervalMinutes: input.intervalMinutes, research: mode === 'discover' || input.research, status: input.start ? 'active' : 'paused', phase: input.start ? 'Coordenador aguardando o próximo ciclo' : 'Projeto pausado', produced: 0, tokens: 0, searches: 0, events: [], createdAt: new Date(now).toISOString(), nextRunAt: now, expiresAt: now + 72 * 3600000, error: '' };
+  const project = { id: crypto.randomUUID(), name: text(input.name || (mode === 'discover' ? 'Descoberta de oportunidades' : ''), 'Nome do projeto', 100), goal: mode === 'discover' ? (input.firstSale ? text(input.goal, 'Objetivo', 4000) : marketGoal) : text(input.goal, 'Objetivo', 4000), mode, market: mode === 'discover' ? marketSettings(input.market) : undefined, maxCalls, calls: 0, decisions: [], kind: input.kind, maxDeliveries: input.maxDeliveries, intervalMinutes: input.intervalMinutes, research: mode === 'discover' || input.research, status: input.start ? 'active' : 'paused', phase: input.start ? 'Coordenador aguardando o próximo ciclo' : 'Projeto pausado', produced: 0, tokens: 0, searches: 0, events: [], createdAt: new Date(now).toISOString(), nextRunAt: now, expiresAt: now + 72 * 3600000, error: '' };
+  if (input.budgetMinor != null) project.budgetMinor = input.budgetMinor;
+  if (input.firstSale === true) project.firstSale = true;
   if (factory) { project.factoryId = factory.id; project.goal = `${factoryContext(workspace, { factoryId: factory.id })}\nObjetivo: ${project.goal}`; }
   workspace.autonomy.projects.unshift(project); syncAutonomy(workspace); return project;
 }
@@ -56,6 +59,7 @@ export function projectAction(workspace, id, action, token, masterKey, now = Dat
   const project = projectById(workspace, id);
   if (action === 'pause') { project.status = 'paused'; project.phase = 'Próximas tarefas pausadas'; }
   else {
+    if (project.firstSale && project.decisions.length) throw new AppError('Revise a descoberta existente e prepare o experimento; retomar não deve repetir pesquisa paga.',409);
     if (project.calls >= project.maxCalls) throw new AppError('Limite de chamadas atingido. Crie um novo ciclo com um novo limite.');
     if (project.produced >= project.maxDeliveries) throw new AppError('Este projeto já atingiu seu limite. Crie outro com um novo objetivo.');
     if (workspace.autonomy.projects.some(other => other.id !== id && ['active', 'planning'].includes(other.status))) throw new AppError('Já existe um projeto ativo.');
