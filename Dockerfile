@@ -11,6 +11,7 @@ RUN apk add --no-cache curl unzip && curl -fsSL --retry 2 https://github.com/itc
  && unzip /tmp/butler.zip -d /opt && chmod +x /opt/linux-amd64/butler
 
 FROM node:24-bookworm-slim AS runtime
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg fonts-dejavu-core && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=butler /opt/linux-amd64/ /opt/butler/
 ENV BUTLER_PATH=/opt/butler/butler

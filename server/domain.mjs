@@ -1,3 +1,4 @@
+import { videoScenes } from './video-production.mjs';
 import { firstSaleSummary } from './first-sale.mjs';
 import { releaseVersion } from './shop-release.mjs';
 import { publicEtsy } from './etsy.mjs';
@@ -54,8 +55,9 @@ export function addAgent(workspace, body) {
 export function addMission(workspace, body) {
   if (workspace.missions.length >= 200) throw new AppError('Limite de 200 missões. Exporte as entregas antes de criar outro espaço.');
   if (!workspace.agents.some(agent => agent.id === body.agentId && agent.enabled)) throw new AppError('Escolha um agente disponível.');
-  if (!['text', 'image', 'thumbnail', 'sprites', 'model3d'].includes(body.kind)) throw new AppError('Tipo de entrega inválido.');
+  if (!['text', 'image', 'thumbnail', 'sprites', 'model3d', 'video'].includes(body.kind)) throw new AppError('Tipo de entrega inválido.');
   const mission = { id: randomUUID(), title: text(body.title, 'Título', 100), brief: text(body.brief, 'Briefing', 6000), agentId: body.agentId, kind: body.kind, status: 'draft', output: '', error: '', phase: 'Pronta para executar', createdAt: new Date().toISOString(), events: [], tokens: 0, images: 0, attempt: 0 };
+  if (body.kind === 'video') { try { videoScenes(mission.brief); } catch(e) { throw new AppError(e.message); } }
   if (body.factoryId) { requireFactoryProduction(workspace, body.factoryId, body.kind); mission.factoryId = body.factoryId; }
   workspace.missions.unshift(mission);
   return mission;
@@ -67,7 +69,7 @@ export function missionById(workspace, id) {
 }
 export function queueMission(workspace, id) {
   const mission = missionById(workspace, id);
-  if (!workspace.secret) throw new AppError('Conecte sua chave da OpenAI primeiro.');
+  if (!workspace.secret && mission.kind !== 'video') throw new AppError('Conecte sua chave da OpenAI primeiro.');
   if (!['draft', 'failed', 'cancelled'].includes(mission.status)) throw new AppError('Esta missão já foi executada ou está em andamento.', 409);
   if (!workspace.agents.some(agent => agent.id === mission.agentId && agent.enabled)) throw new AppError('Reative o agente antes de executar.');
   if (workspace.missions.filter(item => ['queued', 'running'].includes(item.status)).length >= 5) throw new AppError('Aguarde as missões atuais: o limite é cinco na fila.');
