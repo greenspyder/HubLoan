@@ -1,3 +1,4 @@
+import { videoRuntimeAvailable } from './video-production.mjs';
 import { AppError, text } from './domain.mjs';
 export const opportunityResearch = 'Investigue estratégias atuais de lucro além de packs: canais de vídeos curtos por nicho (roteiros originais, edição, legendas e distribuição), serviços de conteúdo, produtos digitais e utilitários. Inclua ao menos uma estratégia de conteúdo ou serviço se houver evidência. Pesquise sinais datados, concorrência, comprador ou pagador, caminho de monetização, requisitos de programas, custos de produção/API/taxas/distribuição, direitos autorais e ferramentas necessárias. Priorize pedidos públicos recentes de serviços, com URL e data, e diferencie pedido explícito de interesse inferido. Considere uma amostra para um público específico antes de coleção; descreva escopo/preço proposto/prazo, revisão humana, custos por entrega desconhecidos, janela e critério de continuar/parar, além de possibilidade de recompra sem afirmar clientes existentes. Views, tendências e preços anunciados não comprovam receita nem lucro. Diferencie produção de roteiro de vídeo pronto, e de publicação. CapCut/TikTok não estão integrados. Não limite a pesquisa às capacidades atuais: registre também oportunidades bloqueadas, sem executar ações externas.';
 export function executionCapabilities(w, market = {}) {
@@ -14,8 +15,8 @@ export function executionCapabilities(w, market = {}) {
     mastodon_publish: { available: Boolean(marketing?.enabled && marketing.expiresAt > now && marketing.channels?.mastodon?.secret), detail: 'Anúncios de produtos da loja, não publicação de qualquer conteúdo ou vídeo.' },
     telegram_publish: { available: Boolean(marketing?.enabled && marketing.expiresAt > now && marketing.channels?.telegram?.secret), detail: 'Anúncios de produtos da loja no canal conectado.' },
     itchio_publish: { available: Boolean(w.commerce?.autoPublish && w.commerce?.background && w.commerce?.expiresAt > now && w.commerce?.secret && w.commerce?.license && w.commerce.uploads < w.commerce.maxUploads), targets: Object.keys(w.commerce?.targets || {}), detail: 'Packs 2D/3D em páginas existentes autorizadas.' },
-    video_render: { available: false, detail: 'Exportação de MP4 ainda não implementada.' },
-    video_caption: { available: false, detail: 'Transcrição e sincronização de legendas em áudio/vídeo ainda não implementadas.' },
+    video_render: { available: videoRuntimeAvailable(), detail: 'Montagem de roteiro manual em MP4 vertical, geometria original, sem áudio. Requer FFmpeg no servidor; não gera cenas com IA.' },
+    video_caption: { available: videoRuntimeAvailable(), detail: 'Legendas temporizadas por cena do roteiro manual. Transcrição de áudio ainda indisponível.' },
     capcut_edit: { available: false, detail: 'Editor CapCut não conectado.' },
     tiktok_publish: { available: false, detail: 'TikTok não conectado; API exige auditoria para alcance público e consentimento do criador.' },
     youtube_publish: { available: false, detail: 'Publicação de vídeos no YouTube não integrada.' },

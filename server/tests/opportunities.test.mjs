@@ -20,7 +20,7 @@ test('broad research options validate permissions and retain existing project de
 test('server computes missing video tools even if the model omits them or claims a text strategy is executable', () => {
  const w = initialWorkspace(), c = assessOpportunity({ ...video, requiredCapabilities: ['text'], execution: { status: 'executable' } }, executionCapabilities(w));
  assert.equal(c.execution.status, 'blocked');
- for (const cap of ['video_render', 'video_caption', 'tiktok_publish']) assert.ok(c.execution.missing.some(m => m.capability === cap));
+ for (const cap of ['tiktok_publish']) assert.ok(c.execution.missing.some(m => m.capability === cap));
  assert.equal(assessOpportunity(video, executionCapabilities(w), true).execution.status, 'preparation');
  assert.throws(() => assessOpportunity({ ...video, costs: {} }, executionCapabilities(w)), /Custos/);
  assert.throws(() => assessOpportunity({ ...video, experimentUnits: 100 }, executionCapabilities(w)), /três/);

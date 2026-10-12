@@ -1,3 +1,4 @@
+import { renderVideo } from './video-production.mjs';
 import { REFERENCE_RULES, productionBottleneck } from './market-references.mjs';
 import { factoryContext } from './factories.mjs';
 import { checkpointCall, executionIntent, remainingOperations } from './execution-checkpoints.mjs';
@@ -45,6 +46,25 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
     const controllerId = `${id}:${mission.id}`;
     controllers.set(controllerId, controller);
     try {
+      if (mission.kind === 'video') {
+        await update(id, mission.id, current => {
+          const fingerprint = executionIntent(current);
+          if (current.execution?.fingerprint !== fingerprint) {
+            if(current.execution)(current.executionHistory ||= []).push(current.execution);
+            current.execution = {fingerprint, checkpoints:[]};
+          }
+          current.phase = 'Montando MP4 no servidor';
+        });
+        const result = await renderVideo({brief:mission.brief, signal:controller.signal, checkpoint});
+        await update(id, mission.id, current => {
+          current.artifact = {base64:result.base64,preview:result.preview,mime:'video/mp4',filename:`hubloan-${mission.id}.mp4`};
+          current.videoReport = result.report;
+          current.output = '## Vídeo vertical produzido\n\nMP4 H.264, 720×1280, sem áudio. Legendas sincronizadas. Validação técnica concluída; qualidade, direitos do roteiro e divulgação comercial exigem revisão humana. Sem publicação externa. Nenhuma chamada paga; custo de infraestrutura a apurar.\n\n### Legendas SRT\n```srt\n'+result.srt+'\n```';
+          current.status = 'review'; current.phase = 'Vídeo pronto para revisão humana';
+          current.events.push({at:new Date().toISOString(),message:'MP4 validado e preservado no Armazém. Publicação não autorizada.'});
+        });
+        return;
+      }
       const key = decryptKey(workspace.secret, token);
       const agent = workspace.agents.find(item => item.id === mission.agentId);
       const memory = knowledgeContext(workspace, mission.title + ' ' + mission.brief, now());
@@ -116,7 +136,7 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
         const item = missionById(current, mission.id);
         if (item.status !== 'running') return;
         item.status = 'failed'; item.phase = 'Falha na execução'; item.budgetBlock = error.budgetBlock;
-        item.error = error instanceof AppError ? error.message : 'A conexão com o provedor foi interrompida. Tente novamente; chamadas anteriores podem ter sido cobradas.';
+        item.error = error instanceof AppError || mission.kind === 'video' ? error.message : 'A conexão com o provedor foi interrompida. Tente novamente; chamadas anteriores podem ter sido cobradas.';
         item.events.push({ at: new Date().toISOString(), message: item.error });
       });
     } finally { controllers.delete(controllerId); }
@@ -219,7 +239,7 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
     for (const [id, entry] of unlocked) {
       if (entry.expires < Date.now()) { unlocked.delete(id); continue; }
       const snapshot = (await store.read(id)).workspace;
-      if (!snapshot.secret) { unlocked.delete(id); continue; }
+      if (!snapshot.secret && !(snapshot.missions || []).some(m => m.kind === 'video' && ['queued','running'].includes(m.status))) { unlocked.delete(id); continue; }
       const hasQueued = snapshot.missions.some(mission => mission.status === 'queued');
       const stale = snapshot.missions.some(mission => mission.status === 'running' && mission.leaseUntil < now());
       const projectNeedsWork = snapshot.autonomy.projects.some(project => ['active', 'planning'].includes(project.status) && (project.nextRunAt <= now() || project.produced >= project.maxDeliveries || project.expiresAt < now() || snapshot.missions.some(mission => mission.projectId === project.id && ['failed', 'cancelled'].includes(mission.status))));
@@ -231,11 +251,11 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
       const claim = await store.mutate(id, workspace => {
         recoverStale(workspace, now()); reconcileProjects(workspace, now());
         if (workspace.missions.some(mission => mission.status === 'running') || workspace.autonomy.projects.some(project => project.status === 'planning')) return null;
-        const candidate = [...workspace.missions].reverse().find(mission => mission.status === 'queued' && workspace.agents.some(agent => agent.id === mission.agentId && agent.enabled));
+        const candidate = [...workspace.missions].reverse().find(mission => mission.status === 'queued' && (workspace.secret || mission.kind === 'video') && workspace.agents.some(agent => agent.id === mission.agentId && agent.enabled));
         if (candidate) { candidate.status = 'running'; candidate.phase = 'Iniciando execução'; candidate.leaseUntil = now() + 600000; return { kind: 'mission', id: candidate.id }; }
         if (workspace.missions.filter(mission => ['queued', 'running'].includes(mission.status)).length >= 5) return null;
         const project = workspace.autonomy.projects.find(project => project.status === 'active' && project.produced < project.maxDeliveries && project.nextRunAt <= now() && !workspace.missions.some(mission => mission.projectId === project.id && ['queued', 'running'].includes(mission.status)));
-        if (!project) return null;
+        if (!project || !workspace.secret) return null;
         if (!workspace.agents.some(agent => agent.enabled)) { project.status = 'paused'; project.phase = 'Todos os agentes estão pausados'; syncAutonomy(workspace); return null; }
         project.status = 'planning'; project.phase = 'Coordenador iniciando o ciclo'; project.leaseUntil = now() + 600000;
         return { kind: 'project', id: project.id };
