@@ -31,7 +31,7 @@ export function publicShop(workspace) {
   return { configured: Boolean(s.secret && s.webhookSecret), enabled: s.enabled === true, autoPublish: s.autoPublish === true, name: s.name || '', slug: s.slug || '', contact: s.contact || '', license: s.license || '', prices: s.prices || {}, maxProducts: s.maxProducts || 20, expiresAt: s.expiresAt, livemode: s.livemode === true, error: s.error || '', products: (s.products || []).map(publicProduct), metrics: { purchases: paid.length, grossMinor: paid.reduce((n, o) => n + o.priceMinor, 0), refundedMinor: paid.reduce((n, o) => n + (o.refundedMinor || 0), 0), currency: 'BRL', netProfit: null, testPurchases: orders.filter(o => o.paidAt && !o.livemode).length } };
 }
 export function salePackage(mission, license) {
-  if (mission.purpose === 'experiment-preparation') throw new AppError('Kit de experimento privado não é produto da loja.');
+  if (['experiment-preparation','affiliate-promotion'].includes(mission.purpose)) throw new AppError('Kit de experimento privado não é produto da loja.');
   if (mission.status !== 'approved' || !kinds.includes(mission.kind)) throw new AppError('A entrega precisa estar aprovada para publicar.');
   const files = { 'LICENSE.txt': strToU8(license), 'README.md': strToU8(`# ${mission.title}\n\n${kindDescriptions[mission.kind]}\n\nProduzido com IA. Confira a adequação ao seu uso. Não são prometidos vendas, visualizações ou retorno financeiro.\n`) };
   if (mission.artifact) {

@@ -30,7 +30,7 @@ export function DeliveryReview({ mission, busy, mutate }: Props) {
       <h3>Revisar entrega</h3>
       <label>O que precisa mudar?<textarea value={feedback} maxLength={2000} onChange={e => setFeedback(e.target.value)} placeholder="Ex.: mesa e armário precisam usar a mesma perspectiva dos demais objetos." /></label>
       {!!mission.reviewComponents?.length && <fieldset><legend>Regenerar somente os objetos selecionados</legend>{mission.reviewComponents.map(c => <label key={c}><input type="checkbox" checked={components.includes(c)} onChange={e => setComponents(e.target.checked ? [...components, c] : components.filter(x => x !== c))} /> {c}</label>)}</fieldset>}
-      <p>O atlas e a revisão serão reconstruídos. Novas chamadas usam os limites de orçamento existentes; arquivos e custos anteriores permanecem no histórico.</p>
+      <p>{mission.kind==='sprites'?'O atlas e a revisão serão reconstruídos.':'A aprovação de qualidade não autoriza publicação.'} Novas chamadas usam os limites de orçamento existentes; arquivos e custos anteriores permanecem no histórico.</p>
       {blocked && mission.status === 'review' && <label><input type="checkbox" checked={override} onChange={e => setOverride(e.target.checked)} /> Revisei os arquivos e desejo contrariar o Sentinel. A justificativa acima será registrada.</label>}
       <div className="aw-actions">{mission.status === 'review' && <button className="aw-button" disabled={busy || Boolean(blocked && (!override || !feedback.trim()))} onClick={() => void approve()}>Aprovar por revisão humana</button>}
       <button className="aw-button aw-secondary" disabled={busy || !feedback.trim() || !components.length} onClick={() => void submit('adjust')}>Solicitar ajustes selecionados</button>

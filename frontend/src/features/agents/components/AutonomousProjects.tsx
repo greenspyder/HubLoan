@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { FirstSaleProject } from './FirstSaleProject';
 import { MarketDecisions } from './MarketDecisions';
 import { useState } from 'react';
@@ -31,8 +32,8 @@ export function AutonomousProjects({ workspace, busy, mutate }: Props) {
     const result = await mutate(() => agentApi.addProject({ name, goal, kind, maxDeliveries, intervalMinutes, research: mode === 'discover' || research, mode, maxCalls, market: { scope, allowPreparation, market, channels, restrictions, allowImages, specializations }, start: active }), active ? 'Projeto iniciado. O coordenador criará e distribuirá as tarefas automaticamente.' : 'Projeto salvo e pausado. Conecte sua IA e inicie quando estiver pronto.');
     if (result) { setName(''); setGoal(''); }
   }
-  return <><FirstSaleProject workspace={workspace} busy={busy} mutate={mutate}/><section className="aw-panel aw-autonomy" id="autonomy"><div className="aw-section-title"><div><p className="aw-eyebrow">COORDENADOR / ORION</p><h2><Cpu size={21} /> Demanda → hipótese → teste pequeno</h2></div><span className="aw-badge">{autonomy.enabled ? 'CICLO AUTÔNOMO ATIVO' : 'AGUARDANDO OBJETIVO'}</span></div><p>Deixe Astra pesquisar oportunidades ou escolha um objetivo. Comece com uma entrega e revise antes de publicar.</p><p className="aw-caption">Produção usa sua API e respeita o orçamento autorizado. Um projeto ativo por vez; sem garantia de vendas.</p>
-    <div className="aw-projects">{autonomy.projects.map(project => {
+  return <><section className="aw-panel"><h2>TikTok Afiliados</h2><p>Crie campanhas de produtos de terceiros, sem loja própria ou Stripe.</p><Link className="aw-button" to="/agentes/afiliados">Abrir projeto de afiliados</Link></section><FirstSaleProject workspace={workspace} busy={busy} mutate={mutate}/><section className="aw-panel aw-autonomy" id="autonomy"><div className="aw-section-title"><div><p className="aw-eyebrow">COORDENADOR / ORION</p><h2><Cpu size={21} /> Demanda → hipótese → teste pequeno</h2></div><span className="aw-badge">{autonomy.enabled ? 'CICLO AUTÔNOMO ATIVO' : 'AGUARDANDO OBJETIVO'}</span></div><p>Deixe Astra pesquisar oportunidades ou escolha um objetivo. Comece com uma entrega e revise antes de publicar.</p><p className="aw-caption">Produção usa sua API e respeita o orçamento autorizado. Um projeto ativo por vez; sem garantia de vendas.</p>
+    <div className="aw-projects">{autonomy.projects.filter(p=>p.businessType!=='affiliate').map(project => {
       const missions = workspace.missions.filter(mission => mission.projectId === project.id);
       const delivered = missions.filter(mission => ['review', 'approved'].includes(mission.status)).length;
       const active = ['active', 'planning'].includes(project.status);

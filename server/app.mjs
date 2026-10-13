@@ -1,3 +1,5 @@
+import { normalizeVideoImages } from './video-production.mjs';
+import { affiliateAction } from './affiliates.mjs';
 import { recordItchReadiness } from './itch-readiness.mjs';
 import { authorizeItchRelease } from './itch-release.mjs';
 import { createEtsy } from './etsy.mjs';
@@ -43,8 +45,8 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
     for await (const chunk of request) { size += chunk.length; if (size > max) throw new AppError('Dados enviados excedem o limite.', 413); chunks.push(chunk); }
     return Buffer.concat(chunks);
   }
-  async function body(request) {
-    const raw = await rawBody(request);
+  async function body(request, max) {
+    const raw = await rawBody(request, max);
     try { const parsed = JSON.parse(raw.toString() || '{}'); if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error(); return parsed; }
     catch { throw new AppError('JSON inválido.'); }
   }
@@ -138,6 +140,13 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if (engineeringRelease && request.method === 'POST') return send(response, 200, publicWorkspace((await (engineeringRelease[2] === 'approve' ? engineering.approve(id, engineeringRelease[1], await body(request)) : engineering.deployment(id, engineeringRelease[1]))).workspace, store.mode, Boolean(masterKey)));
       const engineeringCheck = route.match(/^\/engineering\/jobs\/([a-f0-9-]+)\/checks$/);
       if (engineeringCheck && request.method === 'POST') return send(response, 200, publicWorkspace((await engineering.sync(id, engineeringCheck[1])).workspace, store.mode, Boolean(masterKey)));
+      const affiliateRoute = route.match(/^\/affiliates\/(project|account|product|campaign|revise|authorize|published|report)$/);
+      if (affiliateRoute && request.method === 'POST') {
+        const input=await body(request,['campaign','revise'].includes(affiliateRoute[1])?3600000:20000);
+        if(affiliateRoute[1]==='campaign' || (affiliateRoute[1]==='revise' && input.images?.length)) { try { input.images=await normalizeVideoImages(input.images); } catch { throw new AppError('Envie de 1 a 6 PNG/JPEG/WebP estáticos, mínimo 200 pixels, máximo 2,5 MB no total.'); } }
+        const updated=await store.mutate(id,w=>affiliateAction(w,affiliateRoute[1],input));
+        return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey)));
+      }
       if (route === '/marketing/prepare' && request.method === 'POST') return send(response, 200, publicWorkspace((await marketing.prepare(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
       if (route === '/marketing/connect' && request.method === 'POST') return send(response, 200, publicWorkspace((await marketing.connect(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
       if (route === '/marketing/configure' && request.method === 'POST') return send(response, 200, publicWorkspace((await marketing.configure(id, await body(request))).workspace, store.mode, Boolean(masterKey)));
