@@ -5,7 +5,7 @@ export function releaseVersion(m) {
   return createHash('sha256').update(JSON.stringify([m.id,m.attempt,m.title,m.kind,m.output,m.artifact || null])).digest('hex');
 }
 export function approveShopRelease(w,m,input,now=Date.now()) {
-  if(m.status!=='approved' || m.purpose==='experiment-preparation') throw new AppError('Aprove a qualidade da entrega no Armazém antes de autorizar a venda.',409);
+  if(m.status!=='approved' || ['experiment-preparation','affiliate-promotion'].includes(m.purpose)) throw new AppError('Aprove a qualidade da entrega no Armazém antes de autorizar a venda.',409);
   if(input.authorize!==true || input.version!==releaseVersion(m)) throw new AppError('Confira a versão atual e autorize explicitamente esta oferta.',409);
   if(!Number.isSafeInteger(input.priceMinor)||input.priceMinor<500||input.priceMinor>1000000) throw new AppError('Informe o preço desta oferta entre R$ 5 e R$ 10.000.');
   if(!w.shop?.license || !w.shop?.slug) throw new AppError('Configure a loja e a licença antes de autorizar.');

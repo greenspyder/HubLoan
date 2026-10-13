@@ -1,0 +1,6 @@
+import type { CostTotals } from './agentApi';
+export type AffiliateAccount = { id:string; handle:string; program:'tiktok_shop'|'external'; connection:string; eligibility:string; evidence:string; conditions:string; observedAt:string };
+export type AffiliateProduct = { id:string; accountId:string; name:string; seller:string; platform:string; program:string; officialUrl:string; affiliateUrl:string; externalId:string; currency:string; priceMinor:number; commission:{type:string;value:number;source:string}; conditions:string; rights:string; rightsSource:string; audience:string; hypothesis:string; observedAt:string; verification:string };
+export type AffiliateReport = { views:number|null; clicks:number|null; orders:number|null; estimatedMinor:number|null; approvedMinor:number|null; receivedMinor:number|null; source:string; observedAt:string; note:string; currency:string };
+export type AffiliateCampaign = { id:string; projectId:string; accountId:string; product:AffiliateProduct; missionId:string; brief:string; caption:string; version:string; authorizationCurrent:boolean; next:string; costs:CostTotals; latest:AffiliateReport|null; netMinor:null; publication?:{url:string;origin:string}; reports:AffiliateReport[] };
+export type Affiliates = { accounts:AffiliateAccount[]; products:AffiliateProduct[]; campaigns:AffiliateCampaign[]; oauth:string; publishing:string };

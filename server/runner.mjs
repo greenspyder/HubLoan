@@ -55,7 +55,7 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
           }
           current.phase = 'Montando MP4 no servidor';
         });
-        const result = await renderVideo({brief:mission.brief, signal:controller.signal, checkpoint});
+        const result = await renderVideo({brief:mission.brief, images:mission.videoImages || [], signal:controller.signal, checkpoint});
         await update(id, mission.id, current => {
           current.artifact = {base64:result.base64,preview:result.preview,mime:'video/mp4',filename:`hubloan-${mission.id}.mp4`};
           current.videoReport = result.report;
