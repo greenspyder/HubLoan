@@ -1,3 +1,4 @@
+import { createTikTok } from './tiktok.mjs';
 import { createLiveRuntime, liveAction, publicLive } from './live-factory.mjs';
 import { normalizeVideoImages } from './video-production.mjs';
 import { affiliateAction } from './affiliates.mjs';
@@ -25,14 +26,15 @@ export function shouldUnlockBackgroundWorkers(method) {
   return method !== 'GET' && method !== 'HEAD';
 }
 
-export function createApp({ store, provider, staticDirectory = '../frontend/dist', allowedOrigins = [], masterKey = null, commerceProvider, shopProvider, marketingProvider, engineeringProvider, knowledgeProvider, publicOrigin, webhookOrigin, etsyProvider }) {
+export function createApp({ store, provider, staticDirectory = '../frontend/dist', allowedOrigins = [], masterKey = null, commerceProvider, shopProvider, marketingProvider, engineeringProvider, knowledgeProvider, publicOrigin, webhookOrigin, etsyProvider, tiktokProvider, tiktokConfig }) {
+  const tiktok = createTikTok(store,{masterKey,provider:tiktokProvider,config:tiktokConfig});
   const etsy = createEtsy(store,{masterKey,provider:etsyProvider,callbackOrigin:webhookOrigin});
   const prepareOffer = createOfferPreparation(store,provider);
   const referenceResearch = createReferenceResearch(store,provider);
   const knowledge = createKnowledge(store, { masterKey, provider: knowledgeProvider });
   const runner = createRunner(store, provider, { masterKey, knowledge });
   const commerce = createCommerce(store, { masterKey, provider: commerceProvider });
-  const shop = createShop(store, { masterKey, provider: shopProvider, marketingProvider, engineeringProvider, publicOrigin, webhookOrigin, etsyProvider });
+  const shop = createShop(store, { masterKey, provider: shopProvider, marketingProvider, engineeringProvider, publicOrigin, webhookOrigin, etsyProvider, tiktokProvider, tiktokConfig });
   const engineering = createEngineering(store, provider, { masterKey, provider: engineeringProvider });
   const marketing = createMarketing(store, { masterKey, provider: marketingProvider, publicOrigin });
   const liveRuntime = createLiveRuntime(store);
@@ -142,10 +144,14 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if (engineeringRelease && request.method === 'POST') return send(response, 200, publicWorkspace((await (engineeringRelease[2] === 'approve' ? engineering.approve(id, engineeringRelease[1], await body(request)) : engineering.deployment(id, engineeringRelease[1]))).workspace, store.mode, Boolean(masterKey)));
       const engineeringCheck = route.match(/^\/engineering\/jobs\/([a-f0-9-]+)\/checks$/);
       if (engineeringCheck && request.method === 'POST') return send(response, 200, publicWorkspace((await engineering.sync(id, engineeringCheck[1])).workspace, store.mode, Boolean(masterKey)));
+      if(route==='/tiktok'&&request.method==='GET')return send(response,200,tiktok.state((await store.read(id)).workspace));
+      if(route==='/tiktok/authorize'&&request.method==='POST')return send(response,200,await tiktok.authorize(id));
+      if(route==='/tiktok/callback'&&request.method==='POST')return send(response,200,await tiktok.callback(id,await body(request,5000)));
+      if(route==='/tiktok'&&request.method==='DELETE')return send(response,200,await tiktok.disconnect(id));
       if (route === '/live' && request.method === 'GET') return send(response,200,publicLive((await store.read(id)).workspace));
-      const liveRoute = route.match(/^\/live\/(create|start|pause|resume|stop|emergency|event)$/);
+      const liveRoute = route.match(/^\/live\/(create|start|pause|resume|stop|emergency|event|configure|suggest|apply-suggestion)$/);
       if (liveRoute && request.method === 'POST') {
-        const input=await body(request,2000);
+        const input=await body(request,12000);
         const updated=await store.mutate(id,w=>liveAction(w,liveRoute[1],input));
         return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey)));
       }

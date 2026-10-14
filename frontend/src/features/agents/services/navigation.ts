@@ -11,5 +11,5 @@ export const screens = [
   {id:'conexoes', title:'Conexões', description:'Conecte um serviço por vez. Veja o que está pronto e o que falta.'},
   {id:'avancado', title:'Avançado', description:'Memória, equipe, decisões e melhorias da aplicação.'},
 ] as const;
-export const sectionScreen: Record<string,string> = {etsy:'conexoes',channels:'vendas',overview:'inicio',start:'inicio',station:'base',factories:'base',autonomy:'producao','new-mission':'producao',missions:'armazem',terminal:'armazem',experiments:'vendas',shop:'vendas',marketing:'divulgacao',settings:'conexoes',costs:'conexoes',commerce:'conexoes',knowledge:'avancado',improvements:'avancado',agents:'avancado',astra:'avancado'};
+export const sectionScreen: Record<string,string> = {tiktok:'conexoes',etsy:'conexoes',channels:'vendas',overview:'inicio',start:'inicio',station:'base',factories:'base',autonomy:'producao','new-mission':'producao',missions:'armazem',terminal:'armazem',experiments:'vendas',shop:'vendas',marketing:'divulgacao',settings:'conexoes',costs:'conexoes',commerce:'conexoes',knowledge:'avancado',improvements:'avancado',agents:'avancado',astra:'avancado'};
 export const sectionUrl = (section:string) => `/agentes/${sectionScreen[section] || 'inicio'}#${section}`;

@@ -1,3 +1,7 @@
+# Live Factory — fase 2
+
+Esta documentação histórica da fase 1 permanece abaixo. Para a implementação atual, configuração TikTok, audiovisual e validação, consulte [live-factory-phase2.md](live-factory-phase2.md).
+
 # Live Factory — first vertical slice
 
 Audit base: master afe0b9bd9f8350d5ebe7666234b1e90f8566e849, merged PR #8, including PR #7. Local source tree was verified identical (736b6fe5614893ae7778de3d743eb54816818fbb). The referenced Boneco video was not available for direct inspection; no claim of having watched it. No external code, artwork or branding copied.

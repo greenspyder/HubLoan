@@ -1,4 +1,4 @@
-import type { LiveFactory } from './liveFactory';
+import type { LiveFactory, TikTokState } from './liveFactory';
 import type { Affiliates } from './affiliates';
 export type MarketReference = {id:string;marketplace:string;seller:string;category:string;product:string;url:string;observedAt:string;observedPrice:string|null;signals:{kind:string;value:string;scope:string;sourceUrl:string}[];features:string[];inference:string;hypothesis:string;ipRisk:string;opportunity:string;origin:string};
 export type Etsy = {implemented:boolean;configured:boolean;connected:boolean;shopId?:number;shopName?:string;currency?:string;error:string;redirectUri?:string;mode:string;level:number;note:string};
@@ -62,6 +62,10 @@ async function request<T>(path: string, method = 'GET', body?: object): Promise<
   return data as T;
 }
 export const agentApi = {
+  tiktokState: () => request<TikTokState>('/tiktok'),
+  authorizeTikTok: () => request<{url:string;state:string}>('/tiktok/authorize','POST'),
+  finishTikTok: (input:{state:string;code?:string;error?:string}) => request<TikTokState>('/tiktok/callback','POST',input),
+  disconnectTikTok: () => request<TikTokState>('/tiktok','DELETE'),
   liveState: () => request<LiveFactory>('/live'),
   live: (action:string,input:object) => request<Workspace>(`/live/${action}`,'POST',input),
   affiliate: (action:string, input:object) => request<Workspace>(`/affiliates/${action}`,'POST',input),
