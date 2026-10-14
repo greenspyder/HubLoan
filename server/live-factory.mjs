@@ -79,10 +79,10 @@ export function createLiveRuntime(store,{intervalMs=2000,owner=`${hostname()}:${
  return {tick,close:async()=>{
   closed=true;clearInterval(timer);await inflight;
   let cursor='';
-  do { const rows=await store.liveSpaces(cursor); for(const {id} of rows) await store.mutate(id,w=>{
+  try { do { const rows=await store.liveSpaces(cursor); for(const {id} of rows) await store.mutate(id,w=>{
     for(const e of init(w).experiences) if(e.owner===owner&&active.includes(e.status)) {
       e.status='DEGRADED';e.error='Executor encerrado. Retomada humana necessária.';cancelQueue(e,Date.now());log(e,'lifecycle',{status:e.status,reason:e.error},Date.now());
     }
-  });if(rows.length<100)break;cursor=rows.at(-1).id;}while(true);
+  });if(rows.length<100)break;cursor=rows.at(-1).id;}while(true); } catch { console.error('Live runtime: shutdown sem persistência; heartbeat expirará.'); }
  }};
 }
