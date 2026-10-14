@@ -71,3 +71,36 @@ test('stale queues expire, heartbeat loss degrades, timeout ends, old sessions c
  liveAction(w,'start',{id:e.id},e.deadline+1);advanceLive(w,'one',e.startedAt+1);
  assert.notEqual(old,e.sessionId);assert.throws(()=>liveAction(w,'event',{...event(e,n+1000),sessionId:old},n+1000));
 });
+
+test('flow A: configure -> save -> test event -> configured reaction/log -> reopen persisted workspace',async t=>{
+ const dir=await mkdtemp(join(tmpdir(),'live-editor-')),file=join(dir,'state.sqlite');let store=await createStore({file}),app=createApp({store,provider});
+ await new Promise(r=>app.server.listen(0,'127.0.0.1',r));
+ t.after(async()=>{await app.close();await store.close();await rm(dir,{recursive:true,force:true});});
+ const url=`http://127.0.0.1:${app.server.address().port}/api/agents`;
+ async function req(path,body,access=token){const r=await fetch(url+path,{method:body?'POST':'GET',headers:{Authorization:`Bearer ${access}`,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});return {status:r.status,data:await r.json()};}
+ let r=await req('/live/create',{name:'Persistência'});let e=r.data.liveFactory.experiences[0];const config=structuredClone(e.config);
+ config.name='Lume azul';config.personality='Explorador que comemora descobertas.';config.scene='cosmos';config.rules.celebrate={expression:'focused',animation:'spin',sound:'drum',phrases:['Vitória configurada!','Outro passo!'],durationMs:4000};
+ assert.equal((await req('/live/configure',{id:e.id,version:1,config},'b'.repeat(64))).status,404);
+ assert.equal((await req('/live/configure',{id:e.id,version:1,config:{...config,voice:'paid'}})).status,400);
+ r=await req('/live/configure',{id:e.id,version:1,config});assert.equal(r.status,200);assert.equal(r.data.liveFactory.experiences[0].configVersion,2);
+ assert.equal((await req('/live/configure',{id:e.id,version:1,config})).status,409);
+ await req('/live/start',{id:e.id});await app.liveRuntime.tick();e=(await req('/live')).data.experiences[0];
+ assert.equal((await req('/live/configure',{id:e.id,version:2,config})).status,409);
+ await req('/live/event',event(e,Date.now(),'celebration-1','celebrate'));await app.liveRuntime.tick();e=(await req('/live')).data.experiences[0];
+ assert.equal(e.character.speech,'Vitória configurada!');assert.equal(e.character.animation,'spin');assert.equal(e.action.sound,'drum');assert.equal(e.action.sessionId,e.sessionId);
+ assert.ok(e.logs.some(l=>l.rule==='character.celebrate.v2'&&l.animation==='spin'&&l.aiUsed===false));
+ const action=e.action.id;await req('/live/event',event(e,Date.now(),'celebration-1','celebrate'));await app.liveRuntime.tick();assert.equal((await req('/live')).data.experiences[0].action.id,action);
+ await req('/live/emergency',{id:e.id});assert.equal((await req('/live')).data.experiences[0].action,null);
+ await app.close();await store.close();store=await createStore({file});app=createApp({store,provider});await new Promise(r=>app.server.listen(0,'127.0.0.1',r));
+ const restored=publicLive((await store.read((await import('../domain.mjs')).workspaceId(token))).workspace).experiences[0];
+ assert.deepEqual(restored.config,config);assert.equal(restored.configVersion,2);assert.equal(restored.status,'STOPPED_FINAL');
+});
+
+test('creative proposals are bounded, explicit, version-bound, no automatic mutation; malformed rules rejected',()=>{
+ const w=initialWorkspace();liveAction(w,'create',{},100000);const e=w.liveFactory.experiences[0],before=structuredClone(e.config);
+ liveAction(w,'suggest',{id:e.id},101000);assert.deepEqual(e.config,before);assert.equal(e.suggestions[0].source,'LOCAL_RULES');
+ liveAction(w,'apply-suggestion',{id:e.id,version:1,suggestionId:e.suggestions[0].id},102000);assert.equal(e.configVersion,2);assert.equal(e.config.rules.celebrate.animation,'wave');
+ assert.throws(()=>liveAction(w,'apply-suggestion',{id:e.id,version:2,suggestionId:e.suggestions[0].id},103000),/vencida/);
+ for(const bad of [{audio:{volume:2,muted:false}},{rules:{}},{scene:'https://untrusted.test/image'},{rules:{...e.config.rules,greet:{...e.config.rules.greet,animation:'eval'}}}]) assert.throws(()=>liveAction(w,'configure',{id:e.id,version:2,config:{...e.config,...bad}}));
+ const c=structuredClone(e.config);c.audio.muted=true;liveAction(w,'configure',{id:e.id,version:2,config:c});liveAction(w,'start',{id:e.id},104000);advanceLive(w,'a',104000);liveAction(w,'event',event(e,105000),105000);advanceLive(w,'a',106000);assert.equal(e.action.sound,'none');
+});

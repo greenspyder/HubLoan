@@ -1,5 +1,6 @@
 // Original deterministic runtime. Uses the existing transactional workspace store.
 import { randomUUID } from 'node:crypto';
+import { defaultCharacter, validateCharacter, characterOptions, creativeProposal } from './live-character.mjs';
 import { hostname } from 'node:os';
 import { AppError, text } from './domain.mjs';
 import { createProject } from './autonomy.mjs';
@@ -15,15 +16,31 @@ export function liveAction(w,action,input,now=Date.now()) {
   const name=text(input.name||'Lume, o guardião das sementes','Nome',80);
   const p=createProject(w,{name,goal:'Validar uma experiência interativa original em teste, sem transmissão ou receita presumida.',kind:'text',maxDeliveries:1,maxCalls:1,intervalMinutes:60,research:false,start:false},null,null);
   p.businessType='live';p.budgetMinor=0;p.phase='Live Factory · teste supervisionado';
-  init(w).experiences.push({id:randomUUID(),projectId:p.id,name,version:1,status:'STOPPED',broadcast:'NOT_CONNECTED',character:{expression:'calm',pose:0,speech:'Personagem virtual · pronto para teste'},queue:[],seen:[],logs:[],sessions:[],processed:0,ticks:0,activeMs:0,heartbeat:null,error:null});return;
+  init(w).experiences.push({id:randomUUID(),projectId:p.id,name,version:1,status:'STOPPED',broadcast:'NOT_CONNECTED',config:defaultCharacter(),configVersion:1,suggestions:[],character:{animation:'idle',behavior:'resting',expression:'calm',pose:0,speech:'Personagem virtual · pronto para teste'},queue:[],seen:[],logs:[],sessions:[],processed:0,ticks:0,activeMs:0,heartbeat:null,error:null});return;
  }
  const e=find(w,input.id);
+ e.config ||= defaultCharacter(); e.configVersion ||= 1; e.suggestions ||= [];
+ if(action==='configure'||action==='apply-suggestion') {
+  if(!['STOPPED','STOPPED_FINAL'].includes(e.status)) throw new AppError('Encerre o teste antes de editar o personagem.',409);
+  if(input.version!==e.configVersion) throw new AppError('O personagem mudou. Reabra o editor antes de salvar.',409);
+  const proposal=action==='apply-suggestion'?e.suggestions.find(s=>s.id===input.suggestionId):null;
+  if(action==='apply-suggestion'&&(!proposal||proposal.baseVersion!==e.configVersion||proposal.appliedAt)) throw new AppError('Sugestão vencida ou já aplicada.',409);
+  e.config=validateCharacter(proposal?proposal.config:input.config);e.configVersion++;
+  e.character={expression:'calm',animation:'idle',behavior:'resting',pose:0,speech:e.config.idlePhrase};
+  if(proposal)proposal.appliedAt=iso(now);
+  log(e,'configuration',{action,version:e.configVersion,aiUsed:false},now);return;
+ }
+ if(action==='suggest') {
+  if(e.lastSuggestedAt&&now-e.lastSuggestedAt<1000) throw new AppError('Aguarde antes de gerar outra sugestão.',429);
+  e.lastSuggestedAt=now;e.suggestions.push({id:randomUUID(),baseVersion:e.configVersion,at:iso(now),...creativeProposal(e)});e.suggestions=e.suggestions.slice(-5);
+  log(e,'suggestion',{action:'creative-review',aiUsed:false},now);return;
+ }
  if(action==='start') {
   if(!['STOPPED','STOPPED_FINAL'].includes(e.status)) throw new AppError('Encerre a sessão atual antes de iniciar outra.',409);
-  e.sessionId=randomUUID();e.startedAt=now;e.deadline=now+30*60000;e.status='INITIALIZING';e.seen=[];e.queue=[];e.processed=0;e.ticks=0;e.activeMs=0;e.owner=null;e.heartbeat=null;e.error=null;
+  e.sessionId=randomUUID();e.startedAt=now;e.deadline=now+30*60000;e.status='INITIALIZING';e.seen=[];e.queue=[];e.processed=0;e.ticks=0;e.activeMs=0;e.owner=null;e.heartbeat=null;e.error=null;e.action=null;e.reactionUntil=0;e.character={expression:'calm',animation:'idle',behavior:'resting',pose:0,speech:e.config.idlePhrase};
  } else if(action==='pause') {
   if(!['TESTING','READY','INITIALIZING'].includes(e.status)) throw new AppError('Runtime não está em teste.',409);
-  e.status='PAUSED';
+  e.status='PAUSED';e.action=null;e.reactionUntil=0;e.character.animation='idle';e.character.behavior='paused';
  } else if(action==='resume') {
   if(!['PAUSED','DEGRADED'].includes(e.status)) throw new AppError('Runtime não está pausado/degradado.',409);
   if(now>=e.deadline) throw new AppError('Sessão expirada. Encerre e inicie novo teste.',409);
@@ -31,7 +48,7 @@ export function liveAction(w,action,input,now=Date.now()) {
   e.status='INITIALIZING';e.error=null;
  } else if(action==='stop'||action==='emergency') {
   if(!active.includes(e.status)&&e.status!=='DEGRADED') throw new AppError('Nenhuma sessão ativa.',409);
-  e.status='STOPPED_FINAL';cancelQueue(e,now);e.character.expression='calm';e.character.speech='Sessão encerrada';
+  e.status='STOPPED_FINAL';cancelQueue(e,now);e.character.expression='calm';e.character.speech='Sessão encerrada';e.character.animation='idle';e.character.behavior='stopped';e.action=null;
   e.sessions.push({id:e.sessionId,startedAt:iso(e.startedAt),endedAt:iso(now),activeMs:e.activeMs,processed:e.processed,reason:action});e.sessions=e.sessions.slice(-30);
  } else if(action==='event') {
   if(e.status!=='TESTING'||input.sessionId!==e.sessionId) throw new AppError('Inicie um teste e use a sessão atual.',409);
@@ -62,14 +79,16 @@ export function advanceLive(w,owner,now=Date.now()) {
   const event=e.queue.shift();
   if(event) {
    if(now-event.receivedAt>30000) {log(e,'event',{eventId:event.id,status:'EXPIRED'},now);continue;}
-   const reactions={greet:['happy','Olá, explorador! Este é um teste.'],challenge:['curious','Desafio aceito: encontrar uma nova semente!'],celebrate:['joy','Uma pequena conquista merece uma grande dança!']};
-   const [expression,speech]=reactions[event.type];Object.assign(e.character,{expression,speech});e.reactionUntil=now+6000;e.processed++;e.latencyMs=now-event.receivedAt;
-   log(e,'action',{eventId:event.id,type:event.type,source:event.source,rule:`character.${event.type}.v1`,action:expression,result:speech,status:'PROCESSED',latencyMs:e.latencyMs,aiUsed:false},now);
-  } else if(now>=(e.reactionUntil||0)) { e.character.expression='calm';e.character.speech='Observando o jardim de estrelas…'; }
+   const config=e.config||defaultCharacter(),rule=config.rules[event.type],version=e.configVersion||1;
+   const speech=rule.phrases[e.processed%rule.phrases.length];
+   Object.assign(e.character,{expression:rule.expression,animation:rule.animation,behavior:'reacting',speech});e.reactionUntil=now+rule.durationMs;e.processed++;e.latencyMs=now-event.receivedAt;
+   e.action={id:randomUUID(),eventId:event.id,sessionId:e.sessionId,startedAt:now,expiresAt:e.reactionUntil,expression:rule.expression,animation:rule.animation,sound:config.audio.muted?'none':rule.sound,volume:config.audio.volume,speech};
+   log(e,'action',{eventId:event.id,type:event.type,source:event.source,rule:`character.${event.type}.v${version}`,configVersion:version,state:'reacting',animation:rule.animation,sound:e.action.sound,action:rule.expression,result:speech,status:'PROCESSED',latencyMs:e.latencyMs,aiUsed:false,presentation:'REQUESTED_NOT_CONFIRMED'},now);
+  } else if(now>=(e.reactionUntil||0)) { e.character.expression='calm';e.character.speech=(e.config||defaultCharacter()).idlePhrase;e.character.animation='idle';e.character.behavior='resting';e.action=null; }
  }
 }
 export function publicLive(w,now=Date.now()) {
- return {mode:'SIMULATION_ONLY',tiktok:'NOT_CONNECTED',eligibility:'UNVERIFIED',apiCostMinor:0,infrastructureCostMinor:null,revenueMinor:null,profitMinor:null,experiences:(w.liveFactory?.experiences||[]).map(({seen,queue,owner,...e})=>({...e,pending:queue.length,executor:owner||null,connected:active.includes(e.status)&&e.heartbeat!=null&&now-e.heartbeat<=10000}))};
+ return {options:characterOptions,aiCalls:0,voice:'NOT_SUPPORTED',mode:'SIMULATION_ONLY',tiktok:'NOT_CONNECTED',eligibility:'UNVERIFIED',apiCostMinor:0,infrastructureCostMinor:null,revenueMinor:null,profitMinor:null,experiences:(w.liveFactory?.experiences||[]).map(({seen,queue,owner,...e})=>({...e,config:e.config||defaultCharacter(),configVersion:e.configVersion||1,suggestions:e.suggestions||[],pending:queue.length,executor:owner||null,connected:active.includes(e.status)&&e.heartbeat!=null&&now-e.heartbeat<=10000}))};
 }
 export function createLiveRuntime(store,{intervalMs=2000,owner=`${hostname()}:${randomUUID()}`}={}) {
  let closed=false,inflight=null;

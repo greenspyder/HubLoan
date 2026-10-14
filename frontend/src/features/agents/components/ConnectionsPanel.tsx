@@ -1,6 +1,7 @@
 import type { Workspace } from '../services/agentApi';
 export function ConnectionsPanel({workspace:w}:{workspace:Workspace}) {
  const cards=[
+ {name:'TikTok',status:'Conta, transmissão e eventos: estados separados abaixo',detail:'Veja o acesso real de cada capacidade e os requisitos para autorizar sua conta.',href:'#tiktok',action:'Configurar TikTok',ready:false},
  {name:'Etsy',status:w.etsy?.connected?'API oficial conectada':'Configuração / autorização necessária',detail:w.etsy?.error||'Listing digital pela API após revisão. O fluxo assistido permanece disponível.',href:'#etsy',action:'Configurar Etsy',ready:w.etsy?.connected},
  {name:'OpenAI', status:w.settings.configured?'Chave validada ao salvar':'Não conectada',detail:w.settings.configured?(w.aiCosts?.enabled?'Orçamento autorizado. Você pode iniciar uma tarefa.':'Falta autorizar o orçamento para executar.'):'Necessária para produzir. Sua assinatura ChatGPT não inclui a API.',href:'#settings',action:w.settings.configured?'Gerenciar chave':'Conectar IA',ready:w.settings.configured},
  {name:'Orçamento',status:w.aiCosts?.enabled?'Autorizado':'Chamadas bloqueadas',detail:'Defina o limite antes de iniciar. Reservas não são a fatura do provedor.',href:'#costs',action:'Configurar limite',ready:w.aiCosts?.enabled},
