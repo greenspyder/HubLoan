@@ -1,3 +1,4 @@
+import { createLiveRuntime, liveAction, publicLive } from './live-factory.mjs';
 import { normalizeVideoImages } from './video-production.mjs';
 import { affiliateAction } from './affiliates.mjs';
 import { recordItchReadiness } from './itch-readiness.mjs';
@@ -34,6 +35,7 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
   const shop = createShop(store, { masterKey, provider: shopProvider, marketingProvider, engineeringProvider, publicOrigin, webhookOrigin, etsyProvider });
   const engineering = createEngineering(store, provider, { masterKey, provider: engineeringProvider });
   const marketing = createMarketing(store, { masterKey, provider: marketingProvider, publicOrigin });
+  const liveRuntime = createLiveRuntime(store);
   const rates = new Map();
   const root = resolve(staticDirectory);
   function send(response, status, body, headers = {}) {
@@ -140,6 +142,13 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if (engineeringRelease && request.method === 'POST') return send(response, 200, publicWorkspace((await (engineeringRelease[2] === 'approve' ? engineering.approve(id, engineeringRelease[1], await body(request)) : engineering.deployment(id, engineeringRelease[1]))).workspace, store.mode, Boolean(masterKey)));
       const engineeringCheck = route.match(/^\/engineering\/jobs\/([a-f0-9-]+)\/checks$/);
       if (engineeringCheck && request.method === 'POST') return send(response, 200, publicWorkspace((await engineering.sync(id, engineeringCheck[1])).workspace, store.mode, Boolean(masterKey)));
+      if (route === '/live' && request.method === 'GET') return send(response,200,publicLive((await store.read(id)).workspace));
+      const liveRoute = route.match(/^\/live\/(create|start|pause|resume|stop|emergency|event)$/);
+      if (liveRoute && request.method === 'POST') {
+        const input=await body(request,2000);
+        const updated=await store.mutate(id,w=>liveAction(w,liveRoute[1],input));
+        return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey)));
+      }
       const affiliateRoute = route.match(/^\/affiliates\/(project|account|product|campaign|revise|authorize|published|report)$/);
       if (affiliateRoute && request.method === 'POST') {
         const input=await body(request,['campaign','revise'].includes(affiliateRoute[1])?3600000:20000);
@@ -294,5 +303,5 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       send(response, error instanceof AppError ? error.status : 500, { error: error instanceof AppError ? error.message : 'O servidor não conseguiu concluir a ação. Tente novamente.', budgetBlock: error instanceof AppError ? error.budgetBlock : undefined });
     }
   });
-  return { server, runner, commerce, shop, marketing, engineering, close: async () => { await engineering.close(); await marketing.close(); await shop.close(); await commerce.close(); await runner.close(); await new Promise(resolveClose => server.close(resolveClose)); } };
+  return { server, liveRuntime, runner, commerce, shop, marketing, engineering, close: async () => { await liveRuntime.close(); await engineering.close(); await marketing.close(); await shop.close(); await commerce.close(); await runner.close(); await new Promise(resolveClose => server.close(resolveClose)); } };
 }

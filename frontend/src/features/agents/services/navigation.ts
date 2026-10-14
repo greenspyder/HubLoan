@@ -1,5 +1,6 @@
 export const screens = [
   {id:'inicio', title:'Meus negócios', description:'Seu próximo passo e o que precisa de atenção.'},
+  {id:'live', title:'Live Factory', description:'Personagem interativo · runtime e testes supervisionados.'},
   {id:'afiliados', title:'TikTok Afiliados', description:'Produtos de terceiros · primeira comissão verificável.'},
   {id:'oferta', title:'Preparar oferta', description:'Da fábrica ao primeiro anúncio, com revisão e resultados reais.'},
   {id:'base', title:'Distrito 2D', description:'Fábricas, equipe e armazém ligados à operação real.'},
