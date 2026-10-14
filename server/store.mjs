@@ -54,6 +54,9 @@ export async function createStore({ connectionString, file = 'data/agents.sqlite
     const rows = pool ? (await pool.query(`SELECT id, data::jsonb->'commerce'->'grant' AS grant FROM agent_workspaces WHERE data::jsonb @> '{"commerce":{"background":true}}'::jsonb LIMIT 100`)).rows : sqlite.prepare("SELECT id, json_extract(data, '$.commerce.grant') AS grant FROM agent_workspaces WHERE json_extract(data, '$.commerce.background')=1 LIMIT 100").all();
     return rows.filter(row => row.grant).map(row => ({ id: row.id, grant: typeof row.grant === 'string' ? JSON.parse(row.grant) : row.grant }));
   }
+  async function liveSpaces(after = '') {
+    return pool ? (await pool.query("SELECT id FROM agent_workspaces WHERE id > $1 AND EXISTS (SELECT 1 FROM jsonb_array_elements(COALESCE(data::jsonb->'liveFactory'->'experiences','[]'::jsonb)) e WHERE e->>'status' IN ('INITIALIZING','READY','TESTING','RUNNING','PAUSED','STOPPING')) ORDER BY id LIMIT 100", [after])).rows : sqlite.prepare("SELECT id FROM agent_workspaces WHERE id > ? AND EXISTS (SELECT 1 FROM json_each(data, '$.liveFactory.experiences') e WHERE json_extract(e.value, '$.status') IN ('INITIALIZING','READY','TESTING','RUNNING','PAUSED','STOPPING')) ORDER BY id LIMIT 100").all(after);
+  }
   async function shopBySlug(slug) {
     const rows = pool ? (await pool.query("SELECT id, data FROM agent_workspaces WHERE data::jsonb->'shop'->>'slug'=$1 LIMIT 1", [slug])).rows : sqlite.prepare("SELECT id, data FROM agent_workspaces WHERE json_extract(data, '$.shop.slug')=? LIMIT 1").all(slug);
     return rows[0] ? { id: rows[0].id, workspace: normalizeWorkspace(JSON.parse(rows[0].data)) } : null;
@@ -81,5 +84,5 @@ export async function createStore({ connectionString, file = 'data/agents.sqlite
     if (pool) await pool.query('DELETE FROM shop_files WHERE product_id=$1', [productId]);
     else sqlite.prepare('DELETE FROM shop_files WHERE product_id=?').run(productId);
   }
-  return { read, mutate, autonomousSpaces, commerceSpaces, shopBySlug, shopSpaces, marketingSpaces, engineeringSpaces, writeSaleFile, readSaleFile, removeSaleFile, mode, close: async () => { if (pool) await pool.end(); else sqlite.close(); } };
+  return { read, mutate, liveSpaces, autonomousSpaces, commerceSpaces, shopBySlug, shopSpaces, marketingSpaces, engineeringSpaces, writeSaleFile, readSaleFile, removeSaleFile, mode, close: async () => { if (pool) await pool.end(); else sqlite.close(); } };
 }

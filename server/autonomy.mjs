@@ -57,7 +57,7 @@ export function projectById(workspace, id) {
 }
 export function projectAction(workspace, id, action, token, masterKey, now = Date.now()) {
   const project = projectById(workspace, id);
-  if (project.businessType === 'affiliate' && action !== 'pause') throw new AppError('Continue pela jornada TikTok Afiliados. Este projeto não autoriza produção genérica ou chamadas pagas.',409);
+  if (['affiliate','live'].includes(project.businessType) && action !== 'pause') throw new AppError('Continue pela jornada específica de Afiliados ou Live Factory. Este projeto não autoriza produção genérica ou chamadas pagas.',409);
   if (action === 'pause') { project.status = 'paused'; project.phase = 'Próximas tarefas pausadas'; }
   else {
     if (project.firstSale && project.decisions.length) throw new AppError('Revise a descoberta existente e prepare o experimento; retomar não deve repetir pesquisa paga.',409);
