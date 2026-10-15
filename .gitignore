@@ -374,3 +374,8 @@ server/data/
 hubloan-worker*.json
 hubloan-worker*.json.lock
 live-preview.mp4
+# Optional local 3D/voice runtime assets (never commit downloaded binaries or models)
+.venv-live/
+live-models/
+live-browser/
+previa-3d.mp4

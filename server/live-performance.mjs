@@ -20,9 +20,9 @@ export function demoEvent(input){
  else {if(!Number.isSafeInteger(input.quantity)||input.quantity<1||input.quantity>100)throw new AppError('Quantidade de teste: 1 a 100.');v.quantity=input.quantity;v.gift=safeText(input.gift||'presente',32);}
  return v;
 }
-function job(p,e,segments,now,priority=0){
+function job(p,e,segments,now,priority=0,source='SIMULATED_OPERATOR'){
  if(p.jobs.filter(j=>j.expiresAt>now).length>=6){p.dropped++;return;}
- p.jobs=p.jobs.filter(j=>j.expiresAt>now);p.jobs.push({id:randomUUID(),sessionId:e.sessionId,createdAt:now,expiresAt:now+45000,priority,segments,source:'SIMULATED_OPERATOR'});p.lastSpokeAt=now;
+ p.jobs=p.jobs.filter(j=>j.expiresAt>now);p.jobs.push({id:randomUUID(),sessionId:e.sessionId,createdAt:now,expiresAt:now+45000,priority,segments,source});p.lastSpokeAt=now;
  p.recent.push({at:now,text:segments.at(-1).text});p.recent=p.recent.slice(-12);
 }
 export function advancePerformance(e,event,now){
@@ -49,3 +49,12 @@ export function advancePerformance(e,event,now){
 }
 export function publicPerformance(p){if(!p)return null;const {participants,...rest}=p;return {...rest,participantCount:participants.length};}
 export const liveAudienceAdapter={status:'NOT_SUPPORTED',reason:'Sem acesso oficial validado a comentários, presentes e fotos TikTok LIVE.',ingest(){throw new AppError('Integração LIVE indisponível.',409);}};
+
+// Sparse comments about observed game results only. No synthetic social activity.
+export function advanceGamePerformance(e,now){
+ const p=e.performance,c=e.performanceConfig,g=e.game;if(!p||!c?.enabled||!g||e.status!=='TESTING'||e.queue.length)return;
+ const result=g.history.at(-1);if(!result||result.at===(p.lastGameCommentAt||0)||now-p.lastSpokeAt<Math.max(20,c.cooldownSeconds)*1000)return;
+ p.lastGameCommentAt=result.at;const host=g.names[0],win=result.winner===host;
+ const lines=win?['A colheita foi minha! Agora vou fingir que estava tudo planejado.','Ganhei! Elegância na curva, maçã na barriga.']:['Essa curva me pegou. Na próxima rodada eu negocio com a parede.','Perdi a rodada, mas não perdi a pose. Vamos de novo!'];
+ job(p,e,[{role:'host',voice:'host',text:lines[result.round%lines.length]}],now,0,'INTERNAL_GAME');
+}

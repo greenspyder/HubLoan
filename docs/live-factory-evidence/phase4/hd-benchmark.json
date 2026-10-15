@@ -1,0 +1,21 @@
+{
+  "frames": 12,
+  "meanMs": 206.91666666666666,
+  "steadyMeanMs": 185.7,
+  "metrics": {
+    "engine": "three-webgl2",
+    "width": 720,
+    "height": 1280,
+    "frames": 12,
+    "maxFrameMs": 429,
+    "softwareRequested": true,
+    "sandboxDisabled": true,
+    "gpu": "WebKit WebGL",
+    "geometryCount": 11,
+    "textureCount": 0,
+    "browserCpuMs": 0,
+    "browserRssBytes": null
+  },
+  "approved": false,
+  "reason": "Isolated frame benchmark, not an RTMP quality validation"
+}
