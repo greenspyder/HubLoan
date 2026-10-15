@@ -1,3 +1,4 @@
+import { normalizeAvatar } from './live-avatar.mjs';
 import { authorizeWorker, workerHeartbeat } from './live-broadcast.mjs';
 import { createTikTok } from './tiktok.mjs';
 import { createLiveRuntime, liveAction, publicLive } from './live-factory.mjs';
@@ -158,9 +159,9 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if(route==='/tiktok'&&request.method==='DELETE')return send(response,200,await tiktok.disconnect(id));
       if (route === '/live' && request.method === 'GET') return send(response,200,publicLive((await store.read(id)).workspace));
       if(route==='/live/worker-authorize'&&request.method==='POST'){const input=await body(request);const updated=await store.mutate(id,w=>authorizeWorker(w,input.id,input.mode));return send(response,200,{...updated.result,workerPath:`/api/agents/live-worker/${id}/${input.id}`});}
-      const liveRoute = route.match(/^\/live\/(create|start|pause|resume|stop|emergency|event|configure|suggest|apply-suggestion|game-configure|worker-stop)$/);
+      const liveRoute = route.match(/^\/live\/(create|start|pause|resume|stop|emergency|event|configure|suggest|apply-suggestion|game-configure|worker-stop|performance-configure|performance-event|performance-photo|performance-bind)$/);
       if (liveRoute && request.method === 'POST') {
-        const input=await body(request,12000);
+        const input=await body(request,liveRoute[1]==='performance-photo'?150000:12000);if(liveRoute[1]==='performance-photo')input.normalizedImage=await normalizeAvatar(input);
         const updated=await store.mutate(id,w=>liveAction(w,liveRoute[1],input));
         return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey)));
       }

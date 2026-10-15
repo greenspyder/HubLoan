@@ -1,3 +1,4 @@
+import { performanceDefaults, performanceConfig, resetPerformance, demoEvent, advancePerformance, publicPerformance } from './live-performance.mjs';
 // Original deterministic runtime. Uses the existing transactional workspace store.
 import { gameTemplates } from './live-game.mjs';
 import { revokeWorker, watchWorker } from './live-broadcast.mjs';
@@ -22,6 +23,9 @@ export function liveAction(w,action,input,now=Date.now()) {
  }
  const e=find(w,input.id);
  e.config ||= defaultCharacter(); e.configVersion ||= 1; e.suggestions ||= [];
+ if(action==='performance-configure'){if(!['STOPPED','STOPPED_FINAL'].includes(e.status)||input.version!==e.configVersion)throw new AppError('Encerre a sessão e atualize a versão.',409);e.performanceConfig=performanceConfig(input.config);e.configVersion++;return;}
+ if(action==='performance-bind'){if(e.status!=='TESTING'||input.sessionId!==e.sessionId||!e.game||!['0','1'].includes(input.playerId))throw new AppError('Sessão/jogador inválido.',409);const person=e.performance?.participants.find(x=>x.id===input.participantId);if(!person)throw new AppError('Participante não encontrado.',404);e.performance.bindings=e.performance.bindings.filter(b=>b.playerId!==input.playerId);e.performance.bindings.push({playerId:input.playerId,participantId:person.id,name:person.name,mode:'FREE_OPERATOR_SELECTION'});log(e,'performance',{action,source:'SIMULATED_OPERATOR',result:'Vínculo visual gratuito; regras do jogo preservadas.'},now);return;}
+ if(action==='performance-photo'){if(input.sessionId!==e.sessionId||e.status!=='TESTING')throw new AppError('Sessão inválida.',409);const p=e.performance?.participants.find(x=>x.id===input.participantId);if(!p)throw new AppError('Participante de teste não encontrado.',404);if(!p.avatar&&e.performance.participants.filter(x=>x.avatar).length>=12)throw new AppError('Limite de doze fotos por sessão.',409);p.avatar=input.normalizedImage;for(const x of e.performance.top)if(x.id===p.id)x.avatar=p.avatar;return;}
  if(action==='worker-stop'){revokeWorker(e,now);return;}
  if(action==='game-configure'){
   if(!['STOPPED','STOPPED_FINAL'].includes(e.status)||input.version!==e.configVersion)throw new AppError('Encerre a sessão e atualize a versão.',409);
@@ -45,9 +49,10 @@ export function liveAction(w,action,input,now=Date.now()) {
  if(action==='start') {
   if(!['STOPPED','STOPPED_FINAL'].includes(e.status)) throw new AppError('Encerre a sessão atual antes de iniciar outra.',409);
   revokeWorker(e,now);e.game=e.gameConfig?gameTemplates[e.gameConfig.template].create(e.gameConfig,now):null;e.sessionId=randomUUID();e.startedAt=now;e.deadline=now+30*60000;e.status='INITIALIZING';e.seen=[];e.queue=[];e.processed=0;e.ticks=0;e.activeMs=0;e.owner=null;e.heartbeat=null;e.error=null;e.action=null;e.reactionUntil=0;e.character={expression:'calm',animation:'idle',behavior:'resting',pose:0,speech:e.config.idlePhrase};
+  resetPerformance(e);
  } else if(action==='pause') {
   if(!['TESTING','READY','INITIALIZING'].includes(e.status)) throw new AppError('Runtime não está em teste.',409);
-  e.status='PAUSED';e.action=null;e.reactionUntil=0;e.character.animation='idle';e.character.behavior='paused';
+  e.status='PAUSED';if(e.performance)e.performance.jobs=[];e.action=null;e.reactionUntil=0;e.character.animation='idle';e.character.behavior='paused';
  } else if(action==='resume') {
   if(!['PAUSED','DEGRADED'].includes(e.status)) throw new AppError('Runtime não está pausado/degradado.',409);
   if(now>=e.deadline) throw new AppError('Sessão expirada. Encerre e inicie novo teste.',409);
@@ -55,15 +60,16 @@ export function liveAction(w,action,input,now=Date.now()) {
   e.status='INITIALIZING';e.error=null;
  } else if(action==='stop'||action==='emergency') {
   if(!active.includes(e.status)&&e.status!=='DEGRADED') throw new AppError('Nenhuma sessão ativa.',409);
-  revokeWorker(e,now);e.status='STOPPED_FINAL';cancelQueue(e,now);e.character.expression='calm';e.character.speech='Sessão encerrada';e.character.animation='idle';e.character.behavior='stopped';e.action=null;
+  revokeWorker(e,now);if(e.performance)e.performance.jobs=[];e.status='STOPPED_FINAL';cancelQueue(e,now);e.character.expression='calm';e.character.speech='Sessão encerrada';e.character.animation='idle';e.character.behavior='stopped';e.action=null;
   e.sessions.push({id:e.sessionId,startedAt:iso(e.startedAt),endedAt:iso(now),activeMs:e.activeMs,processed:e.processed,reason:action});e.sessions=e.sessions.slice(-30);
- } else if(action==='event') {
+ } else if(action==='event'||action==='performance-event') {
   if(e.status!=='TESTING'||input.sessionId!==e.sessionId) throw new AppError('Inicie um teste e use a sessão atual.',409);
-  if(!['greet','challenge','celebrate'].includes(input.type)||!/^[a-zA-Z0-9_-]{8,80}$/.test(input.eventId||'')) throw new AppError('Evento de teste inválido.');
+  const performance=action==='performance-event'?demoEvent(input):null;if(performance&&!e.performanceConfig?.enabled)throw new AppError('Habilite atuação antes de enviar eventos.',409);
+  if(!(performance||['greet','challenge','celebrate'].includes(input.type))||!/^[a-zA-Z0-9_-]{8,80}$/.test(input.eventId||'')) throw new AppError('Evento de teste inválido.');
   if(e.seen.includes(input.eventId)) return;
   if(!Number.isSafeInteger(input.at)||input.at<now-30000||input.at>now+5000) throw new AppError('Evento atrasado ou horário inválido.');
   if(e.queue.length>=20||e.seen.length>=5000||now-(e.lastAccepted||0)<500) throw new AppError('Limite de eventos atingido. Aguarde ou encerre a sessão.',429);
-  const event={id:input.eventId,type:input.type,source:'SIMULATED_OPERATOR',at:input.at,receivedAt:now,status:'QUEUED',priority:input.type==='challenge'?1:0};
+  const event={...performance,performance:!!performance,sessionId:e.sessionId,id:input.eventId,type:input.type,source:'SIMULATED_OPERATOR',at:input.at,receivedAt:now,status:'QUEUED',priority:input.type==='challenge'?1:0};
   e.seen.push(event.id);e.queue.push(event);e.lastAccepted=now;log(e,'event',event,now);return;
  } else throw new AppError('Comando não permitido.');
  log(e,'control',{action,status:e.status,aiUsed:false},now);
@@ -88,6 +94,7 @@ export function advanceLive(w,owner,now=Date.now()) {
   const event=e.queue.shift();
   if(event) {
    if(now-event.receivedAt>30000) {log(e,'event',{eventId:event.id,status:'EXPIRED'},now);continue;}
+   if(event.performance){advancePerformance(e,event,now);e.processed++;log(e,'performance',{eventId:event.id,type:event.type,source:event.source,status:'PROCESSED',aiUsed:false},now);continue;}
    if(e.game)gameTemplates[e.game.template].event(e.game,event);
    const config=e.config||defaultCharacter(),rule=config.rules[event.type],version=e.configVersion||1;
    const speech=rule.phrases[e.processed%rule.phrases.length];
@@ -98,7 +105,7 @@ export function advanceLive(w,owner,now=Date.now()) {
  }
 }
 export function publicLive(w,now=Date.now()) {
- return {options:characterOptions,aiCalls:0,voice:'NOT_SUPPORTED',mode:'SIMULATION_ONLY',tiktok:'NOT_CONNECTED',eligibility:'UNVERIFIED',apiCostMinor:0,infrastructureCostMinor:null,revenueMinor:null,profitMinor:null,experiences:(w.liveFactory?.experiences||[]).map(({seen,queue,owner,workerGrant,...e})=>({...e,config:e.config||defaultCharacter(),configVersion:e.configVersion||1,suggestions:e.suggestions||[],pending:queue.length,executor:owner||null,connected:active.includes(e.status)&&e.heartbeat!=null&&now-e.heartbeat<=10000}))};
+ return {options:characterOptions,aiCalls:0,voice:'LOCAL_WORKER_TTS_OPTIONAL',mode:'SIMULATION_ONLY',tiktok:'NOT_CONNECTED',eligibility:'UNVERIFIED',apiCostMinor:0,infrastructureCostMinor:null,revenueMinor:null,profitMinor:null,experiences:(w.liveFactory?.experiences||[]).map(({seen,queue,owner,workerGrant,...e})=>({...e,performance:publicPerformance(e.performance),performanceConfig:e.performanceConfig||performanceDefaults(),config:e.config||defaultCharacter(),configVersion:e.configVersion||1,suggestions:e.suggestions||[],pending:queue.length,executor:owner||null,connected:active.includes(e.status)&&e.heartbeat!=null&&now-e.heartbeat<=10000}))};
 }
 export function createLiveRuntime(store,{intervalMs=2000,owner=`${hostname()}:${randomUUID()}`}={}) {
  let closed=false,inflight=null;
