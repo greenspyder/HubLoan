@@ -1,0 +1,81 @@
+{
+  "report": {
+    "status": "STOPPED",
+    "profile": "smooth",
+    "fps": 30,
+    "maxRenderMs": 266,
+    "lateFrames": 10,
+    "frames": 1980,
+    "bytes": 6471014,
+    "durationMs": 66021,
+    "renderedFrames": 1980,
+    "rssBytes": 230715392,
+    "rendererCpuMs": 37530.99,
+    "encoderCpuMs": null,
+    "networkBytes": null,
+    "publicTransmission": "UNCONFIRMED",
+    "audio": {
+      "synthesized": 6,
+      "cacheHits": 0,
+      "ttsFailures": 0,
+      "dropped": 0,
+      "ttsMs": 114,
+      "maxPlaybackLatencyMs": 1066,
+      "played": {
+        "host": 3,
+        "comment": 1,
+        "chant": 2
+      },
+      "peak": 0.13321323585871098,
+      "aiCalls": 0
+    },
+    "aiCalls": 0
+  },
+  "decodedAudioCorrelation": 0.9969714304240455,
+  "receiverDuration": "66.025999",
+  "top": [
+    {
+      "id": "demo-ana",
+      "name": "ana",
+      "quantity": 21,
+      "joined": 0,
+      "hasPhoto": true
+    },
+    {
+      "id": "demo-amigo0",
+      "name": "amigo0",
+      "quantity": 1,
+      "joined": 2,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo1",
+      "name": "amigo1",
+      "quantity": 1,
+      "joined": 3,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo2",
+      "name": "amigo2",
+      "quantity": 1,
+      "joined": 4,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo3",
+      "name": "amigo3",
+      "quantity": 1,
+      "joined": 5,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo4",
+      "name": "amigo4",
+      "quantity": 1,
+      "joined": 6,
+      "hasPhoto": false
+    }
+  ],
+  "rounds": 5
+}

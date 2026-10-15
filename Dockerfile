@@ -19,6 +19,7 @@ RUN /opt/butler/butler version
 COPY server/package*.json ./server/
 RUN npm ci --prefix server --omit=dev --ignore-scripts
 COPY server/ ./server/
+COPY frontend/src/shared/ ./frontend/src/shared/
 COPY --from=frontend /build/frontend/dist ./frontend/dist
 RUN mkdir -p /app/data && chown -R node:node /app
 USER node

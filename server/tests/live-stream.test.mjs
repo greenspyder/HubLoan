@@ -58,4 +58,6 @@ test('real FFmpeg RTMP receiver receives continuous H264 + AAC, and encoder fail
  const grant2=(await api('/live/worker-authorize',{id,mode:'preview'})).data;
  await assert.rejects(runWorker({backend,...grant2},{seconds:10,output:join(dir,'interrupted.mp4'),onEncoder:child=>setTimeout(()=>child.kill('SIGKILL'),2000)}),/interrompido/);
  assert.equal((await store.read(wid)).workspace.liveFactory.experiences[0].transmission.status,'ERROR');
+ const grant3=(await api('/live/worker-authorize',{id,mode:'preview'})).data;await assert.rejects(runWorker({backend,...grant3},{seconds:5,output:join(dir,'render-failure.mp4'),renderFrame:async()=>{throw Error('controlled render failure');}}),/interrompido/);
+ assert.equal((await store.read(wid)).workspace.liveFactory.experiences[0].transmission.status,'ERROR');
 });
