@@ -1,4 +1,4 @@
-import { performanceDefaults, performanceConfig, resetPerformance, demoEvent, advancePerformance, publicPerformance } from './live-performance.mjs';
+import { performanceDefaults, performanceConfig, resetPerformance, demoEvent, advancePerformance, advanceGamePerformance, publicPerformance } from './live-performance.mjs';
 // Original deterministic runtime. Uses the existing transactional workspace store.
 import { gameTemplates } from './live-game.mjs';
 import { revokeWorker, watchWorker } from './live-broadcast.mjs';
@@ -89,6 +89,7 @@ export function advanceLive(w,owner,now=Date.now()) {
   if(e.status==='PAUSED'){if(e.game)e.game.lastAt=now;continue;}
   if(e.status==='INITIALIZING') {e.status='TESTING';log(e,'lifecycle',{status:'READY',mode:'SIMULATION_ONLY'},now);}
   if(e.game){const rounds=e.game.round;gameTemplates[e.game.template].advance(e.game,now);if(e.game.round!==rounds)log(e,'game',{action:'round-start',source:'INTERNAL_GAME',result:`Rodada ${e.game.round}`,aiUsed:false},now);for(const result of e.game.history.filter(r=>r.at>(e.lastGameResultAt||0))){log(e,'game',{action:'round-end',source:'INTERNAL_GAME',result:`${result.winner} · ${result.scores.join(' x ')}`,aiUsed:false},now);e.lastGameResultAt=result.at;}}
+  advanceGamePerformance(e,now);
   e.ticks++;e.activeMs+=elapsed;e.character.pose=e.ticks%4;
   e.queue.sort((a,b)=>b.priority-a.priority||a.receivedAt-b.receivedAt);
   const event=e.queue.shift();

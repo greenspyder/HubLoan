@@ -1,0 +1,105 @@
+{
+  "report": {
+    "status": "STOPPED",
+    "profile": "light",
+    "fps": 15,
+    "maxRenderMs": 402,
+    "lateFrames": 102,
+    "maxPipelineLagMs": 546.3333333333333,
+    "frames": 1440,
+    "bytes": 9479045,
+    "durationMs": 96018,
+    "renderedFrames": 1440,
+    "rssBytes": 225259520,
+    "rendererCpuMs": 12426.092,
+    "encoderCpuMs": null,
+    "networkBytes": null,
+    "publicTransmission": "UNCONFIRMED",
+    "audio": {
+      "synthesized": 8,
+      "cacheHits": 1,
+      "ttsFailures": 0,
+      "dropped": 0,
+      "ttsMs": 1380,
+      "maxPlaybackLatencyMs": 1091,
+      "played": {
+        "host": 6,
+        "comment": 1,
+        "chant": 2
+      },
+      "peak": 0.15378488029941517,
+      "aiCalls": 0
+    },
+    "aiCalls": 0,
+    "renderer": {
+      "engine": "three-webgl2",
+      "width": 360,
+      "height": 640,
+      "frames": 1440,
+      "maxFrameMs": 397,
+      "softwareRequested": true,
+      "sandboxDisabled": true,
+      "gpu": "WebKit WebGL",
+      "geometryCount": 36,
+      "textureCount": 1,
+      "browserCpuMs": 0,
+      "browserRssBytes": null
+    },
+    "speech": {
+      "engine": "piper",
+      "ready": true,
+      "neural": 8,
+      "fallback": 0,
+      "failures": 0,
+      "maxSynthesisMs": 257,
+      "rssBytes": null
+    }
+  },
+  "decodedAudioCorrelation": 0.9959904678105165,
+  "receiverDuration": "96.021000",
+  "top": [
+    {
+      "id": "demo-ana",
+      "name": "ana",
+      "quantity": 21,
+      "joined": 0,
+      "hasPhoto": true
+    },
+    {
+      "id": "demo-amigo0",
+      "name": "amigo0",
+      "quantity": 1,
+      "joined": 2,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo1",
+      "name": "amigo1",
+      "quantity": 1,
+      "joined": 3,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo2",
+      "name": "amigo2",
+      "quantity": 1,
+      "joined": 4,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo3",
+      "name": "amigo3",
+      "quantity": 1,
+      "joined": 5,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo4",
+      "name": "amigo4",
+      "quantity": 1,
+      "joined": 6,
+      "hasPhoto": false
+    }
+  ],
+  "rounds": 7
+}
