@@ -66,6 +66,7 @@ export const agentApi = {
   authorizeTikTok: () => request<{url:string;state:string}>('/tiktok/authorize','POST'),
   finishTikTok: (input:{state:string;code?:string;error?:string}) => request<TikTokState>('/tiktok/callback','POST',input),
   disconnectTikTok: () => request<TikTokState>('/tiktok','DELETE'),
+  authorizeLiveWorker: async (id:string,mode:string) => ({...await request<{token:string;workerPath:string;expiresAt:number}>('/live/worker-authorize','POST',{id,mode}),backend:new URL(base,window.location.origin).origin}),
   liveState: () => request<LiveFactory>('/live'),
   live: (action:string,input:object) => request<Workspace>(`/live/${action}`,'POST',input),
   affiliate: (action:string, input:object) => request<Workspace>(`/affiliates/${action}`,'POST',input),

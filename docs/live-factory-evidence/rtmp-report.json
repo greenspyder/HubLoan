@@ -1,0 +1,23 @@
+{
+  "report": {
+    "status": "STOPPED",
+    "frames": 270,
+    "bytes": 498161,
+    "durationMs": 18021,
+    "renderedFrames": 270,
+    "rssBytes": 160776192,
+    "rendererCpuMs": 2446.546,
+    "encoderCpuMs": null,
+    "networkBytes": null,
+    "publicTransmission": "UNCONFIRMED",
+    "aiCalls": 0
+  },
+  "receiver": {
+    "video": "h264",
+    "audio": "aac",
+    "duration": "18.026000",
+    "size": "498161"
+  },
+  "gameRounds": 2,
+  "receiverLog": "[in#0/flv @ 0x562d55611b00] Error during demuxing: Input/output error\n[in#0/flv @ 0x562d55611b00] Error retrieving a packet from demuxer: Input/output error\n"
+}

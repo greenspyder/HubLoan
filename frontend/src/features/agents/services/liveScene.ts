@@ -1,6 +1,7 @@
 import type { LiveExperience } from './liveFactory';
 // Presentation only: all expressions, phrases and actions come from the server.
 export function drawLiveScene(ctx:CanvasRenderingContext2D,e:LiveExperience,now:number,fresh:boolean,reducedMotion:boolean) {
+ if(e.game){drawSnake(ctx,e,now);return;}
  const running=fresh&&e.connected&&e.status==='TESTING'&&e.heartbeat!=null&&now-e.heartbeat<=10000;
  const action=running&&e.action&&now<e.action.expiresAt?e.action:null;
  const animation=action?.animation||'idle',elapsed=action?(now-action.startedAt)/1000:0;
@@ -31,4 +32,13 @@ export function drawLiveScene(ctx:CanvasRenderingContext2D,e:LiveExperience,now:
  lines.slice(0,4).forEach((l,i)=>ctx.fillText(l,180,510+i*24,320));
  ctx.font='12px sans-serif';ctx.fillStyle='#b8d4ce';ctx.fillText('PERSONAGEM VIRTUAL · EVENTOS SIMULADOS',180,610);
  ctx.fillText(running?'RUNTIME EM TESTE · NÃO É TRANSMISSÃO':'CENA PAUSADA / SEM RUNTIME ATIVO',180,628);
+}
+
+function drawSnake(ctx:CanvasRenderingContext2D,e:LiveExperience,now:number){
+ const g=e.game!;const f=[...g.frames].reverse().find(f=>f.at<=now-2500)||g.frames[0]||g;
+ ctx.fillStyle=e.config.scene==='cosmos'?'#171d48':e.config.scene==='sunset'?'#512a3e':'#123b39';ctx.fillRect(0,0,360,640);ctx.textAlign='left';ctx.fillStyle='#baf7da';ctx.font='12px sans-serif';ctx.fillText('HUBLOAN · PERSONAGENS VIRTUAIS',22,32);ctx.fillStyle='white';ctx.font='bold 23px sans-serif';ctx.fillText(e.name,22,64,320);ctx.font='18px sans-serif';ctx.fillText(`SEED SNAKE · RODADA ${f.round}`,24,95);ctx.fillStyle='#091c28';ctx.fillRect(20,128,320,480);
+ for(const food of f.food){ctx.fillStyle='#f8e494';ctx.beginPath();ctx.arc(30+food.x*20,138+food.y*20,5,0,Math.PI*2);ctx.fill();}
+ for(const p of f.players){ctx.fillStyle=p.color;ctx.font='14px sans-serif';ctx.fillText(`${p.name}: ${p.score}`,20+Number(p.id)*170,118,160);ctx.globalAlpha=p.alive?1:.3;for(const [i,b] of p.body.entries()){ctx.fillStyle=p.color;ctx.fillRect(21+b.x*20,129+b.y*20,18,18);if(!i){ctx.fillStyle='#102635';ctx.fillRect(25+b.x*20,132+b.y*20,3,3);ctx.fillRect(32+b.x*20,132+b.y*20,3,3);}}ctx.globalAlpha=1;}
+ if(f.phase==='FINISHED'){ctx.fillStyle='#183c50';ctx.fillRect(25,300,310,70);ctx.fillStyle='white';ctx.textAlign='center';ctx.font='20px sans-serif';ctx.fillText(f.winner||'Rodada encerrada',180,330,290);ctx.font='14px sans-serif';ctx.fillText('Nova rodada em instantes',180,355);}
+ ctx.textAlign='center';ctx.font='10px sans-serif';ctx.fillStyle='#a9ccc7';ctx.fillText('EVENTOS DE TESTE · AUDIÊNCIA NÃO VERIFICADA',180,628);
 }

@@ -1,3 +1,4 @@
+import { authorizeWorker, workerHeartbeat } from './live-broadcast.mjs';
 import { createTikTok } from './tiktok.mjs';
 import { createLiveRuntime, liveAction, publicLive } from './live-factory.mjs';
 import { normalizeVideoImages } from './video-production.mjs';
@@ -99,6 +100,13 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
         throw new AppError('Método inválido.', 405);
       }
       if (url.pathname.startsWith('/api/agents/storefront/')) throw new AppError('Loja não encontrada.', 404);
+      const workerRoute=url.pathname.match(/^\/api\/agents\/live-worker\/([a-f0-9]{64})\/([a-f0-9-]{36})$/);
+      if(workerRoute&&request.method==='POST'){
+        const key=`live-worker:${request.socket.remoteAddress}`,now=Date.now(),rate=rates.get(key)||{count:0,reset:now+60000};
+        if(rate.reset<=now){rate.count=0;rate.reset=now+60000;}rates.set(key,rate);if(++rate.count>120)throw new AppError('Limite do worker.',429);
+        const input=await body(request,2048),token=request.headers.authorization?.replace(/^Bearer /,'')||'';
+        const updated=await store.mutate(workerRoute[1],w=>workerHeartbeat(w,workerRoute[2],token,input));return send(response,200,updated.result);
+      }
       const token = request.headers.authorization?.replace(/^Bearer /, '') || '';
       const id = workspaceId(token);
       const rateKey = `${request.socket.remoteAddress}:${id}`;
@@ -149,7 +157,8 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if(route==='/tiktok/callback'&&request.method==='POST')return send(response,200,await tiktok.callback(id,await body(request,5000)));
       if(route==='/tiktok'&&request.method==='DELETE')return send(response,200,await tiktok.disconnect(id));
       if (route === '/live' && request.method === 'GET') return send(response,200,publicLive((await store.read(id)).workspace));
-      const liveRoute = route.match(/^\/live\/(create|start|pause|resume|stop|emergency|event|configure|suggest|apply-suggestion)$/);
+      if(route==='/live/worker-authorize'&&request.method==='POST'){const input=await body(request);const updated=await store.mutate(id,w=>authorizeWorker(w,input.id,input.mode));return send(response,200,{...updated.result,workerPath:`/api/agents/live-worker/${id}/${input.id}`});}
+      const liveRoute = route.match(/^\/live\/(create|start|pause|resume|stop|emergency|event|configure|suggest|apply-suggestion|game-configure|worker-stop)$/);
       if (liveRoute && request.method === 'POST') {
         const input=await body(request,12000);
         const updated=await store.mutate(id,w=>liveAction(w,liveRoute[1],input));
