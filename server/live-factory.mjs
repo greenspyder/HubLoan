@@ -1,4 +1,6 @@
 // Original deterministic runtime. Uses the existing transactional workspace store.
+import { gameTemplates } from './live-game.mjs';
+import { revokeWorker, watchWorker } from './live-broadcast.mjs';
 import { randomUUID } from 'node:crypto';
 import { defaultCharacter, validateCharacter, characterOptions, creativeProposal } from './live-character.mjs';
 import { hostname } from 'node:os';
@@ -20,6 +22,11 @@ export function liveAction(w,action,input,now=Date.now()) {
  }
  const e=find(w,input.id);
  e.config ||= defaultCharacter(); e.configVersion ||= 1; e.suggestions ||= [];
+ if(action==='worker-stop'){revokeWorker(e,now);return;}
+ if(action==='game-configure'){
+  if(!['STOPPED','STOPPED_FINAL'].includes(e.status)||input.version!==e.configVersion)throw new AppError('Encerre a sessão e atualize a versão.',409);
+  e.gameConfig=gameTemplates['seed-snake'].configure(input.config);e.game=null;e.configVersion++;log(e,'configuration',{action,version:e.configVersion,aiUsed:false},now);return;
+ }
  if(action==='configure'||action==='apply-suggestion') {
   if(!['STOPPED','STOPPED_FINAL'].includes(e.status)) throw new AppError('Encerre o teste antes de editar o personagem.',409);
   if(input.version!==e.configVersion) throw new AppError('O personagem mudou. Reabra o editor antes de salvar.',409);
@@ -37,7 +44,7 @@ export function liveAction(w,action,input,now=Date.now()) {
  }
  if(action==='start') {
   if(!['STOPPED','STOPPED_FINAL'].includes(e.status)) throw new AppError('Encerre a sessão atual antes de iniciar outra.',409);
-  e.sessionId=randomUUID();e.startedAt=now;e.deadline=now+30*60000;e.status='INITIALIZING';e.seen=[];e.queue=[];e.processed=0;e.ticks=0;e.activeMs=0;e.owner=null;e.heartbeat=null;e.error=null;e.action=null;e.reactionUntil=0;e.character={expression:'calm',animation:'idle',behavior:'resting',pose:0,speech:e.config.idlePhrase};
+  revokeWorker(e,now);e.game=e.gameConfig?gameTemplates[e.gameConfig.template].create(e.gameConfig,now):null;e.sessionId=randomUUID();e.startedAt=now;e.deadline=now+30*60000;e.status='INITIALIZING';e.seen=[];e.queue=[];e.processed=0;e.ticks=0;e.activeMs=0;e.owner=null;e.heartbeat=null;e.error=null;e.action=null;e.reactionUntil=0;e.character={expression:'calm',animation:'idle',behavior:'resting',pose:0,speech:e.config.idlePhrase};
  } else if(action==='pause') {
   if(!['TESTING','READY','INITIALIZING'].includes(e.status)) throw new AppError('Runtime não está em teste.',409);
   e.status='PAUSED';e.action=null;e.reactionUntil=0;e.character.animation='idle';e.character.behavior='paused';
@@ -48,7 +55,7 @@ export function liveAction(w,action,input,now=Date.now()) {
   e.status='INITIALIZING';e.error=null;
  } else if(action==='stop'||action==='emergency') {
   if(!active.includes(e.status)&&e.status!=='DEGRADED') throw new AppError('Nenhuma sessão ativa.',409);
-  e.status='STOPPED_FINAL';cancelQueue(e,now);e.character.expression='calm';e.character.speech='Sessão encerrada';e.character.animation='idle';e.character.behavior='stopped';e.action=null;
+  revokeWorker(e,now);e.status='STOPPED_FINAL';cancelQueue(e,now);e.character.expression='calm';e.character.speech='Sessão encerrada';e.character.animation='idle';e.character.behavior='stopped';e.action=null;
   e.sessions.push({id:e.sessionId,startedAt:iso(e.startedAt),endedAt:iso(now),activeMs:e.activeMs,processed:e.processed,reason:action});e.sessions=e.sessions.slice(-30);
  } else if(action==='event') {
   if(e.status!=='TESTING'||input.sessionId!==e.sessionId) throw new AppError('Inicie um teste e use a sessão atual.',409);
@@ -63,6 +70,7 @@ export function liveAction(w,action,input,now=Date.now()) {
 }
 export function advanceLive(w,owner,now=Date.now()) {
  for(const e of init(w).experiences) {
+  watchWorker(e,now);
   if(!active.includes(e.status)) continue;
   if(e.owner&&e.owner!==owner) {
    if(now-(e.heartbeat||0)>10000) {e.status='DEGRADED';e.error='Executor anterior indisponível. Revise e retome manualmente.';cancelQueue(e,now);log(e,'failure',{reason:e.error},now);}
@@ -72,13 +80,15 @@ export function advanceLive(w,owner,now=Date.now()) {
   if(now>=e.deadline) { liveAction(w,'stop',{id:e.id},now);continue; }
   if(e.heartbeat&&now-e.heartbeat>10000) {e.status='DEGRADED';e.error='Heartbeat interrompido. Retomada humana necessária.';cancelQueue(e,now);log(e,'failure',{reason:e.error},now);continue;}
   const elapsed=e.heartbeat?Math.max(0,Math.min(5000,now-e.heartbeat)):0;e.heartbeat=now;
-  if(e.status==='PAUSED')continue;
+  if(e.status==='PAUSED'){if(e.game)e.game.lastAt=now;continue;}
   if(e.status==='INITIALIZING') {e.status='TESTING';log(e,'lifecycle',{status:'READY',mode:'SIMULATION_ONLY'},now);}
+  if(e.game){const rounds=e.game.round;gameTemplates[e.game.template].advance(e.game,now);if(e.game.round!==rounds)log(e,'game',{action:'round-start',source:'INTERNAL_GAME',result:`Rodada ${e.game.round}`,aiUsed:false},now);for(const result of e.game.history.filter(r=>r.at>(e.lastGameResultAt||0))){log(e,'game',{action:'round-end',source:'INTERNAL_GAME',result:`${result.winner} · ${result.scores.join(' x ')}`,aiUsed:false},now);e.lastGameResultAt=result.at;}}
   e.ticks++;e.activeMs+=elapsed;e.character.pose=e.ticks%4;
   e.queue.sort((a,b)=>b.priority-a.priority||a.receivedAt-b.receivedAt);
   const event=e.queue.shift();
   if(event) {
    if(now-event.receivedAt>30000) {log(e,'event',{eventId:event.id,status:'EXPIRED'},now);continue;}
+   if(e.game)gameTemplates[e.game.template].event(e.game,event);
    const config=e.config||defaultCharacter(),rule=config.rules[event.type],version=e.configVersion||1;
    const speech=rule.phrases[e.processed%rule.phrases.length];
    Object.assign(e.character,{expression:rule.expression,animation:rule.animation,behavior:'reacting',speech});e.reactionUntil=now+rule.durationMs;e.processed++;e.latencyMs=now-event.receivedAt;
@@ -88,7 +98,7 @@ export function advanceLive(w,owner,now=Date.now()) {
  }
 }
 export function publicLive(w,now=Date.now()) {
- return {options:characterOptions,aiCalls:0,voice:'NOT_SUPPORTED',mode:'SIMULATION_ONLY',tiktok:'NOT_CONNECTED',eligibility:'UNVERIFIED',apiCostMinor:0,infrastructureCostMinor:null,revenueMinor:null,profitMinor:null,experiences:(w.liveFactory?.experiences||[]).map(({seen,queue,owner,...e})=>({...e,config:e.config||defaultCharacter(),configVersion:e.configVersion||1,suggestions:e.suggestions||[],pending:queue.length,executor:owner||null,connected:active.includes(e.status)&&e.heartbeat!=null&&now-e.heartbeat<=10000}))};
+ return {options:characterOptions,aiCalls:0,voice:'NOT_SUPPORTED',mode:'SIMULATION_ONLY',tiktok:'NOT_CONNECTED',eligibility:'UNVERIFIED',apiCostMinor:0,infrastructureCostMinor:null,revenueMinor:null,profitMinor:null,experiences:(w.liveFactory?.experiences||[]).map(({seen,queue,owner,workerGrant,...e})=>({...e,config:e.config||defaultCharacter(),configVersion:e.configVersion||1,suggestions:e.suggestions||[],pending:queue.length,executor:owner||null,connected:active.includes(e.status)&&e.heartbeat!=null&&now-e.heartbeat<=10000}))};
 }
 export function createLiveRuntime(store,{intervalMs=2000,owner=`${hostname()}:${randomUUID()}`}={}) {
  let closed=false,inflight=null;

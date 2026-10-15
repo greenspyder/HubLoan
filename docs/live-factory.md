@@ -1,3 +1,7 @@
+# Live Factory — fase 3
+
+Implementação atual: [worker, jogo, RTMP, operação e limites](live-factory-phase3.md).
+
 # Live Factory — fase 2
 
 Esta documentação histórica da fase 1 permanece abaixo. Para a implementação atual, configuração TikTok, audiovisual e validação, consulte [live-factory-phase2.md](live-factory-phase2.md).

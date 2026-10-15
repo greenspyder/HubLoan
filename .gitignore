@@ -370,3 +370,7 @@ server/data/
 *.sqlite-wal
 .env
 .env.*
+# Local Live Worker session credentials and recordings
+hubloan-worker*.json
+hubloan-worker*.json.lock
+live-preview.mp4
