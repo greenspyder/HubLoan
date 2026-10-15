@@ -1,3 +1,4 @@
+import { LiveAudioControls, LiveCommunity } from './LivePerformanceControls';
 import { LiveGameEditor, LiveTransmission } from './LiveStudioControls';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -7,7 +8,7 @@ import { LiveCharacterEditor } from './LiveCharacterEditor';
 import { LiveStage } from './LiveStage';
 import '../live-factory.css';
 const labels:Record<string,string>={STOPPED:'Parado',INITIALIZING:'Inicializando',READY:'Pronto',TESTING:'Em teste',RUNNING:'Executando',DEGRADED:'Degradado',PAUSED:'Pausado',STOPPING:'Encerrando',STOPPED_FINAL:'Encerrado',ERROR:'Erro'};
-const areas=['Experiência','Personagem','Jogo','Eventos','Transmissão','Operação'];
+const areas=['Experiência','Personagem','Jogo','Áudio','Comunidade','Eventos','Transmissão','Operação'];
 export function LiveFactoryPanel() {
  const [data,setData]=useState<LiveFactory|null>(null),[error,setError]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[name,setName]=useState('Jardim de Lume'),[selected,setSelected]=useState(''),[area,setArea]=useState('Experiência');
  const epoch=useRef(0),locked=useRef(false);
@@ -29,6 +30,8 @@ export function LiveFactoryPanel() {
  {area==='Experiência'&&<><h3>{e.config.name}</h3><p>{e.config.personality}</p><p aria-live="polite">{e.character.speech}</p><p>Estado: {e.character.behavior||'resting'} · expressão: {e.character.expression} · animação: {e.character.animation||'idle'}</p>{events}<p>Configure uma reação em Personagem, salve, inicie um teste e envie um evento. Reabra a página para conferir a configuração persistida.</p></>}
  {area==='Personagem'&&<LiveCharacterEditor key={`${e.id}:${e.configVersion}`} e={e} options={data.options} busy={busy} act={act}/>}
  {area==='Eventos'&&<><h3>Eventos simulados</h3>{events}<p>{e.processed} processados · {e.pending} na fila. Última latência: {e.latencyMs==null?'A apurar':`${e.latencyMs} ms`}.</p><p>Evento → regra versionada → estado → animação/som solicitados → histórico. O registro do servidor não confirma que um navegador reproduziu o áudio.</p></>}
+ {area==='Áudio'&&<LiveAudioControls key={`${e.id}:${e.configVersion}`} e={e} busy={busy} act={act}/>}
+ {area==='Comunidade'&&<LiveCommunity key={e.id} e={e} busy={busy} act={act}/>}
  {area==='Jogo'&&<LiveGameEditor key={`${e.id}:${e.configVersion}`} e={e} busy={busy} act={act}/>}
  {area==='Transmissão'&&<LiveTransmission key={e.id} e={e} busy={busy} act={act}/>}
  {area==='Operação'&&<><h3>Operação e custos</h3><dl><dt>Execução ativa</dt><dd>{Math.floor(e.activeMs/1000)} segundos · {e.ticks} ciclos do servidor</dd><dt>Último heartbeat</dt><dd>{e.heartbeat?new Date(e.heartbeat).toLocaleTimeString():'Não recebido'}</dd><dt>Chamadas de IA desta experiência</dt><dd>0 · custo de API confirmado: R$ 0</dd><dt>Infraestrutura, custos estimados, audiência e lucro</dt><dd>A apurar. Conexão ou teste não comprovam receita.</dd></dl><p>É necessário manter Node e banco ativos. Cada experiência ativa consulta/grava estado a cada 2 s. O worker local codifica a 15 fps sem navegador; fechar o painel não encerra esse worker. O servidor mantém o jogo, e a apresentação usa histórico com atraso de 2,5 s.</p><p>Emergência revoga o worker, interrompe o runtime e descarta a fila. O worker detecta revogação em até 5 s; perda de comunicação causa parada em até 10 s. OBS/LIVE Studio externos devem ser encerrados manualmente.</p><details><summary>Executor</summary><p className="live-wrap">{e.executor||'Aguardando'}</p></details></>}

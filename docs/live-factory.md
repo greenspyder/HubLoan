@@ -63,3 +63,5 @@ Regression tests cover authenticated full lifecycle, workspace isolation, zero p
 Next: audiovisual renderer/output and visual usability tests → richer character/audio → snake using same event contracts → authorized broadcast controller → observed economics → bounded Astra configuration proposals. None of these later phases is claimed delivered. No mini-game, TTS, Higgsfield, real chat/gifts, OBS control, automatic broadcast, commissions or live profit in this PR.
 
 Rollback: revert this commit; added workspace fields are inert and preserved. No destructive schema migration or credentials changes. Existing projects/payments remain untouched.
+
+Evolução incremental: [Live Factory 3.1 — áudio e comunidade](live-factory-phase31.md).

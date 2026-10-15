@@ -4,7 +4,8 @@ import { readFile, stat, open, unlink } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { render, pcm } from './render.mjs';
+import { createMixer } from './mixer.mjs';
+import { render } from './render.mjs';
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 export function validateConfig(c,transmit){
  const api=new URL(c.backend);
@@ -12,10 +13,10 @@ export function validateConfig(c,transmit){
  if(!/^\/api\/agents\/live-worker\/[a-f0-9]{64}\/[a-f0-9-]{36}$/.test(c.workerPath)||! /^[a-f0-9]{64}$/.test(c.token))throw new Error('Autorização inválida.');
  if(transmit){const u=new URL(c.destination);if(!['rtmp:','rtmps:'].includes(u.protocol)||!u.hostname||u.username||u.password||u.hash||c.authorizedDestination!==true)throw new Error('Informe destino RTMP/RTMPS autorizado no arquivo local.');}
 }
-export async function runWorker(c,{transmit=false,output='live-preview.mp4',seconds=1800,signal,onEncoder=()=>{}}={}){
+export async function runWorker(c,{transmit=false,output='live-preview.mp4',seconds=1800,signal,onEncoder=()=>{},onAudio=()=>{}}={}){
  validateConfig(c,transmit);if(!transmit){if(typeof output!=='string'||output.includes('://')||!output.endsWith('.mp4'))throw new Error('Prévia exige arquivo MP4 local.');output=resolve(output);}if(!Number.isInteger(seconds)||seconds<1||seconds>1800)throw new Error('Duração: 1 a 1800 segundos.');
- const instance=randomUUID();let state,offset=0,frames=0,bytes=0,status='STARTING',closed=false,encoder,failed=false,lastProgress=Date.now(),lastContact=Date.now(),frame=0;
- async function heartbeat(){const before=Date.now();const r=await fetch(new URL(c.workerPath,c.backend),{method:'POST',redirect:'error',headers:{Authorization:`Bearer ${c.token}`,'Content-Type':'application/json'},body:JSON.stringify({instance,status,frames,bytes}),signal:AbortSignal.timeout(3000)});if(!r.ok)throw new Error('Worker sem autorização ou backend indisponível.');const data=await r.json();if(transmit&&data.mode!=='stream')throw new Error('Autorize transmissão no painel.');state=data.experience;offset=data.serverTime-(before+Date.now())/2;lastContact=Date.now();if(!['TESTING','PAUSED','INITIALIZING'].includes(state.status)||Date.now()+offset>=data.expiresAt)throw new Error('Sessão encerrada.');}
+ const mixer=createMixer();const instance=randomUUID();let state,offset=0,frames=0,bytes=0,status='STARTING',closed=false,encoder,failed=false,lastProgress=Date.now(),lastContact=Date.now(),frame=0;
+ async function heartbeat(){const before=Date.now();const r=await fetch(new URL(c.workerPath,c.backend),{method:'POST',redirect:'error',headers:{Authorization:`Bearer ${c.token}`,'Content-Type':'application/json'},body:JSON.stringify({instance,status,frames,bytes,audio:mixer.metrics}),signal:AbortSignal.timeout(3000)});if(!r.ok)throw new Error('Worker sem autorização ou backend indisponível.');const data=await r.json();if(transmit&&data.mode!=='stream')throw new Error('Autorize transmissão no painel.');state=data.experience;offset=data.serverTime-(before+Date.now())/2;lastContact=Date.now();mixer.observe(state,Date.now()+offset);if(!['TESTING','PAUSED','INITIALIZING'].includes(state.status)||Date.now()+offset>=data.expiresAt)throw new Error('Sessão encerrada.');}
  await heartbeat();
  const args=['-hide_banner','-loglevel','error','-y','-threads','1','-filter_threads','1','-f','rawvideo','-pixel_format','rgb24','-video_size','360x640','-framerate','15','-probesize','32','-analyzeduration','0','-i','pipe:0','-f','s16le','-ar','48000','-ac','1','-probesize','32','-analyzeduration','0','-i','pipe:3','-map','0:v','-map','1:a','-c:v','libx264','-threads','1','-preset','ultrafast','-tune','zerolatency','-pix_fmt','yuv420p','-b:v','700k','-maxrate','900k','-bufsize','1400k','-g','30','-c:a','aac','-b:a','64k','-progress','pipe:4','-stats_period','1',...(transmit?['-rw_timeout','5000000',...(c.destination.startsWith('rtmps:')?['-tls_verify','1']:[]),'-f','flv',c.destination]:['-movflags','+faststart',output])];
  encoder=spawn('ffmpeg',args,{shell:false,stdio:['pipe','ignore','pipe','pipe','pipe']});onEncoder(encoder);
@@ -31,16 +32,17 @@ export async function runWorker(c,{transmit=false,output='live-preview.mp4',seco
   while(!failed&&!signal?.aborted&&Date.now()-started<seconds*1000){
    if(!state.heartbeat||Date.now()+offset-state.heartbeat>10000)throw new Error('Heartbeat do runtime expirou.');
    const at=Date.now()+offset-2500;
-   await Promise.all([render(state,at).then(b=>write(encoder.stdin,b)),write(encoder.stdio[3],pcm(state,at))]);frame++;
+   const audio=mixer.mix(state,at);onAudio(audio);
+   await Promise.all([render(state,at,mixer.presentation()).then(b=>write(encoder.stdin,b)),write(encoder.stdio[3],audio)]);frame++;
    await wait(Math.max(0,started+frame*1000/15-Date.now()));
   }
  }catch{failed=true;}
  finally{
-  closed=true;clearInterval(timer);clearInterval(watchdog);encoder.stdin.end();encoder.stdio[3].end();
+  closed=true;mixer.close();clearInterval(timer);clearInterval(watchdog);encoder.stdin.end();encoder.stdio[3].end();
   const kill=setTimeout(()=>encoder.kill('SIGKILL'),3000);await exited;clearTimeout(kill);
   status=failed||exitCode!==0?'ERROR':'STOPPED';try{await heartbeat();}catch{/* revocation/backend outage; no secret logged */}
  }
- const usage=process.cpuUsage(cpu);const report={status,frames,bytes,durationMs:Date.now()-started,renderedFrames:frame,rssBytes:process.memoryUsage().rss,rendererCpuMs:(usage.user+usage.system)/1000,encoderCpuMs:null,networkBytes:null,publicTransmission:'UNCONFIRMED',aiCalls:0};
+ const usage=process.cpuUsage(cpu);const report={status,frames,bytes,durationMs:Date.now()-started,renderedFrames:frame,rssBytes:process.memoryUsage().rss,rendererCpuMs:(usage.user+usage.system)/1000,encoderCpuMs:null,networkBytes:null,publicTransmission:'UNCONFIRMED',audio:mixer.metrics,aiCalls:0};
  if(status==='ERROR')throw Object.assign(new Error('Encoder interrompido. Revise destino, FFmpeg, backend e autorização. Não houve confirmação pública.'),{report});
  return report;
 }
