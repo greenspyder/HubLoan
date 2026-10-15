@@ -8,21 +8,23 @@ export function musicSample(t,style='groove'){
  return melody(a)*blend+melody(b)*(1-blend)+Math.sin(2*Math.PI*55*phase)*Math.exp(-phase*22)*.35+Math.sin(2*Math.PI*3600*t)*Math.exp(-(t%(beat/2))*80)*.035;
 }
 export function createMixer({synthesize}={}){
- const speech=createSpeechCache({synthesize}),seen=new Set(),pending=[],ready=[];let current=null,busy=false,closed=false,sample=0,duck=1,lastMinute=-1,generated=0,epoch=0;
+ const speech=createSpeechCache({synthesize}),seen=new Set(),pending=[],ready=[];let current=null,busy=false,closed=false,sample=0,duck=1,lastMinute=-1,generated=0,epoch=0,presentation=null;
  const metrics={synthesized:0,cacheHits:0,ttsFailures:0,dropped:0,ttsMs:0,maxPlaybackLatencyMs:0,played:{host:0,comment:0,chant:0},peak:0,aiCalls:0};
  async function prepare(){if(busy||closed)return;busy=true;try{while(pending.length&&!closed){const job=pending.shift(),segments=[],generation=epoch;for(const segment of job.segments){const started=Date.now();let pcm;try{const result=await speech.get(segment);pcm=result.pcm;metrics[result.cached?'cacheHits':'synthesized']++;}catch{metrics.ttsFailures++;pcm=new Float32Array(48000*2);}metrics.ttsMs+=Date.now()-started;segments.push({...segment,pcm});}if(!closed&&generation===epoch){ready.push({...job,segments});ready.sort((a,b)=>b.priority-a.priority||a.createdAt-b.createdAt);}}}finally{busy=false;}}
  return {metrics,observe(e,now=Date.now()){
   const minute=Math.floor(now/60000);if(minute!==lastMinute){generated=0;lastMinute=minute;}
-  if(!e.performanceConfig?.enabled||e.status!=='TESTING'){epoch++;current=null;ready.length=0;pending.length=0;return;}
+  if(!e.performanceConfig?.enabled||e.status!=='TESTING'){epoch++;presentation=null;current=null;ready.length=0;pending.length=0;return;}
   for(const job of e.performance?.jobs||[]){if(seen.has(job.id))continue;seen.add(job.id);if(seen.size>500)seen.delete(seen.values().next().value);
    if(job.sessionId!==e.sessionId||job.expiresAt<=now||now-job.createdAt>12000||pending.length+ready.length>=6||generated+job.segments.length>12){metrics.dropped++;continue;}generated+=job.segments.length;pending.push(job);
   }void prepare();
  },mix(e,at,samples=3200){
-  const c=e.performanceConfig;if(!c?.enabled)return gamePcm(e,at,samples);
+  const c=e.performanceConfig;if(!c?.enabled){presentation=null;return gamePcm(e,at,samples);}
   const playing=e.status==='TESTING'&&!e.config.audio.muted;
-  if(!playing){current=null;ready.length=0;pending.length=0;return Buffer.alloc(samples*2);}
+  if(!playing){presentation=null;current=null;ready.length=0;pending.length=0;return Buffer.alloc(samples*2);}
   while(!current&&ready.length){const job=ready.shift();if(job.expiresAt<Date.now()){metrics.dropped++;continue;}current={...job,segment:0,offset:0};metrics.maxPlaybackLatencyMs=Math.max(metrics.maxPlaybackLatencyMs,Date.now()-job.createdAt);metrics.played[job.segments[0].role]++;}
   const out=Buffer.alloc(samples*2),effects=gamePcm(e,at,samples),seg=current?.segments[current.segment];
+  let energy=0;if(seg){for(let i=0;i<samples;i++)energy+=(seg.pcm[current.offset+i]||0)**2;}
+  presentation=seg?{text:seg.text,role:seg.role,level:Math.min(1,Math.sqrt(energy/samples)*5),elapsedMs:current.offset/48}:null;
   for(let i=0;i<samples;i++){
    const t=(sample+i)/48000,target=seg?.role==='chant'?.3:seg?.role? .22:1;duck+=(target-duck)/2400;
    let value=c.music?musicSample(t,c.style)*c.musicGain*duck:0;
@@ -32,5 +34,5 @@ export function createMixer({synthesize}={}){
   }
   sample+=samples;if(current){current.offset+=samples;if(current.offset>=seg.pcm.length){current.segment++;current.offset=0;if(current.segment>=current.segments.length)current=null;else metrics.played[current.segments[current.segment].role]++;}}
   return out;
- },presentation(){return current?{text:current.segments[current.segment].text,role:current.segments[current.segment].role}:null;},close(){closed=true;current=null;pending.length=0;ready.length=0;speech.close();},get busy(){return busy;},get duck(){return duck;}};
+ },presentation(){return presentation;},close(){closed=true;presentation=null;current=null;pending.length=0;ready.length=0;speech.close();},get busy(){return busy;},get duck(){return duck;}};
 }

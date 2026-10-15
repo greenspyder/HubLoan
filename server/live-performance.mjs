@@ -33,7 +33,7 @@ export function advancePerformance(e,event,now){
  if(!person){if(p.participants.length>=100){p.dropped++;return;}person={id:event.participantId,name:event.name,quantity:0,joined:p.accepted,avatar:null};p.participants.push(person);}person.name=event.name;p.accepted++;
  const oldLeader=p.top[0]?.id;
  if(event.type==='gift'){
-  person.quantity+=event.quantity;
+  p.previousTop=p.top.map(x=>x.id);p.rankingChangedAt=now;person.quantity+=event.quantity;
   p.top=p.participants.filter(x=>x.quantity>0).sort((a,b)=>b.quantity-a.quantity||a.joined-b.joined||a.id.localeCompare(b.id)).slice(0,6).map(x=>({...x}));p.rankingRevision++;p.avatarUntil=now+12000;
  }
  if(now-p.lastSpokeAt<c.cooldownSeconds*1000){p.dropped++;return;}

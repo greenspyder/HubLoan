@@ -65,3 +65,5 @@ Next: audiovisual renderer/output and visual usability tests → richer characte
 Rollback: revert this commit; added workspace fields are inert and preserved. No destructive schema migration or credentials changes. Existing projects/payments remain untouched.
 
 Evolução incremental: [Live Factory 3.1 — áudio e comunidade](live-factory-phase31.md).
+
+Evolução visual: [Live Factory 3.2 — O jardim do Lume](live-factory-phase32.md).
