@@ -1,0 +1,17 @@
+{
+  "lines": {
+    "alegria": "Ganhei! Elegância na curva, maçã na barriga.",
+    "surpresa": "Opa! Essa pedra passou perto. Respira, Lume!",
+    "frustracao": "Perdi a rodada, mas não perdi a pose. Vamos de novo!"
+  },
+  "metrics": {
+    "engine": "piper",
+    "ready": true,
+    "neural": 3,
+    "fallback": 0,
+    "failures": 0,
+    "maxSynthesisMs": 182
+  },
+  "auditoryReview": "PENDING_HUMAN",
+  "emotionControl": false
+}

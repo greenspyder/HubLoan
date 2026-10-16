@@ -17,7 +17,7 @@ export function createMixer({synthesize}={}){
   for(const job of e.performance?.jobs||[]){if(seen.has(job.id))continue;seen.add(job.id);if(seen.size>500)seen.delete(seen.values().next().value);
    if(job.sessionId!==e.sessionId||job.expiresAt<=now||now-job.createdAt>12000||pending.length+ready.length>=6||generated+job.segments.length>12){metrics.dropped++;continue;}generated+=job.segments.length;pending.push(job);
   }void prepare();
- },mix(e,at,samples=3200){
+ },mix(e,at,samples=3200,direction=null){
   const c=e.performanceConfig;if(!c?.enabled){presentation=null;return gamePcm(e,at,samples);}
   const playing=e.status==='TESTING'&&!e.config.audio.muted;
   if(!playing){presentation=null;current=null;ready.length=0;pending.length=0;return Buffer.alloc(samples*2);}
@@ -26,10 +26,11 @@ export function createMixer({synthesize}={}){
   let energy=0;if(seg){for(let i=0;i<samples;i++)energy+=(seg.pcm[current.offset+i]||0)**2;}
   presentation=seg?{text:seg.text,role:seg.role,level:Math.min(1,Math.sqrt(energy/samples)*5),elapsedMs:current.offset/48}:null;
   for(let i=0;i<samples;i++){
-   const t=(sample+i)/48000,target=seg?.role==='chant'?.3:seg?.role? .22:1;duck+=(target-duck)/2400;
+   const t=(sample+i)/48000,target=seg?.role==='chant'?.3:seg?.role? .22:direction?.cue?.kind==='near-miss'?.5:1;duck+=(target-duck)/2400;
    let value=c.music?musicSample(t,c.style)*c.musicGain*duck:0;
    if(seg){value+=(seg.pcm[current.offset+i]||0)*c.voiceGain;if(seg.role==='chant'){const pulse=t%.5;value+=Math.sin(2*Math.PI*90*pulse)*Math.exp(-pulse*25)*c.effectsGain*.25;}}
    value+=effects.readInt16LE(i*2)/32768*c.effectsGain;
+   if(direction?.cue?.kind==='near-miss'){const age=(direction.age+i/48)/1000;if(age>=0&&age<.2)value+=Math.sin(age*2*Math.PI*320)*Math.exp(-age*25)*c.effectsGain*.16;}
    value=Math.tanh(value)*.92*e.config.audio.volume;metrics.peak=Math.max(metrics.peak,Math.abs(value));out.writeInt16LE(Math.round(value*32767),i*2);
   }
   sample+=samples;if(current){current.offset+=samples;if(current.offset>=seg.pcm.length){current.segment++;current.offset=0;if(current.segment>=current.segments.length)current=null;else metrics.played[current.segments[current.segment].role]++;}}

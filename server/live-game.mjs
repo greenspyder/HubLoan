@@ -2,7 +2,8 @@
 import { AppError } from './domain.mjs';
 export function gameConfig(input) {
  if (!input || input.template !== 'seed-snake' || !Number.isInteger(input.roundSeconds) || input.roundSeconds<15 || input.roundSeconds>180 || !Array.isArray(input.names) || input.names.length!==2 || input.names.some(n=>typeof n!=='string'||!n.trim()||n.length>40)) throw new AppError('Use Seed Snake, dois nomes e rodadas de 15 a 180 segundos.');
- return {template:'seed-snake',roundSeconds:input.roundSeconds,names:input.names.map(n=>n.trim())};
+ if(input.specialEvery!==undefined&&![0,3,5].includes(input.specialEvery))throw new AppError('Maçã dourada: desativada, a cada 3 ou 5 alimentos.');
+ return {specialEvery:input.specialEvery||0,template:'seed-snake',roundSeconds:input.roundSeconds,names:input.names.map(n=>n.trim())};
 }
 const same=(a,b)=>a.x===b.x&&a.y===b.y;
 function round(g,now){g.round++;g.phase='PLAYING';g.roundAt=now;g.winner=null;g.obstacles=[{x:7,y:10},{x:8,y:10},{x:7,y:14}];g.players=g.names.map((name,i)=>({id:String(i),name,color:['#78d6ba','#ffc575'][i],alive:true,score:0,direction:i?2:0,eatenAt:0,hitAt:0,target:null,body:[{x:i?13:2,y:i?19:4},{x:i?14:1,y:i?19:4},{x:i?15:0,y:i?19:4}]}));g.food=[{x:6+(g.round%3),y:5},{x:9,y:18},{x:4,y:12}];}
@@ -33,7 +34,7 @@ function step(g,at){
   if(!p.alive)continue;const n=moves[i];delete p.command;
   if(!n||moves.some((other,j)=>i!==j&&other&&same(other,n))){p.alive=false;p.hitAt=at;g.soundAt=at;continue;}
   p.direction=n.d;p.body.unshift({x:n.x,y:n.y});const food=g.food.findIndex(f=>same(f,n));
-  if(food>=0){p.score++;p.eatenAt=at;p.eatenPosition={x:n.x,y:n.y};g.soundAt=at;g.food.splice(food,1);for(let k=0;k<384;k++){const f={x:(g.step*7+k)%16,y:Math.floor(((g.step*7+k)%384)/16)};if(!g.players.some(s=>s.body.some(b=>same(b,f)))&&!g.food.some(b=>same(b,f))&&!(g.obstacles||[]).some(b=>same(b,f))){g.food.push(f);break;}}}else p.body.pop();
+  if(food>=0){const bonus=g.food[food].golden?2:1;p.score+=bonus;if(bonus===2)p.growthPending=1;p.eatenAt=at;p.eatenPosition={x:n.x,y:n.y};g.soundAt=at;g.food.splice(food,1);for(let k=0;k<384;k++){const f={x:(g.step*7+k)%16,y:Math.floor(((g.step*7+k)%384)/16)};if(!g.players.some(s=>s.body.some(b=>same(b,f)))&&!g.food.some(b=>same(b,f))&&!(g.obstacles||[]).some(b=>same(b,f))){g.foodSerial=(g.foodSerial||0)+1;if(g.specialEvery&&g.foodSerial%g.specialEvery===0)f.golden=true;g.food.push(f);break;}}}else if(p.growthPending)p.growthPending--;else p.body.pop();
  }
  if(g.players.filter(p=>p.alive).length<2||at-g.roundAt>=g.roundSeconds*1000){
   const sorted=[...g.players].sort((a,b)=>Number(b.alive)-Number(a.alive)||b.score-a.score);g.winner=sorted[0].alive===sorted[1].alive&&sorted[0].score===sorted[1].score?'Empate':sorted[0].name;
