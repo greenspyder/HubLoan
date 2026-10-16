@@ -1,3 +1,5 @@
+import {createDirector} from '../live-director.mjs';
+import {sceneFrame} from '../../frontend/src/shared/live-visual.mjs';
 // Explicitly launched local encoder. Never launches from a web request.
 import { spawn } from 'node:child_process';
 import { readFile, stat, open, unlink } from 'node:fs/promises';
@@ -15,7 +17,7 @@ export function validateConfig(c,transmit){
  if(transmit){const u=new URL(c.destination);if(!['rtmp:','rtmps:'].includes(u.protocol)||!u.hostname||u.username||u.password||u.hash||c.authorizedDestination!==true)throw new Error('Informe destino RTMP/RTMPS autorizado no arquivo local.');}
 }
 async function encodeWorker(c,{transmit=false,output='live-preview.mp4',seconds=1800,signal,onEncoder=()=>{},onAudio=()=>{},profile='light',renderFrame=render,synthesize}={}){
- const video=videoProfiles[profile];if(!video)throw new Error('Perfil: light, smooth ou hd (3D experimental).');const fps=video.fps;
+ const director=createDirector(); const video=videoProfiles[profile];if(!video)throw new Error('Perfil: light, smooth ou hd (3D experimental).');const fps=video.fps;
  validateConfig(c,transmit);if(!transmit){if(typeof output!=='string'||output.includes('://')||!output.endsWith('.mp4'))throw new Error('Prévia exige arquivo MP4 local.');output=resolve(output);}if(!Number.isInteger(seconds)||seconds<1||seconds>1800)throw new Error('Duração: 1 a 1800 segundos.');
  const mixer=createMixer({synthesize});const instance=randomUUID();let state,offset=0,frames=0,bytes=0,status='STARTING',closed=false,encoder,failed=false,lastProgress=Date.now(),lastContact=Date.now(),frame=0;
  async function heartbeat(){const before=Date.now();const r=await fetch(new URL(c.workerPath,c.backend),{method:'POST',redirect:'error',headers:{Authorization:`Bearer ${c.token}`,'Content-Type':'application/json'},body:JSON.stringify({instance,status,frames,bytes,audio:mixer.metrics}),signal:AbortSignal.timeout(3000)});if(!r.ok)throw new Error('Worker sem autorização ou backend indisponível.');const data=await r.json();if(transmit&&data.mode!=='stream')throw new Error('Autorize transmissão no painel.');state=data.experience;offset=data.serverTime-(before+Date.now())/2;lastContact=Date.now();mixer.observe(state,Date.now()+offset);if(!['TESTING','PAUSED','INITIALIZING'].includes(state.status)||Date.now()+offset>=data.expiresAt)throw new Error('Sessão encerrada.');}
@@ -35,8 +37,9 @@ async function encodeWorker(c,{transmit=false,output='live-preview.mp4',seconds=
    maxPipelineLagMs=Math.max(maxPipelineLagMs,Date.now()-started-frame*1000/fps);if(maxPipelineLagMs>2000)throw new Error('Perfil excedeu capacidade de renderização. Use light.');
    if(!state.heartbeat||Date.now()+offset-state.heartbeat>10000)throw new Error('Heartbeat do runtime expirou.');
    const at=started+frame*1000/fps+offset-2500,renderStart=Date.now();
-   const audio=mixer.mix(state,at,48000/fps);onAudio(audio);
-   await Promise.all([renderFrame(state,at,mixer.presentation()).then(b=>write(encoder.stdin,b)),write(encoder.stdio[3],audio)]);frame++;maxRenderMs=Math.max(maxRenderMs,Date.now()-renderStart);if(Date.now()-renderStart>1000/fps)lateFrames++;
+   const direction=director.update(state,sceneFrame(state,at),at,mixer.presentation());
+   const audio=mixer.mix(state,at,48000/fps,direction);onAudio(audio);
+   await Promise.all([renderFrame(state,at,mixer.presentation(),direction).then(b=>write(encoder.stdin,b)),write(encoder.stdio[3],audio)]);frame++;maxRenderMs=Math.max(maxRenderMs,Date.now()-renderStart);if(Date.now()-renderStart>1000/fps)lateFrames++;
    await wait(Math.max(0,started+frame*1000/fps-Date.now()));
   }
  }catch{failed=true;}
@@ -45,7 +48,7 @@ async function encodeWorker(c,{transmit=false,output='live-preview.mp4',seconds=
   const kill=setTimeout(()=>encoder.kill('SIGKILL'),3000);await exited;clearTimeout(kill);
   status=failed||exitCode!==0?'ERROR':'STOPPED';try{await heartbeat();}catch{/* revocation/backend outage; no secret logged */}
  }
- const usage=process.cpuUsage(cpu);const report={status,profile,fps,maxRenderMs,lateFrames,maxPipelineLagMs,frames,bytes,durationMs:Date.now()-started,renderedFrames:frame,rssBytes:process.memoryUsage().rss,rendererCpuMs:(usage.user+usage.system)/1000,encoderCpuMs:null,networkBytes:null,publicTransmission:'UNCONFIRMED',audio:mixer.metrics,aiCalls:0};
+ const usage=process.cpuUsage(cpu);const report={direction:director.counts,status,profile,fps,maxRenderMs,lateFrames,maxPipelineLagMs,frames,bytes,durationMs:Date.now()-started,renderedFrames:frame,rssBytes:process.memoryUsage().rss,rendererCpuMs:(usage.user+usage.system)/1000,encoderCpuMs:null,networkBytes:null,publicTransmission:'UNCONFIRMED',audio:mixer.metrics,aiCalls:0};
  if(status==='ERROR')throw Object.assign(new Error('Encoder interrompido. Revise destino, FFmpeg, backend e autorização. Não houve confirmação pública.'),{report});
  return report;
 }

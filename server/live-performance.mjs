@@ -53,8 +53,15 @@ export const liveAudienceAdapter={status:'NOT_SUPPORTED',reason:'Sem acesso ofic
 // Sparse comments about observed game results only. No synthetic social activity.
 export function advanceGamePerformance(e,now){
  const p=e.performance,c=e.performanceConfig,g=e.game;if(!p||!c?.enabled||!g||e.status!=='TESTING'||e.queue.length)return;
- const result=g.history.at(-1);if(!result||result.at===(p.lastGameCommentAt||0)||now-p.lastSpokeAt<Math.max(20,c.cooldownSeconds)*1000)return;
- p.lastGameCommentAt=result.at;const host=g.names[0],win=result.winner===host;
- const lines=win?['A colheita foi minha! Agora vou fingir que estava tudo planejado.','Ganhei! Elegância na curva, maçã na barriga.']:['Essa curva me pegou. Na próxima rodada eu negocio com a parede.','Perdi a rodada, mas não perdi a pose. Vamos de novo!'];
- job(p,e,[{role:'host',voice:'host',text:lines[result.round%lines.length]}],now,0,'INTERNAL_GAME');
+ if(now-p.lastSpokeAt<Math.max(12,c.cooldownSeconds)*1000)return;
+ const result=g.history.at(-1),host=g.players[0];let lines,key;
+ if(result&&result.at!==(p.lastGameCommentAt||0)&&now-result.at<6000){
+  p.lastGameCommentAt=result.at;key='result';
+  lines=result.winner==='Empate'?['Empatamos! Duas cobras, a mesma fome.','Ninguém levou a melhor. Vamos desempatar no jardim!']:result.winner===host.name?['A colheita foi minha! Vou fingir que estava planejado.','Ganhei! Elegância na curva, maçã na barriga.']:['Perdi a rodada, mas não perdi a pose. Vamos de novo!','Essa rodada escapou. Vou treinar minha curva!'];
+ }else if(host.alive&&now-host.eatenAt<2500&&host.eatenAt!==p.lastFoodCommentAt){
+  p.lastFoodCommentAt=host.eatenAt;key='food';lines=['Mais uma maçã! Minha cintura está virando uma avenida.','Eu disse que estava com fome. A prova está na barriga!','Colheita feita. Agora preciso achar espaço para virar.'];
+ }else return;
+ const recent=new Set(p.recent.map(x=>x.text)),available=lines.filter(x=>!recent.has(x));p.gameLineCounter=(p.gameLineCounter||0)+1;
+ const choices=available.length?available:lines,text=choices[p.gameLineCounter%choices.length];
+ job(p,e,[{role:'host',voice:'host',text}],now,0,'INTERNAL_GAME');p.lastGameContext=key;
 }
