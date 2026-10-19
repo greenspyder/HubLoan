@@ -9,7 +9,7 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createMixer } from './mixer.mjs';
 import { render } from './render.mjs';
-export const videoProfiles={economy:{fps:6,width:216,height:384},light:{fps:15,width:360,height:640},smooth:{fps:30,width:360,height:640},hd:{fps:30,width:720,height:1280}};
+export const videoProfiles={economy:{fps:4,width:216,height:384},light:{fps:15,width:360,height:640},smooth:{fps:30,width:360,height:640},hd:{fps:30,width:720,height:1280}};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 export function validateConfig(c,transmit){
  const api=new URL(c.backend);

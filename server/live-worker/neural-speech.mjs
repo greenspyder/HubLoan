@@ -6,7 +6,7 @@ import { decodeWav, localSpeech, voiceProfiles } from './speech.mjs';
 // Owned by one worker; no HTTP listener, secrets or paid APIs. One request in flight.
 export async function createNeuralSpeech({engine='piper',model=process.env[engine==='kokoro'?'HUBLOAN_KOKORO_MODEL':'HUBLOAN_PIPER_MODEL'],python=process.env[engine==='kokoro'?'HUBLOAN_KOKORO_PYTHON':'HUBLOAN_PIPER_PYTHON']||'python3',timeout=5000,fallback=localSpeech}={}) {
  const metrics={engine,voice:engine==='kokoro'?'pf_dora (pt-BR feminina)':'Faber',quality:'HUMAN_REVIEW_REQUIRED',ready:false,neural:0,fallback:0,failures:0,maxSynthesisMs:0};
- if(!model)throw Error('Configure HUBLOAN_PIPER_MODEL para usar voz neural.');
+ if(!model)throw Error(`Configure ${engine==='kokoro'?'HUBLOAN_KOKORO_MODEL':'HUBLOAN_PIPER_MODEL'} para usar voz neural.`);
  let child,buffer='',pending=null,closed=false,failed=false;
  const fail=()=>{failed=true;metrics.ready=false;pending?.reject(Error('Piper indisponível'));pending=null;};
  function request(write,limit,signal){return new Promise((resolve,reject)=>{
