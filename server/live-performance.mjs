@@ -1,8 +1,10 @@
+import {queueMusic} from './live-music.mjs';
 // Presentation decisions only. Never calls a model or changes game physics.
 import { randomUUID } from 'node:crypto';
 import { AppError } from './domain.mjs';
-export const performanceDefaults=()=>({enabled:false,humor:'playful',hostVoice:'host',commentVoice:'bright',music:true,musicGain:.18,voiceGain:.8,effectsGain:.4,cooldownSeconds:8,style:'groove',aiMode:'off'});
+export const performanceDefaults=()=>({enabled:false,jingleCooldownSeconds:20,voiceEngine:'local',humor:'playful',hostVoice:'host',commentVoice:'bright',music:true,musicGain:.18,voiceGain:.8,effectsGain:.4,cooldownSeconds:8,style:'groove',aiMode:'off'});
 export function performanceConfig(c){
+ c={...performanceDefaults(),...c};if(!['local','neural','kokoro'].includes(c.voiceEngine)||!Number.isInteger(c.jingleCooldownSeconds)||c.jingleCooldownSeconds<10||c.jingleCooldownSeconds>120)throw new AppError('Voz/cooldown inválido.');
  if(!c||typeof c.enabled!=='boolean'||typeof c.music!=='boolean'||!['playful','gentle'].includes(c.humor)||c.hostVoice!=='host'||!['bright','deep'].includes(c.commentVoice)||!['groove','calm'].includes(c.style)||c.aiMode!=='off'||![c.musicGain,c.voiceGain,c.effectsGain].every(n=>Number.isFinite(n)&&n>=0&&n<=1)||!Number.isInteger(c.cooldownSeconds)||c.cooldownSeconds<5||c.cooldownSeconds>60)throw new AppError('Configuração de atuação inválida. IA paga não habilitada.');
  return Object.fromEntries(Object.keys(performanceDefaults()).map(k=>[k,c[k]]));
 }
@@ -36,6 +38,7 @@ export function advancePerformance(e,event,now){
   p.previousTop=p.top.map(x=>x.id);p.rankingChangedAt=now;person.quantity+=event.quantity;
   p.top=p.participants.filter(x=>x.quantity>0).sort((a,b)=>b.quantity-a.quantity||a.joined-b.joined||a.id.localeCompare(b.id)).slice(0,6).map(x=>({...x}));p.rankingRevision++;p.avatarUntil=now+12000;
  }
+ if(event.type==='gift'){const category=event.quantity>=10?'special':/rosa/i.test(event.gift)?'roses':'common';if(queueMusic(e,category,person.name,now))return;if(p.top[0]?.id!==oldLeader&&queueMusic(e,'top6',person.name,now))return;}
  if(now-p.lastSpokeAt<c.cooldownSeconds*1000){p.dropped++;return;}
  const round=e.game?.round||1,variant=p.accepted%3;
  if(event.type==='comment'){
@@ -44,7 +47,7 @@ export function advancePerformance(e,event,now){
  }else{
   const leader=p.top[0]?.id!==oldLeader;
   const line=event.quantity>=10?`${person.name} chegou, o jardim levantou! Minha cobra desafina, mas o carinho afinou!`:`Uma ${event.gift} para enfeitar, ${person.name} veio alegrar! Não sei fazer bouquet, mas já sei comemorar!`;
-  job(p,e,[{role:'host',voice:'host',text:leader?`${person.name} lidera o ranking de demonstração!`:`Obrigado pelo carinho, ${person.name}!`},{role:'chant',voice:'host',text:line}],now,event.quantity>=10?2:1);
+  job(p,e,[{role:'host',voice:'host',text:leader?`${person.name} lidera o ranking de demonstração!`:`Obrigada pelo carinho, ${person.name}!`},{role:'chant',voice:'host',text:line}],now,event.quantity>=10?2:1);
  }
 }
 export function publicPerformance(p){if(!p)return null;const {participants,...rest}=p;return {...rest,participantCount:participants.length};}
@@ -56,7 +59,7 @@ export function advanceGamePerformance(e,now){
  if(now-p.lastSpokeAt<Math.max(12,c.cooldownSeconds)*1000)return;
  const result=g.history.at(-1),host=g.players[0];let lines,key;
  if(result&&result.at!==(p.lastGameCommentAt||0)&&now-result.at<6000){
-  p.lastGameCommentAt=result.at;key='result';
+  p.lastGameCommentAt=result.at;key='result';if(result.winner===host.name&&queueMusic(e,'victory',host.name,now))return;
   lines=result.winner==='Empate'?['Empatamos! Duas cobras, a mesma fome.','Ninguém levou a melhor. Vamos desempatar no jardim!']:result.winner===host.name?['A colheita foi minha! Vou fingir que estava planejado.','Ganhei! Elegância na curva, maçã na barriga.']:['Perdi a rodada, mas não perdi a pose. Vamos de novo!','Essa rodada escapou. Vou treinar minha curva!'];
  }else if(host.alive&&now-host.eatenAt<2500&&host.eatenAt!==p.lastFoodCommentAt){
   p.lastFoodCommentAt=host.eatenAt;key='food';lines=['Mais uma maçã! Minha cintura está virando uma avenida.','Eu disse que estava com fome. A prova está na barriga!','Colheita feita. Agora preciso achar espaço para virar.'];

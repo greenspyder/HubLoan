@@ -17,12 +17,13 @@ export async function createStore({ connectionString, file = 'data/agents.sqlite
     const { Pool } = await import('pg');
     pool = new Pool({ ...postgresConfig(connectionString), max: 5, connectionTimeoutMillis: 10000 });
     await pool.query('CREATE TABLE IF NOT EXISTS agent_workspaces (id TEXT PRIMARY KEY, data TEXT NOT NULL, revision INTEGER NOT NULL DEFAULT 0)');
+    await pool.query('CREATE TABLE IF NOT EXISTS live_audio (key TEXT PRIMARY KEY, data BYTEA NOT NULL)');
     await pool.query('CREATE TABLE IF NOT EXISTS shop_files (product_id TEXT PRIMARY KEY, data BYTEA NOT NULL, preview BYTEA)');
   } else {
     const { DatabaseSync } = await import('node:sqlite');
     if (file !== ':memory:') mkdirSync(dirname(file), { recursive: true });
     sqlite = new DatabaseSync(file);
-    sqlite.exec('PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS agent_workspaces (id TEXT PRIMARY KEY, data TEXT NOT NULL, revision INTEGER NOT NULL DEFAULT 0); CREATE TABLE IF NOT EXISTS shop_files (product_id TEXT PRIMARY KEY, data BLOB NOT NULL, preview BLOB)');
+    sqlite.exec('CREATE TABLE IF NOT EXISTS live_audio (key TEXT PRIMARY KEY, data BLOB NOT NULL); PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS agent_workspaces (id TEXT PRIMARY KEY, data TEXT NOT NULL, revision INTEGER NOT NULL DEFAULT 0); CREATE TABLE IF NOT EXISTS shop_files (product_id TEXT PRIMARY KEY, data BLOB NOT NULL, preview BLOB)');
   }
   const mode = pool ? 'postgres' : 'sqlite';
   async function read(id) {
@@ -84,5 +85,8 @@ export async function createStore({ connectionString, file = 'data/agents.sqlite
     if (pool) await pool.query('DELETE FROM shop_files WHERE product_id=$1', [productId]);
     else sqlite.prepare('DELETE FROM shop_files WHERE product_id=?').run(productId);
   }
-  return { read, mutate, liveSpaces, autonomousSpaces, commerceSpaces, shopBySlug, shopSpaces, marketingSpaces, engineeringSpaces, writeSaleFile, readSaleFile, removeSaleFile, mode, close: async () => { if (pool) await pool.end(); else sqlite.close(); } };
+  async function writeLiveAudio(key,bytes){if(pool)await pool.query('INSERT INTO live_audio(key,data) VALUES($1,$2)',[key,bytes]);else sqlite.prepare('INSERT INTO live_audio(key,data) VALUES(?,?)').run(key,bytes);}
+  async function readLiveAudio(key){const row=pool?(await pool.query('SELECT data FROM live_audio WHERE key=$1',[key])).rows[0]:sqlite.prepare('SELECT data FROM live_audio WHERE key=?').get(key);if(!row)throw new AppError('Áudio não encontrado.',404);return Buffer.from(row.data);}
+  async function removeLiveAudio(key){if(pool)await pool.query('DELETE FROM live_audio WHERE key=$1',[key]);else sqlite.prepare('DELETE FROM live_audio WHERE key=?').run(key);}
+  return { writeLiveAudio,readLiveAudio,removeLiveAudio,read, mutate, liveSpaces, autonomousSpaces, commerceSpaces, shopBySlug, shopSpaces, marketingSpaces, engineeringSpaces, writeSaleFile, readSaleFile, removeSaleFile, mode, close: async () => { if (pool) await pool.end(); else sqlite.close(); } };
 }

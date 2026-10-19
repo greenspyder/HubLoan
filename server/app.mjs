@@ -1,5 +1,6 @@
+import {musicTrack} from './live-music.mjs';
 import { normalizeAvatar } from './live-avatar.mjs';
-import { authorizeWorker, workerHeartbeat } from './live-broadcast.mjs';
+import { authorizeWorker, workerHeartbeat, workerMusic } from './live-broadcast.mjs';
 import { createTikTok } from './tiktok.mjs';
 import { createLiveRuntime, liveAction, publicLive } from './live-factory.mjs';
 import { normalizeVideoImages } from './video-production.mjs';
@@ -101,6 +102,8 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
         throw new AppError('Método inválido.', 405);
       }
       if (url.pathname.startsWith('/api/agents/storefront/')) throw new AppError('Loja não encontrada.', 404);
+      const musicWorker=url.pathname.match(/^\/api\/agents\/live-worker\/([a-f0-9]{64})\/([a-f0-9-]{36})\/music\/([a-f0-9-]{36})$/);
+      if(musicWorker&&request.method==='GET'){const [,wid,eid,tid]=musicWorker;workerMusic((await store.read(wid)).workspace,eid,request.headers.authorization?.replace(/^Bearer /,'')||'',tid);return send(response,200,await store.readLiveAudio(`${wid}:${eid}:${tid}`),{'Content-Type':'audio/wav'});}
       const workerRoute=url.pathname.match(/^\/api\/agents\/live-worker\/([a-f0-9]{64})\/([a-f0-9-]{36})$/);
       if(workerRoute&&request.method==='POST'){
         const key=`live-worker:${request.socket.remoteAddress}`,now=Date.now(),rate=rates.get(key)||{count:0,reset:now+60000};
@@ -158,11 +161,19 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if(route==='/tiktok/callback'&&request.method==='POST')return send(response,200,await tiktok.callback(id,await body(request,5000)));
       if(route==='/tiktok'&&request.method==='DELETE')return send(response,200,await tiktok.disconnect(id));
       if (route === '/live' && request.method === 'GET') return send(response,200,publicLive((await store.read(id)).workspace));
+      if(route==='/live/music-import'&&request.method==='POST'){
+        const input=await body(request,7700000);if(typeof input.audio!=='string'||!/^[A-Za-z0-9+/]+={0,2}$/.test(input.audio))throw new AppError('Áudio base64 inválido.');
+        const bytes=Buffer.from(input.audio,'base64'),track=musicTrack(input,bytes),key=`${id}:${input.id}:${track.id}`;await store.writeLiveAudio(key,bytes);
+        try{const updated=await store.mutate(id,w=>liveAction(w,'music-import',{...input,track}));return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey)));}catch(error){await store.removeLiveAudio(key);throw error;}
+      }
+      const musicPreview=route.match(/^\/live\/([a-f0-9-]{36})\/music\/([a-f0-9-]{36})$/);
+      if(musicPreview&&request.method==='GET'){const [,eid,tid]=musicPreview,e=(await store.read(id)).workspace.liveFactory?.experiences.find(x=>x.id===eid);if(!e?.musicCatalog?.some(t=>t.id===tid))throw new AppError('Faixa não encontrada.',404);return send(response,200,await store.readLiveAudio(`${id}:${eid}:${tid}`),{'Content-Type':'audio/wav'});}
       if(route==='/live/worker-authorize'&&request.method==='POST'){const input=await body(request);const updated=await store.mutate(id,w=>authorizeWorker(w,input.id,input.mode));return send(response,200,{...updated.result,workerPath:`/api/agents/live-worker/${id}/${input.id}`});}
-      const liveRoute = route.match(/^\/live\/(create|start|pause|resume|stop|emergency|event|configure|suggest|apply-suggestion|game-configure|worker-stop|performance-configure|performance-event|performance-photo|performance-bind)$/);
+      const liveRoute = route.match(/^\/live\/(create|start|pause|resume|stop|emergency|event|configure|suggest|apply-suggestion|game-configure|worker-stop|performance-configure|performance-event|performance-photo|performance-bind|music-approve|music-remove|audio-mute)$/);
       if (liveRoute && request.method === 'POST') {
         const input=await body(request,liveRoute[1]==='performance-photo'?150000:12000);if(liveRoute[1]==='performance-photo')input.normalizedImage=await normalizeAvatar(input);
         const updated=await store.mutate(id,w=>liveAction(w,liveRoute[1],input));
+        if(liveRoute[1]==='music-remove')await store.removeLiveAudio(`${id}:${input.id}:${input.trackId}`);
         return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey)));
       }
       const affiliateRoute = route.match(/^\/affiliates\/(project|account|product|campaign|revise|authorize|published|report)$/);

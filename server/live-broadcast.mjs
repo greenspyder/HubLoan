@@ -30,6 +30,12 @@ export function workerHeartbeat(w,id,token,input,now=Date.now()){
  if(prior!==t.status){e.logs.push({id:randomBytes(12).toString('hex'),at:new Date(now).toISOString(),kind:'encoder',status:t.status,source:'LOCAL_WORKER_REPORT',aiUsed:false});e.logs=e.logs.slice(-200);}
  if(['ERROR','STOPPED'].includes(t.status)){g.revoked=true;g.revokedAt=now;}
  // No workspace credentials, logs, grant or other projects sent to worker.
- return {serverTime:now,expiresAt:g.expiresAt,mode:g.mode,experience:{id:e.id,sessionId:e.sessionId,status:e.status,heartbeat:e.heartbeat,name:e.name,config:e.config,character:e.character,action:e.action,game:e.game,performanceConfig:e.performanceConfig,performance:publicPerformance(e.performance)}};
+ return {serverTime:now,expiresAt:g.expiresAt,mode:g.mode,experience:{id:e.id,sessionId:e.sessionId,status:e.status,heartbeat:e.heartbeat,name:e.name,config:e.config,character:e.character,action:e.action,game:e.game,musicCatalog:(e.musicCatalog||[]).filter(t=>t.approved),performanceConfig:e.performanceConfig,performance:publicPerformance(e.performance)}};
 }
 export function watchWorker(e,now){const t=e.transmission;if(t&&['STARTING','PREVIEW','SENDING_MEDIA','STOP_REQUESTED'].includes(t.status)&&now-t.heartbeat>10000){t.status='DEGRADED';t.error='Heartbeat do worker perdido. Nova autorização necessária.';if(e.workerGrant){e.workerGrant.revoked=true;e.workerGrant.revokedAt=now;}e.logs.push({id:randomBytes(12).toString('hex'),at:new Date(now).toISOString(),kind:'encoder',status:'DEGRADED',aiUsed:false});e.logs=e.logs.slice(-200);}}
+
+export function workerMusic(w,id,token,trackId,now=Date.now()){
+ const e=w.liveFactory?.experiences.find(x=>x.id===id),g=e?.workerGrant;
+ if(!g||typeof token!=='string'||g.hash!==hash(token)||g.revoked||g.expiresAt<=now||g.sessionId!==e.sessionId||!valid(e))throw new AppError('Autorização indisponível.',403);
+ if(!e.musicCatalog?.some(t=>t.id===trackId&&t.approved))throw new AppError('Faixa indisponível.',404);
+}
