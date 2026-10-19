@@ -1,3 +1,4 @@
+import {loadRepertoire} from './repertoire.mjs';
 import {createDirector} from '../live-director.mjs';
 import {sceneFrame} from '../../frontend/src/shared/live-visual.mjs';
 // Explicitly launched local encoder. Never launches from a web request.
@@ -8,7 +9,7 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createMixer } from './mixer.mjs';
 import { render } from './render.mjs';
-export const videoProfiles={light:{fps:15,width:360,height:640},smooth:{fps:30,width:360,height:640},hd:{fps:30,width:720,height:1280}};
+export const videoProfiles={economy:{fps:6,width:216,height:384},light:{fps:15,width:360,height:640},smooth:{fps:30,width:360,height:640},hd:{fps:30,width:720,height:1280}};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 export function validateConfig(c,transmit){
  const api=new URL(c.backend);
@@ -17,11 +18,11 @@ export function validateConfig(c,transmit){
  if(transmit){const u=new URL(c.destination);if(!['rtmp:','rtmps:'].includes(u.protocol)||!u.hostname||u.username||u.password||u.hash||c.authorizedDestination!==true)throw new Error('Informe destino RTMP/RTMPS autorizado no arquivo local.');}
 }
 async function encodeWorker(c,{transmit=false,output='live-preview.mp4',seconds=1800,signal,onEncoder=()=>{},onAudio=()=>{},profile='light',renderFrame=render,synthesize}={}){
- const director=createDirector(); const video=videoProfiles[profile];if(!video)throw new Error('Perfil: light, smooth ou hd (3D experimental).');const fps=video.fps;
+ const director=createDirector(); const video=videoProfiles[profile];if(!video)throw new Error('Perfil: economy, light, smooth ou hd (3D experimental).');const fps=video.fps;
  validateConfig(c,transmit);if(!transmit){if(typeof output!=='string'||output.includes('://')||!output.endsWith('.mp4'))throw new Error('Prévia exige arquivo MP4 local.');output=resolve(output);}if(!Number.isInteger(seconds)||seconds<1||seconds>1800)throw new Error('Duração: 1 a 1800 segundos.');
- const mixer=createMixer({synthesize});const instance=randomUUID();let state,offset=0,frames=0,bytes=0,status='STARTING',closed=false,encoder,failed=false,lastProgress=Date.now(),lastContact=Date.now(),frame=0;
- async function heartbeat(){const before=Date.now();const r=await fetch(new URL(c.workerPath,c.backend),{method:'POST',redirect:'error',headers:{Authorization:`Bearer ${c.token}`,'Content-Type':'application/json'},body:JSON.stringify({instance,status,frames,bytes,audio:mixer.metrics}),signal:AbortSignal.timeout(3000)});if(!r.ok)throw new Error('Worker sem autorização ou backend indisponível.');const data=await r.json();if(transmit&&data.mode!=='stream')throw new Error('Autorize transmissão no painel.');state=data.experience;offset=data.serverTime-(before+Date.now())/2;lastContact=Date.now();mixer.observe(state,Date.now()+offset);if(!['TESTING','PAUSED','INITIALIZING'].includes(state.status)||Date.now()+offset>=data.expiresAt)throw new Error('Sessão encerrada.');}
- try{await heartbeat();}catch(error){mixer.close();throw error;}
+ const mixer=createMixer({synthesize});const instance=randomUUID();let assetsReady=false,state,offset=0,frames=0,bytes=0,status='STARTING',closed=false,encoder,failed=false,lastProgress=Date.now(),lastContact=Date.now(),frame=0;
+ async function heartbeat(){const before=Date.now();const r=await fetch(new URL(c.workerPath,c.backend),{method:'POST',redirect:'error',headers:{Authorization:`Bearer ${c.token}`,'Content-Type':'application/json'},body:JSON.stringify({instance,status,frames,bytes,audio:mixer.metrics}),signal:AbortSignal.timeout(3000)});if(!r.ok)throw new Error('Worker sem autorização ou backend indisponível.');const data=await r.json();if(transmit&&data.mode!=='stream')throw new Error('Autorize transmissão no painel.');state=data.experience;offset=data.serverTime-(before+Date.now())/2;lastContact=Date.now();if(assetsReady)mixer.observe(state,Date.now()+offset);if(!['TESTING','PAUSED','INITIALIZING'].includes(state.status)||Date.now()+offset>=data.expiresAt)throw new Error('Sessão encerrada.');}
+ try{await heartbeat();mixer.setRepertoire(await loadRepertoire(c,state.musicCatalog||[]));assetsReady=true;await heartbeat();}catch(error){mixer.close();throw error;}
  const args=['-hide_banner','-loglevel','error','-y','-threads','1','-filter_threads','1','-f','rawvideo','-pixel_format','rgb24','-video_size',`${video.width}x${video.height}`,'-framerate',String(fps),'-probesize','32','-analyzeduration','0','-i','pipe:0','-f','s16le','-ar','48000','-ac','1','-probesize','32','-analyzeduration','0','-i','pipe:3','-map','0:v','-map','1:a','-c:v','libx264','-threads','1','-preset','ultrafast','-tune','zerolatency','-pix_fmt','yuv420p','-b:v',profile==='hd'?'2800k':'700k','-maxrate',profile==='hd'?'3500k':'900k','-bufsize',profile==='hd'?'5600k':'1400k','-g',String(fps*2),'-c:a','aac','-b:a','64k','-progress','pipe:4','-stats_period','1',...(transmit?['-rw_timeout','5000000',...(c.destination.startsWith('rtmps:')?['-tls_verify','1']:[]),'-f','flv',c.destination]:['-movflags','+faststart',output])];
  encoder=spawn('ffmpeg',args,{shell:false,stdio:['pipe','ignore','pipe','pipe','pipe']});onEncoder(encoder);
  let exitCode=null;const exited=new Promise(resolve=>{encoder.on('error',()=>{failed=true;resolve();});encoder.on('close',code=>{exitCode=code;if(!closed)failed=true;resolve();});});
@@ -34,7 +35,7 @@ async function encodeWorker(c,{transmit=false,output='live-preview.mp4',seconds=
  const write=(pipe,data)=>new Promise((resolve,reject)=>{pipe.write(data,error=>error?reject(error):resolve());});
  try{
   while(!failed&&!signal?.aborted&&Date.now()-started<seconds*1000){
-   maxPipelineLagMs=Math.max(maxPipelineLagMs,Date.now()-started-frame*1000/fps);if(maxPipelineLagMs>2000)throw new Error('Perfil excedeu capacidade de renderização. Use light.');
+   maxPipelineLagMs=Math.max(maxPipelineLagMs,Date.now()-started-frame*1000/fps);if(maxPipelineLagMs>2000)throw new Error('Perfil excedeu capacidade de renderização. Use um perfil menor ou hardware mais rápido.');
    if(!state.heartbeat||Date.now()+offset-state.heartbeat>10000)throw new Error('Heartbeat do runtime expirou.');
    const at=started+frame*1000/fps+offset-2500,renderStart=Date.now();
    const direction=director.update(state,sceneFrame(state,at),at,mixer.presentation());
@@ -54,13 +55,13 @@ async function encodeWorker(c,{transmit=false,output='live-preview.mp4',seconds=
 }
 export async function runWorker(c,options={}){
  if(!videoProfiles[options.profile||'light'])throw Error('Perfil inválido');
- validateConfig(c,options.transmit);const kind=options.renderer||'svg',voice=options.voice||'local';
- if(!['svg','three'].includes(kind)||!['neural','local'].includes(voice))throw Error('Renderer/voz inválidos');
- if(options.profile==='hd'&&kind!=='three')throw Error('HD requer renderer 3D');
+ validateConfig(c,options.transmit);const kind=options.renderer||'svg',voice=options.voice||c.voice||'local';
+ if(!['svg','three'].includes(kind)||!['neural','kokoro','local'].includes(voice))throw Error('Renderer/voz inválidos');
+ if(['economy','hd'].includes(options.profile)&&kind!=='three')throw Error('Economy/HD requer renderer 3D');
  let stage,speech;
  try{
   if(kind==='three'){const video=videoProfiles[options.profile||'light'];if(!video)throw Error('Perfil inválido');const {create3DRenderer}=await import('./render3d.mjs');stage=await create3DRenderer(video);}
-  if(voice==='neural'){const {createNeuralSpeech}=await import('./neural-speech.mjs');speech=await createNeuralSpeech();}
+  if(voice==='neural'||voice==='kokoro'){const {createNeuralSpeech}=await import('./neural-speech.mjs');speech=await createNeuralSpeech({engine:voice==='kokoro'?'kokoro':'piper'});}
   const report=await encodeWorker(c,{...options,renderFrame:options.renderFrame||stage?.render||render,synthesize:options.synthesize||speech?.synthesize});
   if(stage)await stage.inspect();if(speech)await speech.inspect();return {...report,renderer:stage?{...stage.metrics}:{engine:'svg-sharp'},speech:speech?{...speech.metrics}:{engine:'espeak-ng'}};
  }catch(error){if(error.report){error.report.renderer=stage?{...stage.metrics}:{engine:'svg-sharp'};error.report.speech=speech?{...speech.metrics}:{engine:'espeak-ng'};}throw error;}finally{speech?.close();await stage?.close();}

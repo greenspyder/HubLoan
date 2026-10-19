@@ -3,8 +3,8 @@
 export function bootScene3D(T,width=360,height=640) {
  const renderer=new T.WebGLRenderer({antialias:false,alpha:false,preserveDrawingBuffer:true,powerPreference:'low-power'});
  renderer.setSize(width,height);renderer.setPixelRatio(1);renderer.outputColorSpace=T.SRGBColorSpace;renderer.setClearColor('#163940');
- const scene=new T.Scene();scene.background=new T.Color('#163940');scene.fog=new T.Fog('#163940',48,80);
- const camera=new T.PerspectiveCamera(42,width/height,.1,100);camera.position.set(0,29,30);
+ const scene=new T.Scene();scene.background=new T.Color('#163940');scene.fog=new T.Fog('#163940',110,180);
+ const camera=new T.PerspectiveCamera(42,width/height,.1,300);camera.position.set(0,29,30);
  scene.add(new T.HemisphereLight('#e5ffff','#37564d',2.3));const sun=new T.DirectionalLight('#ffe6b6',3.1);sun.position.set(-12,24,10);scene.add(sun);
  const fill=new T.DirectionalLight('#86cfff',1.2);fill.position.set(12,8,-8);scene.add(fill);
  const materials=new Map();function mat(color){if(!materials.has(color))materials.set(color,new T.MeshStandardMaterial({color,roughness:.65,metalness:.03}));return materials.get(color);}
@@ -46,7 +46,7 @@ export function bootScene3D(T,width=360,height=640) {
   const delta=previousAt===null?1:Math.min(.1,Math.max(0,(at-previousAt)/1000));previousAt=at;const host=f.players[direction.player||0]||f.players[0],target=host.target||host.body[0];
   cameraMode=direction.mode;currentDirection=direction;
   const h=host.body[0],overview=direction.mode==='Overview';
-  const goal=new T.Vector3(overview?0:(h.x+target.x)/2-7.5,0,overview?0:(h.y+target.y)/2-11.5);
+  const bodies=f.players.flatMap(p=>p.body).concat(target),xs=bodies.map(p=>p.x),zs=bodies.map(p=>p.y);const goal=new T.Vector3((Math.min(...xs)+Math.max(...xs))/2-7.5,0,(Math.min(...zs)+Math.max(...zs))/2-11.5);
   // Fit protagonist and objective to a bounded vertical safe region; no world geometry is moved.
   const spread=Math.hypot(h.x-target.x,h.y-target.y);
   const distance=overview?39:Math.max(direction.mode==='Close-up'?18:21,Math.min(32,spread*1.8+15));
@@ -55,12 +55,13 @@ export function bootScene3D(T,width=360,height=640) {
   if(lastRound===null){aim.copy(goal);camera.position.copy(desired);}else{aim.lerp(goal,ease);camera.position.lerp(desired,ease);}
   lastRound=f.round;camera.lookAt(aim.x,0,aim.z);
   // Safety framing overrides slow tracking when a round or target changes abruptly.
-  const anchors=[new T.Vector3(h.x-7.5,.7,h.y-11.5),new T.Vector3(target.x-7.5,.7,target.y-11.5)];
-  if(direction.cue?.kind==='contest')anchors.push(new T.Vector3(f.players[1].body[0].x-7.5,.7,f.players[1].body[0].y-11.5));
-  for(let fit=0;fit<12;fit++){camera.updateMatrixWorld();const safe=anchors.every(v=>{const q=v.clone().project(camera);return Math.abs(q.x)<.77&&q.y>-.40&&q.y<.65;});if(safe)break;camera.position.sub(aim).multiplyScalar(1.08).add(aim);camera.lookAt(aim);}
+  const anchors=bodies.map(p=>new T.Vector3(p.x-7.5,1.25,p.y-11.5));
+  for(let fit=0;fit<24;fit++){camera.updateMatrixWorld();const safe=anchors.every(v=>{const q=v.clone().project(camera);return q.z>-1&&q.z<1&&Math.abs(q.x)<.76&&q.y>-.45&&q.y<.65;});if(safe)break;camera.position.sub(aim).multiplyScalar(1.06).add(aim);camera.lookAt(aim);}
+  const music=presentation?.role==='music',vocal=music&&['AI_SINGING','HUMAN_SINGING'].includes(presentation.kind);sun.intensity=3.1+(music?.18*(presentation.level||0):0);
+
 
   const celebrating=f.phase==='FINISHED';
-  for(let i=0;i<2;i++){const s=snakes[i],v=f.players[i];if(!v)continue;const eat=at-v.eatenAt,joy=eat>=0&&eat<600||celebrating&&v.name===f.winner,level=i===0&&presentation?.role!=='comment'?presentation?.level||0:0;
+  for(let i=0;i<2;i++){const s=snakes[i],v=f.players[i];if(!v)continue;const eat=at-v.eatenAt,joy=eat>=0&&eat<600||celebrating&&v.name===f.winner,level=i===0&&(!music||vocal)&&presentation?.role!=='comment'?presentation?.level||0:0;
    const points=v.body.map((b,j)=>new T.Vector3(b.x-7.5,.52+Math.sin(t*4+j*.6)*.035,b.y-11.5));
    const curve=new T.CatmullRomCurve3(points,false,'centripetal');const geometry=new T.TubeGeometry(curve,Math.max(12,Math.min(192,points.length*5)),.32,8,false);s.body.geometry.dispose();s.body.geometry=geometry;
    s.head.g.position.copy(points[0]);s.head.g.position.y+=joy?Math.abs(Math.sin(t*12))*.2:0;s.head.g.rotation.y=Math.PI/2-(v.visualDirection??v.direction)*Math.PI/2;s.head.g.rotation.z=v.alive?Math.sin(t*4)*.035:.3;
@@ -71,15 +72,15 @@ export function bootScene3D(T,width=360,height=640) {
   f.obstacles?.forEach((r,i)=>{if(rocks[i])rocks[i].position.set(r.x-7.5,.3,r.y-11.5);});
   apples.forEach((a,i)=>{a.visible=!!f.food[i];if(a.visible){a.position.set(f.food[i].x-7.5,.1+Math.sin(t*2+i)*.06,f.food[i].y-11.5);a.rotation.y=Math.sin(t+i)*.12;a.scale.setScalar(f.food[i].golden?1.25:1);a.children[0].material=mat(f.food[i].golden?'#ffda58':'#ff5360');a.children[1].material=mat(f.food[i].golden?'#e8a92e':'#ed3b4c');}});
   plants.forEach((g,i)=>g.rotation.z=Math.sin(t*.7+i)*.025);
-  const voice=presentation?.role&&presentation.role!=='comment'?presentation:null,chant=voice?.role==='chant';portrait.g.visible=!!voice||!!direction.cue;portrait.animate(at,voice?.level||0,chant||direction.emotion==='joy',direction.emotion==='sad',direction.emotion,(h.x-7.5)*.015);portrait.g.rotation.y=(h.x-7.5)*.035;portrait.g.rotation.z=chant?Math.sin((voice.elapsedMs||0)/140)*.09:Math.sin(t*2)*.025;portrait.g.position.y=-2.1+(voice?Math.sin(t*5)*.05:0);
+  const voice=presentation?.role&&presentation.role!=='comment'?presentation:null,chant=voice?.role==='chant'||music;portrait.g.visible=!!voice||!!direction.cue;portrait.animate(at,music&&!vocal?0:voice?.level||0,chant||direction.emotion==='joy',direction.emotion==='sad',direction.emotion,(h.x-7.5)*.015);portrait.g.rotation.y=(h.x-7.5)*.035;portrait.g.rotation.z=chant?Math.sin((voice.elapsedMs||0)/140)*.09:Math.sin(t*2)*.025;portrait.g.position.y=-2.1+(voice?Math.sin(t*5)*.05:0);
   audience.forEach((a,i)=>{const person=p?.top?.[i];a.g.visible=!!person&&visibility>0;if(!a.g.visible)return;const side=i%2?1:-1;a.g.position.set(-1.45+i*.58,1.7+Math.sin(t*4+i)*.035,-9);a.g.scale.setScalar(visibility*(i===0?.46:.35));a.g.rotation.y=side*-.12;a.crown.visible=i===0;});
   renderer.render(scene,camera);ctx.drawImage(renderer.domElement,0,0);ctx.save();ctx.scale(width/360,height/640);
   card(16,16,310,47,'#123740e0');label(`SEED SNAKE • R${f.round}`,28,35,12,'#b8e7b6');
   label(`${f.players[0].name.slice(0,12)} ${f.players[0].score}  ×  ${f.players[1].score} ${f.players[1].name.slice(0,12)}`,28,54,14);
   if(celebrating){card(70,115,220,68,'#fff0cbea');label(f.winner==='Empate'?'Empate!':`${f.winner} venceu!`,180,144,20,'#224443','center');label('Próxima colheita em instantes',180,167,12,'#456459','center');}
-  if(presentation?.text){card(99,475,228,82,'#123740ed');label(voice?'LUME • '+(chant?'NO RITMO':'FALANDO'):'COMENTÁRIO • SIMULADO',111,492,10,'#c8edb2');wrap(presentation.text,111,512,203);}
+  if(presentation?.text){card(99,475,228,82,'#123740ed');label(voice?'LUME • '+(music?(vocal?'FAIXA VOCAL':'INSTRUMENTAL'):chant?'NO RITMO':'FALANDO'):'COMENTÁRIO • SIMULADO',111,492,10,'#c8edb2');wrap(presentation.text,111,512,203);}
   if(p?.top?.length){const expanded=visibility>0;card(16,expanded?565:590,310,expanded?48:25,'#123740e0');label(expanded?'TOP 6 • QUANTIDADE SIMULADA':`LÍDER DEMO • ${p.top[0].name.slice(0,20)}`,28,expanded?580:607,11,'#ffdc81');if(expanded)(p.top||[]).forEach((person,i)=>label(`${i+1} ${person.name.slice(0,5)}`,28+i*49,601,10,i?'#dcf0ed':'#ffdc81'));}
-  label(paused?'PAUSADO':'PERSONAGENS VIRTUAIS • INTERAÇÕES SIMULADAS',180,631,9,'#a2c8c1','center');ctx.restore();
+  label(paused?'PAUSADO':'PERSONAGENS VIRTUAIS • INTERAÇÕES SIMULADAS',180,631,9,'#102d35','center');ctx.restore();
   lastPresentation={anchors:anchors.map(v=>v.clone().project(camera).toArray()),cameraMode,cue:currentDirection?.cue?.kind||null,focus:aim.toArray(),mouth:voice?.level||0,round:f.round,camera:camera.position.toArray(),bodyLengths:f.players.map(v=>v.body.length),avatarCount:(p?.top||[]).filter((_,i)=>audience[i].g.visible).length};
   const data=ctx.getImageData(0,0,width,height).data,rgb=new Uint8Array(width*height*3);for(let i=0,j=0;i<data.length;i+=4){rgb[j++]=data[i];rgb[j++]=data[i+1];rgb[j++]=data[i+2];}
   let binary='';for(let i=0;i<rgb.length;i+=32768)binary+=String.fromCharCode(...rgb.subarray(i,i+32768));return btoa(binary);

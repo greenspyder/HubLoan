@@ -7,7 +7,7 @@ import { bootScene3D } from './scene3d.mjs';
 import { sceneFrame,avatarVisibility } from '../../frontend/src/shared/live-visual.mjs';
 const require=createRequire(import.meta.url);
 export async function create3DRenderer({width=360,height=640,executablePath=process.env.HUBLOAN_CHROMIUM,software=process.env.HUBLOAN_SOFTWARE_GL==='1',unsandboxed=process.env.HUBLOAN_UNSANDBOXED_RENDERER==='1'}={}) {
- if(![[360,640],[720,1280]].some(([w,h])=>w===width&&h===height))throw Error('Resolução 3D não suportada.');
+ if(![[216,384],[360,640],[720,1280]].some(([w,h])=>w===width&&h===height))throw Error('Resolução 3D não suportada.');
  if(!executablePath)throw Error('Configure HUBLOAN_CHROMIUM com Chrome/Chromium local.');
  const browser=await puppeteer.launch({executablePath,headless:'shell',pipe:true,timeout:15000,args:['--disable-dev-shm-usage',...(software?['--use-angle=swiftshader','--enable-unsafe-swiftshader']:[]),...(unsandboxed?['--no-sandbox']:[])]});
  const director=createDirector();let closed=false,busy=false;const metrics={engine:'three-webgl2',width,height,frames:0,maxFrameMs:0,softwareRequested:software,sandboxDisabled:unsandboxed,gpu:null,geometryCount:0,textureCount:0};
