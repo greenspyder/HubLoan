@@ -62,6 +62,7 @@ async function request<T>(path: string, method = 'GET', body?: object): Promise<
   return data as T;
 }
 export const agentApi = {
+  async liveMusicPreview(id:string,track:string){const r=await fetch(`${base}/live/${encodeURIComponent(id)}/music/${encodeURIComponent(track)}`,{headers:{Authorization:`Bearer ${getAccessCode()}`}});if(!r.ok)throw Error('Faixa indisponível.');return r.blob();},
   tiktokState: () => request<TikTokState>('/tiktok'),
   authorizeTikTok: () => request<{url:string;state:string}>('/tiktok/authorize','POST'),
   finishTikTok: (input:{state:string;code?:string;error?:string}) => request<TikTokState>('/tiktok/callback','POST',input),
