@@ -52,3 +52,5 @@ Custo de API e geração dos instrumentais de teste: zero. Computador/energia/re
 Comparado à 4.1: acrescenta voz feminina opcional, repertório persistente/aprovado, ambiente importado, rotação/agrupamento e performance por PCM real. Ainda pendentes: repertório cantado real, escuta/seleção artística, retenção real, HD validado em GPU, sessões longas, playlist reordenável e ganhos separados fala/canto. Fotos/ranking reaproveitados.
 
 Limitações técnicas: seleção persistida não é confirmação de reprodução; não há exactly-once entre crash e replay. Crash entre blob e metadata pode deixar órfão privado. Worker baixa catálogo no início; alterações exigem parar/reiniciar. Aprovação/remoção/integridade e isolamento têm regressões automatizadas.
+
+Validação concluída: 180/180 backend, 4/4 após ajuste final de câmera, build/lint aprovados e receptor RTMP com 126,037 s H.264/AAC. Evidência e avaliação crítica em [validation.md](evidence/phase42/validation.md). A entrega segue em rascunho: canto real, revisão auditiva e qualidade de movimento ainda pendentes.

@@ -1,0 +1,216 @@
+{
+  "report": {
+    "direction": {
+      "harvest": 8,
+      "result": 8,
+      "music": 3,
+      "speech": 4,
+      "contest": 5
+    },
+    "status": "STOPPED",
+    "profile": "economy",
+    "fps": 4,
+    "maxRenderMs": 303,
+    "lateFrames": 2,
+    "maxPipelineLagMs": 76,
+    "frames": 504,
+    "bytes": 10983263,
+    "durationMs": 126023,
+    "renderedFrames": 504,
+    "rssBytes": 211480576,
+    "rendererCpuMs": 5432.013,
+    "encoderCpuMs": null,
+    "networkBytes": null,
+    "publicTransmission": "UNCONFIRMED",
+    "audio": {
+      "synthesized": 5,
+      "cacheHits": 6,
+      "ttsFailures": 0,
+      "dropped": 0,
+      "ttsMs": 7999,
+      "maxPlaybackLatencyMs": 18669,
+      "musicFailures": 0,
+      "ambientFrames": 504,
+      "trackPlays": {
+        "1a9460a0-b7ac-4e92-8e22-33f450844037": 1,
+        "a42f9470-6db0-4911-8d44-57d518daa1d7": 1,
+        "e5b9ee83-fedd-4657-b69f-a7f5601a1221": 1
+      },
+      "played": {
+        "host": 10,
+        "comment": 1,
+        "chant": 0,
+        "music": 3
+      },
+      "peak": 0.1060451596973381,
+      "aiCalls": 0
+    },
+    "aiCalls": 0,
+    "renderer": {
+      "engine": "three-webgl2",
+      "width": 216,
+      "height": 384,
+      "frames": 504,
+      "maxFrameMs": 290,
+      "softwareRequested": true,
+      "sandboxDisabled": true,
+      "gpu": "WebKit WebGL",
+      "geometryCount": 36,
+      "textureCount": 1,
+      "browserCpuMs": null,
+      "browserRssBytes": null
+    },
+    "speech": {
+      "engine": "kokoro",
+      "voice": "pf_dora (pt-BR feminina)",
+      "quality": "HUMAN_REVIEW_REQUIRED",
+      "ready": true,
+      "neural": 5,
+      "fallback": 0,
+      "failures": 0,
+      "maxSynthesisMs": 1820,
+      "rssBytes": null
+    }
+  },
+  "decodedAudioCorrelation": 0.9964844264329172,
+  "receiverDuration": "126.037000",
+  "top": [
+    {
+      "id": "demo-ana",
+      "name": "ana",
+      "quantity": 22,
+      "joined": 0,
+      "hasPhoto": true
+    },
+    {
+      "id": "demo-amigo0",
+      "name": "amigo0",
+      "quantity": 1,
+      "joined": 2,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo1",
+      "name": "amigo1",
+      "quantity": 1,
+      "joined": 3,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo2",
+      "name": "amigo2",
+      "quantity": 1,
+      "joined": 4,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo3",
+      "name": "amigo3",
+      "quantity": 1,
+      "joined": 5,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo4",
+      "name": "amigo4",
+      "quantity": 1,
+      "joined": 6,
+      "hasPhoto": false
+    }
+  ],
+  "rounds": 8,
+  "repertoire": {
+    "categories": {
+      "roses": {
+        "count": 2,
+        "lastAt": 1792436532520
+      },
+      "special": {
+        "count": 1,
+        "lastAt": 1792436515511
+      }
+    },
+    "grouped": 5,
+    "selected": 3,
+    "history": [
+      {
+        "at": 1792436505192,
+        "trackId": "1a9460a0-b7ac-4e92-8e22-33f450844037",
+        "category": "roses"
+      },
+      {
+        "at": 1792436515511,
+        "trackId": "a42f9470-6db0-4911-8d44-57d518daa1d7",
+        "category": "special"
+      },
+      {
+        "at": 1792436532520,
+        "trackId": "e5b9ee83-fedd-4657-b69f-a7f5601a1221",
+        "category": "roses"
+      }
+    ],
+    "lastAt": 1792436532520
+  },
+  "catalog": [
+    {
+      "id": "1a9460a0-b7ac-4e92-8e22-33f450844037",
+      "title": "Teste instrumental 1",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "roses",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "0b48b17a0b091a6b8b7a85241d78033a5960016fe3bca53a172e88fa63c58ba4",
+      "bytes": 288044,
+      "seconds": 6,
+      "approved": true
+    },
+    {
+      "id": "e5b9ee83-fedd-4657-b69f-a7f5601a1221",
+      "title": "Teste instrumental 2",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "roses",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "da4ad690f9c59d5fa3ae9f554390f2ebacef2d13f7a78d4aefe1a4e2932f597a",
+      "bytes": 288044,
+      "seconds": 6,
+      "approved": true
+    },
+    {
+      "id": "a42f9470-6db0-4911-8d44-57d518daa1d7",
+      "title": "Teste instrumental 3",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "special",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "01d8ed5d839866f3a721e10f8ca0c419cd2a4740ccfaacde0de8c8165d2c60e9",
+      "bytes": 576044,
+      "seconds": 12,
+      "approved": true
+    },
+    {
+      "id": "761dc7a2-ab08-4ec3-ac40-35cc33e7a648",
+      "title": "Teste instrumental 2",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "ambient",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "f49fbf5a31bb7ddca8c44ae5c2844760e0b0672faab40e507e709e074f28a5b8",
+      "bytes": 1440044,
+      "seconds": 30,
+      "approved": true
+    }
+  ]
+}

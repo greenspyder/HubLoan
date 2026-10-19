@@ -56,7 +56,7 @@ export function bootScene3D(T,width=360,height=640) {
   lastRound=f.round;camera.lookAt(aim.x,0,aim.z);
   // Safety framing overrides slow tracking when a round or target changes abruptly.
   const anchors=bodies.map(p=>new T.Vector3(p.x-7.5,1.25,p.y-11.5));
-  for(let fit=0;fit<24;fit++){camera.updateMatrixWorld();const safe=anchors.every(v=>{const q=v.clone().project(camera);return q.z>-1&&q.z<1&&Math.abs(q.x)<.76&&q.y>-.45&&q.y<.65;});if(safe)break;camera.position.sub(aim).multiplyScalar(1.06).add(aim);camera.lookAt(aim);}
+  for(let fit=0;fit<24;fit++){camera.updateMatrixWorld();const safe=anchors.every(v=>{const q=v.clone().project(camera);return q.z>-1&&q.z<1&&Math.abs(q.x)<.76&&q.y>-.25&&q.y<.65;});if(safe)break;camera.position.sub(aim).multiplyScalar(1.06).add(aim);camera.lookAt(aim);}
   const music=presentation?.role==='music',vocal=music&&['AI_SINGING','HUMAN_SINGING'].includes(presentation.kind);sun.intensity=3.1+(music?.18*(presentation.level||0):0);
 
 
