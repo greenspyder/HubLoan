@@ -42,7 +42,7 @@ Faixas pré-carregadas não esperam síntese. Voz continua serial e com cache ex
 
 Últimas 256 amostras por tipo: `pending` espera antes da síntese; `synthesis` preparação; `queue` espera após preparo; `reaction` evento até primeiro áudio; `segment` evento até cada segmento; `preloaded` evento até faixa pronta. Média/p95/máximo só incluem itens reproduzidos; descartes são separados. Relógios precisam estar sincronizados. Não mede latência de plataforma. Heartbeat de 2 s impede garantir universalmente reação abaixo de 2 s.
 
-O teste RTMP agora aguarda `SENDING_MEDIA` antes de enviar eventos, evitando narrar comentários que já envelheceram durante inicialização do modelo. Uma tentativa anterior à recuperação falhou por descarte do comentário de startup; asserções de áudio/recepção foram preservadas.
+O teste RTMP aguarda `SENDING_MEDIA` e o cooldown da fala autônoma antes de enviar o comentário. Verifica sua aceitação antes da reprodução. O prazo de preparação 3D admite a inicialização do navegador e modelo; os watchdogs durante transmissão não foram alterados. As asserções de recepção continuam exigindo áudio real.
 
 ## Visual e desempenho
 
@@ -50,7 +50,7 @@ Regras de câmera incluem cantos da arena, corpos e objetivo; Top 6 tem duas lin
 
 Readback continua necessário na composição Canvas→RGB→FFmpeg. Já há `willReadFrequently`, buffer reutilizado e serialização nativa; não foi introduzido pipeline assíncrono não validado. Não alegamos redução desse gargalo nesta etapa. Software WebGL e métricas são documentados no relatório; HD/30 e hardware com GPU permanecem pendentes.
 
-A demonstração usa instrumentais CC0 de teste porque nenhuma trilha final autorizada foi fornecida. Não representa a sonoridade final A/B/C. Kokoro disponível; escuta humana e canto real pendentes. Sem merge/deploy de produção. Evidências: `evidence/phase42-brazil/`.
+A última demonstração concluída está em `evidence/phase42-completion/`, anterior às mudanças de identidade brasileira. Usa instrumentais CC0 de teste porque nenhuma trilha final autorizada foi fornecida. Não representa a sonoridade final A/B/C. Kokoro disponível; escuta humana e canto real pendentes. Sem merge/deploy de produção. Testes desta atualização e pendências: `evidence/phase42-brazil/validation.md`. Não há nova gravação 120 s validada para este commit.
 
 ## Três propostas completas
 
