@@ -56,3 +56,5 @@ Comparado à 4.1: acrescenta voz feminina opcional, repertório persistente/apro
 Limitações técnicas: seleção persistida não é confirmação de reprodução; não há exactly-once entre crash e replay. Crash entre blob e metadata pode deixar órfão privado. Worker baixa catálogo no início; alterações exigem parar/reiniciar. Aprovação/remoção/integridade e isolamento têm regressões automatizadas.
 
 Validação concluída: 180/180 backend, 4/4 após ajuste final de câmera, build/lint aprovados e receptor RTMP com 126,037 s H.264/AAC. Evidência e avaliação crítica em [validation.md](evidence/phase42/validation.md). A entrega segue em rascunho: canto real, revisão auditiva e qualidade de movimento ainda pendentes.
+
+Refinamento brasileiro: [propostas, operação e limites](live-factory-brazilian-sound.md). Evidências em `evidence/phase42-brazil/`.
