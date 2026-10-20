@@ -1,4 +1,5 @@
 import {createHash,randomUUID} from 'node:crypto';
+import {prepareMusic} from './live-music-providers.mjs';
 import {AppError} from './domain.mjs';
 export const musicCategories=['roses','common','special','top6','victory','ambient'];
 // Deliberately narrow import contract: no decoder subprocess or remote URL on the server.
@@ -13,10 +14,12 @@ export function musicTrack(i,b){
  if(!musicCategories.includes(i.category)||!['INSTRUMENTAL_TEST','ORIGINAL_INSTRUMENTAL','AI_SINGING','HUMAN_SINGING'].includes(i.kind)||i.commercialLiveRights!==true)throw new AppError('Declare categoria, tipo e direitos comerciais/live.');
  if((i.category==='roses'&&(a.seconds<4||a.seconds>8))||(i.category!=='ambient'&&a.seconds>20)||(i.category==='ambient'&&a.seconds<4))throw new AppError('Rosas: 4–8 s. Jingles: até 20 s. Ambiente: 4–60 s.');
  if(i.costMinor!==null&&(!Number.isSafeInteger(i.costMinor)||i.costMinor<0||i.costMinor>1000000))throw new AppError('Custo em centavos ou desconhecido.');
- return {id:randomUUID(),title:clean('title',70),source:clean('source',300),license:clean('license',500),creator:clean('creator',100),category:i.category,kind:i.kind,costMinor:i.costMinor,commercialLiveRights:true,hash:a.hash,bytes:a.bytes,seconds:a.seconds,approved:false};
+ const vocalWindows=validateVocalWindows(i.vocalWindows||[],a.seconds,i.kind);
+ return {vocalWindows,id:randomUUID(),title:clean('title',70),source:clean('source',300),license:clean('license',500),creator:clean('creator',100),category:i.category,kind:i.kind,costMinor:i.costMinor,commercialLiveRights:true,hash:a.hash,bytes:a.bytes,seconds:a.seconds,approved:false};
 }
 export function repertoireAction(e,action,i){
  if(!['STOPPED','STOPPED_FINAL'].includes(e.status)||i.version!==e.configVersion)throw new AppError('Encerre a sessão e atualize a versão.',409);const list=e.musicCatalog||=[];
+ if(action==='music-prepare'){e.musicPreparation=prepareMusic(i);e.configVersion++;return;}
  if(action==='music-import'){const t=i.track;if(list.filter(x=>x.category===t.category).length>=3||list.reduce((n,x)=>n+x.bytes,0)+t.bytes>18000000)throw new AppError('Máximo três faixas por categoria e 18 MB por experiência.');if(list.some(x=>x.hash===t.hash))throw new AppError('Arquivo já importado.');list.push(t);}else{const t=list.find(x=>x.id===i.trackId);if(!t)throw new AppError('Faixa não encontrada.',404);if(action==='music-approve'){if(i.hash!==t.hash||i.listened!==true||i.rightsReviewed!==true)throw new AppError('Pré-escute e revise direitos do arquivo exato.');t.approved=true;}else if(action==='music-remove')e.musicCatalog=list.filter(x=>x!==t);else throw new AppError('Ação inválida.');}e.configVersion++;
 }
 export function queueMusic(e,category,name,now){
@@ -25,4 +28,10 @@ export function queueMusic(e,category,name,now){
  if((state.lastAt!==null&&now-state.lastAt<cooldown)||(category!=='special'&&r.lastAt!=null&&now-r.lastAt<8000)||p.jobs.filter(j=>j.expiresAt>now).length>=6){r.grouped++;return true;}
  const pattern=tracks.length===3?[0,1,0,1,0,2]:tracks.map((_,i)=>i),t=tracks[pattern[state.count%pattern.length]];state.count++;state.lastAt=now;r.lastAt=now;r.selected++;r.history.push({at:now,trackId:t.id,category});r.history=r.history.slice(-40);
  p.jobs=p.jobs.filter(j=>j.expiresAt>now);p.jobs.push({id:randomUUID(),sessionId:e.sessionId,createdAt:now,expiresAt:now+45000,priority:category==='special'?4:2,source:category==='victory'?'INTERNAL_GAME':'SIMULATED_OPERATOR',segments:[{role:'music',trackId:t.id,hash:t.hash,kind:t.kind,text:`${name} · ${t.title}${t.kind==='INSTRUMENTAL_TEST'?' · TESTE SEM CANTO':''}`} ]});return true;
+}
+
+// Human-reviewed intervals in seconds. Not phonetic lip sync or source separation.
+export function validateVocalWindows(windows,seconds,kind){
+ if(!Array.isArray(windows)||windows.length>20||(!['AI_SINGING','HUMAN_SINGING'].includes(kind)&&windows.length))throw new AppError('Trechos vocais exigem uma faixa cantada.');
+ let end=0;return windows.map(w=>{if(!Array.isArray(w)||w.length!==2||!w.every(Number.isFinite)||w[0]<end||w[0]<0||w[1]<=w[0]||w[1]>seconds)throw new AppError('Trechos vocais ordenados, sem sobreposição e dentro da faixa.');end=w[1];return [w[0],w[1]];});
 }

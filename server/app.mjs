@@ -169,7 +169,7 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       const musicPreview=route.match(/^\/live\/([a-f0-9-]{36})\/music\/([a-f0-9-]{36})$/);
       if(musicPreview&&request.method==='GET'){const [,eid,tid]=musicPreview,e=(await store.read(id)).workspace.liveFactory?.experiences.find(x=>x.id===eid);if(!e?.musicCatalog?.some(t=>t.id===tid))throw new AppError('Faixa não encontrada.',404);return send(response,200,await store.readLiveAudio(`${id}:${eid}:${tid}`),{'Content-Type':'audio/wav'});}
       if(route==='/live/worker-authorize'&&request.method==='POST'){const input=await body(request);const updated=await store.mutate(id,w=>authorizeWorker(w,input.id,input.mode));return send(response,200,{...updated.result,workerPath:`/api/agents/live-worker/${id}/${input.id}`});}
-      const liveRoute = route.match(/^\/live\/(create|start|pause|resume|stop|emergency|event|configure|suggest|apply-suggestion|game-configure|worker-stop|performance-configure|performance-event|performance-photo|performance-bind|music-approve|music-remove|audio-mute)$/);
+      const liveRoute = route.match(/^\/live\/(create|start|pause|resume|stop|emergency|event|configure|suggest|apply-suggestion|game-configure|worker-stop|performance-configure|performance-event|performance-photo|performance-bind|music-prepare|music-approve|music-remove|audio-mute)$/);
       if (liveRoute && request.method === 'POST') {
         const input=await body(request,liveRoute[1]==='performance-photo'?150000:12000);if(liveRoute[1]==='performance-photo')input.normalizedImage=await normalizeAvatar(input);
         const updated=await store.mutate(id,w=>liveAction(w,liveRoute[1],input));

@@ -31,7 +31,7 @@ async function encodeWorker(c,{transmit=false,output='live-preview.mp4',seconds=
  let progress='';encoder.stdio[4].on('data',chunk=>{progress+=chunk;let end;while((end=progress.indexOf('\n'))>=0){const line=progress.slice(0,end);progress=progress.slice(end+1);const [key,value]=line.split('=');if(key==='frame'&&Number(value)>frames){frames=Number(value);lastProgress=Date.now();status=transmit?'SENDING_MEDIA':'PREVIEW';}if(key==='total_size'&&Number.isSafeInteger(Number(value)))bytes=Number(value);}progress=progress.slice(-2048);});
  let polling=false;const timer=setInterval(async()=>{if(polling||closed)return;polling=true;try{await heartbeat();}catch{failed=true;}finally{polling=false;}},2000);
  const watchdog=setInterval(()=>{if(signal?.aborted||Date.now()-lastProgress>8000||Date.now()-lastContact>7000||failed){failed=true;encoder.kill('SIGTERM');}},250);
- const started=Date.now(),cpu=process.cpuUsage();let maxRenderMs=0,lateFrames=0,maxPipelineLagMs=0;
+ const started=Date.now(),cpu=process.cpuUsage();let maxRenderMs=0,lateFrames=0,maxPipelineLagMs=0;const stages={};const record=(key,ms)=>{const m=stages[key]||={totalMs:0,maxMs:0,count:0};m.totalMs+=ms;m.maxMs=Math.max(m.maxMs,ms);m.count++;};const timed=async(key,fn)=>{const start=performance.now();try{return await fn();}finally{record(key,performance.now()-start);}};
  const write=(pipe,data)=>new Promise((resolve,reject)=>{pipe.write(data,error=>error?reject(error):resolve());});
  try{
   while(!failed&&!signal?.aborted&&Date.now()-started<seconds*1000){
@@ -39,8 +39,8 @@ async function encodeWorker(c,{transmit=false,output='live-preview.mp4',seconds=
    if(!state.heartbeat||Date.now()+offset-state.heartbeat>10000)throw new Error('Heartbeat do runtime expirou.');
    const at=started+frame*1000/fps+offset-2500,renderStart=Date.now();
    const direction=director.update(state,sceneFrame(state,at),at,mixer.presentation());
-   const audio=mixer.mix(state,at,48000/fps,direction);onAudio(audio);
-   await Promise.all([renderFrame(state,at,mixer.presentation(),direction).then(b=>write(encoder.stdin,b)),write(encoder.stdio[3],audio)]);frame++;maxRenderMs=Math.max(maxRenderMs,Date.now()-renderStart);if(Date.now()-renderStart>1000/fps)lateFrames++;
+   const mixStart=performance.now(),audio=mixer.mix(state,at,48000/fps,direction);record('pcmMixMs',performance.now()-mixStart);onAudio(audio);
+   await Promise.all([timed('renderRoundtripMs',()=>renderFrame(state,at,mixer.presentation(),direction)).then(b=>timed('videoPipeMs',()=>write(encoder.stdin,b))),timed('audioPipeMs',()=>write(encoder.stdio[3],audio))]);frame++;maxRenderMs=Math.max(maxRenderMs,Date.now()-renderStart);if(Date.now()-renderStart>1000/fps)lateFrames++;
    await wait(Math.max(0,started+frame*1000/fps-Date.now()));
   }
  }catch{failed=true;}
@@ -49,7 +49,7 @@ async function encodeWorker(c,{transmit=false,output='live-preview.mp4',seconds=
   const kill=setTimeout(()=>encoder.kill('SIGKILL'),3000);await exited;clearTimeout(kill);
   status=failed||exitCode!==0?'ERROR':'STOPPED';try{await heartbeat();}catch{/* revocation/backend outage; no secret logged */}
  }
- const usage=process.cpuUsage(cpu);const report={direction:director.counts,status,profile,fps,maxRenderMs,lateFrames,maxPipelineLagMs,frames,bytes,durationMs:Date.now()-started,renderedFrames:frame,rssBytes:process.memoryUsage().rss,rendererCpuMs:(usage.user+usage.system)/1000,encoderCpuMs:null,networkBytes:null,publicTransmission:'UNCONFIRMED',audio:mixer.metrics,aiCalls:0};
+ const usage=process.cpuUsage(cpu);const report={stages,codecTimingNote:"Pipe timing includes backpressure, not isolated H264/AAC codec time. GPU submit is not GPU completion.",direction:director.counts,status,profile,fps,maxRenderMs,lateFrames,maxPipelineLagMs,frames,bytes,durationMs:Date.now()-started,renderedFrames:frame,rssBytes:process.memoryUsage().rss,rendererCpuMs:(usage.user+usage.system)/1000,encoderCpuMs:null,networkBytes:null,publicTransmission:'UNCONFIRMED',audio:mixer.metrics,aiCalls:0};
  if(status==='ERROR')throw Object.assign(new Error('Encoder interrompido. Revise destino, FFmpeg, backend e autorização. Não houve confirmação pública.'),{report});
  return report;
 }

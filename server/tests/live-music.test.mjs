@@ -32,3 +32,19 @@ test('API persists audio, protects preview and worker access, rejects unapproved
  await post('/live/start',{id:e.id});await app.liveRuntime.tick();let grant=await post('/live/worker-authorize',{id:e.id,mode:'preview'});const media=base.replace('/api/agents','')+grant.workerPath+'/music/'+song.id;assert.equal((await fetch(media,{headers:{Authorization:`Bearer ${grant.token}`}})).status,404);
  await post('/live/stop',{id:e.id});await post('/live/music-approve',{id:e.id,version:2,trackId:song.id,hash:song.hash,listened:true,rightsReviewed:true});await post('/live/start',{id:e.id});await app.liveRuntime.tick();grant=await post('/live/worker-authorize',{id:e.id,mode:'preview'});assert.equal((await fetch(media,{headers:{Authorization:`Bearer ${grant.token}`}})).status,200);await post('/live/worker-stop',{id:e.id});assert.equal((await fetch(media,{headers:{Authorization:`Bearer ${grant.token}`}})).status,403);
 });
+test('provider preparation cannot authorize cost or replace approved music',()=>{
+ const e={status:'STOPPED',configVersion:1,musicCatalog:[]},i={version:1,provider:'elevenlabs',category:'roses',seconds:6,lyrics:'Uma rosa chegou',style:'Voz feminina',costAuthorized:true};
+ repertoireAction(e,'music-prepare',i);assert.equal(e.musicPreparation.costAuthorized,false);assert.equal(e.musicPreparation.generated,false);assert.equal(e.musicPreparation.status,'NOT_CONFIGURED');assert.equal(e.musicCatalog.length,0);
+ assert.throws(()=>repertoireAction(e,'music-prepare',{...i,version:2,provider:'unofficial'}));assert.throws(()=>repertoireAction(e,'music-prepare',{...i,version:2,seconds:9}));assert.equal(e.configVersion,2);
+});
+test('vocal windows exclude instrumental intros, pause cancels performance',async()=>{
+ const b=testMusic(),i={...trackInput(),kind:'AI_SINGING',vocalWindows:[[1,2],[3,4]]},t=musicTrack(i,b);
+ assert.throws(()=>musicTrack({...i,vocalWindows:[[2,3],[1,4]]},b));assert.throws(()=>musicTrack({...i,vocalWindows:[[1,7]]},b));assert.throws(()=>musicTrack({...i,kind:'ORIGINAL_INSTRUMENTAL'},b));
+ const m=createMixer(),now=Date.now(),e={status:'TESTING',sessionId:'s',config:{audio:{muted:false,volume:1}},performanceConfig:{...performanceDefaults(),enabled:true},performance:{jobs:[{id:'vocal',sessionId:'s',createdAt:now,expiresAt:now+45000,priority:2,segments:[{role:'music',trackId:t.id,hash:t.hash,kind:t.kind,text:'Synthetic unit fixture; not singing evidence'}]}]}};
+ m.setRepertoire({assets:new Map([[t.id,decodeMusic(b,t)]]),failures:0});m.observe(e,now);await tick();m.mix(e,now,48000);assert.equal(m.presentation().vocalActive,false);m.mix(e,now,48000);assert.equal(m.presentation().vocalActive,true);m.mix(e,now,48000);assert.equal(m.presentation().vocalLevel,0);e.config.audio.muted=true;m.observe(e,now);assert.equal(m.presentation(),null);m.close();
+});
+test('jingle finishes before queued speech; repeated gifts do not regenerate audio',async()=>{
+ const b=testMusic(),t=musicTrack(trackInput(),b),now=Date.now();let calls=0;const m=createMixer({synthesize:async()=>{calls++;return new Float32Array(4800).fill(.2);}}),job=(id,priority,segments)=>({id,priority,segments,sessionId:'s',createdAt:now,expiresAt:now+45000});
+ const e={status:'TESTING',sessionId:'s',config:{audio:{muted:false,volume:1}},performanceConfig:{...performanceDefaults(),enabled:true},performance:{jobs:[job('speech',1,[{role:'host',voice:'host',text:'Olá'}]),job('jingle',4,[{role:'music',trackId:t.id,hash:t.hash,kind:t.kind}])]}};
+ m.setRepertoire({assets:new Map([[t.id,decodeMusic(b,t)]]),failures:0});m.observe(e,now);await tick();for(let i=0;i<60;i++){m.mix(e,now,4800);assert.equal(m.presentation().role,'music');}m.mix(e,now,4800);assert.equal(m.presentation().role,'host');m.observe(e,now);await tick();m.mix(e,now,4800);assert.equal(m.presentation(),null);assert.equal(calls,1);assert.equal(m.metrics.played.music,1);m.close();
+});

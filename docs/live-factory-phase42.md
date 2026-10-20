@@ -1,3 +1,5 @@
+> Atualização: [conclusão incremental da PR #16](live-factory-phase42-completion.md).
+
 # Live Factory 4.2 — repertório revisável e voz feminina
 
 Entrega incremental sobre d88d26d (4.1), base `codex/live-factory-director`. Na auditoria master era 05634c6 (3.2); PRs #14/#15 estavam abertos. Runtime, Seed Snake, Three.js, director, mixer, Top 6, encoder, autorizações e watchdog existentes são preservados. Sem merge/deploy público, compras ou APIs pagas.
