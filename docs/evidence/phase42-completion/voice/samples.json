@@ -1,0 +1,52 @@
+{
+  "engine": {
+    "engine": "kokoro",
+    "voice": "pf_dora (pt-BR feminina)",
+    "quality": "HUMAN_REVIEW_REQUIRED",
+    "ready": true,
+    "neural": 6,
+    "fallback": 0,
+    "failures": 0,
+    "maxSynthesisMs": 1895
+  },
+  "samples": [
+    {
+      "file": "saudacao.wav",
+      "text": "Oi! Eu sou a Lume. Chega mais, tem uma surpresa nessa arena.",
+      "seconds": 3.55,
+      "synthesisMs": 1693.5956139999998
+    },
+    {
+      "file": "jogo.wav",
+      "text": "Olha aquela maçã! Se eu acertar a curva, ela é minha.",
+      "seconds": 3.275,
+      "synthesisMs": 1610.439324
+    },
+    {
+      "file": "rosa.wav",
+      "text": "Uma rosa pra mim? Agora essa arena virou um jardim!",
+      "seconds": 3.35,
+      "synthesisMs": 1518.9606939999994
+    },
+    {
+      "file": "especial.wav",
+      "text": "Que surpresa maravilhosa! Essa comemoração vai ser especial.",
+      "seconds": 3.975,
+      "synthesisMs": 1901.8734749999985
+    },
+    {
+      "file": "vitoria.wav",
+      "text": "Eu consegui! Elegância na curva, vitória na colheita.",
+      "seconds": 3.4,
+      "synthesisMs": 1602.1935380000014
+    },
+    {
+      "file": "frustracao.wav",
+      "text": "Eu não bati. Foi um abraço dramático no obstáculo.",
+      "seconds": 3.3,
+      "synthesisMs": 1480.0281529999993
+    }
+  ],
+  "humanReview": "PENDING",
+  "note": "Intenção emocional no texto; sem controle neural específico de emoção ou aprovação auditiva."
+}
