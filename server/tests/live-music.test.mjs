@@ -68,3 +68,8 @@ test('main ambient and brief persist and reach only the authorized worker',async
  const reopened=await createStore({file});const saved=(await reopened.read((await import('../domain.mjs')).workspaceId(token))).workspace.liveFactory.experiences[0];assert.equal(saved.musicAmbientTrackId,track.id);assert.equal(saved.musicPreparation.proposalId,'signature');await reopened.close();await post('/live/start',{id:e.id});await app.liveRuntime.tick();const grant=await post('/live/worker-authorize',{id:e.id,mode:'preview'}),url=base.replace('/api/agents','')+grant.workerPath;
  const beat=await fetch(url,{method:'POST',headers:{Authorization:`Bearer ${grant.token}`,'Content-Type':'application/json'},body:JSON.stringify({instance:'selection-test-worker',status:'STARTING',frames:0,bytes:0})});assert.equal(beat.status,200);assert.equal((await beat.json()).experience.musicAmbientTrackId,track.id);assert.equal((await fetch(base+`/live/${e.id}/music/${track.id}`,{headers:{Authorization:`Bearer ${'e'.repeat(64)}`}})).status,404);
 });
+
+test('mixer acknowledges completed and interrupted jobs without replay',async()=>{
+ const now=Date.now(),e={status:'TESTING',sessionId:'session',performanceConfig:{...performanceDefaults(),enabled:true},config:{audio:{muted:false,volume:1}},performance:{}};e.performance.jobs=[{id:'a'.repeat(36),sessionId:'session',createdAt:now,expiresAt:now+45000,priority:0,segments:[{role:'host',voice:'host',text:'Oi'}]}];
+ const m=createMixer({synthesize:async()=>new Float32Array(100)});m.observe(e,now);await new Promise(r=>setTimeout(r,10));m.mix(e,now);assert.deepEqual(m.settledJobs,['a'.repeat(36)]);m.observe(e,now);assert.equal(m.metrics.synthesized,1);m.close();
+});
