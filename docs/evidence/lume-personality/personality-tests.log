@@ -1,0 +1,11 @@
+✔ Lume: varied contextual repertoire, bounded memory and occasional double meaning (1.775436ms)
+✔ Lume: cache keys preserve delivery, state isolated per session and queue remains bounded (1.888347ms)
+✔ approved jingle receives one contextual reply; grouped roses do not add speech (1.013644ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 230.846792
