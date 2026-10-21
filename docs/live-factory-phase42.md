@@ -58,3 +58,7 @@ Limitações técnicas: seleção persistida não é confirmação de reproduç�
 Validação concluída: 180/180 backend, 4/4 após ajuste final de câmera, build/lint aprovados e receptor RTMP com 126,037 s H.264/AAC. Evidência e avaliação crítica em [validation.md](evidence/phase42/validation.md). A entrega segue em rascunho: canto real, revisão auditiva e qualidade de movimento ainda pendentes.
 
 Refinamento brasileiro: [propostas, operação e limites](live-factory-brazilian-sound.md). Evidências em `evidence/phase42-brazil/`.
+
+## Validação RTMP posterior — 21/10/2026
+
+Ver [nova gravação, correções de fila/polling, latências e avaliação visual](evidence/phase42-rtmp-fix/validation.md). Backend 188/188, captura RTMP 126 s com código atual. A candidata brasileira foi importada em teste e permanece sem aprovação de escuta; não foi usada no vídeo.
