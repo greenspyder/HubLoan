@@ -19,10 +19,10 @@ export async function createNeuralSpeech({engine='piper',model=process.env[engin
  child.stdin.on('error',fail);child.on('error',fail);child.on('close',fail);
  child.stdout.on('data',data=>{buffer+=data.toString();if(buffer.length>1100000){fail();child.kill('SIGKILL');return;}let end;while((end=buffer.indexOf('\n'))>=0){const line=buffer.slice(0,end);buffer=buffer.slice(end+1);try{const result=JSON.parse(line);if(result.error)pending?.reject(Error('Piper falhou'));else pending?.resolve(result);}catch{fail();child.kill('SIGKILL');}}});
  try{const result=await request(null,30000);if(!result.ready)throw Error();metrics.ready=true;}catch{child.kill('SIGKILL');failed=true;metrics.failures++;}
- return {metrics,async inspect(){metrics.rssBytes=await rssOf(child.pid);return metrics;},async synthesize(text,voice='host',{signal,musical=false}={}){
+ return {metrics,async inspect(){metrics.rssBytes=await rssOf(child.pid);return metrics;},async synthesize(text,voice='host',{signal,musical=false,delivery='warm'}={}){
   if(typeof text!=='string'||!text.trim()||text.length>200||text.includes('[[')||!voiceProfiles[voice])throw Error('Fala inválida');
   if(closed||signal?.aborted)throw Error('TTS cancelado');const started=Date.now();
-  try{const result=await request(()=>child.stdin.write(JSON.stringify({text,voice,musical})+'\n'),timeout,signal);const pcm=decodeWav(Buffer.from(result.wav,'base64'));metrics.neural++;return pcm;}
+  try{const result=await request(()=>child.stdin.write(JSON.stringify({text,voice,musical,delivery:['warm','wry','excited'].includes(delivery)?delivery:'warm'})+'\n'),timeout,signal);const pcm=decodeWav(Buffer.from(result.wav,'base64'));metrics.neural++;return pcm;}
   catch{metrics.failures++;if(signal?.aborted||closed)throw Error('TTS cancelado');metrics.fallback++;return await fallback(text,voice,{signal,musical});}
   finally{metrics.maxSynthesisMs=Math.max(metrics.maxSynthesisMs,Date.now()-started);}
  },close(){closed=true;fail();child.kill('SIGKILL');}};
