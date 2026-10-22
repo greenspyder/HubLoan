@@ -1,0 +1,19 @@
+{
+  "sourceCommit": "ff60d87703ffc15a3b9e8584f0511f38b8e14e8e",
+  "video": "Live-Factory-radio-126s.mp4",
+  "sha256": "b1cc0346436169ced01ab1b43866032e4a8ac725ddaf8b8a2da3d35339432afe",
+  "receiverDurationSeconds": 126.037,
+  "effectiveFramesPerSecond": 14.997857448935866,
+  "resolution": [
+    360,
+    640
+  ],
+  "testEvents": "SIMULATED_OPERATOR",
+  "publicTikTokConfirmed": false,
+  "music": "INSTRUMENTAL_TEST, not AI singing or commercially approved repertoire",
+  "visualReview": "12 sampled frames at 10s intervals plus native-resolution frame at 22s; not a full real-time playback",
+  "auditoryReview": "NOT_PERFORMED; human review required",
+  "generationApiCostConfirmed": 0,
+  "operatingCost": "Unpriced local CPU/electricity; no provider calls",
+  "videoDelivery": "Separate MP4 attachment; not committed to Git"
+}
