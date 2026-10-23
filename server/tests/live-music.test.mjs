@@ -19,7 +19,7 @@ test('same mixer plays imported ambient and prioritized jingles, ducks, limits, 
  const mixer=createMixer({synthesize:async()=>new Float32Array(48000).fill(.2)}),now=Date.now(),e={status:'TESTING',sessionId:'s',config:{audio:{muted:false,volume:1}},performanceConfig:{...performanceDefaults(),enabled:true},performance:{jobs:[{id:'j',sessionId:'s',createdAt:now,expiresAt:now+45000,priority:4,segments:[{role:'music',trackId:b.id,hash:b.hash,kind:b.kind,text:b.title}]}]}};
  mixer.setRepertoire({assets:new Map([[a.id,decodeMusic(testMusic(0,4),a)],[b.id,decodeMusic(testMusic(1),b)]]),failures:0});mixer.observe(e,now);await tick();
  for(let i=0;i<105;i++)assert.equal(mixer.mix(e,now+i*100,4800).length,9600);
- assert.equal(mixer.metrics.played.music,1);assert.equal(mixer.metrics.trackPlays[b.id],1);assert.equal(mixer.metrics.ambientFrames,105);assert.ok(mixer.metrics.peak<1);assert.ok(mixer.duck>.9);assert.equal(mixer.metrics.synthesized,0);
+ assert.equal(mixer.metrics.played.music,1);assert.equal(mixer.metrics.trackPlays[b.id],1);assert.equal(mixer.metrics.ambientFrames,105);assert.ok(mixer.metrics.ambientTransitions>=2);assert.equal(mixer.metrics.ambientTrackId,a.id);assert.ok(mixer.metrics.peak<1);assert.ok(mixer.duck>.9);assert.equal(mixer.metrics.synthesized,0);
  e.config.audio.muted=true;mixer.observe(e,now+12000);assert.ok(mixer.mix(e,now+12000).every(x=>x===0));mixer.close();
  const broken=createMixer();e.config.audio.muted=false;broken.observe(e,now);await tick();broken.mix(e,now);assert.equal(broken.metrics.musicFailures,1);broken.close();
 });
@@ -72,4 +72,17 @@ test('main ambient and brief persist and reach only the authorized worker',async
 test('mixer acknowledges completed and interrupted jobs without replay',async()=>{
  const now=Date.now(),e={status:'TESTING',sessionId:'session',performanceConfig:{...performanceDefaults(),enabled:true},config:{audio:{muted:false,volume:1}},performance:{}};e.performance.jobs=[{id:'a'.repeat(36),sessionId:'session',createdAt:now,expiresAt:now+45000,priority:0,segments:[{role:'host',voice:'host',text:'Oi'}]}];
  const m=createMixer({synthesize:async()=>new Float32Array(100)});m.observe(e,now);await new Promise(r=>setTimeout(r,10));m.mix(e,now);assert.deepEqual(m.settledJobs,['a'.repeat(36)]);m.observe(e,now);assert.equal(m.metrics.synthesized,1);m.close();
+});
+
+test('radio: complete 24kHz tracks, duration and decoded-memory budgets remain bounded',()=>{
+ const long=testMusic(0,212),track=musicTrack(trackInput('ambient'),long);
+ assert.equal(track.seconds,212);assert.equal(track.approved,false);
+ const decoded=decodeMusic(long,track);assert.equal(decoded.pcm.length,212*48000);
+ assert.throws(()=>musicTrack(trackInput('special'),long));
+ assert.throws(()=>musicTrack(trackInput('ambient'),testMusic(0,241)));
+ const high=Buffer.from(long);high.writeUInt32LE(48000,24);high.writeUInt32LE(96000,28);
+ assert.throws(()=>inspectMusic(high),/24 kHz/);
+ const e={status:'STOPPED',configVersion:1,musicCatalog:[{...track,seconds:719,bytes:100,hash:'other'}]};
+ assert.throws(()=>repertoireAction(e,'music-import',{version:1,track}),/12 minutos/);
+ assert.equal(e.musicCatalog.length,1);
 });

@@ -162,7 +162,7 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if(route==='/tiktok'&&request.method==='DELETE')return send(response,200,await tiktok.disconnect(id));
       if (route === '/live' && request.method === 'GET') return send(response,200,publicLive((await store.read(id)).workspace));
       if(route==='/live/music-import'&&request.method==='POST'){
-        const input=await body(request,7700000);if(typeof input.audio!=='string'||!/^[A-Za-z0-9+/]+={0,2}$/.test(input.audio))throw new AppError('Áudio base64 inválido.');
+        const input=await body(request,15400000);if(typeof input.audio!=='string'||!/^[A-Za-z0-9+/]+={0,2}$/.test(input.audio))throw new AppError('Áudio base64 inválido.');
         const bytes=Buffer.from(input.audio,'base64'),track=musicTrack(input,bytes),key=`${id}:${input.id}:${track.id}`;await store.writeLiveAudio(key,bytes);
         try{const updated=await store.mutate(id,w=>liveAction(w,'music-import',{...input,track}));return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey)));}catch(error){await store.removeLiveAudio(key);throw error;}
       }

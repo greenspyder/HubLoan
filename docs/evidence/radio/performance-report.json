@@ -1,0 +1,317 @@
+{
+  "report": {
+    "preparationMs": 326.39468899999974,
+    "failureReason": null,
+    "heartbeatIntervalMs": 750,
+    "stages": {
+      "pcmMixMs": {
+        "totalMs": 1870.9219840002634,
+        "maxMs": 10.652368999999453,
+        "count": 1890
+      },
+      "audioPipeMs": {
+        "totalMs": 171.43569500008925,
+        "maxMs": 8.390729999999166,
+        "count": 1890
+      },
+      "renderRoundtripMs": {
+        "totalMs": 61824.15668900008,
+        "maxMs": 222.71578100000625,
+        "count": 1890
+      },
+      "videoPipeMs": {
+        "totalMs": 927.3982220001353,
+        "maxMs": 218.29043499999898,
+        "count": 1890
+      }
+    },
+    "codecTimingNote": "Pipe timing includes backpressure, not isolated H264/AAC codec time. GPU submit is not GPU completion.",
+    "direction": {
+      "contest": 5,
+      "harvest": 9,
+      "speech": 5,
+      "music": 3,
+      "result": 7
+    },
+    "status": "STOPPED",
+    "profile": "light",
+    "fps": 15,
+    "maxRenderMs": 265,
+    "lateFrames": 15,
+    "maxPipelineLagMs": 197.66666666666666,
+    "frames": 1890,
+    "bytes": 12304010,
+    "durationMs": 126018,
+    "renderedFrames": 1890,
+    "rssBytes": 275513344,
+    "rendererCpuMs": 19191.525,
+    "encoderCpuMs": null,
+    "networkBytes": null,
+    "publicTransmission": "UNCONFIRMED",
+    "audio": {
+      "latency": {
+        "pending": {
+          "count": 13,
+          "meanMs": 0,
+          "p95Ms": 0,
+          "maxMs": 0
+        },
+        "synthesis": {
+          "count": 13,
+          "meanMs": 1576.923076923077,
+          "p95Ms": 2732,
+          "maxMs": 2732
+        },
+        "reaction": {
+          "count": 11,
+          "meanMs": 2177.7272727272725,
+          "p95Ms": 3303,
+          "maxMs": 3303
+        },
+        "queue": {
+          "count": 11,
+          "meanMs": 52.90909090909091,
+          "p95Ms": 338,
+          "maxMs": 338
+        },
+        "segment": {
+          "count": 15,
+          "meanMs": 4095.5333333333333,
+          "p95Ms": 15015,
+          "maxMs": 15015
+        }
+      },
+      "interrupted": 1,
+      "staleDropped": 2,
+      "synthesized": 12,
+      "cacheHits": 2,
+      "ttsFailures": 0,
+      "dropped": 2,
+      "ttsMs": 20499,
+      "maxPlaybackLatencyMs": 15015,
+      "musicFailures": 0,
+      "ambientFrames": 1890,
+      "ambientTransitions": 0,
+      "ambientTrackId": "f525b3fb-ebe8-4e9f-8530-b5ff99f9ec4f",
+      "trackPlays": {
+        "9b55c477-3e12-4c31-8ef2-3f744f28ab63": 1,
+        "7b7e6467-d643-4fb6-86b1-7ea644bb9ca1": 1,
+        "8ce0c809-92f7-4199-aa01-9ca39eb0d849": 1
+      },
+      "played": {
+        "host": 11,
+        "comment": 1,
+        "chant": 0,
+        "music": 3
+      },
+      "peak": 0.104131466516875,
+      "aiCalls": 0
+    },
+    "aiCalls": 0,
+    "renderer": {
+      "engine": "three-webgl2",
+      "width": 360,
+      "height": 640,
+      "frames": 1891,
+      "maxFrameMs": 321,
+      "softwareRequested": true,
+      "sandboxDisabled": true,
+      "gpu": "WebKit WebGL",
+      "geometryCount": 36,
+      "textureCount": 1,
+      "timings": {
+        "sceneMs": {
+          "totalMs": 1491.9999999995925,
+          "maxMs": 10.700000000011642
+        },
+        "threeSubmitMs": {
+          "totalMs": 1728.9000000020023,
+          "maxMs": 54.59999999997672
+        },
+        "captureMs": {
+          "totalMs": 239.99999999970896,
+          "maxMs": 16.900000000023283
+        },
+        "overlayMs": {
+          "totalMs": 378.7000000012922,
+          "maxMs": 14.299999999988358
+        },
+        "readbackMs": {
+          "totalMs": 36273.599999995844,
+          "maxMs": 207.70000000001164
+        },
+        "pixelConversionMs": {
+          "totalMs": 2322.100000001956,
+          "maxMs": 19.599999999976717
+        },
+        "serializationMs": {
+          "totalMs": 665.600000001723,
+          "maxMs": 4.400000000023283
+        },
+        "decodeMs": {
+          "totalMs": 111.5584160000044,
+          "maxMs": 2.160403000001679
+        }
+      },
+      "nativeBase64": true,
+      "browserCpuMs": null,
+      "browserRssBytes": null
+    },
+    "speech": {
+      "engine": "kokoro",
+      "voice": "pf_dora (pt-BR feminina)",
+      "quality": "HUMAN_REVIEW_REQUIRED",
+      "ready": true,
+      "neural": 12,
+      "fallback": 0,
+      "failures": 0,
+      "maxSynthesisMs": 2388,
+      "rssBytes": null
+    }
+  },
+  "decodedAudioCorrelation": 0.9998837252261396,
+  "receiverDuration": "126.037000",
+  "top": [
+    {
+      "id": "demo-ana",
+      "name": "ana",
+      "quantity": 22,
+      "joined": 0,
+      "hasPhoto": true
+    },
+    {
+      "id": "demo-amigo0",
+      "name": "amigo0",
+      "quantity": 1,
+      "joined": 2,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo1",
+      "name": "amigo1",
+      "quantity": 1,
+      "joined": 3,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo2",
+      "name": "amigo2",
+      "quantity": 1,
+      "joined": 4,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo3",
+      "name": "amigo3",
+      "quantity": 1,
+      "joined": 5,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo4",
+      "name": "amigo4",
+      "quantity": 1,
+      "joined": 6,
+      "hasPhoto": false
+    }
+  ],
+  "rounds": 8,
+  "repertoire": {
+    "categories": {
+      "roses": {
+        "count": 2,
+        "lastAt": 1792630610300
+      },
+      "special": {
+        "count": 1,
+        "lastAt": 1792630593288
+      }
+    },
+    "grouped": 5,
+    "selected": 3,
+    "history": [
+      {
+        "at": 1792630582946,
+        "trackId": "9b55c477-3e12-4c31-8ef2-3f744f28ab63",
+        "category": "roses"
+      },
+      {
+        "at": 1792630593288,
+        "trackId": "7b7e6467-d643-4fb6-86b1-7ea644bb9ca1",
+        "category": "special"
+      },
+      {
+        "at": 1792630610300,
+        "trackId": "8ce0c809-92f7-4199-aa01-9ca39eb0d849",
+        "category": "roses"
+      }
+    ],
+    "lastAt": 1792630610300
+  },
+  "catalog": [
+    {
+      "vocalWindows": [],
+      "id": "9b55c477-3e12-4c31-8ef2-3f744f28ab63",
+      "title": "Teste instrumental 1",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "roses",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "0b48b17a0b091a6b8b7a85241d78033a5960016fe3bca53a172e88fa63c58ba4",
+      "bytes": 288044,
+      "seconds": 6,
+      "approved": true
+    },
+    {
+      "vocalWindows": [],
+      "id": "8ce0c809-92f7-4199-aa01-9ca39eb0d849",
+      "title": "Teste instrumental 2",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "roses",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "da4ad690f9c59d5fa3ae9f554390f2ebacef2d13f7a78d4aefe1a4e2932f597a",
+      "bytes": 288044,
+      "seconds": 6,
+      "approved": true
+    },
+    {
+      "vocalWindows": [],
+      "id": "7b7e6467-d643-4fb6-86b1-7ea644bb9ca1",
+      "title": "Teste instrumental 3",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "special",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "01d8ed5d839866f3a721e10f8ca0c419cd2a4740ccfaacde0de8c8165d2c60e9",
+      "bytes": 576044,
+      "seconds": 12,
+      "approved": true
+    },
+    {
+      "vocalWindows": [],
+      "id": "f525b3fb-ebe8-4e9f-8530-b5ff99f9ec4f",
+      "title": "Teste instrumental 2",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "ambient",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "98b8b8485b99dac5ae972ca873c12d5e6d8e611cb764d37e5b6a1e730fd1c3da",
+      "bytes": 6240044,
+      "seconds": 130,
+      "approved": true
+    }
+  ]
+}

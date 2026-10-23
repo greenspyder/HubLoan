@@ -1,0 +1,131 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> frontend@0.0.0 lint
+> eslint .
+
+
+/workspace/scratch/59dcc8643396/HubLoan-recovered/frontend/src/app/contexts/ImpersonationContext.tsx
+  48:17  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/workspace/scratch/59dcc8643396/HubLoan-recovered/frontend/src/app/layout/DashboardLayout.tsx
+  43:10  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/workspace/scratch/59dcc8643396/HubLoan-recovered/frontend/src/app/layout/DashboardLayout.tsx:43:10
+  41 |
+  42 |   useEffect(() => {
+> 43 |     void loadOperationalDate().catch(() => {
+     |          ^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  44 |       setOperationalDateLabel("Indisponível");
+  45 |     });
+  46 |   }, []);  react-hooks/set-state-in-effect
+
+/workspace/scratch/59dcc8643396/HubLoan-recovered/frontend/src/components/ui/alert.tsx
+  19:17  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/workspace/scratch/59dcc8643396/HubLoan-recovered/frontend/src/components/ui/button.tsx
+  50:18  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/workspace/scratch/59dcc8643396/HubLoan-recovered/frontend/src/components/ui/input.tsx
+  5:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+/workspace/scratch/59dcc8643396/HubLoan-recovered/frontend/src/components/ui/textarea.tsx
+  5:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+/workspace/scratch/59dcc8643396/HubLoan-recovered/frontend/src/features/admin/pages/AdminContractDetailsPage.tsx
+  57:10  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/workspace/scratch/59dcc8643396/HubLoan-recovered/frontend/src/features/admin/pages/AdminContractDetailsPage.tsx:57:10
+  55 |
+  56 |   useEffect(() => {
+> 57 |     void loadDetails();
+     |          ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  58 |   }, [contractId]);
+  59 |
+  60 |   const handleAuthorizeDisbursement = async () => {  react-hooks/set-state-in-effect
+  58:6   warning  React Hook useEffect has a missing dependency: 'loadDetails'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react-hooks/exhaustive-deps
+
+/workspace/scratch/59dcc8643396/HubLoan-recovered/frontend/src/features/admin/pages/AdminDashboardPage.tsx
+  163:10  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/workspace/scratch/59dcc8643396/HubLoan-recovered/frontend/src/features/admin/pages/AdminDashboardPage.tsx:163:10
+  161 |   };
+  162 |   useEffect(() => {
+> 163 |     void refreshData(true).catch((error: Error) => setMessage(error.message));
+      |          ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  164 |   }, []);
+  165 |
+  166 |   const handleCreateOffer = async () => {  react-hooks/set-state-in-effect
+  164:6   warning  React Hook useEffect has a missing dependency: 'refreshData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    react-hooks/exhaustive-deps
+
+/workspace/scratch/59dcc8643396/HubLoan-recovered/frontend/src/features/client/pages/ClientDashboardPage.tsx
+  34:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/workspace/scratch/59dcc8643396/HubLoan-recovered/frontend/src/features/client/pages/ClientDashboardPage.tsx:34:7
+  32 |     const tab = searchParams.get("tab");
+  33 |     if (tab === "overview" || tab === "offers" || tab === "contracts" || tab === "movements") {
+> 34 |       setActiveTab(tab);
+     |       ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  35 |     }
+  36 |   }, [searchParams]);
+  37 |                                                                                                              react-hooks/set-state-in-effect
+  40:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/workspace/scratch/59dcc8643396/HubLoan-recovered/frontend/src/features/client/pages/ClientDashboardPage.tsx:40:7
+  38 |   useEffect(() => {
+  39 |     if (searchParams.get("contratado") === "1") {
+> 40 |       setMessage("Oferta contratada com sucesso. A oferta foi consumida e removida da lista disponível.");
+     |       ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  41 |       setSearchParams((current) => {
+  42 |         const next = new URLSearchParams(current);
+  43 |         next.delete("contratado");  react-hooks/set-state-in-effect
+
+/workspace/scratch/59dcc8643396/HubLoan-recovered/frontend/src/features/simulation/pages/SimulationPage.tsx
+  74:5  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/workspace/scratch/59dcc8643396/HubLoan-recovered/frontend/src/features/simulation/pages/SimulationPage.tsx:74:5
+  72 |     }
+  73 |
+> 74 |     setForm({
+     |     ^^^^^^^ Avoid calling setState() directly within an effect
+  75 |       valorSolicitado: Math.min(Math.max(selectedOffer.valorMinimo, 5000), selectedOffer.valorMaximo),
+  76 |       quantidadeParcelas: selectedOffer.parcelasMinimas,
+  77 |       diaVencimento: selectedOffer.diaVencimentoMinimo,  react-hooks/set-state-in-effect
+
+✖ 13 problems (11 errors, 2 warnings)
+
