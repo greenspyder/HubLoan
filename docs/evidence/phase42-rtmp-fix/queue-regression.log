@@ -1,0 +1,25 @@
+✖ RTMP performance: received music, narrated comment, reply, gift verse, Top6 and photo avatar; game keeps moving (132389.134794ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 135687.578893
+
+✖ failing tests:
+
+test at server/tests/live-performance.test.mjs:55:1
+✖ RTMP performance: received music, narrated comment, reply, gift verse, Top6 and photo avatar; game keeps moving (132389.134794ms)
+  AssertionError [ERR_ASSERTION]: {"latency":{"pending":{"count":11,"meanMs":0,"p95Ms":0,"maxMs":0},"synthesis":{"count":11,"meanMs":965.9090909090909,"p95Ms":3087,"maxMs":3087},"reaction":{"count":13,"meanMs":1990.076923076923,"p95Ms":5911,"maxMs":5911},"queue":{"count":13,"meanMs":507.15384615384613,"p95Ms":2558,"maxMs":2558},"segment":{"count":14,"meanMs":2264.0714285714284,"p95Ms":5911,"maxMs":5911},"preloaded":{"count":2,"meanMs":1645,"p95Ms":3150,"maxMs":3150}},"interrupted":1,"staleDropped":0,"synthesized":7,"cacheHits":5,"ttsFailures":0,"dropped":0,"ttsMs":10625,"maxPlaybackLatencyMs":5911,"musicFailures":0,"ambientFrames":1890,"trackPlays":{"343b617f-6bb4-4f3b-aee9-1aa84bbd6f9c":1,"88acf901-288b-4b89-9b40-852d792f4441":1},"played":{"host":11,"comment":1,"chant":0,"music":2},"peak":0.10625227025088385,"aiCalls":0}
+      at TestContext.<anonymous> (file:///workspace/scratch/59dcc8643396/HubLoan-recovered/server/tests/live-performance.test.mjs:80:220)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

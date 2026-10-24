@@ -1,0 +1,39 @@
+✔ Top6: quantities, deterministic ties, overtaking, duplicate gifts, session/workspace isolation, safe inputs (17.607013ms)
+✔ ranking survives SQLite reopen; photos reject URLs, consent omission, SVG and oversized images; animated composition (174.505934ms)
+✔ mixer: continuous original music, ducking/recovery, limiter, voice cache, failure fallback and pause (151.72925ms)
+✔ real local pt-BR TTS creates distinct main and secondary voices (110.656601ms)
+✖ RTMP performance: received music, narrated comment, reply, gift verse, Top6 and photo avatar; game keeps moving (23706.508416ms)
+✔ game progresses in existing runtime, rounds restart, collision/scoring/ranking persist and pause freezes (121.180175ms)
+✔ worker grants are session-scoped, single-instance, hidden, revocable, bounded and fail closed (4.951291ms)
+✖ real FFmpeg RTMP receiver receives continuous H264 + AAC, and encoder failure is observable (8943.243507ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 6
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 35285.160223
+
+✖ failing tests:
+
+test at server/tests/live-performance.test.mjs:55:1
+✖ RTMP performance: received music, narrated comment, reply, gift verse, Top6 and photo avatar; game keeps moving (23706.508416ms)
+  Error: Encoder interrompido. Revise destino, FFmpeg, backend e autorização. Não houve confirmação pública.
+      at encodeWorker (file:///workspace/scratch/59dcc8643396/HubLoan-recovered/server/live-worker/worker.mjs:53:42)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async runWorker (file:///workspace/scratch/59dcc8643396/HubLoan-recovered/server/live-worker/worker.mjs:65:16) {
+    report: { stages: { pcmMixMs: [Object], audioPipeMs: [Object], renderRoundtripMs: [Object], videoPipeMs: [Object] }, codecTimingNote: 'Pipe timing includes backpressure, not isolated H264/AAC codec time. GPU submit is not GPU completion.', direction: { speech: 1 }, status: 'ERROR', profile: 'light', fps: 15, maxRenderMs: 1389, lateFrames: 21, maxPipelineLagMs: 2050.3333333333335, frames: 55, bytes: 317963, durationMs: 5759, renderedFrames: 55, rssBytes: 145940480, rendererCpuMs: 5392.819, encoderCpuMs: null, networkBytes: null, publicTransmission: 'UNCONFIRMED', audio: { latency: [Object], interrupted: 0, staleDropped: 0, synthesized: 1, cacheHits: 0, ttsFailures: 0, dropped: 0, ttsMs: 1193, maxPlaybackLatencyMs: 2208, musicFailures: 0, ambientFrames: 0, trackPlays: {}, played: [Object], peak: 0.10105849374760553, aiCalls: 0 }, aiCalls: 0, renderer: { engine: 'svg-sharp' }, speech: { engine: 'espeak-ng' } }
+  }
+
+test at server/tests/live-stream.test.mjs:43:1
+✖ real FFmpeg RTMP receiver receives continuous H264 + AAC, and encoder failure is observable (8943.243507ms)
+  Error: Encoder interrompido. Revise destino, FFmpeg, backend e autorização. Não houve confirmação pública.
+      at encodeWorker (file:///workspace/scratch/59dcc8643396/HubLoan-recovered/server/live-worker/worker.mjs:53:42)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async runWorker (file:///workspace/scratch/59dcc8643396/HubLoan-recovered/server/live-worker/worker.mjs:65:16)
+      at async TestContext.<anonymous> (file:///workspace/scratch/59dcc8643396/HubLoan-recovered/server/tests/live-stream.test.mjs:50:15)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    report: { stages: { pcmMixMs: [Object], audioPipeMs: [Object], renderRoundtripMs: [Object], videoPipeMs: [Object] }, codecTimingNote: 'Pipe timing includes backpressure, not isolated H264/AAC codec time. GPU submit is not GPU completion.', direction: { harvest: 1 }, status: 'ERROR', profile: 'light', fps: 15, maxRenderMs: 289, lateFrames: 51, maxPipelineLagMs: 2039.666666666667, frames: 92, bytes: 560342, durationMs: 8260, renderedFrames: 92, rssBytes: 154624000, rendererCpuMs: 7421.651, encoderCpuMs: null, networkBytes: null, publicTransmission: 'UNCONFIRMED', audio: { latency: {}, interrupted: 0, staleDropped: 0, synthesized: 0, cacheHits: 0, ttsFailures: 0, dropped: 0, ttsMs: 0, maxPlaybackLatencyMs: 0, musicFailures: 0, ambientFrames: 0, trackPlays: {}, played: [Object], peak: 0, aiCalls: 0 }, aiCalls: 0, renderer: { engine: 'svg-sharp' }, speech: { engine: 'espeak-ng' } }
+  }

@@ -23,13 +23,21 @@ export function workerHeartbeat(w,id,token,input,now=Date.now()){
  if(g.instance&&g.instance!==input.instance)throw new AppError('Outro worker já utiliza esta autorização.',409);
  if(!['STARTING','PREVIEW','SENDING_MEDIA','ERROR','STOPPED'].includes(input.status)||!Number.isSafeInteger(input.frames)||input.frames<0||!Number.isSafeInteger(input.bytes)||input.bytes<0)throw new AppError('Telemetria inválida.');
  if(g.mode==='preview'&&input.status==='SENDING_MEDIA')throw new AppError('Transmissão não autorizada.',403);
- if(input.audio){const audio={};for(const key of ['synthesized','cacheHits','ttsFailures','dropped','ttsMs','maxPlaybackLatencyMs']){const value=input.audio[key];if(!Number.isFinite(value)||value<0||value>100000000)throw new AppError('Telemetria de áudio inválida.');audio[key]=Math.round(value);}e.transmission.audio=audio;}
+ if(input.audio){const audio={};for(const key of ['synthesized','cacheHits','ttsFailures','dropped','ttsMs','maxPlaybackLatencyMs']){const value=input.audio[key];if(!Number.isFinite(value)||value<0||value>100000000)throw new AppError('Telemetria de áudio inválida.');audio[key]=Math.round(value);}if(input.audio.latency){audio.latency={};for(const key of ['reaction','queue','synthesis','pending','segment','preloaded','firstSpeech','firstMusic','firstEffect','complete']){const v=input.audio.latency[key];if(!v)continue;if(!['count','meanMs','p95Ms','maxMs'].every(k=>Number.isFinite(v[k])&&v[k]>=0&&v[k]<=100000000))throw new AppError('Latência inválida.');audio.latency[key]=Object.fromEntries(['count','meanMs','p95Ms','maxMs'].map(k=>[k,Math.round(v[k])]));}}e.transmission.audio=audio;}
+ // Authenticated, session-scoped acknowledgement; history and ranking are retained.
+ if(input.settledJobs!==undefined){if(!Array.isArray(input.settledJobs)||input.settledJobs.length>64||input.settledJobs.some(id=>typeof id!=='string'||!/^[-a-f0-9]{36}$/.test(id)))throw new AppError('Confirmação de atuação inválida.');if(e.performance)e.performance.jobs=e.performance.jobs.filter(j=>!input.settledJobs.includes(j.id));}
  g.instance=input.instance;
  const t=e.transmission,prior=t.status;
  Object.assign(t,{status:input.status,heartbeat:now,frames:input.frames,bytes:input.bytes,publicStatus:'UNCONFIRMED',error:input.status==='ERROR'?'Worker interrompido; revise localmente e autorize nova execução.':null});
  if(prior!==t.status){e.logs.push({id:randomBytes(12).toString('hex'),at:new Date(now).toISOString(),kind:'encoder',status:t.status,source:'LOCAL_WORKER_REPORT',aiUsed:false});e.logs=e.logs.slice(-200);}
  if(['ERROR','STOPPED'].includes(t.status)){g.revoked=true;g.revokedAt=now;}
  // No workspace credentials, logs, grant or other projects sent to worker.
- return {serverTime:now,expiresAt:g.expiresAt,mode:g.mode,experience:{id:e.id,sessionId:e.sessionId,status:e.status,heartbeat:e.heartbeat,name:e.name,config:e.config,character:e.character,action:e.action,game:e.game,performanceConfig:e.performanceConfig,performance:publicPerformance(e.performance)}};
+ return {serverTime:now,expiresAt:g.expiresAt,mode:g.mode,experience:{id:e.id,sessionId:e.sessionId,status:e.status,heartbeat:e.heartbeat,name:e.name,config:e.config,character:e.character,action:e.action,game:e.game,musicAmbientTrackId:e.musicAmbientTrackId||null,musicCatalog:(e.musicCatalog||[]).filter(t=>t.approved),performanceConfig:e.performanceConfig,performance:publicPerformance(e.performance)}};
 }
 export function watchWorker(e,now){const t=e.transmission;if(t&&['STARTING','PREVIEW','SENDING_MEDIA','STOP_REQUESTED'].includes(t.status)&&now-t.heartbeat>10000){t.status='DEGRADED';t.error='Heartbeat do worker perdido. Nova autorização necessária.';if(e.workerGrant){e.workerGrant.revoked=true;e.workerGrant.revokedAt=now;}e.logs.push({id:randomBytes(12).toString('hex'),at:new Date(now).toISOString(),kind:'encoder',status:'DEGRADED',aiUsed:false});e.logs=e.logs.slice(-200);}}
+
+export function workerMusic(w,id,token,trackId,now=Date.now()){
+ const e=w.liveFactory?.experiences.find(x=>x.id===id),g=e?.workerGrant;
+ if(!g||typeof token!=='string'||g.hash!==hash(token)||g.revoked||g.expiresAt<=now||g.sessionId!==e.sessionId||!valid(e))throw new AppError('Autorização indisponível.',403);
+ if(!e.musicCatalog?.some(t=>t.id===trackId&&t.approved))throw new AppError('Faixa indisponível.',404);
+}

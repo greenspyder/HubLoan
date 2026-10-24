@@ -1,0 +1,14 @@
+✔ prepared reply bypasses blocked dynamic synthesis; first effect, speech and completion measured separately (22.695574ms)
+✔ no audience: sparse contextual autonomy never changes physics or creates gifts (298.662606ms)
+✔ gift reply precedes music, grouping and warmup limits preserved (0.704872ms)
+✔ warmup failure does not stop media; emergency mutes everything (6.069351ms)
+✔ heartbeat telemetry excludes local speech journal and fits unchanged 2048-byte body limit (1.061999ms)
+✔ CPU profile is optional; light and HD remain unchanged (0.262817ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 664.613369

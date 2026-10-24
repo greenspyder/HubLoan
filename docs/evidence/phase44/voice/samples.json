@@ -1,0 +1,97 @@
+{
+  "samples": [
+    {
+      "name": "saudacao",
+      "delivery": "warm",
+      "text": "Chega mais! Eu sou a Lume. Aqui a gente faz curva, faz charme e às vezes faz vergonha.",
+      "seconds": 5.35,
+      "synthesisMs": 3282.332592999999,
+      "neural": true,
+      "sha256": "6a52d44bd2ddb69f1a40dd6e874826ffa7038b03235d5ab806380f18701a4bde"
+    },
+    {
+      "name": "jogo",
+      "delivery": "wry",
+      "text": "Duas cobras e uma maçã. Isso vai virar reunião de condomínio.",
+      "seconds": 4,
+      "synthesisMs": 2466.9003749999993,
+      "neural": true,
+      "sha256": "181802ca9b1eb6f9e821cde9097a6a1616b76db46a29c3bd795ca521eeeee149"
+    },
+    {
+      "name": "rosa",
+      "delivery": "wry",
+      "text": "Uma rosa! Finalmente alguém percebeu que eu sou uma flor de cobra.",
+      "seconds": 3.875,
+      "synthesisMs": 2323.1705899999997,
+      "neural": true,
+      "sha256": "a0cce94af0bf393f07341632f188672c62fb126c7634573297fe8345646803af"
+    },
+    {
+      "name": "especial",
+      "delivery": "excited",
+      "text": "Que surpresa! Até esqueci para que lado fica a próxima curva.",
+      "seconds": 3.75,
+      "synthesisMs": 2454.3052270000007,
+      "neural": true,
+      "sha256": "3ee64334000713ea5cf29a558b541b1a57c12982ba1355b1e9ce6cebd6819cab"
+    },
+    {
+      "name": "vitoria",
+      "delivery": "excited",
+      "text": "Ganhei! Vou fingir que estava tudo no planejamento.",
+      "seconds": 3,
+      "synthesisMs": 1643.3912489999966,
+      "neural": true,
+      "sha256": "e7022c98d2794c4dd44a55df3385a6ffe35f714a33d7db92a9ccf9d267e7e527"
+    },
+    {
+      "name": "derrota",
+      "delivery": "wry",
+      "text": "Perdi a rodada, mas a autoestima continua invicta.",
+      "seconds": 3.3,
+      "synthesisMs": 1883.6142690000015,
+      "neural": true,
+      "sha256": "18d346e61d02b9e0f91103b8d154f87ce4e241aa62966a8af6d295311860f145"
+    },
+    {
+      "name": "controle-suave",
+      "delivery": "warm",
+      "text": "Eu tenho um plano. Só estou esperando ele me contar qual é.",
+      "seconds": 3.65,
+      "synthesisMs": 2514.8027589999983,
+      "neural": true,
+      "sha256": "c573b8e010b185335dd4d421fc8f81fbc2cf51a18f5c0aae25402f92dfa3d806"
+    },
+    {
+      "name": "controle-ironico",
+      "delivery": "wry",
+      "text": "Eu tenho um plano. Só estou esperando ele me contar qual é.",
+      "seconds": 3.65,
+      "synthesisMs": 2119.53428,
+      "neural": true,
+      "sha256": "54f6d14520095286bf1b7a6ef25d1294d4a9dbf6588232f3f42cdfbf33068333"
+    },
+    {
+      "name": "controle-animado",
+      "delivery": "excited",
+      "text": "Eu tenho um plano. Só estou esperando ele me contar qual é.",
+      "seconds": 3.45,
+      "synthesisMs": 2148.3725140000024,
+      "neural": true,
+      "sha256": "9db4f8b46554ade7bdd33640645d96cea65ab9da0e62f0e52c83a315c5127aef"
+    }
+  ],
+  "metrics": {
+    "engine": "kokoro",
+    "voice": "pf_dora (pt-BR feminina)",
+    "quality": "HUMAN_REVIEW_REQUIRED",
+    "ready": true,
+    "neural": 9,
+    "fallback": 0,
+    "failures": 0,
+    "maxSynthesisMs": 3268
+  },
+  "humanListeningApproved": false,
+  "note": "Delivery adjusts speed/punctuation; no learned emotion control or singing."
+}

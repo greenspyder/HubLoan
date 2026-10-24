@@ -1,0 +1,499 @@
+{
+  "report": {
+    "preparationMs": 555.3566430000028,
+    "failureReason": null,
+    "heartbeatIntervalMs": 750,
+    "stages": {
+      "pcmMixMs": {
+        "totalMs": 5622.929070999937,
+        "maxMs": 197.2173940000066,
+        "count": 1488
+      },
+      "audioPipeMs": {
+        "totalMs": 214.9434879999135,
+        "maxMs": 7.866328999996767,
+        "count": 1488
+      },
+      "renderRoundtripMs": {
+        "totalMs": 110930.38982300006,
+        "maxMs": 594.8864310000063,
+        "count": 1488
+      },
+      "videoPipeMs": {
+        "totalMs": 1393.2311109999791,
+        "maxMs": 179.7926699999989,
+        "count": 1488
+      }
+    },
+    "codecTimingNote": "Pipe timing includes backpressure, not isolated H264/AAC codec time. GPU submit is not GPU completion.",
+    "direction": {
+      "harvest": 13,
+      "contest": 8,
+      "result": 9,
+      "speech": 5,
+      "community": 3,
+      "music": 3,
+      "near-miss": 1
+    },
+    "status": "STOPPED",
+    "profile": "cpu",
+    "fps": 8,
+    "maxRenderMs": 611,
+    "lateFrames": 142,
+    "maxPipelineLagMs": 1316,
+    "frames": 1488,
+    "bytes": 18249313,
+    "durationMs": 186120,
+    "renderedFrames": 1488,
+    "rssBytes": 338399232,
+    "rendererCpuMs": 34468.852,
+    "encoderCpuMs": null,
+    "networkBytes": null,
+    "publicTransmission": "UNCONFIRMED",
+    "audio": {
+      "playback": [
+        {
+          "text": "Eu disse que estava com fome. A prova está na barriga!",
+          "role": "host",
+          "createdAt": 1792767724738,
+          "startedAt": 1792767729374,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Duas cobras e uma maçã. Isso vai virar reunião de condomínio.",
+          "role": "host",
+          "createdAt": 1792767736759,
+          "startedAt": 1792767740253,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Elegância na curva, maçã na barriga. Hoje eu vim pronta!",
+          "role": "host",
+          "createdAt": 1792767748779,
+          "startedAt": 1792767751374,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Essa cobra não sabe jogar",
+          "role": "comment",
+          "createdAt": 1792767759155,
+          "startedAt": 1792767762624,
+          "source": "SIMULATED_OPERATOR"
+        },
+        {
+          "text": "Minha estratégia é deixar a concorrência tão confusa quanto eu.",
+          "role": "host",
+          "createdAt": 1792767759155,
+          "startedAt": 1792767764749,
+          "source": "SIMULATED_OPERATOR"
+        },
+        {
+          "text": "Que delicadeza! Agora só falta descobrir como segurar sem ter mãos.",
+          "role": "host",
+          "createdAt": 1792767765180,
+          "startedAt": 1792767768750,
+          "source": "SIMULATED_OPERATOR"
+        },
+        {
+          "text": "ana · Teste instrumental 1 · TESTE SEM CANTO",
+          "role": "music",
+          "createdAt": 1792767765180,
+          "startedAt": 1792767773250,
+          "source": "SIMULATED_OPERATOR"
+        },
+        {
+          "text": "Pausa para recuperar a pose. Mentira, eu nunca tive essa pose toda!",
+          "role": "host",
+          "createdAt": 1792767775630,
+          "startedAt": 1792767775874,
+          "source": "SIMULATED_OPERATOR"
+        },
+        {
+          "text": "ana · Teste instrumental 3 · TESTE SEM CANTO",
+          "role": "music",
+          "createdAt": 1792767775630,
+          "startedAt": 1792767779999,
+          "source": "SIMULATED_OPERATOR"
+        },
+        {
+          "text": "Ganhei! Vou fingir que estava tudo no planejamento.",
+          "role": "host",
+          "createdAt": 1792767788788,
+          "startedAt": 1792767792731,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Obrigada pela rosa! Vou guardar longe da curva... por causa dos espinhos.",
+          "role": "host",
+          "createdAt": 1792767792646,
+          "startedAt": 1792767795097,
+          "source": "SIMULATED_OPERATOR"
+        },
+        {
+          "text": "ana · Teste instrumental 2 · TESTE SEM CANTO",
+          "role": "music",
+          "createdAt": 1792767792646,
+          "startedAt": 1792767799624,
+          "source": "SIMULATED_OPERATOR"
+        },
+        {
+          "text": "Eu disse que estava com fome. A prova está na barriga!",
+          "role": "host",
+          "createdAt": 1792767804792,
+          "startedAt": 1792767805641,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Essa curva não combinou comigo. Vou pedir uma segunda opinião.",
+          "role": "host",
+          "createdAt": 1792767816799,
+          "startedAt": 1792767819971,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Mais uma maçã! Minha cintura está virando uma avenida.",
+          "role": "host",
+          "createdAt": 1792767828800,
+          "startedAt": 1792767831090,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Eu disse que estava com fome. A prova está na barriga!",
+          "role": "host",
+          "createdAt": 1792767840804,
+          "startedAt": 1792767841248,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Hoje eu passei vergonha. Amanhã eu passo de fase.",
+          "role": "host",
+          "createdAt": 1792767852815,
+          "startedAt": 1792767855124,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Comprida desse jeito e ainda querem que eu tenha jogo de cintura?",
+          "role": "host",
+          "createdAt": 1792767864816,
+          "startedAt": 1792767867499,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Colheita feita. Agora preciso achar espaço para virar.",
+          "role": "host",
+          "createdAt": 1792767876818,
+          "startedAt": 1792767879375,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Colheita feita. Agora preciso achar espaço para virar.",
+          "role": "host",
+          "createdAt": 1792767888825,
+          "startedAt": 1792767889250,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Perdi a rodada, mas a autoestima continua invicta.",
+          "role": "host",
+          "createdAt": 1792767900845,
+          "startedAt": 1792767903874,
+          "source": "INTERNAL_GAME"
+        }
+      ],
+      "latency": {
+        "pending": {
+          "count": 11,
+          "meanMs": 0.09090909090909091,
+          "p95Ms": 1,
+          "maxMs": 1
+        },
+        "synthesis": {
+          "count": 11,
+          "meanMs": 2457.7272727272725,
+          "p95Ms": 3396,
+          "maxMs": 3396
+        },
+        "reaction": {
+          "count": 17,
+          "meanMs": 2480,
+          "p95Ms": 4636,
+          "maxMs": 4636
+        },
+        "queue": {
+          "count": 17,
+          "meanMs": 430.5882352941176,
+          "p95Ms": 3545,
+          "maxMs": 3545
+        },
+        "segment": {
+          "count": 21,
+          "meanMs": 3198.6190476190477,
+          "p95Ms": 6978,
+          "maxMs": 8070
+        },
+        "firstSpeech": {
+          "count": 17,
+          "meanMs": 2480,
+          "p95Ms": 4636,
+          "maxMs": 4636
+        },
+        "complete": {
+          "count": 16,
+          "meanMs": 7331.625,
+          "p95Ms": 17151,
+          "maxMs": 17151
+        },
+        "firstEffect": {
+          "count": 3,
+          "meanMs": 180.33333333333334,
+          "p95Ms": 349,
+          "maxMs": 349
+        },
+        "preloaded": {
+          "count": 6,
+          "meanMs": 1330.5,
+          "p95Ms": 3570,
+          "maxMs": 3570
+        },
+        "firstMusic": {
+          "count": 3,
+          "meanMs": 6472.333333333333,
+          "p95Ms": 8070,
+          "maxMs": 8070
+        }
+      },
+      "interrupted": 1,
+      "staleDropped": 0,
+      "synthesized": 12,
+      "cacheHits": 6,
+      "ttsFailures": 0,
+      "dropped": 2,
+      "ttsMs": 27035,
+      "maxPlaybackLatencyMs": 8070,
+      "musicFailures": 0,
+      "ambientFrames": 1488,
+      "ambientTransitions": 0,
+      "ambientTrackId": "a46bcec4-2374-423d-a855-4f66a47180bf",
+      "trackPlays": {
+        "37032b7a-f1b9-4023-aec9-db6f5ec0cd67": 1,
+        "486cd23a-ffe7-4e52-8b93-ff0e04662252": 1,
+        "e8a34348-95ca-49ef-89dd-006470f8fc74": 1
+      },
+      "played": {
+        "host": 17,
+        "comment": 1,
+        "chant": 0,
+        "music": 3
+      },
+      "peak": 0.10642602249738675,
+      "aiCalls": 0,
+      "warmupMs": 17053.020054
+    },
+    "aiCalls": 0,
+    "renderer": {
+      "engine": "three-webgl2",
+      "width": 360,
+      "height": 640,
+      "frames": 1489,
+      "maxFrameMs": 595,
+      "softwareRequested": true,
+      "sandboxDisabled": true,
+      "gpu": "WebKit WebGL",
+      "geometryCount": 36,
+      "textureCount": 1,
+      "timings": {
+        "sceneMs": {
+          "totalMs": 2048.399999995483,
+          "maxMs": 32.300000000046566
+        },
+        "threeSubmitMs": {
+          "totalMs": 2227.4000000001397,
+          "maxMs": 88.19999999995343
+        },
+        "captureMs": {
+          "totalMs": 289.4000000045635,
+          "maxMs": 11.699999999953434
+        },
+        "overlayMs": {
+          "totalMs": 818.5000000016298,
+          "maxMs": 233.80000000004657
+        },
+        "readbackMs": {
+          "totalMs": 71313.79999999935,
+          "maxMs": 527.8999999999069
+        },
+        "pixelConversionMs": {
+          "totalMs": 3116.799999997951,
+          "maxMs": 32
+        },
+        "serializationMs": {
+          "totalMs": 1008.7000000004191,
+          "maxMs": 11.399999999906868
+        },
+        "decodeMs": {
+          "totalMs": 344.9718170002561,
+          "maxMs": 53.640952999994624
+        }
+      },
+      "nativeBase64": true,
+      "browserCpuMs": null,
+      "browserRssBytes": null
+    },
+    "speech": {
+      "engine": "kokoro",
+      "voice": "pf_dora (pt-BR feminina)",
+      "quality": "HUMAN_REVIEW_REQUIRED",
+      "ready": true,
+      "neural": 19,
+      "fallback": 0,
+      "failures": 0,
+      "maxSynthesisMs": 3136,
+      "rssBytes": null
+    }
+  },
+  "decodedAudioCorrelation": 0.9971306720457993,
+  "receiverDuration": "186.026000",
+  "top": [
+    {
+      "id": "demo-ana",
+      "name": "ana",
+      "quantity": 22,
+      "joined": 0,
+      "hasPhoto": true
+    },
+    {
+      "id": "demo-amigo0",
+      "name": "amigo0",
+      "quantity": 1,
+      "joined": 2,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo1",
+      "name": "amigo1",
+      "quantity": 1,
+      "joined": 3,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo2",
+      "name": "amigo2",
+      "quantity": 1,
+      "joined": 4,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo3",
+      "name": "amigo3",
+      "quantity": 1,
+      "joined": 5,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo4",
+      "name": "amigo4",
+      "quantity": 1,
+      "joined": 6,
+      "hasPhoto": false
+    }
+  ],
+  "rounds": 13,
+  "repertoire": {
+    "categories": {
+      "roses": {
+        "count": 2,
+        "lastAt": 1792767792646
+      },
+      "special": {
+        "count": 1,
+        "lastAt": 1792767775630
+      }
+    },
+    "grouped": 5,
+    "selected": 3,
+    "history": [
+      {
+        "at": 1792767765180,
+        "trackId": "37032b7a-f1b9-4023-aec9-db6f5ec0cd67",
+        "category": "roses"
+      },
+      {
+        "at": 1792767775630,
+        "trackId": "486cd23a-ffe7-4e52-8b93-ff0e04662252",
+        "category": "special"
+      },
+      {
+        "at": 1792767792646,
+        "trackId": "e8a34348-95ca-49ef-89dd-006470f8fc74",
+        "category": "roses"
+      }
+    ],
+    "lastAt": 1792767792646
+  },
+  "catalog": [
+    {
+      "vocalWindows": [],
+      "id": "37032b7a-f1b9-4023-aec9-db6f5ec0cd67",
+      "title": "Teste instrumental 1",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "roses",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "0b48b17a0b091a6b8b7a85241d78033a5960016fe3bca53a172e88fa63c58ba4",
+      "bytes": 288044,
+      "seconds": 6,
+      "approved": true
+    },
+    {
+      "vocalWindows": [],
+      "id": "e8a34348-95ca-49ef-89dd-006470f8fc74",
+      "title": "Teste instrumental 2",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "roses",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "da4ad690f9c59d5fa3ae9f554390f2ebacef2d13f7a78d4aefe1a4e2932f597a",
+      "bytes": 288044,
+      "seconds": 6,
+      "approved": true
+    },
+    {
+      "vocalWindows": [],
+      "id": "486cd23a-ffe7-4e52-8b93-ff0e04662252",
+      "title": "Teste instrumental 3",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "special",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "01d8ed5d839866f3a721e10f8ca0c419cd2a4740ccfaacde0de8c8165d2c60e9",
+      "bytes": 576044,
+      "seconds": 12,
+      "approved": true
+    },
+    {
+      "vocalWindows": [],
+      "id": "a46bcec4-2374-423d-a855-4f66a47180bf",
+      "title": "Brazilian Sunsets",
+      "source": "https://freemusicarchive.org/music/Ketsa/cc-by-free-to-use-for-anything/brazilian-sunsets/",
+      "license": "CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/",
+      "creator": "Ketsa",
+      "category": "ambient",
+      "kind": "ORIGINAL_INSTRUMENTAL",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "ac907c95596fc433d14aea4ea76f00c833bd6dcc4a4c1bd16f18eea72250a3e5",
+      "bytes": 10177802,
+      "seconds": 212.03591666666668,
+      "approved": true
+    }
+  ]
+}

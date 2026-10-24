@@ -1,0 +1,18 @@
+[
+  {
+    "width": 360,
+    "height": 640,
+    "samples": 35,
+    "meanMs": 51.50840042857146,
+    "p90Ms": 55.92890299999999,
+    "thirtyFpsFrameBudgetMs": 33.333333333333336
+  },
+  {
+    "width": 720,
+    "height": 1280,
+    "samples": 35,
+    "meanMs": 190.32603300000002,
+    "p90Ms": 204.319528,
+    "thirtyFpsFrameBudgetMs": 33.333333333333336
+  }
+]

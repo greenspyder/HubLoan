@@ -32,5 +32,5 @@ test('shared compositor animates faces, safe avatars, entry/exit, and keeps comm
  const e=setup();advanceGame(e.game,102000);e.performance.top=[{id:'demo-a',name:'<Ana>',quantity:3,avatar:'https://evil.invalid'}];e.performance.avatarUntil=113000;
  assert.equal(avatarVisibility(e.performance,100000),0);assert.ok(avatarVisibility(e.performance,102000)>0);assert.equal(avatarVisibility(e.performance,114000),0);
  const silent=sceneSvg(e,102000,{role:'host',text:'Oi!',level:0}),speaking=sceneSvg(e,102000,{role:'host',text:'Oi!',level:.9});assert.notEqual(silent,speaking);assert.match(speaking,/&lt;Ana&gt;/);assert.ok(!speaking.includes('evil.invalid'));assert.match(speaking,/y="560"/);assert.match(speaking,/y="480"/);
- const pixels=await render(e,102000);assert.equal(pixels.length,360*640*3);assert.deepEqual(Object.keys(videoProfiles),['light','smooth','hd']);await assert.rejects(runWorker({}, {profile:'unbounded'}),/Perfil/);
+ const pixels=await render(e,102000);assert.equal(pixels.length,360*640*3);assert.deepEqual(Object.keys(videoProfiles),['cpu','economy','light','smooth','hd']);await assert.rejects(runWorker({}, {profile:'unbounded'}),/Perfil/);
 });

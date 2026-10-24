@@ -1,0 +1,20 @@
+✖ RTMP performance: received music, narrated comment, reply, gift verse, Top6 and photo avatar; game keeps moving (92184.073926ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 92728.659258
+
+✖ failing tests:
+
+test at server/tests/live-performance.test.mjs:57:1
+✖ RTMP performance: received music, narrated comment, reply, gift verse, Top6 and photo avatar; game keeps moving (92184.073926ms)
+  Error: Encoder interrompido. Revise destino, FFmpeg, backend e autorização. Não houve confirmação pública.
+      at encodeWorker (file:///workspace/scratch/59dcc8643396/HubLoan-recovered/server/live-worker/worker.mjs:58:42)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async runWorker (file:///workspace/scratch/59dcc8643396/HubLoan-recovered/server/live-worker/worker.mjs:70:16) {
+    report: { preparationMs: 509.1080510000029, failureReason: 'FRAME_BUDGET_EXCEEDED', heartbeatIntervalMs: 750, stages: { pcmMixMs: [Object], audioPipeMs: [Object], renderRoundtripMs: [Object], videoPipeMs: [Object] }, codecTimingNote: 'Pipe timing includes backpressure, not isolated H264/AAC codec time. GPU submit is not GPU completion.', direction: { speech: 1, result: 1 }, status: 'ERROR', profile: 'light', fps: 15, maxRenderMs: 429, lateFrames: 63, maxPipelineLagMs: 2187.666666666667, frames: 107, bytes: 741667, durationMs: 9374, renderedFrames: 107, rssBytes: 290213888, rendererCpuMs: 2725.114, encoderCpuMs: null, networkBytes: null, publicTransmission: 'UNCONFIRMED', audio: { playback: [Array], latency: [Object], interrupted: 0, staleDropped: 0, synthesized: 1, cacheHits: 0, ttsFailures: 0, dropped: 2, ttsMs: 1957, maxPlaybackLatencyMs: 2615, musicFailures: 0, ambientFrames: 107, ambientTransitions: 0, ambientTrackId: '883bb823-6d5f-457e-ae07-6010dcd7eff5', trackPlays: {}, played: [Object], peak: 0.07525459431858172, aiCalls: 0, warmupMs: 16762.157054000003 }, aiCalls: 0, renderer: { engine: 'three-webgl2', width: 360, height: 640, frames: 108, maxFrameMs: 498, softwareRequested: true, sandboxDisabled: true, gpu: 'WebKit WebGL', geometryCount: 0, textureCount: 0, timings: [Object], nativeBase64: true }, speech: { engine: 'kokoro', voice: 'pf_dora (pt-BR feminina)', quality: 'HUMAN_REVIEW_REQUIRED', ready: true, neural: 8, fallback: 0, failures: 0, maxSynthesisMs: 3083 } }
+  }

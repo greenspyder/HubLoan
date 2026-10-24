@@ -1,0 +1,337 @@
+{
+  "report": {
+    "preparationMs": 354.68455300000005,
+    "failureReason": null,
+    "heartbeatIntervalMs": 750,
+    "stages": {
+      "pcmMixMs": {
+        "totalMs": 1861.8283159999364,
+        "maxMs": 7.335266000001866,
+        "count": 1890
+      },
+      "audioPipeMs": {
+        "totalMs": 198.26086000014584,
+        "maxMs": 4.104709000006551,
+        "count": 1890
+      },
+      "renderRoundtripMs": {
+        "totalMs": 64574.68996000005,
+        "maxMs": 205.66375300000072,
+        "count": 1890
+      },
+      "videoPipeMs": {
+        "totalMs": 917.3068249998414,
+        "maxMs": 229.93714200000068,
+        "count": 1890
+      }
+    },
+    "codecTimingNote": "Pipe timing includes backpressure, not isolated H264/AAC codec time. GPU submit is not GPU completion.",
+    "direction": {
+      "harvest": 8,
+      "result": 8,
+      "speech": 6,
+      "music": 3,
+      "contest": 6
+    },
+    "status": "STOPPED",
+    "profile": "light",
+    "fps": 15,
+    "maxRenderMs": 270,
+    "lateFrames": 31,
+    "maxPipelineLagMs": 203.66666666666666,
+    "frames": 1890,
+    "bytes": 12300905,
+    "durationMs": 126021,
+    "renderedFrames": 1890,
+    "rssBytes": 279064576,
+    "rendererCpuMs": 19804.157,
+    "encoderCpuMs": null,
+    "networkBytes": null,
+    "publicTransmission": "UNCONFIRMED",
+    "audio": {
+      "latency": {
+        "pending": {
+          "count": 12,
+          "meanMs": 0,
+          "p95Ms": 0,
+          "maxMs": 0
+        },
+        "synthesis": {
+          "count": 12,
+          "meanMs": 834.3333333333334,
+          "p95Ms": 2871,
+          "maxMs": 2871
+        },
+        "reaction": {
+          "count": 15,
+          "meanMs": 1539.4666666666667,
+          "p95Ms": 5930,
+          "maxMs": 5930
+        },
+        "queue": {
+          "count": 15,
+          "meanMs": 250.66666666666666,
+          "p95Ms": 2339,
+          "maxMs": 2339
+        },
+        "segment": {
+          "count": 16,
+          "meanMs": 1787.9375,
+          "p95Ms": 5930,
+          "maxMs": 5930
+        },
+        "preloaded": {
+          "count": 3,
+          "meanMs": 1339.3333333333333,
+          "p95Ms": 2900,
+          "maxMs": 2900
+        }
+      },
+      "interrupted": 1,
+      "staleDropped": 0,
+      "synthesized": 6,
+      "cacheHits": 7,
+      "ttsFailures": 0,
+      "dropped": 0,
+      "ttsMs": 10012,
+      "maxPlaybackLatencyMs": 5930,
+      "musicFailures": 0,
+      "ambientFrames": 1890,
+      "trackPlays": {
+        "a7ad1700-e137-4a1f-b805-399babe8a987": 1,
+        "0077fb1a-4563-4cfc-9d88-a0ca0de02395": 1,
+        "185deb5c-2206-4ad9-8e11-a3e584e51bd1": 1
+      },
+      "played": {
+        "host": 12,
+        "comment": 1,
+        "chant": 0,
+        "music": 3
+      },
+      "peak": 0.10375523936928602,
+      "aiCalls": 0
+    },
+    "aiCalls": 0,
+    "renderer": {
+      "engine": "three-webgl2",
+      "width": 360,
+      "height": 640,
+      "frames": 1891,
+      "maxFrameMs": 344,
+      "softwareRequested": true,
+      "sandboxDisabled": true,
+      "gpu": "WebKit WebGL",
+      "geometryCount": 36,
+      "textureCount": 1,
+      "timings": {
+        "sceneMs": {
+          "totalMs": 1405.8000000052853,
+          "maxMs": 11.599999999976717
+        },
+        "threeSubmitMs": {
+          "totalMs": 1812.0999999954365,
+          "maxMs": 81.59999999997672
+        },
+        "captureMs": {
+          "totalMs": 227.10000000114087,
+          "maxMs": 10.599999999976717
+        },
+        "overlayMs": {
+          "totalMs": 329.6000000028871,
+          "maxMs": 11.900000000023283
+        },
+        "readbackMs": {
+          "totalMs": 38466.49999999709,
+          "maxMs": 248
+        },
+        "pixelConversionMs": {
+          "totalMs": 2256.200000001816,
+          "maxMs": 15.900000000023283
+        },
+        "serializationMs": {
+          "totalMs": 757.4999999989523,
+          "maxMs": 25.29999999993015
+        },
+        "decodeMs": {
+          "totalMs": 123.24640000005365,
+          "maxMs": 8.615942999999788
+        }
+      },
+      "nativeBase64": true,
+      "browserCpuMs": null,
+      "browserRssBytes": null
+    },
+    "speech": {
+      "engine": "kokoro",
+      "voice": "pf_dora (pt-BR feminina)",
+      "quality": "HUMAN_REVIEW_REQUIRED",
+      "ready": true,
+      "neural": 6,
+      "fallback": 0,
+      "failures": 0,
+      "maxSynthesisMs": 2038,
+      "rssBytes": null
+    }
+  },
+  "decodedAudioCorrelation": 0.9998489352880381,
+  "receiverDuration": "126.037000",
+  "top": [
+    {
+      "id": "demo-ana",
+      "name": "ana",
+      "quantity": 22,
+      "joined": 0,
+      "hasPhoto": true
+    },
+    {
+      "id": "demo-amigo0",
+      "name": "amigo0",
+      "quantity": 1,
+      "joined": 2,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo1",
+      "name": "amigo1",
+      "quantity": 1,
+      "joined": 3,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo2",
+      "name": "amigo2",
+      "quantity": 1,
+      "joined": 4,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo3",
+      "name": "amigo3",
+      "quantity": 1,
+      "joined": 5,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo4",
+      "name": "amigo4",
+      "quantity": 1,
+      "joined": 6,
+      "hasPhoto": false
+    }
+  ],
+  "rounds": 8,
+  "repertoire": {
+    "categories": {
+      "roses": {
+        "count": 2,
+        "lastAt": 1792583190690
+      },
+      "special": {
+        "count": 1,
+        "lastAt": 1792583173680
+      }
+    },
+    "grouped": 5,
+    "selected": 3,
+    "history": [
+      {
+        "at": 1792583163344,
+        "trackId": "a7ad1700-e137-4a1f-b805-399babe8a987",
+        "category": "roses"
+      },
+      {
+        "at": 1792583173680,
+        "trackId": "0077fb1a-4563-4cfc-9d88-a0ca0de02395",
+        "category": "special"
+      },
+      {
+        "at": 1792583190690,
+        "trackId": "185deb5c-2206-4ad9-8e11-a3e584e51bd1",
+        "category": "roses"
+      }
+    ],
+    "lastAt": 1792583190690
+  },
+  "catalog": [
+    {
+      "vocalWindows": [],
+      "id": "a7ad1700-e137-4a1f-b805-399babe8a987",
+      "title": "Teste instrumental 1",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "roses",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "0b48b17a0b091a6b8b7a85241d78033a5960016fe3bca53a172e88fa63c58ba4",
+      "bytes": 288044,
+      "seconds": 6,
+      "approved": true
+    },
+    {
+      "vocalWindows": [],
+      "id": "185deb5c-2206-4ad9-8e11-a3e584e51bd1",
+      "title": "Teste instrumental 2",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "roses",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "da4ad690f9c59d5fa3ae9f554390f2ebacef2d13f7a78d4aefe1a4e2932f597a",
+      "bytes": 288044,
+      "seconds": 6,
+      "approved": true
+    },
+    {
+      "vocalWindows": [],
+      "id": "0077fb1a-4563-4cfc-9d88-a0ca0de02395",
+      "title": "Teste instrumental 3",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "special",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "01d8ed5d839866f3a721e10f8ca0c419cd2a4740ccfaacde0de8c8165d2c60e9",
+      "bytes": 576044,
+      "seconds": 12,
+      "approved": true
+    },
+    {
+      "vocalWindows": [],
+      "id": "8f3ed169-4c2f-4bbd-ab41-3d8b00dcc9d9",
+      "title": "Teste instrumental 2",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "ambient",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "f49fbf5a31bb7ddca8c44ae5c2844760e0b0672faab40e507e709e074f28a5b8",
+      "bytes": 1440044,
+      "seconds": 30,
+      "approved": true
+    },
+    {
+      "vocalWindows": [],
+      "id": "5221e037-2e54-4f02-9b36-7a79208af889",
+      "title": "Lume — Jardim Digital",
+      "source": "Partitura fixa scripts/music/lume-jardim-digital.py; síntese offline sem samples externos",
+      "license": "CC0-1.0; composição e timbres originais desta entrega, sem samples externos",
+      "creator": "HubLoan / composição assistida por Codex",
+      "category": "ambient",
+      "kind": "ORIGINAL_INSTRUMENTAL",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "f1910f348b0412dfa006b579d8112c405a1e925d7ffd3bb8224c1763c499059b",
+      "bytes": 4189134,
+      "seconds": 43.63635416666666,
+      "approved": false
+    }
+  ]
+}

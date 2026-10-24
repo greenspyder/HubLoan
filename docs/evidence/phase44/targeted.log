@@ -1,0 +1,25 @@
+✔ autonomous presentation comments on real results, respects cooldown, never fills audience (82.162552ms)
+✔ neural unavailable falls back locally, rejects unsafe input and cancels (8.146699ms)
+✔ real neural pt-BR synthesis, bounded PCM and model reuse (3946.102485ms)
+✔ real WebGL frames, camera, PCM mouth, game immutable, avatars, bounded geometry and cleanup (14979.897952ms)
+✔ director uses actual state, bounds cuts, priorities, recovery and resets sessions without changing physics (4.939189ms)
+✔ special apples are optional, deterministic, shared and increase score and growth; invalid config rejected (196.046764ms)
+✔ two minutes of autonomous direction has multiple modes, bounded cue counts and no long freeze (46.408655ms)
+✔ director supports non-game experiences and detects only an actual turn beside a rock (0.315666ms)
+✔ risk cue reaches existing PCM mixer at media time, with limiter and silence on pause (15.627303ms)
+✔ prepared reply bypasses blocked dynamic synthesis; first effect, speech and completion measured separately (36.96829ms)
+✔ no audience: sparse contextual autonomy never changes physics or creates gifts (445.971513ms)
+✔ gift reply precedes music, grouping and warmup limits preserved (1.52829ms)
+✔ warmup failure does not stop media; emergency mutes everything (8.59576ms)
+✔ heartbeat telemetry excludes local speech journal and fits unchanged 2048-byte body limit (0.711739ms)
+✔ Lume: varied contextual repertoire, bounded memory and occasional double meaning (3.334725ms)
+✔ Lume: cache keys preserve delivery, state isolated per session and queue remains bounded (6.212555ms)
+✔ approved jingle receives one contextual reply; grouped roses do not add speech (3.391146ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 19782.328719

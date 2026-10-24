@@ -1,0 +1,17 @@
+{
+  "title": "Lume — Jardim Digital",
+  "category": "ambient",
+  "kind": "ORIGINAL_INSTRUMENTAL",
+  "creator": "HubLoan / composição assistida por Codex",
+  "source": "Partitura fixa scripts/music/lume-jardim-digital.py; síntese offline sem samples externos",
+  "license": "CC0-1.0; composição e timbres originais desta entrega, sem samples externos",
+  "commercialLiveRights": true,
+  "costMinor": 0,
+  "bpm": 132,
+  "seconds": 43.63635416666666,
+  "hash": "f1910f348b0412dfa006b579d8112c405a1e925d7ffd3bb8224c1763c499059b",
+  "peakDbFS": -7.729516248967931,
+  "rmsDbFS": -20.83240544256511,
+  "approval": "PENDING_LISTENING",
+  "aiGeneratedMusic": false
+}
