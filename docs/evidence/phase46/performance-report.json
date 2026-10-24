@@ -1,0 +1,4517 @@
+{
+  "report": {
+    "preparationMs": 358.35214199999973,
+    "failureReason": null,
+    "heartbeatIntervalMs": 750,
+    "stages": {
+      "pcmMixMs": {
+        "totalMs": 2844.311175999421,
+        "maxMs": 22.201084000000264,
+        "count": 2790
+      },
+      "audioPipeMs": {
+        "totalMs": 222.9460359999066,
+        "maxMs": 1.4791219999897294,
+        "count": 2790
+      },
+      "renderRoundtripMs": {
+        "totalMs": 103822.18235699952,
+        "maxMs": 122.50728700000036,
+        "count": 2790
+      },
+      "videoPipeMs": {
+        "totalMs": 1190.4338810001173,
+        "maxMs": 229.42710400000215,
+        "count": 2790
+      }
+    },
+    "codecTimingNote": "Pipe timing includes backpressure, not isolated H264/AAC codec time. GPU submit is not GPU completion.",
+    "direction": {
+      "harvest": 12,
+      "result": 10,
+      "speech": 7,
+      "contest": 8,
+      "music": 3,
+      "community": 2,
+      "near-miss": 1
+    },
+    "cameraCuts": {
+      "Front": 13,
+      "Action": 3,
+      "Follow": 7,
+      "Tactical": 3
+    },
+    "status": "STOPPED",
+    "profile": "light",
+    "fps": 15,
+    "maxRenderMs": 270,
+    "lateFrames": 22,
+    "maxPipelineLagMs": 205.66666666666666,
+    "frames": 2790,
+    "bytes": 18132502,
+    "durationMs": 186020,
+    "renderedFrames": 2790,
+    "rssBytes": 345726976,
+    "rendererCpuMs": 27026.328,
+    "encoderCpuMs": null,
+    "networkBytes": null,
+    "publicTransmission": "UNCONFIRMED",
+    "audio": {
+      "playback": [
+        {
+          "text": "Eu disse que estava com fome. A prova está na barriga!",
+          "role": "host",
+          "createdAt": 1792838912174,
+          "startedAt": 1792838914149,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Duas cobras e uma maçã. Isso vai virar reunião de condomínio.",
+          "role": "host",
+          "createdAt": 1792838924178,
+          "startedAt": 1792838926415,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Elegância na curva, maçã na barriga. Hoje eu vim pronta!",
+          "role": "host",
+          "createdAt": 1792838936178,
+          "startedAt": 1792838938282,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Essa cobra não sabe jogar",
+          "role": "comment",
+          "createdAt": 1792838941288,
+          "startedAt": 1792838944749,
+          "source": "SIMULATED_OPERATOR"
+        },
+        {
+          "text": "Minha estratégia é deixar a concorrência tão confusa quanto eu.",
+          "role": "host",
+          "createdAt": 1792838941288,
+          "startedAt": 1792838946816,
+          "source": "SIMULATED_OPERATOR"
+        },
+        {
+          "text": "Que delicadeza! Agora só falta descobrir como segurar sem ter mãos.",
+          "role": "host",
+          "createdAt": 1792838947306,
+          "startedAt": 1792838950750,
+          "source": "SIMULATED_OPERATOR"
+        },
+        {
+          "text": "ana · Teste instrumental 1 · TESTE SEM CANTO",
+          "role": "music",
+          "createdAt": 1792838947306,
+          "startedAt": 1792838955282,
+          "source": "SIMULATED_OPERATOR"
+        },
+        {
+          "text": "Pausa para recuperar a pose. Mentira, eu nunca tive essa pose toda!",
+          "role": "host",
+          "createdAt": 1792838957652,
+          "startedAt": 1792838957749,
+          "source": "SIMULATED_OPERATOR"
+        },
+        {
+          "text": "ana · Teste instrumental 3 · TESTE SEM CANTO",
+          "role": "music",
+          "createdAt": 1792838957652,
+          "startedAt": 1792838961882,
+          "source": "SIMULATED_OPERATOR"
+        },
+        {
+          "text": "Mais uma maçã! Minha cintura está virando uma avenida.",
+          "role": "host",
+          "createdAt": 1792838970194,
+          "startedAt": 1792838973882,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Obrigada pela rosa! Vou guardar longe da curva... por causa dos espinhos.",
+          "role": "host",
+          "createdAt": 1792838974664,
+          "startedAt": 1792838977282,
+          "source": "SIMULATED_OPERATOR"
+        },
+        {
+          "text": "ana · Teste instrumental 2 · TESTE SEM CANTO",
+          "role": "music",
+          "createdAt": 1792838974664,
+          "startedAt": 1792838981950,
+          "source": "SIMULATED_OPERATOR"
+        },
+        {
+          "text": "Colheita feita. Agora preciso achar espaço para virar.",
+          "role": "host",
+          "createdAt": 1792838988201,
+          "startedAt": 1792838988482,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Essa curva não combinou comigo. Vou pedir uma segunda opinião.",
+          "role": "host",
+          "createdAt": 1792839000202,
+          "startedAt": 1792839002149,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Hoje eu passei vergonha. Amanhã eu passo de fase.",
+          "role": "host",
+          "createdAt": 1792839012202,
+          "startedAt": 1792839013816,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Eu disse que estava com fome. A prova está na barriga!",
+          "role": "host",
+          "createdAt": 1792839026204,
+          "startedAt": 1792839026749,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Perdi a rodada, mas a autoestima continua invicta.",
+          "role": "host",
+          "createdAt": 1792839038204,
+          "startedAt": 1792839040215,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Comprida desse jeito e ainda querem que eu tenha jogo de cintura?",
+          "role": "host",
+          "createdAt": 1792839050204,
+          "startedAt": 1792839052483,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Ganhei! Vou fingir que estava tudo no planejamento.",
+          "role": "host",
+          "createdAt": 1792839062204,
+          "startedAt": 1792839064215,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "A concorrência chegou. Vou caprichar no rebolado da curva.",
+          "role": "host",
+          "createdAt": 1792839074204,
+          "startedAt": 1792839076415,
+          "source": "INTERNAL_GAME"
+        },
+        {
+          "text": "Essa curva não combinou comigo. Vou pedir uma segunda opinião.",
+          "role": "host",
+          "createdAt": 1792839086204,
+          "startedAt": 1792839086749,
+          "source": "INTERNAL_GAME"
+        }
+      ],
+      "latency": {
+        "pending": {
+          "count": 12,
+          "meanMs": 0,
+          "p95Ms": 0,
+          "maxMs": 0
+        },
+        "synthesis": {
+          "count": 12,
+          "meanMs": 1661.75,
+          "p95Ms": 2783,
+          "maxMs": 2783
+        },
+        "reaction": {
+          "count": 17,
+          "meanMs": 1945.1764705882354,
+          "p95Ms": 3688,
+          "maxMs": 3688
+        },
+        "queue": {
+          "count": 17,
+          "meanMs": 448.52941176470586,
+          "p95Ms": 2828,
+          "maxMs": 2828
+        },
+        "segment": {
+          "count": 21,
+          "meanMs": 2766.095238095238,
+          "p95Ms": 7286,
+          "maxMs": 7976
+        },
+        "firstSpeech": {
+          "count": 17,
+          "meanMs": 1945.1764705882354,
+          "p95Ms": 3688,
+          "maxMs": 3688
+        },
+        "complete": {
+          "count": 16,
+          "meanMs": 6774.604248046875,
+          "p95Ms": 16230.666748046875,
+          "maxMs": 16230.666748046875
+        },
+        "firstEffect": {
+          "count": 3,
+          "meanMs": 319.3333333333333,
+          "p95Ms": 643,
+          "maxMs": 643
+        },
+        "preloaded": {
+          "count": 6,
+          "meanMs": 1255,
+          "p95Ms": 3444,
+          "maxMs": 3444
+        },
+        "firstMusic": {
+          "count": 3,
+          "meanMs": 6497.333333333333,
+          "p95Ms": 7976,
+          "maxMs": 7976
+        }
+      },
+      "interrupted": 1,
+      "staleDropped": 1,
+      "synthesized": 13,
+      "cacheHits": 6,
+      "ttsFailures": 0,
+      "dropped": 2,
+      "ttsMs": 19939,
+      "maxPlaybackLatencyMs": 7976,
+      "musicFailures": 0,
+      "ambientFrames": 2790,
+      "ambientTransitions": 0,
+      "ambientTrackId": "6dd23b47-c3af-4a78-a34f-e467e58cbc67",
+      "trackPlays": {
+        "7a37d9d0-ae42-43a8-93b1-de4d2e740f34": 1,
+        "a90759af-708d-4562-88a6-91f52106dbe8": 1,
+        "608b2336-0712-4454-a931-c5d1f1dba54a": 1
+      },
+      "played": {
+        "host": 17,
+        "comment": 1,
+        "chant": 0,
+        "music": 3
+      },
+      "peak": 0.10564136408657795,
+      "aiCalls": 0,
+      "warmupMs": 12772.39315
+    },
+    "aiCalls": 0,
+    "renderer": {
+      "engine": "three-webgl2",
+      "width": 360,
+      "height": 640,
+      "frames": 2791,
+      "maxFrameMs": 354,
+      "softwareRequested": true,
+      "sandboxDisabled": true,
+      "gpu": "WebKit WebGL",
+      "geometryCount": 39,
+      "textureCount": 2,
+      "timings": {
+        "sceneMs": {
+          "totalMs": 2550.699999997858,
+          "maxMs": 6.5
+        },
+        "threeSubmitMs": {
+          "totalMs": 2028.1000000006752,
+          "maxMs": 63.40000000002328
+        },
+        "captureMs": {
+          "totalMs": 325.6999999961117,
+          "maxMs": 5.900000000023283
+        },
+        "overlayMs": {
+          "totalMs": 431.8000000048196,
+          "maxMs": 6.899999999906868
+        },
+        "readbackMs": {
+          "totalMs": 63979.50000000221,
+          "maxMs": 259.4000000000233
+        },
+        "pixelConversionMs": {
+          "totalMs": 2893.7999999960884,
+          "maxMs": 6
+        },
+        "serializationMs": {
+          "totalMs": 305.70000000239816,
+          "maxMs": 2.400000000023283
+        },
+        "decodeMs": {
+          "totalMs": 159.2152180001067,
+          "maxMs": 3.159732999993139
+        }
+      },
+      "shots": {
+        "Tactical": 1150,
+        "Front": 1049,
+        "Action": 101,
+        "Follow": 491
+      },
+      "cameraSamples": [
+        {
+          "at": 1792838902285,
+          "frame": 1,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.06637485468938155,
+            0.4123974209649758,
+            0.9969716585581571
+          ],
+          "camera": [
+            0,
+            34.87739750400001,
+            32.651735040000005
+          ],
+          "round": 2,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838903315.6667,
+          "frame": 12,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.03718548112272709,
+            0.29775770407767715,
+            0.9969405371993447
+          ],
+          "camera": [
+            0,
+            36.397569431078466,
+            33.98327249437529
+          ],
+          "round": 2,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838904381.3333,
+          "frame": 28,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.1874402021044814,
+            0.2289052463170976,
+            0.9969102177751961
+          ],
+          "camera": [
+            0,
+            37.18515593431285,
+            34.673129285529505
+          ],
+          "round": 2,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838905382.3333,
+          "frame": 43,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.19426744586823885,
+            0.237242795561409,
+            0.9967733863502861
+          ],
+          "camera": [
+            0,
+            35.77725739707029,
+            33.439933486484925
+          ],
+          "round": 2,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838906449,
+          "frame": 59,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.18879417448394076,
+            0.23055874101859156,
+            0.9968830814993603
+          ],
+          "camera": [
+            0,
+            36.89784828144884,
+            34.42147294725446
+          ],
+          "round": 2,
+          "phase": "FINISHED",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838907515.1667,
+          "frame": 75,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.3554904600705629,
+            0.3235488177263397,
+            0.9969163729365161
+          ],
+          "camera": [
+            0,
+            35.7639721322399,
+            33.42829675816633
+          ],
+          "round": 3,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838908516.1667,
+          "frame": 90,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.11184998575174747,
+            0.266910711434403,
+            0.9969307319192042
+          ],
+          "camera": [
+            0,
+            36.788458327355045,
+            34.32565692907011
+          ],
+          "round": 3,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838909582.3333,
+          "frame": 106,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.12593153740110058,
+            0.11114215856104656,
+            0.9964603618245768
+          ],
+          "camera": [
+            0,
+            34.92642624561962,
+            32.69467992317047
+          ],
+          "round": 3,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838910582.3333,
+          "frame": 121,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.3621416507755002,
+            0.11243958740917165,
+            0.9966346486061127
+          ],
+          "camera": [
+            0,
+            36.38692103224072,
+            33.9739454296999
+          ],
+          "round": 3,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838911648,
+          "frame": 137,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.3315742653370097,
+            0.26907449394376864,
+            0.996974998977039
+          ],
+          "camera": [
+            0,
+            37.186773252373975,
+            34.67454591448816
+          ],
+          "round": 3,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838912714.1667,
+          "frame": 153,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.09432127467991643,
+            -0.02260859066469498,
+            0.9852038508174368
+          ],
+          "camera": [
+            3.1030108839280492,
+            11.023261239831825,
+            -2.388519134585255
+          ],
+          "round": 3,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838913715.1667,
+          "frame": 168,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.03693581519740736,
+            -0.06762731358641551,
+            0.9742529184481706
+          ],
+          "camera": [
+            9.646664740027553,
+            4.520824993271389,
+            -7.113922540496178
+          ],
+          "round": 3,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838914779.8333,
+          "frame": 184,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.0064427917104767475,
+            -0.02634849546053237,
+            0.9770255684917688
+          ],
+          "camera": [
+            10.980962087549326,
+            4.401708604826259,
+            -7.100732294972262
+          ],
+          "round": 3,
+          "phase": "FINISHED",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838915782.3333,
+          "frame": 199,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.0064025692265136025,
+            -0.02622634263065261,
+            0.9770699558229795
+          ],
+          "camera": [
+            10.999655381525283,
+            4.400030982806618,
+            -7.100016512138754
+          ],
+          "round": 3,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838916848.5,
+          "frame": 215,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.006402908855446966,
+            -0.026228434220167317,
+            0.9770707622760413
+          ],
+          "camera": [
+            10.9999951590799,
+            4.400000435511287,
+            -7.100000249384673
+          ],
+          "round": 3,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838917848.5,
+          "frame": 230,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.08098836105876882,
+            0.32338803372559494,
+            0.9969182367139077
+          ],
+          "camera": [
+            0,
+            35.78392278097321,
+            33.44577177895464
+          ],
+          "round": 4,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838918851,
+          "frame": 245,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.03856859174716577,
+            0.18882900454682344,
+            0.9968019358807905
+          ],
+          "camera": [
+            0,
+            36.771552171745945,
+            34.31084861758769
+          ],
+          "round": 4,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838919915.6667,
+          "frame": 261,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.29257099630551137,
+            0.12245218335226583,
+            0.9964785321283263
+          ],
+          "camera": [
+            0,
+            34.9164236713832,
+            32.685918544277264
+          ],
+          "round": 4,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838920981.8333,
+          "frame": 277,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.3004310635285103,
+            -0.0678774164224672,
+            0.9963660098117261
+          ],
+          "camera": [
+            0,
+            36.618531735135534,
+            34.176816118366894
+          ],
+          "round": 4,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838921982.3333,
+          "frame": 292,
+          "shot": "Front",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            0.014875812503800951,
+            -0.06138571877667781,
+            0.97706343864446
+          ],
+          "camera": [
+            -14.086666259765625,
+            4.4,
+            5.100000000000001
+          ],
+          "round": 4,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838923048.5,
+          "frame": 308,
+          "shot": "Front",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            0.006109350686532812,
+            -0.07259136370988307,
+            0.9729539257498818
+          ],
+          "camera": [
+            -7.3500079602075,
+            4.4,
+            -4.1190782059967495
+          ],
+          "round": 4,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838924113.1667,
+          "frame": 324,
+          "shot": "Front",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            0.03674110050787078,
+            -0.06700543079131725,
+            0.9740695164745191
+          ],
+          "camera": [
+            -6.124702753726289,
+            4.4,
+            -9.648243328792699
+          ],
+          "round": 4,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838925115.6667,
+          "frame": 339,
+          "shot": "Front",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            0.03754894870110375,
+            -0.06718122995130064,
+            0.9740199249581977
+          ],
+          "camera": [
+            -6.100490341927633,
+            4.4,
+            -14.63906611149733
+          ],
+          "round": 4,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838926115.6667,
+          "frame": 354,
+          "shot": "Front",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.11364729761878135,
+            -0.06141632454771489,
+            0.9725860174063211
+          ],
+          "camera": [
+            -1.608056769584017,
+            4.4,
+            -15.974570365167667
+          ],
+          "round": 4,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838927181.3333,
+          "frame": 370,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.06023469510209395,
+            -0.05617379138130745,
+            0.9759036198057471
+          ],
+          "camera": [
+            7.914216388226758,
+            4.4,
+            -3.747938490672268
+          ],
+          "round": 4,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838928181.8333,
+          "frame": 385,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.030571299077204583,
+            -0.06778879100414337,
+            0.9739493182866941
+          ],
+          "camera": [
+            2.37434501365787,
+            4.4,
+            2.0005908284896936
+          ],
+          "round": 4,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838929247,
+          "frame": 401,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.06535263269421965,
+            -0.04850269901789378,
+            0.9747068654685607
+          ],
+          "camera": [
+            1.6011715580694805,
+            4.4,
+            7.097769638552978
+          ],
+          "round": 4,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838930247.5,
+          "frame": 416,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.011415620629784856,
+            -0.04420133024178025,
+            0.9744446823884797
+          ],
+          "camera": [
+            -8.128286266766409,
+            4.4,
+            -0.2814419317131145
+          ],
+          "round": 4,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838931248,
+          "frame": 431,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.10328218862312984,
+            -0.03906031656676841,
+            0.9749698405408587
+          ],
+          "camera": [
+            -13.235582674542874,
+            4.4,
+            -0.3563098229477167
+          ],
+          "round": 4,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838932313.1667,
+          "frame": 447,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.13435877521033032,
+            -0.03065904594044061,
+            0.9747019798962554
+          ],
+          "camera": [
+            -6.951859229926496,
+            4.4,
+            12.158602495586244
+          ],
+          "round": 4,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838933315.1667,
+          "frame": 462,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.16765783806826973,
+            -0.04460009169693566,
+            0.9722563737903571
+          ],
+          "camera": [
+            3.2663154887021886,
+            4.4,
+            2.088963691281573
+          ],
+          "round": 4,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838934316.1667,
+          "frame": 477,
+          "shot": "Action",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.023096728055804157,
+            -0.013488587174488018,
+            0.9828771241843598
+          ],
+          "camera": [
+            6.467791494505572,
+            7.4434481797443315,
+            -2.023764262180555
+          ],
+          "round": 4,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838935382.3333,
+          "frame": 493,
+          "shot": "Action",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.026145690365914107,
+            -0.021908302870984605,
+            0.9830906792026012
+          ],
+          "camera": [
+            6.499731029960491,
+            7.499205075887733,
+            -7.036860632699446
+          ],
+          "round": 4,
+          "phase": "FINISHED",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838936382.8333,
+          "frame": 508,
+          "shot": "Action",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.036365456900702135,
+            -0.02077146961071782,
+            0.9831992323885312
+          ],
+          "camera": [
+            6.499996200294356,
+            7.499985469547002,
+            -7.491529229345551
+          ],
+          "round": 4,
+          "phase": "FINISHED",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838937448,
+          "frame": 524,
+          "shot": "Action",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.036429534032666785,
+            -0.020757397722003856,
+            0.9832014667217771
+          ],
+          "camera": [
+            6.499999952383623,
+            7.499999794933372,
+            -7.499880425940732
+          ],
+          "round": 4,
+          "phase": "FINISHED",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838938450,
+          "frame": 539,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.3837182560197737,
+            0.3268177650913272,
+            0.9968784799237451
+          ],
+          "camera": [
+            0,
+            35.36260629051132,
+            33.07673543694422
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838939515.6667,
+          "frame": 555,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.01849854995744315,
+            0.3156268144251963,
+            0.9970082032839471
+          ],
+          "camera": [
+            0,
+            36.77113397548481,
+            34.31048231429327
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838940515.6667,
+          "frame": 570,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.0413308727308773,
+            0.19104371413990218,
+            0.9965251280970921
+          ],
+          "camera": [
+            0,
+            34.32938549450152,
+            32.171724520731274
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838941516.1667,
+          "frame": 585,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.2794387262115623,
+            0.1506541529932844,
+            0.9966665296875415
+          ],
+          "camera": [
+            0,
+            36.11066558940427,
+            33.731969859332196
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838942581.3333,
+          "frame": 601,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.3508728768606421,
+            0.1417682601318475,
+            0.9967601199647776
+          ],
+          "camera": [
+            0,
+            37.09245327998694,
+            34.59192988028054
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838943581.3333,
+          "frame": 616,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.04462215470365191,
+            0.07905771241248181,
+            0.9921997295069046
+          ],
+          "camera": [
+            -1.7386813828984542,
+            19.130623355166378,
+            7.9702062838324705
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838944581.8333,
+          "frame": 631,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.1171263967943522,
+            -0.052150853771694525,
+            0.9736221456764498
+          ],
+          "camera": [
+            -0.6816917564546154,
+            4.6692617156652245,
+            -16.118787857780465
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838945582.3333,
+          "frame": 646,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.02845371773852287,
+            -0.06876767716622612,
+            0.9737487646384972
+          ],
+          "camera": [
+            7.95196806348433,
+            4.404921846806813,
+            -9.474388620203014
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 1,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838946648.5,
+          "frame": 662,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.0065507912652150195,
+            -0.07264180417288346,
+            0.9729360718306932
+          ],
+          "camera": [
+            2.335209126804578,
+            4.4000691841724136,
+            0.11325156655783325
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838947713.1667,
+          "frame": 678,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.14203065121600228,
+            -0.049997634871142026,
+            0.9735676614672182
+          ],
+          "camera": [
+            -6.130862575789707,
+            4.400000978343075,
+            -0.7253113995196507
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838948715.6667,
+          "frame": 693,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.02217494889244476,
+            -0.02737053450651636,
+            0.9840989047617043
+          ],
+          "camera": [
+            1.5778818771265213,
+            8,
+            -9.531359473937123
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838949781.3333,
+          "frame": 709,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.04988622182616445,
+            0.001993882767851365,
+            0.9882384484272786
+          ],
+          "camera": [
+            3.5097600930122024,
+            10.081839644494362,
+            -8.348524927305252
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838950782.3333,
+          "frame": 724,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.013818757548611314,
+            -0.019407471734531955,
+            0.9842776554943645
+          ],
+          "camera": [
+            10.431534411518971,
+            8.178765113963802,
+            2.069427406778471
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838951848.5,
+          "frame": 740,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.05822508489114066,
+            -0.0016858848566229032,
+            0.9875046852443318
+          ],
+          "camera": [
+            1.6138118737642737,
+            10.04452232214265,
+            -2.885199415257553
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838952849,
+          "frame": 755,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            0.010217777163263816,
+            -0.011392775864989874,
+            0.9888590928540458
+          ],
+          "camera": [
+            1.5498014569265721,
+            11.349314890186085,
+            -1.1693255700710203
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838953849.5,
+          "frame": 770,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.014875784072329036,
+            -0.06138559996050081,
+            0.9770634386791857
+          ],
+          "camera": [
+            -6.100000000000001,
+            4.4,
+            -6.422499999999999
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838954849.5,
+          "frame": 785,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.1200922150904132,
+            -0.05520218277315606,
+            0.9732124483901536
+          ],
+          "camera": [
+            -2.6030376770798807,
+            4.4,
+            -7.736590016335228
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838955914.6667,
+          "frame": 801,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.08163016742500216,
+            -0.06678678691946867,
+            0.9731792702443401
+          ],
+          "camera": [
+            -1.5757581161168077,
+            4.4,
+            -11.798407914102636
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838956915.1667,
+          "frame": 816,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.03151371097697834,
+            -0.08358899634955422,
+            0.9702533817433069
+          ],
+          "camera": [
+            -2.4783154234406224,
+            4.4,
+            2.5988938327967155
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838957915.1667,
+          "frame": 831,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.06105971934781012,
+            -0.06777625065931732,
+            0.9734741942099667
+          ],
+          "camera": [
+            7.218935166182895,
+            4.4,
+            -0.2898885574413381
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838958915.6667,
+          "frame": 846,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.05929812101024122,
+            -0.07466569563034371,
+            0.9718073008715379
+          ],
+          "camera": [
+            5.624278191682382,
+            4.4,
+            5.723210507798005
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838959915.6667,
+          "frame": 861,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.01273692295549015,
+            -0.07268838603611312,
+            0.9729022469456589
+          ],
+          "camera": [
+            -7.428885415934212,
+            4.4,
+            0.11122444855957336
+          ],
+          "round": 5,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838960981.8333,
+          "frame": 877,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.006593363030930684,
+            -0.026762670001188326,
+            0.9767249416936962
+          ],
+          "camera": [
+            -10.864957222426979,
+            4.4,
+            -0.8804617500385554
+          ],
+          "round": 5,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838961982.3333,
+          "frame": 892,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.006396674491902684,
+            -0.026202502741396322,
+            0.9770645357512538
+          ],
+          "camera": [
+            -10.997537575274224,
+            4.4,
+            -0.8996105634884197
+          ],
+          "round": 5,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838963048,
+          "frame": 908,
+          "shot": "Follow",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.023373297479184464,
+            -0.038071157851529175,
+            0.9831307746218905
+          ],
+          "camera": [
+            5.196615353306443,
+            7.933799426606135,
+            -0.9981557806649399
+          ],
+          "round": 5,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838964048.5,
+          "frame": 923,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.16168674923520657,
+            0.33559745587521805,
+            0.9967767074270201
+          ],
+          "camera": [
+            0,
+            34.32332559799344,
+            32.16641658218403
+          ],
+          "round": 6,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838965114.6667,
+          "frame": 939,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.25585422014906706,
+            0.3391228798046652,
+            0.9970041582577224
+          ],
+          "camera": [
+            0,
+            36.35479953941737,
+            33.94580981554805
+          ],
+          "round": 6,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838966115.1667,
+          "frame": 954,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.1923936898702727,
+            0.3913313899842254,
+            0.9971604178331472
+          ],
+          "camera": [
+            0,
+            37.069827185429034,
+            34.572111403295516
+          ],
+          "round": 6,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838967115.6667,
+          "frame": 969,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.056420271482347774,
+            0.32661632281932823,
+            0.9968808150040427
+          ],
+          "camera": [
+            0,
+            35.38710735900812,
+            33.098196226868424
+          ],
+          "round": 6,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838968181.3333,
+          "frame": 985,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.3343330029996325,
+            0.31541695786103013,
+            0.9970106359011104
+          ],
+          "camera": [
+            0,
+            36.79850188224678,
+            34.334454203427846
+          ],
+          "round": 6,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838969182.3333,
+          "frame": 1000,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.019566770403994398,
+            -0.06492849588453625,
+            0.9770928460358559
+          ],
+          "camera": [
+            7.642200153491727,
+            5.416181308137656,
+            2.553704842660822
+          ],
+          "round": 6,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838970248,
+          "frame": 1016,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.02778616391400133,
+            -0.06835788453434817,
+            0.9739224167103662
+          ],
+          "camera": [
+            9.265533347908802,
+            4.414312597205207,
+            6.168143889225682
+          ],
+          "round": 6,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838971249.5,
+          "frame": 1031,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.00428124835950622,
+            -0.07407610105862183,
+            0.9726003688368701
+          ],
+          "camera": [
+            -3.0192145163546553,
+            4.400260576204974,
+            0.42131442720953505
+          ],
+          "round": 6,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838972315.1667,
+          "frame": 1047,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.015948357657239648,
+            -0.03706610469201324,
+            0.9733935263892868
+          ],
+          "camera": [
+            1.9809848445501435,
+            4.400003670134684,
+            8.814051814988737
+          ],
+          "round": 6,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838973315.6667,
+          "frame": 1062,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.006960264497282729,
+            -0.027669239328312733,
+            0.976323158793886
+          ],
+          "camera": [
+            1.1664321636117554,
+            4.4000000670865544,
+            13.716943246993194
+          ],
+          "round": 6,
+          "phase": "FINISHED",
+          "emotion": "surprise",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838974315.6667,
+          "frame": 1077,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.23511794415753423,
+            -0.1436282967130641,
+            0.9959520979952768
+          ],
+          "camera": [
+            -0.18176745543995787,
+            34.12582838805044,
+            32.763271615736905
+          ],
+          "round": 6,
+          "phase": "FINISHED",
+          "emotion": "neutral",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838975315.6667,
+          "frame": 1092,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.22399236818981272,
+            -0.14312954515397897,
+            0.9961803633198866
+          ],
+          "camera": [
+            -0.011403025068884352,
+            36.1015468920664,
+            33.76303209453695
+          ],
+          "round": 6,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838976381.8333,
+          "frame": 1108,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.3277362734689515,
+            0.32080493329416354,
+            0.9969481795201717
+          ],
+          "camera": [
+            0,
+            36.107184488225045,
+            33.72892071961317
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838977382.3333,
+          "frame": 1123,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.03683751423858599,
+            0.28457998628993575,
+            0.9969754069112126
+          ],
+          "camera": [
+            0,
+            36.94428210204519,
+            34.4621449069009
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838978449,
+          "frame": 1139,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.19745907258115517,
+            0.2271038220022107,
+            0.9967094198586799
+          ],
+          "camera": [
+            0,
+            35.36065260836939,
+            33.07502418251334
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838979514.1667,
+          "frame": 1155,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.17208482889575083,
+            0.20151434724478484,
+            0.996827647466786
+          ],
+          "camera": [
+            0,
+            36.819201908837364,
+            34.352585613580175
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838980514.6667,
+          "frame": 1170,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.4181449853378844,
+            0.27695377289563544,
+            0.9966749315665324
+          ],
+          "camera": [
+            0,
+            34.32829187088843,
+            32.17076660223806
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838981516.1667,
+          "frame": 1185,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.009210139363978444,
+            -0.03304736800550943,
+            0.9883479301669241
+          ],
+          "camera": [
+            -5.89282598021546,
+            10.993962825810637,
+            11.813462697989763
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838982516.1667,
+          "frame": 1200,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.08899667222381495,
+            -0.06724097842685776,
+            0.9731906077427217
+          ],
+          "camera": [
+            3.606882830260017,
+            4.520772641963285,
+            3.6402369254767044
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838983581.8333,
+          "frame": 1216,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.03841230531843154,
+            -0.06694580000511906,
+            0.9740666414116138
+          ],
+          "camera": [
+            9.975854146352669,
+            4.401701046704997,
+            1.9381200282714104
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838984582.8333,
+          "frame": 1231,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.05420267689297487,
+            -0.09040331823589022,
+            0.9712033656880984
+          ],
+          "camera": [
+            7.001749813816262,
+            4.400031031383068,
+            9.08881444947669
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838985647.5,
+          "frame": 1247,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.0357581079895857,
+            -0.06725054921933586,
+            0.9740222893359513
+          ],
+          "camera": [
+            4.167589395254734,
+            4.400000438819136,
+            15.313323270121064
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 6,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838986649,
+          "frame": 1262,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.10441056915929199,
+            -0.03900282315311623,
+            0.9738135323234015
+          ],
+          "camera": [
+            8.853231271428477,
+            4.400000007989174,
+            17.723177444277503
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838987649,
+          "frame": 1277,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.02137398091860503,
+            -0.07093952584429897,
+            0.973264067890284
+          ],
+          "camera": [
+            -4.176553033363853,
+            4.400000000146328,
+            10.776017988223822
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838988715.1667,
+          "frame": 1293,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.01532971040502293,
+            -0.022217313633045327,
+            0.984326674605143
+          ],
+          "camera": [
+            -2.9999999999999982,
+            8,
+            12.46451877302484
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792838989715.6667,
+          "frame": 1308,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.012591936215663608,
+            -0.017260500602798854,
+            0.9847098739103898
+          ],
+          "camera": [
+            -2.9999999999999982,
+            8,
+            7.829749773480691
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838990781.3333,
+          "frame": 1324,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.006566385251809936,
+            -0.0038018027127694393,
+            0.9848124030786384
+          ],
+          "camera": [
+            -2.9999999999999982,
+            8,
+            2.6015722730892548
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838991782.3333,
+          "frame": 1339,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.028246412065399917,
+            -0.005303392498989171,
+            0.986410679245472
+          ],
+          "camera": [
+            -10.706034288475333,
+            9.305852736039562,
+            -4.382481112612655
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838992848,
+          "frame": 1355,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            0.02912182458638873,
+            -0.010705100450666999,
+            0.9847399029441569
+          ],
+          "camera": [
+            -5.176887153799388,
+            8.018392529040417,
+            -6.951460615025077
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838993848.5,
+          "frame": 1370,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            0.033211051917614996,
+            -0.03528140661936814,
+            0.9831812223939893
+          ],
+          "camera": [
+            1.505720433718966,
+            8.000336197851608,
+            -3.6227175337677524
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838994913.6667,
+          "frame": 1386,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.028774212129394888,
+            -0.01737217507501059,
+            0.984645878264132
+          ],
+          "camera": [
+            5.064089192760597,
+            8.28774629248643,
+            -14.371980057095511
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838995915.6667,
+          "frame": 1401,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.028834560804931884,
+            -0.060827798862737315,
+            0.9759066729881822
+          ],
+          "camera": [
+            8.302475214331276,
+            4.4,
+            7.9
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838996915.6667,
+          "frame": 1416,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.025397281819077813,
+            -0.06668401035946002,
+            0.9742536122638953
+          ],
+          "camera": [
+            11.810819568223144,
+            4.4,
+            6.357284130625712
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838997915.6667,
+          "frame": 1431,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.012907465202743124,
+            -0.07175183387562464,
+            0.9731274126529718
+          ],
+          "camera": [
+            5.095743289886026,
+            4.4,
+            16.49650603889136
+          ],
+          "round": 7,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838998915.6667,
+          "frame": 1446,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.006342604099471081,
+            -0.026328129424873517,
+            0.9769944091204893
+          ],
+          "camera": [
+            4.124611993397081,
+            4.4,
+            17.973636650035793
+          ],
+          "round": 7,
+          "phase": "FINISHED",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792838999977.8333,
+          "frame": 1462,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.006402091098193833,
+            -0.026230968926549747,
+            0.9770696850960187
+          ],
+          "camera": [
+            4.100386212063696,
+            4.4,
+            17.999629916610854
+          ],
+          "round": 7,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839000982.3333,
+          "frame": 1477,
+          "shot": "Front",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            0.00811203719463337,
+            -0.033279438466207845,
+            0.9770697742787139
+          ],
+          "camera": [
+            6.100000000000001,
+            4.4,
+            18
+          ],
+          "round": 7,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839001982.3333,
+          "frame": 1492,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.10679663141533188,
+            0.3266194685956607,
+            0.9968807785388051
+          ],
+          "camera": [
+            0,
+            35.386724511484765,
+            33.09786088597206
+          ],
+          "round": 8,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839002983.8333,
+          "frame": 1507,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.03809029882358953,
+            0.22954728399041213,
+            0.9968498655464958
+          ],
+          "camera": [
+            0,
+            36.59840490050141,
+            34.15918677416182
+          ],
+          "round": 8,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839003983.8333,
+          "frame": 1522,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.1995141998298062,
+            0.16972060646603263,
+            0.9968133792939434
+          ],
+          "camera": [
+            0,
+            37.16970258350948,
+            34.65959350380392
+          ],
+          "round": 8,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 6,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839005048,
+          "frame": 1538,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.29131683699559624,
+            0.028186601212063414,
+            0.9964964862891412
+          ],
+          "camera": [
+            0,
+            36.390355005447134,
+            33.97695328944275
+          ],
+          "round": 8,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 6,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839006113.6667,
+          "frame": 1554,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.06383545375995975,
+            -0.06370782551948413,
+            0.9964398326875737
+          ],
+          "camera": [
+            0,
+            37.18793296007352,
+            34.67556171685272
+          ],
+          "round": 8,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839007115.1667,
+          "frame": 1569,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.001780522455399656,
+            -0.036977340048504455,
+            0.9836412771631031
+          ],
+          "camera": [
+            11.587447093524204,
+            8,
+            3.999999999999999
+          ],
+          "round": 8,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839008115.6667,
+          "frame": 1584,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.0020057961344990493,
+            -0.037534612395311334,
+            0.9835446809804962
+          ],
+          "camera": [
+            11.501598449289249,
+            8,
+            3.999999999999999
+          ],
+          "round": 8,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839009115.6667,
+          "frame": 1599,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.0020098541720863145,
+            -0.03754452749041673,
+            0.9835429086691464
+          ],
+          "camera": [
+            11.500029276619964,
+            8,
+            3.999999999999999
+          ],
+          "round": 8,
+          "phase": "FINISHED",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839010181.3333,
+          "frame": 1615,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.24939728496008143,
+            0.3153599223504634,
+            0.9970112970458427
+          ],
+          "camera": [
+            0,
+            36.80594631736316,
+            34.340974876522466
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839011181.8333,
+          "frame": 1630,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.11430973861136097,
+            0.24649265648596394,
+            0.9966215825511795
+          ],
+          "camera": [
+            0,
+            34.32675012705731,
+            32.169416169685235
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839012182.3333,
+          "frame": 1645,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.2696367179075906,
+            0.23520361860093655,
+            0.9968068522382789
+          ],
+          "camera": [
+            0,
+            36.112376827114716,
+            33.73346875367713
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839013248.5,
+          "frame": 1661,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.35783954929346007,
+            0.09413991760318836,
+            0.9966825500479328
+          ],
+          "camera": [
+            0,
+            37.0855273973115,
+            34.585863413703514
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839014249.5,
+          "frame": 1676,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.04197282750294608,
+            0.07868886029564133,
+            0.9964607979008744
+          ],
+          "camera": [
+            0,
+            35.382823475008514,
+            33.09444391971549
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839015314.6667,
+          "frame": 1692,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.12562482789081542,
+            -0.018888289522883156,
+            0.9964706069300145
+          ],
+          "camera": [
+            0,
+            36.82865687188636,
+            34.360867333039145
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839016316.6667,
+          "frame": 1707,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.40545746630484203,
+            -0.020702068447250283,
+            0.9961523517504643
+          ],
+          "camera": [
+            0,
+            34.30532418365708,
+            32.1506489199916
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839017381.8333,
+          "frame": 1723,
+          "shot": "Follow",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.04672803112831602,
+            -0.01948635944327755,
+            0.9833879398705646
+          ],
+          "camera": [
+            -1.3191866291522918,
+            8.872291870401481,
+            6.700899342627123
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839018382.3333,
+          "frame": 1738,
+          "shot": "Follow",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.053238922299854524,
+            0.0021550812283272105,
+            0.9874405584447722
+          ],
+          "camera": [
+            2.5307747038914457,
+            10.30786344004939,
+            -1.988987273933479
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839019383.3333,
+          "frame": 1753,
+          "shot": "Follow",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.0019172926621474039,
+            -0.04878376728820494,
+            0.9809511546205913
+          ],
+          "camera": [
+            11.913318138950467,
+            8.170984603400582,
+            6.177252791601626
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839020448.5,
+          "frame": 1769,
+          "shot": "Follow",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.04554965586245457,
+            0.018745046524788672,
+            0.984608833581709
+          ],
+          "camera": [
+            13.126349884090724,
+            8.374459410156732,
+            11.316828236076853
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839021514.6667,
+          "frame": 1785,
+          "shot": "Follow",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.011677359163197277,
+            -0.017386872480397518,
+            0.9846958428519735
+          ],
+          "camera": [
+            8.836359137202384,
+            8.005263606408478,
+            6.134540285833235
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839022516.1667,
+          "frame": 1800,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.03505097384570562,
+            -0.0191074000602279,
+            0.984325565958565
+          ],
+          "camera": [
+            -1.5084116556352845,
+            8.585442054151176,
+            11.943744508111461
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839023581.3333,
+          "frame": 1816,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.013452945039277147,
+            -0.017336035815446436,
+            0.9846909790215264
+          ],
+          "camera": [
+            -5.892455728310084,
+            8.008262285088497,
+            9.460362118354718
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839024581.3333,
+          "frame": 1831,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.004115919753064362,
+            0.0017434125592663767,
+            0.9847216766686446
+          ],
+          "camera": [
+            -5.997760571447382,
+            8.000151329030075,
+            4.511988154693802
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839025581.8333,
+          "frame": 1846,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.02702932793054061,
+            0.010657534910124044,
+            0.9845632933966573
+          ],
+          "camera": [
+            -10.877092158740153,
+            8.69884877970103,
+            -0.7184425348873076
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839026648,
+          "frame": 1862,
+          "shot": "Follow",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            -0.012574911773125075,
+            -0.007624923727191058,
+            0.9846418327831762
+          ],
+          "camera": [
+            -7.705703695822002,
+            8.346920342257322,
+            -13.41865293276906
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839027648.5,
+          "frame": 1877,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.037000594979937185,
+            -0.06647758274077928,
+            0.9741932381971006
+          ],
+          "camera": [
+            3.100000000000001,
+            4.4,
+            4.36080780946035
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839028714.6667,
+          "frame": 1893,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.15766133515626907,
+            -0.04458801033230105,
+            0.9732761465172566
+          ],
+          "camera": [
+            8.324326613000691,
+            4.4,
+            7.45444220312082
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839029715.6667,
+          "frame": 1908,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.018260158443951558,
+            -0.06953167291595579,
+            0.9736242037167552
+          ],
+          "camera": [
+            5.876671914192393,
+            4.4,
+            12.633627462171235
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839030718.1667,
+          "frame": 1923,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.11368468438475711,
+            -0.06176199465247036,
+            0.9725210938075622
+          ],
+          "camera": [
+            0.5926863506197879,
+            4.4,
+            13.945693758854947
+          ],
+          "round": 9,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 6,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839031780.8333,
+          "frame": 1939,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.1746588135312602,
+            -0.09664804088417317,
+            0.9711601498783585
+          ],
+          "camera": [
+            -2.1649754578935023,
+            4.4,
+            3.1382919009409322
+          ],
+          "round": 9,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839032842,
+          "frame": 1955,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.005889957562471759,
+            -0.026450451795390042,
+            0.9769226968623413
+          ],
+          "camera": [
+            2.752711023874351,
+            4.4,
+            0.03361788485891433
+          ],
+          "round": 9,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839033849,
+          "frame": 1970,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.006390899595256236,
+            -0.026232059697105847,
+            0.9770680954636543
+          ],
+          "camera": [
+            2.8969329796697645,
+            4.4,
+            0.0005159640154160427
+          ],
+          "round": 9,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 6,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839034849,
+          "frame": 1985,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.3840963035626503,
+            0.3268177650913272,
+            0.9968784799237451
+          ],
+          "camera": [
+            0,
+            35.36260629051132,
+            33.07673543694422
+          ],
+          "round": 10,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 6,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839035849.5,
+          "frame": 2000,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.03684832086383861,
+            0.30537448683482293,
+            0.996974323980836
+          ],
+          "camera": [
+            0,
+            36.603135987721494,
+            34.16333079216481
+          ],
+          "round": 10,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 6,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839036915.1667,
+          "frame": 2016,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.10373014656759476,
+            0.18300542950701024,
+            0.9965117471285515
+          ],
+          "camera": [
+            0,
+            34.33462786922806,
+            32.17631638180559
+          ],
+          "round": 10,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839037981.3333,
+          "frame": 2032,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.28213399107845877,
+            0.10967044823144363,
+            0.9966279451006582
+          ],
+          "camera": [
+            0,
+            36.367930084372574,
+            33.957311022808085
+          ],
+          "round": 10,
+          "phase": "FINISHED",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839038981.3333,
+          "frame": 2047,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.27687238649675977,
+            0.10762516991993756,
+            0.9967032686214082
+          ],
+          "camera": [
+            0,
+            37.07603874906205,
+            34.57755218895945
+          ],
+          "round": 10,
+          "phase": "FINISHED",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839040047,
+          "frame": 2063,
+          "shot": "Action",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.030150619116662516,
+            0.012762436615551438,
+            0.9916759615784999
+          ],
+          "camera": [
+            -8.172197093080662,
+            17.775417088255143,
+            12.983295739753997
+          ],
+          "round": 10,
+          "phase": "FINISHED",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839041048.5,
+          "frame": 2078,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.3842853273340886,
+            0.3268177650913272,
+            0.9968784799237451
+          ],
+          "camera": [
+            0,
+            35.36260629051132,
+            33.07673543694422
+          ],
+          "round": 11,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839042050,
+          "frame": 2093,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.005499803039260657,
+            0.3169677767786724,
+            0.9969926591047629
+          ],
+          "camera": [
+            0,
+            36.597111423171754,
+            34.15805380131832
+          ],
+          "round": 11,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839043114.6667,
+          "frame": 2109,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.32908712559094155,
+            0.3020507998213363,
+            0.9967856291596757
+          ],
+          "camera": [
+            0,
+            34.907896559518804,
+            32.67844954118435
+          ],
+          "round": 11,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839044115.1667,
+          "frame": 2124,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.5281175742478323,
+            0.3456460315817094,
+            0.997017475064933
+          ],
+          "camera": [
+            0,
+            36.37999714584423,
+            33.96788071168838
+          ],
+          "round": 11,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839045181.3333,
+          "frame": 2140,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.5631720413987064,
+            0.1996529393421788,
+            0.996863110919184
+          ],
+          "camera": [
+            0,
+            37.184670094007096,
+            34.67270373197703
+          ],
+          "round": 11,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839046181.8333,
+          "frame": 2155,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.03683805561825418,
+            -0.007073947631607533,
+            0.9917628830701085
+          ],
+          "camera": [
+            0.03364239392646795,
+            15.681239258392527,
+            14.725141587102634
+          ],
+          "round": 11,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839047244,
+          "frame": 2171,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.112844662421964,
+            -0.07084130127170697,
+            0.971228249276382
+          ],
+          "camera": [
+            -1.0899284553762063,
+            4.561132883862423,
+            4.209913860863421
+          ],
+          "round": 11,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839048248.5,
+          "frame": 2186,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.18251202213078738,
+            -0.03443235079910136,
+            0.9725300898735734
+          ],
+          "camera": [
+            4.076577502389438,
+            4.402898604430098,
+            9.577824440147946
+          ],
+          "round": 11,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839049314.6667,
+          "frame": 2202,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.10797155646028336,
+            -0.06206801690165665,
+            0.972711435481274
+          ],
+          "camera": [
+            11.8441701432912,
+            4.400040744370258,
+            9.576349875291491
+          ],
+          "round": 11,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839050375.3333,
+          "frame": 2218,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.11841016342087422,
+            -0.0523067654803126,
+            0.9734089593595935
+          ],
+          "camera": [
+            -0.07607322438694308,
+            4.400000585465315,
+            11.579221024030009
+          ],
+          "round": 11,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839051381.3333,
+          "frame": 2233,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.5331995357111472,
+            -0.25269676072229935,
+            0.9964793006856123
+          ],
+          "camera": [
+            1.486259928361978,
+            38.89205508362398,
+            40.69892670065366
+          ],
+          "round": 11,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839052381.3333,
+          "frame": 2248,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.6015703489161818,
+            -0.22572694398640963,
+            0.9960122440312923
+          ],
+          "camera": [
+            0.042658725376479814,
+            35.81582646345916,
+            33.66427699848028
+          ],
+          "round": 11,
+          "phase": "FINISHED",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839053381.3333,
+          "frame": 2263,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.5873916098597765,
+            -0.22115665066628531,
+            0.9961385505121567
+          ],
+          "camera": [
+            0.0016475479726696834,
+            36.79755511024966,
+            34.34315175216321
+          ],
+          "round": 11,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839054381.8333,
+          "frame": 2278,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.6351171186323085,
+            -0.23916220916550976,
+            0.9957711024430884
+          ],
+          "camera": [
+            0.00007139922060889904,
+            34.30713568492133,
+            32.15269747739074
+          ],
+          "round": 11,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839055448,
+          "frame": 2294,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.3844743511055269,
+            0.3268177650913272,
+            0.9968784799237451
+          ],
+          "camera": [
+            0,
+            35.36260629051132,
+            33.07673543694422
+          ],
+          "round": 12,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839056515.6667,
+          "frame": 2310,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.11198173531764509,
+            0.2673040810111749,
+            0.996926331050797
+          ],
+          "camera": [
+            0,
+            36.739827109139355,
+            34.28306024158191
+          ],
+          "round": 12,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839057516.1667,
+          "frame": 2325,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.12751017758868938,
+            0.12443517683226112,
+            0.9964076300551731
+          ],
+          "camera": [
+            0,
+            34.31951240268738,
+            32.163076557098435
+          ],
+          "round": 12,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839058582.3333,
+          "frame": 2341,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.04028230728162944,
+            0.10960909300365637,
+            0.9966302046913201
+          ],
+          "camera": [
+            0,
+            36.38878778042633,
+            33.9755805375997
+          ],
+          "round": 12,
+          "phase": "FINISHED",
+          "emotion": "fear",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839059648.5,
+          "frame": 2357,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.03940446386008568,
+            0.10722046068024116,
+            0.996718173255483
+          ],
+          "camera": [
+            0,
+            37.219357351597466,
+            34.70308673132625
+          ],
+          "round": 12,
+          "phase": "FINISHED",
+          "emotion": "fear",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839060648.5,
+          "frame": 2372,
+          "shot": "Action",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.015019202397411413,
+            0.007404094206500942,
+            0.9914157007564685
+          ],
+          "camera": [
+            1.104598162254986,
+            15.29777967156624,
+            15.375388891043677
+          ],
+          "round": 12,
+          "phase": "FINISHED",
+          "emotion": "neutral",
+          "avatarCount": 6,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839061648.5,
+          "frame": 2387,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.16167529363868408,
+            0.33557367860796133,
+            0.9967769830485558
+          ],
+          "camera": [
+            0,
+            34.32606675142378,
+            32.168817592487976
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 6,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839062714.6667,
+          "frame": 2403,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.038598642035210684,
+            0.21124256536960895,
+            0.9967989245457082
+          ],
+          "camera": [
+            0,
+            36.403373427912264,
+            33.98835628722243
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839063715.6667,
+          "frame": 2418,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.27248669340262893,
+            0.1469884505703078,
+            0.9967660528613962
+          ],
+          "camera": [
+            0,
+            37.06926169529684,
+            34.57161608347168
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 6,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839064780.3333,
+          "frame": 2434,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.12252729887675945,
+            0.11378306706895812,
+            0.9965740745770278
+          ],
+          "camera": [
+            0,
+            35.839485743753585,
+            33.494440067521396
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 6,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839065782.8333,
+          "frame": 2449,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.11214566308475084,
+            0.26271286614882583,
+            0.9969208553247374
+          ],
+          "camera": [
+            0,
+            36.7590793876373,
+            34.29992355121516
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 6,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839066848.5,
+          "frame": 2465,
+          "shot": "Follow",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.00624043715092852,
+            -0.01655688664520779,
+            0.9846780427705463
+          ],
+          "camera": [
+            -6.3979117013467866,
+            8.697493867865187,
+            -2.6548631833908547
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839067914.6667,
+          "frame": 2481,
+          "shot": "Follow",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.06580505411363219,
+            -0.009818540572716585,
+            0.9836601683709423
+          ],
+          "camera": [
+            0.45261775164082974,
+            8.009804355540785,
+            -1.6260377640302166
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839068915.6667,
+          "frame": 2496,
+          "shot": "Follow",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.041357046718944704,
+            -0.016441619677715836,
+            0.9845552959279467
+          ],
+          "camera": [
+            2.195309852313569,
+            8.557186933222656,
+            -13.777959726575114
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839069983.3333,
+          "frame": 2512,
+          "shot": "Follow",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.005639032115385586,
+            -0.016775713923297606,
+            0.9847107604640517
+          ],
+          "camera": [
+            3.9660284406312467,
+            8.007785280030978,
+            -9.481440742211321
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839071047.5,
+          "frame": 2528,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.07104913239486306,
+            0.04509414748217268,
+            0.9982897140979656
+          ],
+          "camera": [
+            -32.34686204275571,
+            74.69143138866667,
+            8.987702330472821
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839072048.5,
+          "frame": 2543,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.35993832268881465,
+            -0.0985042996135513,
+            0.9965826584568019
+          ],
+          "camera": [
+            -2.6738128128568457,
+            40.67566068225981,
+            33.427736076849904
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839073048.5,
+          "frame": 2558,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.07711271068404643,
+            -0.10256321526238918,
+            0.9963521910118872
+          ],
+          "camera": [
+            -0.14758199850846768,
+            37.07162051097865,
+            34.34178722472866
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839074048.5,
+          "frame": 2573,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.5508820983525746,
+            -0.10982338177136308,
+            0.996001458665895
+          ],
+          "camera": [
+            -0.007412109665407436,
+            34.34433152725103,
+            32.17325802599305
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839075049,
+          "frame": 2588,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.6131663177465659,
+            -0.2875907803668799,
+            0.9959402416704506
+          ],
+          "camera": [
+            -0.00039920156876634155,
+            36.11147057757645,
+            33.73205428390591
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839076115.1667,
+          "frame": 2604,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.14316530586283782,
+            -0.11613596057920382,
+            0.9932911691524757
+          ],
+          "camera": [
+            1.857232308799722,
+            23.416312830692565,
+            25.692638927976372
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839077181.3333,
+          "frame": 2620,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.04155112415512607,
+            -0.06750636078020751,
+            0.9746069915607692
+          ],
+          "camera": [
+            8.962906579242636,
+            4.667303961697288,
+            13.093451192846487
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839078248.5,
+          "frame": 2636,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.14838517284565225,
+            -0.05939075026247312,
+            0.9723668560349433
+          ],
+          "camera": [
+            10.334249183810652,
+            4.4037423713152295,
+            5.477791385537653
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "surprise",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839079314.6667,
+          "frame": 2652,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.040211904400736,
+            -0.06707221865625478,
+            0.9740077786245815
+          ],
+          "camera": [
+            6.999581151784738,
+            4.4000526048193835,
+            -2.6072829183200255
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839080315.1667,
+          "frame": 2667,
+          "shot": "Front",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.03738479764786584,
+            -0.06688481253703153,
+            0.9740897437633003
+          ],
+          "camera": [
+            6.902133286712534,
+            4.40000096156582,
+            -7.659155333788305
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839081315.6667,
+          "frame": 2682,
+          "shot": "Front",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            0.033311436660927264,
+            -0.06274853258037183,
+            0.9751805146185584
+          ],
+          "camera": [
+            -4.8999999999999995,
+            4.4,
+            11.03743670888371
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839082381.3333,
+          "frame": 2698,
+          "shot": "Front",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            0.1375773876609955,
+            -0.03612526542006992,
+            0.9736200094535139
+          ],
+          "camera": [
+            6.971440387339176,
+            4.4,
+            4.025366977856663
+          ],
+          "round": 13,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839083381.8333,
+          "frame": 2713,
+          "shot": "Front",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            0.00040588992509619316,
+            -0.030020566273389705,
+            0.974676207358858
+          ],
+          "camera": [
+            1.9432747967248143,
+            4.4,
+            12.236291571253213
+          ],
+          "round": 13,
+          "phase": "FINISHED",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        },
+        {
+          "at": 1792839084382.3333,
+          "frame": 2728,
+          "shot": "Front",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            0.0062182274418658,
+            -0.02628056038478887,
+            0.9770209518796006
+          ],
+          "camera": [
+            0.14969790524179247,
+            4.4,
+            12.988928213257507
+          ],
+          "round": 13,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839085445,
+          "frame": 2744,
+          "shot": "Front",
+          "player": 1,
+          "fallback": null,
+          "head": [
+            0.006400305141546916,
+            -0.026231627027503306,
+            0.9770700595241102
+          ],
+          "camera": [
+            0.10079520323980784,
+            4.4,
+            12.999858368939627
+          ],
+          "round": 13,
+          "phase": "FINISHED",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839086448.5,
+          "frame": 2759,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.22415886508686025,
+            0.3143272798862957,
+            0.9970232672398266
+          ],
+          "camera": [
+            0,
+            36.94119696707261,
+            34.459442598895706
+          ],
+          "round": 14,
+          "phase": "PLAYING",
+          "emotion": "joy",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839087514.6667,
+          "frame": 2775,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            0.038605000825023085,
+            0.2766175661469059,
+            0.9967982873322875
+          ],
+          "camera": [
+            0,
+            35.40567756983251,
+            33.11446210496278
+          ],
+          "round": 14,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": true
+        },
+        {
+          "at": 1792839088579.8333,
+          "frame": 2791,
+          "shot": "Tactical",
+          "player": 0,
+          "fallback": null,
+          "head": [
+            -0.26424154020571444,
+            0.22812813522083777,
+            0.996884087950934
+          ],
+          "camera": [
+            0,
+            36.94519059430527,
+            34.46294066654475
+          ],
+          "round": 14,
+          "phase": "PLAYING",
+          "emotion": "neutral",
+          "avatarCount": 0,
+          "presenterVisible": false
+        }
+      ],
+      "nativeBase64": true,
+      "browserCpuMs": null,
+      "browserRssBytes": null
+    },
+    "speech": {
+      "engine": "kokoro",
+      "voice": "pf_dora (pt-BR feminina)",
+      "quality": "HUMAN_REVIEW_REQUIRED",
+      "ready": true,
+      "neural": 20,
+      "fallback": 0,
+      "failures": 0,
+      "maxSynthesisMs": 2171,
+      "rssBytes": 73306112
+    }
+  },
+  "decodedAudioCorrelation": 0.9978560340360334,
+  "receiverDuration": "186.026000",
+  "top": [
+    {
+      "id": "demo-ana",
+      "name": "ana",
+      "quantity": 22,
+      "joined": 0,
+      "hasPhoto": true
+    },
+    {
+      "id": "demo-amigo0",
+      "name": "amigo0",
+      "quantity": 1,
+      "joined": 2,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo1",
+      "name": "amigo1",
+      "quantity": 1,
+      "joined": 3,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo2",
+      "name": "amigo2",
+      "quantity": 1,
+      "joined": 4,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo3",
+      "name": "amigo3",
+      "quantity": 1,
+      "joined": 5,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo4",
+      "name": "amigo4",
+      "quantity": 1,
+      "joined": 6,
+      "hasPhoto": false
+    }
+  ],
+  "rounds": 13,
+  "repertoire": {
+    "categories": {
+      "roses": {
+        "count": 2,
+        "lastAt": 1792838974664
+      },
+      "special": {
+        "count": 1,
+        "lastAt": 1792838957652
+      }
+    },
+    "grouped": 5,
+    "selected": 3,
+    "history": [
+      {
+        "at": 1792838947306,
+        "trackId": "7a37d9d0-ae42-43a8-93b1-de4d2e740f34",
+        "category": "roses"
+      },
+      {
+        "at": 1792838957652,
+        "trackId": "a90759af-708d-4562-88a6-91f52106dbe8",
+        "category": "special"
+      },
+      {
+        "at": 1792838974664,
+        "trackId": "608b2336-0712-4454-a931-c5d1f1dba54a",
+        "category": "roses"
+      }
+    ],
+    "lastAt": 1792838974664
+  },
+  "catalog": [
+    {
+      "vocalWindows": [],
+      "id": "7a37d9d0-ae42-43a8-93b1-de4d2e740f34",
+      "title": "Teste instrumental 1",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "roses",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "0b48b17a0b091a6b8b7a85241d78033a5960016fe3bca53a172e88fa63c58ba4",
+      "bytes": 288044,
+      "seconds": 6,
+      "approved": true
+    },
+    {
+      "vocalWindows": [],
+      "id": "608b2336-0712-4454-a931-c5d1f1dba54a",
+      "title": "Teste instrumental 2",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "roses",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "da4ad690f9c59d5fa3ae9f554390f2ebacef2d13f7a78d4aefe1a4e2932f597a",
+      "bytes": 288044,
+      "seconds": 6,
+      "approved": true
+    },
+    {
+      "vocalWindows": [],
+      "id": "a90759af-708d-4562-88a6-91f52106dbe8",
+      "title": "Teste instrumental 3",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "special",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "01d8ed5d839866f3a721e10f8ca0c419cd2a4740ccfaacde0de8c8165d2c60e9",
+      "bytes": 576044,
+      "seconds": 12,
+      "approved": true
+    },
+    {
+      "vocalWindows": [],
+      "id": "6dd23b47-c3af-4a78-a34f-e467e58cbc67",
+      "title": "Brazilian Sunsets",
+      "source": "https://freemusicarchive.org/music/Ketsa/cc-by-free-to-use-for-anything/brazilian-sunsets/",
+      "license": "CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/",
+      "creator": "Ketsa",
+      "category": "ambient",
+      "kind": "ORIGINAL_INSTRUMENTAL",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "ac907c95596fc433d14aea4ea76f00c833bd6dcc4a4c1bd16f18eea72250a3e5",
+      "bytes": 10177802,
+      "seconds": 212.03591666666668,
+      "approved": true
+    }
+  ]
+}

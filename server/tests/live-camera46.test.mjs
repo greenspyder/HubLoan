@@ -6,8 +6,8 @@ import {createDirector} from '../live-director.mjs';
 import {createGame,advanceGame} from '../live-game.mjs';
 const config={template:'seed-snake',names:['Lume','Faísca'],roundSeconds:22};
 test('rig keeps head visible through turns, growth and target loss without changing physics',()=>{
- const g=createGame(config,1000),camera=new T.PerspectiveCamera(48,9/16,.1,300),rig=createCameraRig(T,camera);
- for(const shot of ['Follow','Front','Tactical','Action'])for(let at=1000;at<=25000;at+=100){advanceGame(g,at);const before=JSON.stringify(g),r=rig.update(g,{shot,player:0},at);assert.equal(JSON.stringify(g),before);assert.ok(r.camera.every(Number.isFinite));assert.ok(r.camera[1]>=3);const [x,y,z]=r.head;assert.ok(Math.abs(x)<.91&&y>-.56&&y<.7&&z<1&&z>-1);}
+ const camera=new T.PerspectiveCamera(48,9/16,.1,300),rig=createCameraRig(T,camera);
+ let g;for(const shot of ['Follow','Front','Tactical','Action']){g=createGame(config,1000);for(let at=1000;at<=25000;at+=100){advanceGame(g,at);const before=JSON.stringify(g),r=rig.update(g,{shot,player:0},at);assert.equal(JSON.stringify(g),before);assert.ok(r.camera.every(Number.isFinite));assert.ok(r.camera[1]>=3);const [x,y,z]=r.head;assert.ok(Math.abs(x)<.91&&y>-.56&&y<.7&&z<1&&z>-1);}}
  const r=rig.update(g,{shot:'Front',player:99},26000);assert.equal(r.shot,'Tactical');assert.equal(r.fallback,'TARGET_LOST');
 });
 test('director uses contextual shots, stable holds, leader choice and session reset',()=>{
