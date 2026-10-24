@@ -39,7 +39,7 @@ export function advancePerformance(e,event,now){
   p.previousTop=p.top.map(x=>x.id);p.rankingChangedAt=now;person.quantity+=event.quantity;
   p.top=p.participants.filter(x=>x.quantity>0).sort((a,b)=>b.quantity-a.quantity||a.joined-b.joined||a.id.localeCompare(b.id)).slice(0,6).map(x=>({...x}));p.rankingRevision++;p.avatarUntil=now+12000;
  }
- if(event.type==='gift'){const category=event.quantity>=10?'special':/rosa/i.test(event.gift)?'roses':'common';const previousJob=p.jobs.at(-1)?.id;if(queueMusic(e,category,person.name,now)){const queued=p.jobs.at(-1);if(queued&&queued.id!==previousJob&&c.humor!=='gentle'){queued.segments.push(hostSegment(lumeLine(p,category,c.humor,now),category==='special'?'excited':'wry'));p.lastSpokeAt=now;}return;}if(p.top[0]?.id!==oldLeader&&queueMusic(e,'top6',person.name,now))return;}
+ if(event.type==='gift'){const category=event.quantity>=10?'special':/rosa/i.test(event.gift)?'roses':'common';const previousJob=p.jobs.at(-1)?.id;if(queueMusic(e,category,person.name,now)){const queued=p.jobs.at(-1);if(queued&&queued.id!==previousJob&&c.humor!=='gentle'){queued.segments.unshift(hostSegment(lumeLine(p,category,c.humor,now),category==='special'?'excited':'wry'));p.lastSpokeAt=now;}return;}if(p.top[0]?.id!==oldLeader&&queueMusic(e,'top6',person.name,now))return;}
  if(now-p.lastSpokeAt<c.cooldownSeconds*1000){p.dropped++;return;}
  if(event.type==='comment'){
   const text=c.humor==='gentle'?`Boa, ${person.name}! Vamos tentar de novo.`:lumeLine(p,/jog|cobra|curva|pedra/i.test(event.message)?'playing':'comment',c.humor,now);
@@ -47,7 +47,7 @@ export function advancePerformance(e,event,now){
  }else{
   const category=event.quantity>=10?'special':/rosa/i.test(event.gift)?'roses':'common';
   const text=c.humor==='gentle'?`Obrigada pelo carinho, ${person.name}!`:lumeLine(p,category,c.humor,now);
-  job(p,e,[hostSegment(text,category==='special'?'excited':'wry')],now,event.quantity>=10?2:1);
+  job(p,e,[hostSegment(text,category==='special'?'excited':'wry')],now,event.quantity>=10?4:1);
  }
 
 }
@@ -57,6 +57,7 @@ export const liveAudienceAdapter={status:'NOT_SUPPORTED',reason:'Sem acesso ofic
 // Sparse comments about observed game results only. No synthetic social activity.
 export function advanceGamePerformance(e,now){
  const p=e.performance,c=e.performanceConfig,g=e.game;if(!p||!c?.enabled||!g||e.status!=='TESTING'||e.queue.length)return;
+ const hostNow=g.players[0],old=p.observedHost;p.observedHost={direction:hostNow.direction,round:g.round};
  if(now-p.lastSpokeAt<Math.max(12,c.cooldownSeconds)*1000)return;
  const result=g.history.at(-1),host=g.players[0];let lines,key;
  if(result&&result.at!==(p.lastGameCommentAt||0)&&now-result.at<6000){
@@ -64,8 +65,15 @@ export function advanceGamePerformance(e,now){
   lines=result.winner==='Empate'?['Empatamos! Duas cobras, a mesma fome.','Ninguém levou a melhor. Vamos desempatar no jardim!']:result.winner===host.name?['A colheita foi minha! Vou fingir que estava planejado.','Ganhei! Elegância na curva, maçã na barriga.']:['Perdi a rodada, mas não perdi a pose. Vamos de novo!','Essa rodada escapou. Vou treinar minha curva!'];
  }else if(host.alive&&now-host.eatenAt<2500&&host.eatenAt!==p.lastFoodCommentAt){
   p.lastFoodCommentAt=host.eatenAt;key='food';lines=['Mais uma maçã! Minha cintura está virando uma avenida.','Eu disse que estava com fome. A prova está na barriga!','Colheita feita. Agora preciso achar espaço para virar.'];
- }else return;
- if(c.humor!=='gentle'){const category=key==='food'?'food':result.winner==='Empate'?'tie':result.winner===host.name?'victory':'defeat';lines=[lumeLine(p,category,c.humor,now)];}
+ }else {
+  const h=host.body[0],rival=g.players[1],distance=o=>Math.abs(h.x-o.x)+Math.abs(h.y-o.y);
+  const risk=old?.round===g.round&&old.direction!==host.direction&&g.obstacles.some(o=>distance(o)===1);
+  const contest=host.target&&rival?.alive&&rival.target&&host.target.x===rival.target.x&&host.target.y===rival.target.y&&distance(rival.body[0])<7;
+  if(!host.alive)return;
+  if(risk)key='risk';else if(contest)key='contest';else if(host.target&&distance(host.target)<=4&&now-p.lastSpokeAt>=24000)key='pursuit';else return;
+  lines=[lumeLine(p,key,c.humor,now)];
+ }
+ if(c.humor!=='gentle'&&['food','result'].includes(key)){const category=key==='food'?'food':result.winner==='Empate'?'tie':result.winner===host.name?'victory':'defeat';lines=[lumeLine(p,category,c.humor,now)];}
  const recent=new Set(p.recent.map(x=>x.text)),available=lines.filter(x=>!recent.has(x));p.gameLineCounter=(p.gameLineCounter||0)+1;
  const choices=available.length?available:lines,text=choices[p.gameLineCounter%choices.length];
  job(p,e,[hostSegment(text,key==='food'?'wry':'excited')],now,0,'INTERNAL_GAME');p.lastGameContext=key;

@@ -23,6 +23,9 @@ test('Lume: cache keys preserve delivery, state isolated per session and queue r
 test('approved jingle receives one contextual reply; grouped roses do not add speech',()=>{
  const e={sessionId:'a',musicCatalog:[{id:'track',approved:true,category:'roses',hash:'hash',kind:'ORIGINAL_INSTRUMENTAL',title:'Teste'}],performanceConfig:{...performanceDefaults(),enabled:true,humor:'cheeky'}};resetPerformance(e);
  const gift={type:'gift',gift:'rosa',quantity:1,participantId:'demo-one',name:'Ana'};
- advancePerformance(e,gift,100000);assert.deepEqual(e.performance.jobs[0].segments.map(x=>x.role),['music','host']);
+ advancePerformance(e,gift,100000);assert.deepEqual(e.performance.jobs[0].segments.map(x=>x.role),['host','music']);
  advancePerformance(e,gift,101000);assert.equal(e.performance.jobs.length,1);assert.equal(e.performance.jobs[0].segments.length,2);assert.equal(e.performance.top[0].quantity,2);
+});
+test('exhausted contextual categories never repeat the immediately preceding line',()=>{
+ for(const category of ['food','roses','victory','defeat','contest','risk']){const p={};let last;for(let i=0;i<100;i++){const next=lumeLine(p,category,'playful',i*20000);assert.notEqual(next,last);last=next;}assert.ok(p.lumeMemory.recent.length<=12);}
 });

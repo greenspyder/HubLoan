@@ -12,6 +12,21 @@ export const lumeLines = {
   'Pausa para recuperar a pose. Mentira, eu nunca tive essa pose toda!',
   'Que surpresa! Até esqueci para que lado fica a próxima curva.',
  ],
+ contest: [
+  'Duas cobras e uma maçã. Isso vai virar reunião de condomínio.',
+  'Ela quer a minha maçã! Faísca, amizade tem limite.',
+  'A concorrência chegou. Vou caprichar no rebolado da curva.',
+ ],
+ risk: [
+  'Essa pedra passou perto! Meu coração fez uma curva antes de mim.',
+  'Desviei! Foi habilidade... com uma pitada de desespero.',
+  'Licença, pedrinha. Hoje eu estou comprida demais para discutir.',
+ ],
+ pursuit: [
+  'Achei a maçã. Agora falta convencer o resto de mim a acompanhar.',
+  'Olha o meu jantar ali! Vou chegar fazendo curva e charme.',
+  'A maçã está me dando bola. Ou eu estou com muita fome.',
+ ],
  comment: [
   'Eu ouvi! Meu talento está carregando... a confiança veio pré-instalada.',
   'Pode rir comigo. Eu também estou descobrindo esse meu talento.',
@@ -48,7 +63,9 @@ export function lumeLine(p, category, humor='playful', now=Date.now()) {
  const teasing=humor==='cheeky'&&cheekyLines[category]&&memory.count%4===3&&(memory.lastCheekyAt===null||now-memory.lastCheekyAt>=60000);
  const lines=teasing?cheekyLines[category]:(lumeLines[category]||lumeLines.comment);
  const available=lines.filter(line=>!memory.recent.includes(line));
- const text=(available.length?available:lines)[memory.count%(available.length||lines.length)];
+ // Exhausted categories use least-recently-spoken, not global modulo (which can repeat immediately).
+ const pool=available.length?available:[...lines].sort((a,b)=>memory.recent.lastIndexOf(a)-memory.recent.lastIndexOf(b));
+ const text=available.length?pool[memory.count%pool.length]:pool[0];
  memory.count++;memory.recent=[...memory.recent,text].slice(-12);
  if(teasing)memory.lastCheekyAt=now;
  return text;
@@ -56,3 +73,6 @@ export function lumeLine(p, category, humor='playful', now=Date.now()) {
 export function hostSegment(text, delivery='warm') {
  return {role:'host',voice:'host',text,delivery};
 }
+
+// Offline preparation set, bounded and independent of audience text.
+export function warmupSegments(){return [...lumeLines.roses.map(t=>hostSegment(t,'wry')),...lumeLines.special.map(t=>hostSegment(t,'excited'))];}

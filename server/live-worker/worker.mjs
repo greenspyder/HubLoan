@@ -1,3 +1,4 @@
+import {warmupSegments} from '../live-lume-lines.mjs';
 import {loadRepertoire} from './repertoire.mjs';
 import {createDirector} from '../live-director.mjs';
 import {sceneFrame} from '../../frontend/src/shared/live-visual.mjs';
@@ -9,7 +10,7 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createMixer } from './mixer.mjs';
 import { render } from './render.mjs';
-export const videoProfiles={economy:{fps:4,width:216,height:384},light:{fps:15,width:360,height:640},smooth:{fps:30,width:360,height:640},hd:{fps:30,width:720,height:1280}};
+export const videoProfiles={cpu:{fps:8,width:360,height:640},economy:{fps:4,width:216,height:384},light:{fps:15,width:360,height:640},smooth:{fps:30,width:360,height:640},hd:{fps:30,width:720,height:1280}};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 export function validateConfig(c,transmit){
  const api=new URL(c.backend);
@@ -18,11 +19,11 @@ export function validateConfig(c,transmit){
  if(transmit){const u=new URL(c.destination);if(!['rtmp:','rtmps:'].includes(u.protocol)||!u.hostname||u.username||u.password||u.hash||c.authorizedDestination!==true)throw new Error('Informe destino RTMP/RTMPS autorizado no arquivo local.');}
 }
 async function encodeWorker(c,{transmit=false,output='live-preview.mp4',seconds=1800,signal,onEncoder=()=>{},onAudio=()=>{},profile='light',renderFrame=render,synthesize}={}){
- const director=createDirector(); const video=videoProfiles[profile];if(!video)throw new Error('Perfil: economy, light, smooth ou hd (3D experimental).');const fps=video.fps;
+ const director=createDirector(); const video=videoProfiles[profile];if(!video)throw new Error('Perfil: economy, cpu, light, smooth ou hd (3D experimental).');const fps=video.fps;
  validateConfig(c,transmit);if(!transmit){if(typeof output!=='string'||output.includes('://')||!output.endsWith('.mp4'))throw new Error('Prévia exige arquivo MP4 local.');output=resolve(output);}if(!Number.isInteger(seconds)||seconds<1||seconds>1800)throw new Error('Duração: 1 a 1800 segundos.');
  const mixer=createMixer({synthesize});const instance=randomUUID();let assetsReady=false,state,offset=0,frames=0,bytes=0,status='STARTING',closed=false,encoder,failed=false,lastProgress=Date.now(),lastContact=Date.now(),frame=0;let failureReason=null;
- async function heartbeat(){const before=Date.now();const r=await fetch(new URL(c.workerPath,c.backend),{method:'POST',redirect:'error',headers:{Authorization:`Bearer ${c.token}`,'Content-Type':'application/json'},body:JSON.stringify({instance,status,frames,bytes,audio:mixer.metrics,settledJobs:mixer.settledJobs}),signal:AbortSignal.timeout(3000)});if(!r.ok)throw new Error('Worker sem autorização ou backend indisponível.');const data=await r.json();if(transmit&&data.mode!=='stream')throw new Error('Autorize transmissão no painel.');state=data.experience;offset=data.serverTime-(before+Date.now())/2;lastContact=Date.now();if(assetsReady)mixer.observe(state,Date.now()+offset);if(!['TESTING','PAUSED','INITIALIZING'].includes(state.status)||Date.now()+offset>=data.expiresAt)throw new Error('Sessão encerrada.');}
- try{await heartbeat();mixer.setRepertoire(await loadRepertoire(c,state.musicCatalog||[]),state.musicAmbientTrackId);assetsReady=true;await heartbeat();}catch(error){mixer.close();throw error;}
+ async function heartbeat(){const before=Date.now();const r=await fetch(new URL(c.workerPath,c.backend),{method:'POST',redirect:'error',headers:{Authorization:`Bearer ${c.token}`,'Content-Type':'application/json'},body:JSON.stringify({instance,status,frames,bytes,audio:workerAudioTelemetry(mixer.metrics),settledJobs:mixer.settledJobs.slice(-8)}),signal:AbortSignal.timeout(3000)});if(!r.ok)throw new Error('Worker sem autorização ou backend indisponível.');const data=await r.json();if(transmit&&data.mode!=='stream')throw new Error('Autorize transmissão no painel.');state=data.experience;offset=data.serverTime-(before+Date.now())/2;lastContact=Date.now();if(assetsReady)mixer.observe(state,Date.now()+offset);if(!['TESTING','PAUSED','INITIALIZING'].includes(state.status)||Date.now()+offset>=data.expiresAt)throw new Error('Sessão encerrada.');}
+ try{await heartbeat();mixer.setRepertoire(await loadRepertoire(c,state.musicCatalog||[]),state.musicAmbientTrackId);if(synthesize&&state.performanceConfig?.enabled){const warmupStart=performance.now();await mixer.prime(warmupSegments(),heartbeat);mixer.metrics.warmupMs=performance.now()-warmupStart;}assetsReady=true;await heartbeat();}catch(error){mixer.close();throw error;}
  // Compile shaders and rasterizer caches before media time, with a bounded preparation.
  const preparationStart=performance.now();let preparationTimer;
  try{await Promise.race([renderFrame(state,Date.now()+offset-2500,null),new Promise((_,reject)=>{preparationTimer=setTimeout(()=>reject(Error('Preparação visual excedeu 5 segundos')),5000);})]);await heartbeat();}catch{status='ERROR';try{await heartbeat();}catch{}mixer.close();throw new Error('Encoder interrompido durante preparação visual.');}finally{clearTimeout(preparationTimer);}
@@ -78,3 +79,6 @@ async function main(){
  try{const config=JSON.parse(await readFile(file,'utf8'));const report=await runWorker(config,{transmit:args.includes('--transmit'),output:args.includes('--output')?args[args.indexOf('--output')+1]:'live-preview.mp4',seconds:args.includes('--seconds')?Number(args[args.indexOf('--seconds')+1]):1800,signal:controller.signal,profile:args.includes('--profile')?args[args.indexOf('--profile')+1]:'light',renderer:args.includes('--renderer')?args[args.indexOf('--renderer')+1]:'svg',voice:args.includes('--voice')?args[args.indexOf('--voice')+1]:undefined});console.log(JSON.stringify(report));}finally{await handle.close();await unlink(lock);}
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)main().catch(error=>{if(error.report)console.error(JSON.stringify(error.report));console.error('Worker encerrado com erro. Verifique configuração protegida, autorização, backend e FFmpeg.');process.exitCode=1;});
+
+// Keep heartbeat under its existing 2048-byte limit; full journal stays in local report.
+export function workerAudioTelemetry(m){const out={};for(const key of ['synthesized','cacheHits','ttsFailures','dropped','ttsMs','maxPlaybackLatencyMs'])out[key]=Math.round(m[key]||0);out.latency={};for(const key of ['reaction','segment','preloaded','firstSpeech','firstMusic','firstEffect','complete'])if(m.latency?.[key])out.latency[key]=Object.fromEntries(['count','meanMs','p95Ms','maxMs'].map(k=>[k,Math.round(m.latency[key][k])]));return out;}
