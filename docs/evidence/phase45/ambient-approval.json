@@ -1,0 +1,26 @@
+{
+  "track": {
+    "vocalWindows": [],
+    "id": "991fb6b2-a1ea-4155-be46-33052482fb7e",
+    "title": "Brazilian Sunsets",
+    "source": "https://freemusicarchive.org/music/Ketsa/cc-by-free-to-use-for-anything/brazilian-sunsets/",
+    "license": "CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/",
+    "creator": "Ketsa",
+    "category": "ambient",
+    "kind": "ORIGINAL_INSTRUMENTAL",
+    "costMinor": 0,
+    "commercialLiveRights": true,
+    "hash": "ac907c95596fc433d14aea4ea76f00c833bd6dcc4a4c1bd16f18eea72250a3e5",
+    "bytes": 10177802,
+    "seconds": 212.03591666666668,
+    "approved": true
+  },
+  "operatorApproval": {
+    "approved": true,
+    "date": "2026-10-22",
+    "statement": "Perfeito. Pode usar essa musica.",
+    "sha256": "ac907c95596fc433d14aea4ea76f00c833bd6dcc4a4c1bd16f18eea72250a3e5",
+    "basis": "Autorização explícita do operador após entrega da candidata; não é avaliação auditiva do agente."
+  },
+  "scope": "isolated local demonstration workspace; not deployed to production"
+}

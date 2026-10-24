@@ -18,8 +18,8 @@ export function createDirector(){
   }
   if(f.phase==='FINISHED')add('result',100,Math.max(0,players.findIndex(p=>p.name===f.winner)),3000,f.winner==='Empate'?'surprise':'joy');
   const rank=e.performance?.rankingChangedAt||0;if(rank!==lastRank&&rank<=at&&at-rank<4000){add('community',80,0,3200,'joy');}
-  if(voice?.role==='music'&&voice.level>.02)add('music',90,0,Math.min(20000,voice.durationMs||6000),'joy');
-  if(voice?.level>.08&&voice.role!=='comment')add('speech',50,0,3000,voice.role==='chant'?'joy':'surprise');
+  if(voice?.role==='music'&&voice.level>.02)add('music',90,0,Math.max(200,Math.min(20000,(voice.durationMs||6000)-(voice.elapsedMs||0))),'joy');
+  if(voice?.level>.08&&['host','chant'].includes(voice.role))add('speech',50,0,3000,voice.role==='chant'?'joy':'surprise');
   candidates.sort((a,b)=>b.priority-a.priority);
   const next=candidates.find(c=>at-(cooldown.get(c.kind)??-Infinity)>(c.kind==='result'?6000:c.kind==='speech'?14000:9000));
   if(next&&at-lastCut>=3500&&(!cue||at>=until||next.priority>cue.priority)){
