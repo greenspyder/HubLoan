@@ -1,0 +1,14 @@
+✔ repertoire validates files, rights, approval hash, versions, limit and rotation/grouping (88.034343ms)
+✔ same mixer plays imported ambient and prioritized jingles, ducks, limits, mutes and recovers missing files (210.230548ms)
+✔ API persists audio, protects preview and worker access, rejects unapproved and revoked grants (144.689394ms)
+✔ provider preparation cannot authorize cost or replace approved music (0.492581ms)
+✔ vocal windows exclude instrumental intros, pause cancels performance (66.929636ms)
+✔ jingle finishes before queued speech; repeated gifts do not regenerate audio (83.021716ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 843.416851

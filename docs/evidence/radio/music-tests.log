@@ -1,0 +1,20 @@
+✔ repertoire validates files, rights, approval hash, versions, limit and rotation/grouping (87.851125ms)
+✔ same mixer plays imported ambient and prioritized jingles, ducks, limits, mutes and recovers missing files (206.001831ms)
+✔ API persists audio, protects preview and worker access, rejects unapproved and revoked grants (157.737219ms)
+✔ provider preparation cannot authorize cost or replace approved music (0.601192ms)
+✔ vocal windows exclude instrumental intros, pause cancels performance (67.225829ms)
+✔ jingle finishes before queued speech; repeated gifts do not regenerate audio (94.458605ms)
+✔ preloaded special bypasses blocked synthesis in less than two seconds (33.646218ms)
+✔ special fades lower priority and stale speech does not play (38.922288ms)
+✔ Brazilian proposal and approved ambient selection never authorize cost or replace approval (8.45588ms)
+✔ main ambient and brief persist and reach only the authorized worker (56.850801ms)
+✔ mixer acknowledges completed and interrupted jobs without replay (12.574047ms)
+✔ radio: complete 24kHz tracks, duration and decoded-memory budgets remain bounded (1136.907155ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2144.806739

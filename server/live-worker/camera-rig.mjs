@@ -1,0 +1,36 @@
+// Presentation only, serialized into the existing isolated renderer.
+export function createCameraRig(T,camera){
+ const aim=new T.Vector3(),heading=new T.Vector3(1,0,0),desired=new T.Vector3(),goal=new T.Vector3();
+ let initialized=false,lastRound=null,lastPlayer=null,previousAt=null;
+ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+ return {update(f,d,at){
+  const dt=previousAt===null?0:clamp((at-previousAt)/1000,0,.25);previousAt=at;
+  const index=f.players[d.player]?.body?.length?d.player:f.players.findIndex(p=>p.alive&&p.body.length);
+  const p=f.players[index]||f.players[0],h=p.body[0],target=p.target||h;
+  let mode=d.shot||'Tactical',fallback=null;
+  if(index!==d.player){mode='Tactical';fallback='TARGET_LOST';}
+  const reset=!initialized||lastRound!==f.round||lastPlayer!==p.id;
+  const yaw=(p.visualDirection??p.direction??0)*Math.PI/2,forward=new T.Vector3(Math.cos(yaw),0,Math.sin(yaw));
+  if(reset)heading.copy(forward);else{heading.lerp(forward,1-Math.exp(-dt*5));if(heading.lengthSq()<.01)heading.copy(forward);heading.normalize();}
+  const head=new T.Vector3(h.x-7.5,.7,h.y-11.5),objective=new T.Vector3(target.x-7.5,.5,target.y-11.5);
+  const localGoal=objective.clone().sub(head).clampLength(0,3.2).add(head),side=new T.Vector3(-heading.z,0,heading.x);
+  if(mode==='Tactical'){goal.set(0,-2.4,0);desired.set(0,25,24);}
+  else if(mode==='Front'){goal.copy(head).addScaledVector(heading,-.3);goal.y=1;desired.copy(head).addScaledVector(heading,7.5).addScaledVector(side,1.4);desired.y=4.4;}
+  else if(mode==='Action'){goal.copy(head).lerp(localGoal,.3);goal.y=.6;desired.copy(head).addScaledVector(side,9).addScaledVector(heading,2);desired.y=7.5;}
+  else{goal.copy(head).lerp(localGoal,.25).addScaledVector(heading,1.4);goal.y=.4;desired.copy(head).addScaledVector(heading,-9).addScaledVector(side,1.5);desired.y=8;}
+  desired.y=Math.max(3.2,desired.y);
+  for(const rock of f.obstacles||[]){const r=new T.Vector3(rock.x-7.5,.4,rock.y-11.5);if(r.distanceTo(desired)<2)desired.y=Math.max(desired.y,4.5);}
+  const ease=1-Math.exp(-dt*4);
+  if(reset){camera.position.copy(desired);aim.copy(goal);}else{camera.position.lerp(desired,ease);aim.lerp(goal,ease);}
+  if(mode!=='Tactical')aim.lerp(head,1-Math.exp(-dt*8));
+  camera.lookAt(aim);camera.updateMatrixWorld();
+  const anchors=mode==='Tactical'?f.players.flatMap(p=>p.body).concat(f.food||[]).map(v=>new T.Vector3(v.x-7.5,1.3,v.y-11.5)):[head.clone().add(new T.Vector3(0,1.3,0)),head.clone().add(new T.Vector3(0,-.6,0))];
+  if(mode==='Follow')anchors.push(localGoal);
+  const corners=[[-8.7,-12.7],[8.7,-12.7],[-8.7,12.7],[8.7,12.7]].map(([x,z])=>new T.Vector3(x,0,z));
+  const safe=mode==='Tactical'?anchors.concat(corners):anchors;let fit=0;
+  for(;fit<24;fit++){camera.updateMatrixWorld();if(safe.every(v=>{const q=v.clone().project(camera);return q.z>-1&&q.z<1&&Math.abs(q.x)<(mode==='Tactical'?.90:.8)&&q.y>(mode==='Tactical'?-.55:-.42)&&q.y<.64;}))break;camera.position.sub(aim).multiplyScalar(1.08).add(aim);camera.lookAt(aim);}
+  if(fit===24){mode='Tactical';fallback='UNSAFE_FRAMING';camera.position.set(0,42,40);aim.set(0,0,0);camera.lookAt(aim);}
+  camera.updateMatrixWorld();initialized=true;lastRound=f.round;lastPlayer=p.id;
+  return {shot:mode,fallback,player:index,focus:aim.toArray(),camera:camera.position.toArray(),anchors:anchors.map(v=>v.clone().project(camera).toArray()),arenaCorners:corners.map(v=>v.clone().project(camera).toArray()),head:head.clone().project(camera).toArray(),cut:reset};
+ }};
+}

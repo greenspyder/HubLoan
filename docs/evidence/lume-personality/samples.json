@@ -1,0 +1,59 @@
+{
+  "engine": "kokoro",
+  "voice": "pf_dora",
+  "humanReview": "PENDING",
+  "metrics": {
+    "engine": "kokoro",
+    "voice": "pf_dora (pt-BR feminina)",
+    "quality": "HUMAN_REVIEW_REQUIRED",
+    "ready": true,
+    "neural": 6,
+    "fallback": 0,
+    "failures": 0,
+    "maxSynthesisMs": 2699
+  },
+  "samples": [
+    {
+      "name": "saudacao",
+      "text": "Oi, eu sou a Lume! Pode chegar. A bagunça aqui tem personalidade.",
+      "delivery": "warm",
+      "seconds": 3.925,
+      "synthesisMs": 2715
+    },
+    {
+      "name": "jogo",
+      "text": "Eu vi a pedra. Só achei que ela ia sair.",
+      "delivery": "wry",
+      "seconds": 2.75,
+      "synthesisMs": 2096
+    },
+    {
+      "name": "rosa",
+      "text": "Trouxe flor ou veio me espetar? Esse cabinho está suspeito.",
+      "delivery": "wry",
+      "seconds": 3.7,
+      "synthesisMs": 2683
+    },
+    {
+      "name": "especial",
+      "text": "Eu estava plena... agora estou oficialmente fazendo escândalo! Obrigada!",
+      "delivery": "excited",
+      "seconds": 4.125,
+      "synthesisMs": 2600
+    },
+    {
+      "name": "vitoria",
+      "text": "Ganhei! Vou fingir que estava tudo no planejamento.",
+      "delivery": "excited",
+      "seconds": 3,
+      "synthesisMs": 1464
+    },
+    {
+      "name": "derrota",
+      "text": "Hoje eu passei vergonha. Amanhã eu passo de fase.",
+      "delivery": "wry",
+      "seconds": 3.225,
+      "synthesisMs": 1504
+    }
+  ]
+}

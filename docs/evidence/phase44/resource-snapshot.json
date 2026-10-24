@@ -1,0 +1,19 @@
+{
+  "cpuCount": 9,
+  "processes": [
+    "MainThread      40068  0.0",
+    "MainThread      313324 18.3",
+    "ffmpeg          36360  0.7",
+    "chrome-headless 92100  1.7",
+    "chrome-headless 35124  0.0",
+    "chrome-headless 34780  0.0",
+    "chrome-headless 127848 215",
+    "chrome-headless 57300  0.0",
+    "chrome-headless 71760  0.0",
+    "chrome-headless 245964 20.9",
+    "python          1639296 54.3",
+    "ffmpeg          39896  5.9"
+  ],
+  "columns": "command RSS_KiB CPU_percent_lifetime",
+  "note": "Snapshot of matching processes in shared test host, not isolated instantaneous CPU profiling or GPU measurement."
+}

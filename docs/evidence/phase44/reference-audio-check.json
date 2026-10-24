@@ -1,0 +1,132 @@
+{
+  "method": "Correlation of decoded entire audio at 5-second spaced windows against approved ambient PCM, allowing AAC priming; not listening or aesthetic approval",
+  "videoSha256": "895a60cec81539f558666f6c7f643f2ea81d794b1bc3da04aaf26c4dcd0b0669",
+  "ambientSha256": "ac907c95596fc433d14aea4ea76f00c833bd6dcc4a4c1bd16f18eea72250a3e5",
+  "windows": [
+    {
+      "second": 0,
+      "ambientCorrelation": 0.9873001144554545,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 5,
+      "ambientCorrelation": 0.26669156607036215,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 10,
+      "ambientCorrelation": 0.30564584970845277,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 15,
+      "ambientCorrelation": 0.04041352873769758,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 20,
+      "ambientCorrelation": 0.41532851979861224,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 25,
+      "ambientCorrelation": 0.09548089376286759,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 30,
+      "ambientCorrelation": 0.08175927872663466,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 35,
+      "ambientCorrelation": 0.2760070121678998,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 40,
+      "ambientCorrelation": 0.08528720409978498,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 45,
+      "ambientCorrelation": 0.2783619024591808,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 50,
+      "ambientCorrelation": 0.2487154007657714,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 55,
+      "ambientCorrelation": 0.9959165731430016,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 60,
+      "ambientCorrelation": 0.9970877949873711,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 65,
+      "ambientCorrelation": 0.9936191854005902,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 70,
+      "ambientCorrelation": 0.9985802752083938,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 75,
+      "ambientCorrelation": 0.2867897505593831,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 80,
+      "ambientCorrelation": 0.9945336171663967,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 85,
+      "ambientCorrelation": 0.2276072189682558,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 90,
+      "ambientCorrelation": 0.995059588852059,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 95,
+      "ambientCorrelation": 0.9959257458299845,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 100,
+      "ambientCorrelation": 0.6786359631030386,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 105,
+      "ambientCorrelation": 0.9949497046344864,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 110,
+      "ambientCorrelation": 0.9983795822969747,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 115,
+      "ambientCorrelation": 0.8351229156343063,
+      "alignmentSamples": 1024
+    },
+    {
+      "second": 120,
+      "ambientCorrelation": 0.9973219654565898,
+      "alignmentSamples": 1024
+    }
+  ]
+}

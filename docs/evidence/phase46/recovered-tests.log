@@ -1,0 +1,17 @@
+✔ rig keeps head visible through turns, growth and target loss without changing physics (199.458438ms)
+✔ director uses contextual shots, stable holds, leader choice and session reset (48.730962ms)
+✔ rapid compass turns keep camera travel bounded (5.462149ms)
+✔ three distinct original silhouettes, bounded reusable geometry and audio driven jaw (9.195067ms)
+✔ director uses actual state, bounds cuts, priorities, recovery and resets sessions without changing physics (2.306033ms)
+✔ special apples are optional, deterministic, shared and increase score and growth; invalid config rejected (103.666682ms)
+✔ two minutes of autonomous direction has multiple modes, bounded cue counts and no long freeze (35.573825ms)
+✔ director supports non-game experiences and detects only an actual turn beside a rock (0.394783ms)
+✔ risk cue reaches existing PCM mixer at media time, with limiter and silence on pause (12.00979ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 487.148974

@@ -1,0 +1,17 @@
+✔ autonomous presentation comments on real results, respects cooldown, never fills audience (38.560401ms)
+✔ neural unavailable falls back locally, rejects unsafe input and cancels (5.324266ms)
+✔ real neural pt-BR synthesis, bounded PCM and model reuse (1534.864055ms)
+✔ real WebGL frames, camera, PCM mouth, game immutable, avatars, bounded geometry and cleanup (3443.756325ms)
+✔ director uses actual state, bounds cuts, priorities, recovery and resets sessions without changing physics (1.182515ms)
+✔ special apples are optional, deterministic, shared and increase score and growth; invalid config rejected (72.818558ms)
+✔ two minutes of autonomous direction has multiple modes, bounded cue counts and no long freeze (32.951841ms)
+✔ director supports non-game experiences and detects only an actual turn beside a rock (0.254045ms)
+✔ risk cue reaches existing PCM mixer at media time, with limiter and silence on pause (7.541318ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5354.179688

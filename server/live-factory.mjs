@@ -1,4 +1,5 @@
-import { performanceDefaults, performanceConfig, resetPerformance, demoEvent, advancePerformance, publicPerformance } from './live-performance.mjs';
+import {repertoireAction} from './live-music.mjs';
+import { performanceDefaults, performanceConfig, resetPerformance, demoEvent, advancePerformance, advanceGamePerformance, publicPerformance } from './live-performance.mjs';
 // Original deterministic runtime. Uses the existing transactional workspace store.
 import { gameTemplates } from './live-game.mjs';
 import { revokeWorker, watchWorker } from './live-broadcast.mjs';
@@ -23,6 +24,8 @@ export function liveAction(w,action,input,now=Date.now()) {
  }
  const e=find(w,input.id);
  e.config ||= defaultCharacter(); e.configVersion ||= 1; e.suggestions ||= [];
+ if(action==='audio-mute'){e.config.audio.muted=true;if(e.performance)e.performance.jobs=[];log(e,'audio',{action},now);return;}
+ if(action.startsWith('music-')){repertoireAction(e,action,input);log(e,'repertoire',{action,trackId:input.trackId||input.track?.id},now);return;}
  if(action==='performance-configure'){if(!['STOPPED','STOPPED_FINAL'].includes(e.status)||input.version!==e.configVersion)throw new AppError('Encerre a sessão e atualize a versão.',409);e.performanceConfig=performanceConfig(input.config);e.configVersion++;return;}
  if(action==='performance-bind'){if(e.status!=='TESTING'||input.sessionId!==e.sessionId||!e.game||!['0','1'].includes(input.playerId))throw new AppError('Sessão/jogador inválido.',409);const person=e.performance?.participants.find(x=>x.id===input.participantId);if(!person)throw new AppError('Participante não encontrado.',404);e.performance.bindings=e.performance.bindings.filter(b=>b.playerId!==input.playerId);e.performance.bindings.push({playerId:input.playerId,participantId:person.id,name:person.name,mode:'FREE_OPERATOR_SELECTION'});log(e,'performance',{action,source:'SIMULATED_OPERATOR',result:'Vínculo visual gratuito; regras do jogo preservadas.'},now);return;}
  if(action==='performance-photo'){if(input.sessionId!==e.sessionId||e.status!=='TESTING')throw new AppError('Sessão inválida.',409);const p=e.performance?.participants.find(x=>x.id===input.participantId);if(!p)throw new AppError('Participante de teste não encontrado.',404);if(!p.avatar&&e.performance.participants.filter(x=>x.avatar).length>=12)throw new AppError('Limite de doze fotos por sessão.',409);p.avatar=input.normalizedImage;for(const x of e.performance.top)if(x.id===p.id)x.avatar=p.avatar;return;}
@@ -89,6 +92,7 @@ export function advanceLive(w,owner,now=Date.now()) {
   if(e.status==='PAUSED'){if(e.game)e.game.lastAt=now;continue;}
   if(e.status==='INITIALIZING') {e.status='TESTING';log(e,'lifecycle',{status:'READY',mode:'SIMULATION_ONLY'},now);}
   if(e.game){const rounds=e.game.round;gameTemplates[e.game.template].advance(e.game,now);if(e.game.round!==rounds)log(e,'game',{action:'round-start',source:'INTERNAL_GAME',result:`Rodada ${e.game.round}`,aiUsed:false},now);for(const result of e.game.history.filter(r=>r.at>(e.lastGameResultAt||0))){log(e,'game',{action:'round-end',source:'INTERNAL_GAME',result:`${result.winner} · ${result.scores.join(' x ')}`,aiUsed:false},now);e.lastGameResultAt=result.at;}}
+  advanceGamePerformance(e,now);
   e.ticks++;e.activeMs+=elapsed;e.character.pose=e.ticks%4;
   e.queue.sort((a,b)=>b.priority-a.priority||a.receivedAt-b.receivedAt);
   const event=e.queue.shift();

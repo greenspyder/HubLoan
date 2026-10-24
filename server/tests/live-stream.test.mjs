@@ -31,6 +31,9 @@ test('worker grants are session-scoped, single-instance, hidden, revocable, boun
  assert.throws(()=>workerHeartbeat(w,e.id,grant.token,{...input,status:'CONFIRMED'},n),/inválida/);
  assert.throws(()=>workerHeartbeat(w,e.id,grant.token,{...input,status:'SENDING_MEDIA'},n),/não autorizada/);
  const response=workerHeartbeat(w,e.id,grant.token,input,n);assert.equal(response.experience.workerGrant,undefined);assert.equal(publicLive(w).experiences[0].workerGrant,undefined);assert.ok(!JSON.stringify(publicLive(w)).includes(grant.token));
+ const settled='a'.repeat(36),retained='b'.repeat(36);e.performance.jobs=[{id:settled},{id:retained}];
+ assert.throws(()=>workerHeartbeat(w,e.id,grant.token,{...input,settledJobs:['invalid']},n),/atuação/);
+ workerHeartbeat(w,e.id,grant.token,{...input,settledJobs:[settled]},n);assert.deepEqual(e.performance.jobs,[{id:retained}]);
  assert.throws(()=>workerHeartbeat(w,e.id,grant.token,{...input,instance:'b'.repeat(20)},n),/Outro worker/);
  assert.throws(()=>authorizeWorker(w,e.id,'stream',n),/anterior/);
  watchWorker(e,n+11000);assert.equal(e.transmission.status,'DEGRADED');assert.throws(()=>workerHeartbeat(w,e.id,grant.token,input,n+11001),/encerrada/);
@@ -48,7 +51,7 @@ test('real FFmpeg RTMP receiver receives continuous H264 + AAC, and encoder fail
  const destination=`rtmp://127.0.0.1:${port}/live/controlled-test`,output=join(dir,'received.flv');
  const receiver=spawn('ffmpeg',['-hide_banner','-loglevel','error','-y','-listen','1','-i',destination,'-c','copy',output],{stdio:['ignore','ignore','pipe']});let receiverLog='';receiver.stderr.on('data',b=>receiverLog+=b);const reception=new Promise(r=>receiver.once('close',r));t.after(()=>receiver.kill('SIGKILL'));await wait(500);
  const report=await runWorker({backend,...grant,destination,authorizedDestination:true},{transmit:true,seconds:18});await Promise.race([reception,wait(4000)]);
- assert.ok(report.frames>150,JSON.stringify(report));assert.equal(report.publicTransmission,'UNCONFIRMED');
+ assert.ok(report.preparationMs>=0);assert.equal(report.failureReason,null);assert.equal(report.heartbeatIntervalMs,750);assert.ok(report.frames>150,JSON.stringify(report));assert.equal(report.publicTransmission,'UNCONFIRMED');
  const probe=JSON.parse(await mediaCommand('ffprobe',['-v','error','-show_streams','-show_format','-of','json',output]));assert.ok(probe.streams.some(s=>s.codec_name==='h264'&&s.width===360&&s.height===640));assert.ok(probe.streams.some(s=>s.codec_name==='aac'));assert.ok(Number(probe.format.duration)>=15);
  await mediaCommand('ffmpeg',['-v','error','-threads','1','-i',output,'-f','null','-']);
  const hashes=await mediaCommand('ffmpeg',['-v','error','-i',output,'-map','0:v','-frames:v','120','-f','framemd5','-']);assert.ok(new Set(hashes.split('\n').filter(x=>!x.startsWith('#')).map(x=>x.split(',').at(-1))).size>5,'received frames must change');
@@ -59,5 +62,8 @@ test('real FFmpeg RTMP receiver receives continuous H264 + AAC, and encoder fail
  await assert.rejects(runWorker({backend,...grant2},{seconds:10,output:join(dir,'interrupted.mp4'),onEncoder:child=>setTimeout(()=>child.kill('SIGKILL'),2000)}),/interrompido/);
  assert.equal((await store.read(wid)).workspace.liveFactory.experiences[0].transmission.status,'ERROR');
  const grant3=(await api('/live/worker-authorize',{id,mode:'preview'})).data;await assert.rejects(runWorker({backend,...grant3},{seconds:5,output:join(dir,'render-failure.mp4'),renderFrame:async()=>{throw Error('controlled render failure');}}),/interrompido/);
+ assert.equal((await store.read(wid)).workspace.liveFactory.experiences[0].transmission.status,'ERROR');
+ const grant4=(await api('/live/worker-authorize',{id,mode:'preview'})).data;
+ await assert.rejects(runWorker({backend,...grant4},{seconds:8,output:join(dir,'overloaded.mp4'),renderFrame:async()=>{await wait(650);return Buffer.alloc(360*640*3);}}),error=>error.report?.failureReason==='FRAME_BUDGET_EXCEEDED'&&error.report.maxPipelineLagMs>2000);
  assert.equal((await store.read(wid)).workspace.liveFactory.experiences[0].transmission.status,'ERROR');
 });

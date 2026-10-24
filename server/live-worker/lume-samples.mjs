@@ -1,0 +1,9 @@
+// Offline review samples: no paid API, never approves quality or changes a session.
+import {mkdir,writeFile} from 'node:fs/promises';
+import {resolve,join} from 'node:path';
+import {createNeuralSpeech} from './neural-speech.mjs';
+const out=resolve(process.argv[2]||'lume-voice-samples');await mkdir(out,{recursive:true});
+const speech=await createNeuralSpeech({engine:'kokoro',fallback:async()=>{throw Error('Neural sample requires Kokoro; fallback is not evidence.');}});
+const samples=[['saudacao','Oi, eu sou a Lume! Pode chegar. A bagunça aqui tem personalidade.','warm'],['jogo','Eu vi a pedra. Só achei que ela ia sair.','wry'],['rosa','Trouxe flor ou veio me espetar? Esse cabinho está suspeito.','wry'],['especial','Eu estava plena... agora estou oficialmente fazendo escândalo! Obrigada!','excited'],['vitoria','Ganhei! Vou fingir que estava tudo no planejamento.','excited'],['derrota','Hoje eu passei vergonha. Amanhã eu passo de fase.','wry']];
+const report=[];
+try{for(const [name,text,delivery] of samples){const start=Date.now(),pcm=await speech.synthesize(text,'host',{delivery}),b=Buffer.alloc(44+pcm.length*2);b.write('RIFF');b.writeUInt32LE(b.length-8,4);b.write('WAVEfmt ',8);b.writeUInt32LE(16,16);b.writeUInt16LE(1,20);b.writeUInt16LE(1,22);b.writeUInt32LE(48000,24);b.writeUInt32LE(96000,28);b.writeUInt16LE(2,32);b.writeUInt16LE(16,34);b.write('data',36);b.writeUInt32LE(pcm.length*2,40);for(let i=0;i<pcm.length;i++)b.writeInt16LE(Math.round(Math.max(-1,Math.min(1,pcm[i]))*32767),44+i*2);await writeFile(join(out,`${name}.wav`),b);report.push({name,text,delivery,seconds:pcm.length/48000,synthesisMs:Date.now()-start});}await writeFile(join(out,'samples.json'),JSON.stringify({engine:'kokoro',voice:'pf_dora',humanReview:'PENDING',metrics:speech.metrics,samples:report},null,2));}finally{speech.close();}

@@ -1,0 +1,317 @@
+{
+  "report": {
+    "preparationMs": 347.217858,
+    "failureReason": null,
+    "heartbeatIntervalMs": 750,
+    "stages": {
+      "pcmMixMs": {
+        "totalMs": 1907.1574159996608,
+        "maxMs": 5.0473259999998845,
+        "count": 1890
+      },
+      "audioPipeMs": {
+        "totalMs": 170.4687030000996,
+        "maxMs": 2.577595000009751,
+        "count": 1890
+      },
+      "renderRoundtripMs": {
+        "totalMs": 63946.92682800002,
+        "maxMs": 193.4852899999969,
+        "count": 1890
+      },
+      "videoPipeMs": {
+        "totalMs": 914.2144580001595,
+        "maxMs": 197.87080699999933,
+        "count": 1890
+      }
+    },
+    "codecTimingNote": "Pipe timing includes backpressure, not isolated H264/AAC codec time. GPU submit is not GPU completion.",
+    "direction": {
+      "harvest": 8,
+      "result": 7,
+      "speech": 6,
+      "music": 3,
+      "contest": 8
+    },
+    "status": "STOPPED",
+    "profile": "light",
+    "fps": 15,
+    "maxRenderMs": 274,
+    "lateFrames": 29,
+    "maxPipelineLagMs": 210.66666666666666,
+    "frames": 1890,
+    "bytes": 12358233,
+    "durationMs": 126018,
+    "renderedFrames": 1890,
+    "rssBytes": 317022208,
+    "rendererCpuMs": 19225.336,
+    "encoderCpuMs": null,
+    "networkBytes": null,
+    "publicTransmission": "UNCONFIRMED",
+    "audio": {
+      "latency": {
+        "pending": {
+          "count": 13,
+          "meanMs": 0,
+          "p95Ms": 0,
+          "maxMs": 0
+        },
+        "synthesis": {
+          "count": 13,
+          "meanMs": 1690.5384615384614,
+          "p95Ms": 2870,
+          "maxMs": 2870
+        },
+        "reaction": {
+          "count": 11,
+          "meanMs": 2082.6363636363635,
+          "p95Ms": 3467,
+          "maxMs": 3467
+        },
+        "queue": {
+          "count": 11,
+          "meanMs": 70.72727272727273,
+          "p95Ms": 344,
+          "maxMs": 344
+        },
+        "segment": {
+          "count": 15,
+          "meanMs": 4039.5333333333333,
+          "p95Ms": 15022,
+          "maxMs": 15022
+        }
+      },
+      "interrupted": 1,
+      "staleDropped": 2,
+      "synthesized": 13,
+      "cacheHits": 1,
+      "ttsFailures": 0,
+      "dropped": 2,
+      "ttsMs": 21976,
+      "maxPlaybackLatencyMs": 15022,
+      "musicFailures": 0,
+      "ambientFrames": 1890,
+      "ambientTransitions": 0,
+      "ambientTrackId": "489d82a8-e7d8-497b-b3c2-859efe6f7c71",
+      "trackPlays": {
+        "bcda6902-5df5-4fb5-8c99-7b9262db4535": 1,
+        "008cb964-1d68-4ffd-b463-be32d2a5a09f": 1,
+        "2e1fcdee-f7f2-4949-b454-4fe050727cff": 1
+      },
+      "played": {
+        "host": 11,
+        "comment": 1,
+        "chant": 0,
+        "music": 3
+      },
+      "peak": 0.10515756957772883,
+      "aiCalls": 0
+    },
+    "aiCalls": 0,
+    "renderer": {
+      "engine": "three-webgl2",
+      "width": 360,
+      "height": 640,
+      "frames": 1891,
+      "maxFrameMs": 340,
+      "softwareRequested": true,
+      "sandboxDisabled": true,
+      "gpu": "WebKit WebGL",
+      "geometryCount": 36,
+      "textureCount": 1,
+      "timings": {
+        "sceneMs": {
+          "totalMs": 1437.2999999999884,
+          "maxMs": 7.599999999976717
+        },
+        "threeSubmitMs": {
+          "totalMs": 1721.4000000006636,
+          "maxMs": 42.699999999953434
+        },
+        "captureMs": {
+          "totalMs": 228.29999999899883,
+          "maxMs": 12
+        },
+        "overlayMs": {
+          "totalMs": 361.0000000006985,
+          "maxMs": 15.900000000023283
+        },
+        "readbackMs": {
+          "totalMs": 37661.79999999952,
+          "maxMs": 242
+        },
+        "pixelConversionMs": {
+          "totalMs": 2293.300000000745,
+          "maxMs": 22
+        },
+        "serializationMs": {
+          "totalMs": 686.2999999997555,
+          "maxMs": 8.5
+        },
+        "decodeMs": {
+          "totalMs": 115.07992800021202,
+          "maxMs": 1.2369369999942137
+        }
+      },
+      "nativeBase64": true,
+      "browserCpuMs": null,
+      "browserRssBytes": null
+    },
+    "speech": {
+      "engine": "kokoro",
+      "voice": "pf_dora (pt-BR feminina)",
+      "quality": "HUMAN_REVIEW_REQUIRED",
+      "ready": true,
+      "neural": 13,
+      "fallback": 0,
+      "failures": 0,
+      "maxSynthesisMs": 2356,
+      "rssBytes": null
+    }
+  },
+  "decodedAudioCorrelation": 0.9998665210172253,
+  "receiverDuration": "126.037000",
+  "top": [
+    {
+      "id": "demo-ana",
+      "name": "ana",
+      "quantity": 22,
+      "joined": 0,
+      "hasPhoto": true
+    },
+    {
+      "id": "demo-amigo0",
+      "name": "amigo0",
+      "quantity": 1,
+      "joined": 2,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo1",
+      "name": "amigo1",
+      "quantity": 1,
+      "joined": 3,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo2",
+      "name": "amigo2",
+      "quantity": 1,
+      "joined": 4,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo3",
+      "name": "amigo3",
+      "quantity": 1,
+      "joined": 5,
+      "hasPhoto": false
+    },
+    {
+      "id": "demo-amigo4",
+      "name": "amigo4",
+      "quantity": 1,
+      "joined": 6,
+      "hasPhoto": false
+    }
+  ],
+  "rounds": 8,
+  "repertoire": {
+    "categories": {
+      "roses": {
+        "count": 2,
+        "lastAt": 1792720686125
+      },
+      "special": {
+        "count": 1,
+        "lastAt": 1792720669111
+      }
+    },
+    "grouped": 5,
+    "selected": 3,
+    "history": [
+      {
+        "at": 1792720658751,
+        "trackId": "bcda6902-5df5-4fb5-8c99-7b9262db4535",
+        "category": "roses"
+      },
+      {
+        "at": 1792720669111,
+        "trackId": "008cb964-1d68-4ffd-b463-be32d2a5a09f",
+        "category": "special"
+      },
+      {
+        "at": 1792720686125,
+        "trackId": "2e1fcdee-f7f2-4949-b454-4fe050727cff",
+        "category": "roses"
+      }
+    ],
+    "lastAt": 1792720686125
+  },
+  "catalog": [
+    {
+      "vocalWindows": [],
+      "id": "bcda6902-5df5-4fb5-8c99-7b9262db4535",
+      "title": "Teste instrumental 1",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "roses",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "0b48b17a0b091a6b8b7a85241d78033a5960016fe3bca53a172e88fa63c58ba4",
+      "bytes": 288044,
+      "seconds": 6,
+      "approved": true
+    },
+    {
+      "vocalWindows": [],
+      "id": "2e1fcdee-f7f2-4949-b454-4fe050727cff",
+      "title": "Teste instrumental 2",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "roses",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "da4ad690f9c59d5fa3ae9f554390f2ebacef2d13f7a78d4aefe1a4e2932f597a",
+      "bytes": 288044,
+      "seconds": 6,
+      "approved": true
+    },
+    {
+      "vocalWindows": [],
+      "id": "008cb964-1d68-4ffd-b463-be32d2a5a09f",
+      "title": "Teste instrumental 3",
+      "source": "server/tests/fixtures/live-music.mjs",
+      "license": "CC0-1.0 original test composition",
+      "creator": "HubLoan test fixture",
+      "category": "special",
+      "kind": "INSTRUMENTAL_TEST",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "01d8ed5d839866f3a721e10f8ca0c419cd2a4740ccfaacde0de8c8165d2c60e9",
+      "bytes": 576044,
+      "seconds": 12,
+      "approved": true
+    },
+    {
+      "vocalWindows": [],
+      "id": "489d82a8-e7d8-497b-b3c2-859efe6f7c71",
+      "title": "Brazilian Sunsets",
+      "source": "https://freemusicarchive.org/music/Ketsa/cc-by-free-to-use-for-anything/brazilian-sunsets/",
+      "license": "CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/",
+      "creator": "Ketsa",
+      "category": "ambient",
+      "kind": "ORIGINAL_INSTRUMENTAL",
+      "costMinor": 0,
+      "commercialLiveRights": true,
+      "hash": "ac907c95596fc433d14aea4ea76f00c833bd6dcc4a4c1bd16f18eea72250a3e5",
+      "bytes": 10177802,
+      "seconds": 212.03591666666668,
+      "approved": true
+    }
+  ]
+}
