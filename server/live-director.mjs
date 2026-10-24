@@ -31,13 +31,17 @@ export function createDirector(){
   const alive=players.map((p,i)=>({p,i})).filter(v=>v.p.alive);
   const leader=alive.sort((a,b)=>b.p.score-a.p.score||a.i-b.i)[0]?.i??0;
   const desiredPlayer=cue?.player??leader,interest=cue?.priority??(players[leader]?.target?20:10);
-  let desiredShot=mode==='Overview'||cue?.kind==='contest'?'Tactical':mode==='Celebration'||mode==='Close-up'?'Front':mode==='Action'?'Action':'Follow';
+  let desiredShot=mode==='Overview'?'Tactical':mode==='Celebration'||mode==='Close-up'?'Front':mode==='Action'?'Action':'Follow';
   const head=players[desiredPlayer]?.body?.[0],nearby=head&&(f.obstacles||[]).some(o=>Math.hypot(o.x-head.x,o.y-head.y)<3.5);
   if(desiredShot==='Follow'&&nearby)desiredShot='Action';
   if(cue?.kind==='harvest')desiredShot='Front';
+  if(cue?.kind==='contest')desiredShot='Action';
+  // Brief establishing shot; ordinary cuts retain the five-second hold.
+  const establishing=shot==='Tactical'&&at-shotAt>=1800;
+  if(establishing&&desiredShot==='Tactical')desiredShot='Follow';
   const lost=!players[protagonist]?.alive&&f.phase!=='FINISHED';
   if(lost){protagonist=leader;shot='Tactical';shotAt=at;}
-  else if(!fresh&&at-shotAt>=5000&&(shot!==desiredShot||protagonist!==desiredPlayer)){shot=desiredShot;protagonist=desiredPlayer;shotAt=at;shots[shot]=(shots[shot]||0)+1;}
-  return {mode,cue,shot,interest,player:protagonist,emotion:cue?.emotion??'neutral',at,age:cue?at-cue.at:0};
+  else if(!fresh&&(at-shotAt>=5000||establishing)&&(shot!==desiredShot||protagonist!==desiredPlayer)){shot=desiredShot;protagonist=desiredPlayer;shotAt=at;shots[shot]=(shots[shot]||0)+1;}
+  return {mode,cue,shot,interest,player:protagonist,emotion:cue?.emotion??(nearby?'focused':'confident'),pacing:cue?.kind==='result'?'reward':cue?.kind==='contest'||cue?.kind==='near-miss'?'tension':cue?.kind==='speech'?'reaction':'exploration',at,age:cue?at-cue.at:0};
  }};
 }
