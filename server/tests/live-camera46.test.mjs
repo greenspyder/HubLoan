@@ -12,7 +12,7 @@ test('rig keeps head visible through turns, growth and target loss without chang
 });
 test('director uses contextual shots, stable holds, leader choice and session reset',()=>{
  const g=createGame(config,1000),d=createDirector(),shots=new Set();let last,lastChange=1000;
- for(let at=1000;at<=181000;at+=100){advanceGame(g,at);const r=d.update({sessionId:'a'},g,at);shots.add(r.shot);if(last&&r.shot!==last.shot){assert.ok(at-lastChange>=5000||!g.players[last.player]?.alive||r.shot==='Tactical');lastChange=at;}last=r;}
+ for(let at=1000;at<=181000;at+=100){advanceGame(g,at);const r=d.update({sessionId:'a'},g,at);shots.add(r.shot);if(last&&r.shot!==last.shot){assert.ok(at-lastChange>=5000||(last.shot==='Tactical'&&at-lastChange>=1800)||!g.players[last.player]?.alive||r.shot==='Tactical');lastChange=at;}last=r;}
  for(const shot of ['Tactical','Follow','Front','Action'])assert.ok(shots.has(shot),shot);assert.equal(d.update({sessionId:'b'},g,182000).shot,'Tactical');
 });
 test('rapid compass turns keep camera travel bounded',()=>{

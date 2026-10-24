@@ -4,7 +4,7 @@ export function bootScene3D(T,width=360,height=640,createFace,design='jade',crea
  const rgb=new Uint8Array(width*height*3);
  const renderer=new T.WebGLRenderer({antialias:false,alpha:false,preserveDrawingBuffer:true,powerPreference:'low-power'});
  renderer.setSize(width,height);renderer.setPixelRatio(1);renderer.outputColorSpace=T.SRGBColorSpace;renderer.setClearColor('#163940');
- const scene=new T.Scene();scene.background=new T.Color('#163940');scene.fog=new T.Fog('#163940',110,180);
+ const scene=new T.Scene();scene.background=new T.Color('#163940');scene.fog=new T.Fog('#163940',38,95);
  const camera=new T.PerspectiveCamera(48,width/height,.1,300);camera.position.set(0,29,30);const rig=createRig(T,camera);
  scene.add(new T.HemisphereLight('#e5ffff','#37564d',2.3));const sun=new T.DirectionalLight('#ffe6b6',3.1);sun.position.set(-12,24,10);scene.add(sun);
  const fill=new T.DirectionalLight('#86cfff',1.2);fill.position.set(12,8,-8);scene.add(fill);
@@ -12,8 +12,8 @@ export function bootScene3D(T,width=360,height=640,createFace,design='jade',crea
  const sphere=new T.SphereGeometry(1,12,8),box=new T.BoxGeometry(1,1,1),cylinder=new T.CylinderGeometry(1,1,1,24),cone=new T.ConeGeometry(1,1,5);
  function mesh(g,color,parent=scene,x=0,y=0,z=0,sx=1,sy=1,sz=1){const m=new T.Mesh(g,mat(color));m.position.set(x,y,z);m.scale.set(sx,sy,sz);parent.add(m);return m;}
  mesh(box,'#234854',scene,0,-1,0,19,1.5,27);mesh(box,'#4d8b73',scene,0,-.2,0,17.6,.3,25.6);
- mesh(box,'#6fba88',scene,0,0,0,16.6,.15,24.6);
- for(let z=0;z<24;z+=2)mesh(box,'#76c18e',scene,0,.085,z-11,16.2,.008,1);
+ mesh(box,'#609a80',scene,0,0,0,16.6,.15,24.6);
+ for(let z=0;z<24;z+=2)mesh(box,'#639f83',scene,0,.085,z-11,16.2,.008,1);
  for(const x of [-8.5,8.5])mesh(box,'#c1db9a',scene,x,.15,0,.35,.4,25.5);
  for(const z of [-12.5,12.5])mesh(box,'#c1db9a',scene,0,.15,z,17.4,.4,.35);
  const plants=[];
@@ -27,12 +27,12 @@ export function bootScene3D(T,width=360,height=640,createFace,design='jade',crea
  const scaleCtx=scaleCanvas.getContext('2d');scaleCtx.fillStyle='#aaa';scaleCtx.fillRect(0,0,128,128);scaleCtx.strokeStyle='#888';scaleCtx.lineWidth=2;
  for(let y=-16;y<144;y+=16)for(let x=-16;x<144;x+=16){const u=x+(y%32?8:0);scaleCtx.beginPath();scaleCtx.ellipse(u,y,8,9,0,0,Math.PI*2);scaleCtx.stroke();}
  const scaleTexture=new T.CanvasTexture(scaleCanvas);scaleTexture.wrapS=scaleTexture.wrapT=T.RepeatWrapping;scaleTexture.repeat.set(6,2);
- const snakes=[0,1].map(i=>{const color=i?'#f5af55':'#71dca0',head=face(color,i?'ember':design);scene.add(head.g);const skin=mat(color).clone();skin.bumpMap=scaleTexture;skin.bumpScale=.035;skin.roughness=.43;const body=new T.Mesh(new T.BufferGeometry(),skin);scene.add(body);const scales=new T.InstancedMesh(sphere,mat(i?'#ffe0a1':'#b5f3b7'),96);scales.instanceMatrix.setUsage(T.DynamicDrawUsage);scales.frustumCulled=false;scene.add(scales);const shadow=mesh(new T.CircleGeometry(1,20),'#527d67',scene,0,.12,0,.75,.65,1);shadow.rotation.x=-Math.PI/2;return {head,body,scales,shadow};});
- const scaleTransform=new T.Object3D();scaleTransform.scale.set(.15,.035,.2);
+ const snakes=[0,1].map(i=>{const color=i?'#da9551':'#67caaa',head=face(color,i?'ember':design);scene.add(head.g);const skin=mat(color).clone();skin.bumpMap=scaleTexture;skin.bumpScale=.012;skin.roughness=.52;const body=new T.Mesh(new T.BufferGeometry(),skin);scene.add(body);const scales=new T.InstancedMesh(sphere,mat(i?'#ffe0a1':'#b5f3b7'),96);scales.instanceMatrix.setUsage(T.DynamicDrawUsage);scales.frustumCulled=false;scene.add(scales);const shadow=mesh(new T.CircleGeometry(1,20),'#527d67',scene,0,.12,0,.75,.65,1);shadow.rotation.x=-Math.PI/2;return {head,body,scales,shadow};});
+ const scaleTransform=new T.Object3D();scaleTransform.scale.set(.10,.012,.16);
  const apples=Array.from({length:3},()=>{const g=new T.Group();scene.add(g);mesh(sphere,'#ff5360',g,-.16,.31,0,.36,.4,.36);mesh(sphere,'#ed3b4c',g,.16,.31,0,.36,.4,.36);mesh(cylinder,'#775541',g,0,.8,0,.04,.25,.04);const leaf=mesh(sphere,'#b9ea65',g,.18,.84,0,.27,.07,.11);leaf.rotation.z=.3;mesh(sphere,'#ffbfad',g,-.26,.49,.26,.08,.14,.025);return g;});
  const particles=Array.from({length:24},(_,i)=>{const p=mesh(new T.OctahedronGeometry(.12),'#fff2aa');p.visible=false;return p;});
  // A close-up of the same host design, on the foreground stage, not another simulation.
- const portrait=face('#71dca0');scene.add(camera);portrait.g.position.set(-.85,-1.78,-8);portrait.g.scale.setScalar(.66);camera.add(portrait.g);
+ const portrait=face('#67caaa');scene.add(camera);portrait.g.position.set(-.85,-1.78,-8);portrait.g.scale.setScalar(.66);camera.add(portrait.g);
  const audience=Array.from({length:6},(_,i)=>{const g=new T.Group();camera.add(g);mesh(sphere,i?'#6ba4b7':'#f6ce65',g,0,.4,0,.4,.5,.28);const head=mesh(sphere,'#d8eadc',g,0,1.02,0,.37,.37,.3);for(const x of [-.13,.13])mesh(sphere,'#203d4e',g,x,1.08,.28,.04,.05,.035);const photo=new T.Mesh(new T.PlaneGeometry(.65,.65),new T.MeshBasicMaterial({transparent:true}));photo.position.set(0,1.02,.32);photo.visible=false;g.add(photo);const crown=mesh(cone,'#ffe28a',g,0,1.55,0,.3,.3,.3);crown.visible=i===0;return {g,head,photo,crown,key:null};});
  const output=document.createElement('canvas');output.width=width;output.height=height;document.body.append(output);const ctx=output.getContext('2d',{willReadFrequently:true});
  let musicEnergy=0;let previousAt=null;let cameraMode='Overview',currentDirection=null;let lastPresentation=null;
@@ -47,13 +47,17 @@ export function bootScene3D(T,width=360,height=640,createFace,design='jade',crea
   const delta=previousAt===null?1:Math.min(.25,Math.max(0,(at-previousAt)/1000));previousAt=at;const host=f.players[direction.player||0]||f.players[0];
   cameraMode=direction.mode;currentDirection=direction;
   const h=host.body[0],framing=rig.update(f,direction,at);
-  const music=presentation?.role==='music',vocal=music&&presentation.vocalActive===true;musicEnergy+=((music?presentation.level||0:0)-musicEnergy)*(1-Math.exp(-delta*7));sun.intensity=3.1+.18*musicEnergy;fill.intensity=1.2+.12*musicEnergy;
+  const music=presentation?.role==='music',vocal=music&&presentation.vocalActive===true;musicEnergy+=((music?presentation.level||0:0)-musicEnergy)*(1-Math.exp(-delta*7));sun.intensity=2.3+.18*musicEnergy;fill.intensity=1.2+.12*musicEnergy;
 
 
   const celebrating=f.phase==='FINISHED';
   for(let i=0;i<2;i++){const s=snakes[i],v=f.players[i];if(!v)continue;const eat=at-v.eatenAt,joy=eat>=0&&eat<600||celebrating&&v.name===f.winner,level=i===0&&(!music||vocal)&&presentation?.role!=='comment'?presentation?.level||0:0;
-   const points=v.body.map((b,j)=>new T.Vector3(b.x-7.5,.52+Math.sin(t*4+j*.6)*.035,b.y-11.5));
-   const curve=new T.CatmullRomCurve3(points,false,'centripetal');const segments=Math.max(12,Math.min(192,points.length*5));const geometry=new T.TubeGeometry(curve,segments,.43,8,false);
+   const logical=v.body.map((b,j)=>new T.Vector3(b.x-7.5,.52+Math.sin(t*4+j*.6)*.025,b.y-11.5));
+   // Two bounded corner-cutting passes round the grid path without moving the logical head.
+   let points=logical;
+   for(let pass=0;pass<2;pass++){const rounded=[points[0]];for(let j=0;j<points.length-1;j++){rounded.push(points[j].clone().lerp(points[j+1],.25),points[j].clone().lerp(points[j+1],.75));}rounded.push(points.at(-1));points=rounded;}
+
+   const curve=new T.CatmullRomCurve3(points,false,'centripetal');const segments=Math.max(12,Math.min(160,v.body.length*7));const geometry=new T.TubeGeometry(curve,segments,.43,8,false);
    const positions=geometry.attributes.position,center=new T.Vector3(),vertex=new T.Vector3();
    for(let ring=0;ring<=segments;ring++){const u=ring/segments,scale=u>.7?Math.max(.015,(1-u)/.3):1;curve.getPointAt(u,center);for(let j=0;j<=8;j++){const index=ring*9+j;vertex.fromBufferAttribute(positions,index).sub(center).multiplyScalar(scale).add(center);positions.setXYZ(index,vertex.x,vertex.y,vertex.z);}}
    geometry.computeVertexNormals();const previous=s.body.geometry;
@@ -62,7 +66,7 @@ export function bootScene3D(T,width=360,height=640,createFace,design='jade',crea
    else{previous.dispose();s.body.geometry=geometry;}
    s.head.g.position.copy(points[0]);s.head.g.position.y+=joy?Math.abs(Math.sin(t*12))*.2:0;s.head.g.rotation.y=Math.PI/2-(v.visualDirection??v.direction)*Math.PI/2;s.head.g.rotation.z=v.alive?Math.sin(t*4)*.035+(i===0&&music?Math.sin(t*6)*.06*musicEnergy:0):.3;
    s.head.g.scale.setScalar(1.25);s.head.animate(at,level,joy,!v.alive,direction.player===i?direction.emotion:(joy?'happy':'focused'),v.target?((v.target.x-v.body[0].x)*Math.sin((v.visualDirection??v.direction)*Math.PI/2)-(v.target.y-v.body[0].y)*Math.cos((v.visualDirection??v.direction)*Math.PI/2))*.015:0);s.shadow.position.set(points[0].x,.13,points[0].z);
-   s.scales.count=Math.min(96,v.body.length-1);for(let k=0;k<s.scales.count;k++){const pt=points[k];scaleTransform.position.set(pt.x,pt.y+.4,pt.z);scaleTransform.updateMatrix();s.scales.setMatrixAt(k,scaleTransform.matrix);}s.scales.instanceMatrix.needsUpdate=true;
+   s.scales.count=Math.min(96,v.body.length*2-2);for(let k=0;k<s.scales.count;k++){const u=k/Math.max(1,s.scales.count),taper=u>.7?Math.max(.015,(1-u)/.3):1,pt=curve.getPointAt(u);scaleTransform.scale.set(.10*taper,.012,.16*taper);scaleTransform.position.set(pt.x,pt.y+.43*taper,pt.z);scaleTransform.updateMatrix();s.scales.setMatrixAt(k,scaleTransform.matrix);}s.scales.instanceMatrix.needsUpdate=true;
    for(let k=0;k<12;k++){const part=particles[i*12+k],age=at-(v.alive?v.eatenAt:v.hitAt);part.visible=age>=0&&age<700;if(part.visible){const u=age/700,a=k*Math.PI/6;part.position.set(points[0].x+Math.cos(a)*u*1.7,.5+Math.sin(u*Math.PI)*1.6,points[0].z+Math.sin(a)*u*1.7);part.scale.setScalar(1-u);}}
   }
   f.obstacles?.forEach((r,i)=>{if(rocks[i])rocks[i].position.set(r.x-7.5,.3,r.y-11.5);});
@@ -80,7 +84,7 @@ export function bootScene3D(T,width=360,height=640,createFace,design='jade',crea
   label(paused?'PAUSADO':'PERSONAGENS VIRTUAIS • INTERAÇÕES SIMULADAS',180,631,9,'#b8d8d7','center');ctx.restore();
   lastPresentation={...framing,cameraMode,cue:currentDirection?.cue?.kind||null,mouth:music&&!vocal?0:voice?.level||0,presenterVisible:portrait.g.visible,face:portrait.inspect(),headScale:snakes[0].head.g.scale.x,round:f.round,camera:camera.position.toArray(),bodyLengths:f.players.map(v=>v.body.length),avatarCount:(p?.top||[]).filter((_,i)=>audience[i].g.visible).length};
   const overlaid=performance.now(),data=ctx.getImageData(0,0,width,height).data,readback=performance.now();for(let i=0,j=0;i<data.length;i+=4){rgb[j++]=data[i];rgb[j++]=data[i+1];rgb[j++]=data[i+2];}
-  const converted=performance.now();let pixels;if(typeof rgb.toBase64==='function'){pixels=rgb.toBase64();}else{let binary='';for(let i=0;i<rgb.length;i+=32768)binary+=String.fromCharCode(...rgb.subarray(i,i+32768));pixels=btoa(binary);}return {pixels,visual:{shot:framing.shot,player:framing.player,fallback:framing.fallback,head:framing.head,camera:framing.camera,round:f.round,phase:f.phase,emotion:direction.emotion,avatarCount:lastPresentation.avatarCount,presenterVisible:portrait.g.visible},timings:{sceneMs:staged-began,threeSubmitMs:rendered-staged,captureMs:captured-rendered,overlayMs:overlaid-captured,readbackMs:readback-overlaid,pixelConversionMs:converted-readback,serializationMs:performance.now()-converted}};
+  const converted=performance.now();let pixels;if(typeof rgb.toBase64==='function'){pixels=rgb.toBase64();}else{let binary='';for(let i=0;i<rgb.length;i+=32768)binary+=String.fromCharCode(...rgb.subarray(i,i+32768));pixels=btoa(binary);}return {pixels,visual:{shot:framing.shot,occlusionCorrected:framing.occlusionCorrected,pacing:direction.pacing,player:framing.player,fallback:framing.fallback,head:framing.head,camera:framing.camera,round:f.round,phase:f.phase,emotion:direction.emotion,avatarCount:lastPresentation.avatarCount,presenterVisible:portrait.g.visible},timings:{sceneMs:staged-began,threeSubmitMs:rendered-staged,captureMs:captured-rendered,overlayMs:overlaid-captured,readbackMs:readback-overlaid,pixelConversionMs:converted-readback,serializationMs:performance.now()-converted}};
  }
  return {draw,resources,portrait(designEmotion='neutral',level=0,at=1000){
  const visibility=scene.children.map(o=>[o,o.visible]);for(const o of scene.children)if(!o.isLight&&o!==camera)o.visible=false;

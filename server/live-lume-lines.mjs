@@ -13,16 +13,28 @@ export const lumeLines = {
   'Que surpresa! Até esqueci para que lado fica a próxima curva.',
  ],
  contest: [
+  'A maçã virou imóvel disputado. Faísca já quer a escritura.',
+  'Duas candidatas, uma vaga no almoço. Que comece a entrevista.',
+  'Faísca veio pelo mesmo caminho. Isso é fome ou perseguição?',
+
   'Duas cobras e uma maçã. Isso vai virar reunião de condomínio.',
   'Ela quer a minha maçã! Faísca, amizade tem limite.',
   'A concorrência chegou. Vou caprichar no rebolado da curva.',
  ],
  risk: [
+  'Passei tão perto da pedra que quase trocamos telefone.',
+  'Essa curva devia vir com aviso e seguro.',
+  'O corpo foi. A dignidade ainda está fazendo a curva.',
+
   'Essa pedra passou perto! Meu coração fez uma curva antes de mim.',
   'Desviei! Foi habilidade... com uma pitada de desespero.',
   'Licença, pedrinha. Hoje eu estou comprida demais para discutir.',
  ],
  pursuit: [
+  'Estou de olho naquela maçã. O resto de mim chega depois.',
+  'Jantar à vista! Hoje o delivery sou eu.',
+  'Vou pela sombra. Fome com estratégia, meu bem.',
+
   'Achei a maçã. Agora falta convencer o resto de mim a acompanhar.',
   'Olha o meu jantar ali! Vou chegar fazendo curva e charme.',
   'A maçã está me dando bola. Ou eu estou com muita fome.',
@@ -38,16 +50,28 @@ export const lumeLines = {
   'Minha estratégia é deixar a concorrência tão confusa quanto eu.',
  ],
  food: [
+  'Mais comprida. Agora manobrar exige reunião.',
+  'Eu como uma maçã e ganho três problemas de estacionamento.',
+  'A fruta era pequena. A consequência ficou longa.',
+
   'Mais uma maçã! Minha cintura está virando uma avenida.',
   'Eu disse que estava com fome. A prova está na barriga!',
   'Colheita feita. Agora preciso achar espaço para virar.',
  ],
  victory: [
+  'Faísca, guarda essa maçã na memória. Na barriga ficou comigo.',
+  'Hoje eu deslizei no jardim e no ego da concorrência.',
+  'Ganhei sem levantar um dedo. Facilita não ter nenhum.',
+
   'Ganhei! Vou fingir que estava tudo no planejamento.',
   'Elegância na curva, maçã na barriga. Hoje eu vim pronta!',
   'Podem aplaudir. Se eu tivesse mãos, também estaria aplaudindo.',
  ],
  defeat: [
+  'Faísca ganhou. Eu ofereci entretenimento. São carreiras diferentes.',
+  'Essa derrota foi uma escolha artística muito questionável.',
+  'Meu plano era perfeito antes de encontrar a realidade.',
+
   'Hoje eu passei vergonha. Amanhã eu passo de fase.',
   'Perdi a rodada, mas a autoestima continua invicta.',
   'Essa curva não combinou comigo. Vou pedir uma segunda opinião.',
