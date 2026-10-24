@@ -14,10 +14,10 @@ export function createDirector(){
     const h=p.body[0],near=(f.obstacles||[]).some(o=>Math.abs(h.x-o.x)+Math.abs(h.y-o.y)===1);
     if(p.alive&&near&&p.direction!==old.direction)add('near-miss',70,i,2300,'fear');
    });
-   const [a,b]=players;if(a?.target&&b?.target&&a.target.x===b.target.x&&a.target.y===b.target.y&&Math.abs(a.body[0].x-b.body[0].x)+Math.abs(a.body[0].y-b.body[0].y)<7)add('contest',60,0,2600,'surprise');
+   for(let ai=0;ai<players.length;ai++)for(let bi=ai+1;bi<players.length;bi++){const a=players[ai],b=players[bi];if(a?.target&&b?.target&&a.target.x===b.target.x&&a.target.y===b.target.y&&Math.abs(a.body[0].x-b.body[0].x)+Math.abs(a.body[0].y-b.body[0].y)<7)add('contest',60,ai,2600,'surprise');}
   }
-  if(f.phase==='FINISHED')add('result',100,Math.max(0,players.findIndex(p=>p.name===f.winner)),3000,f.winner==='Empate'?'surprise':'joy');
-  const rank=e.performance?.rankingChangedAt||0;if(rank!==lastRank&&rank<=at&&at-rank<4000){add('community',80,0,3200,'joy');}
+  if(f.phase==='FINISHED')add('result',100,Math.max(0,players.findIndex(p=>f.winnerId?p.id===f.winnerId:p.name===f.winner)),3000,f.winner==='Empate'?'surprise':'joy');
+  const rank=e.performance?.rankingChangedAt||0;if(rank!==lastRank&&rank<=at&&at-rank<4000){add('community',80,Math.max(0,players.findIndex(p=>p.participantId===e.performance?.championCue?.participantId)),3200,'joy');}
   if(voice?.role==='music'&&voice.level>.02)add('music',90,0,Math.max(200,Math.min(20000,(voice.durationMs||6000)-(voice.elapsedMs||0))),'joy');
   if(voice?.level>.08&&['host','chant'].includes(voice.role))add('speech',50,0,3000,voice.role==='chant'?'joy':'surprise');
   candidates.sort((a,b)=>b.priority-a.priority);
@@ -30,7 +30,8 @@ export function createDirector(){
   if(fresh){shot='Tactical';shotAt=at;protagonist=0;}
   const alive=players.map((p,i)=>({p,i})).filter(v=>v.p.alive);
   const leader=alive.sort((a,b)=>b.p.score-a.p.score||a.i-b.i)[0]?.i??0;
-  const desiredPlayer=cue?.player??leader,interest=cue?.priority??(players[leader]?.target?20:10);
+  const roaming=players.length>2?alive[Math.floor((at-started)/12000)%Math.max(1,alive.length)]?.i:leader;
+  const desiredPlayer=cue?.player??roaming??leader,interest=cue?.priority??(players[leader]?.target?20:10);
   let desiredShot=mode==='Overview'?'Tactical':mode==='Celebration'||mode==='Close-up'?'Front':mode==='Action'?'Action':'Follow';
   const head=players[desiredPlayer]?.body?.[0],nearby=head&&(f.obstacles||[]).some(o=>Math.hypot(o.x-head.x,o.y-head.y)<3.5);
   if(desiredShot==='Follow'&&nearby)desiredShot='Action';
