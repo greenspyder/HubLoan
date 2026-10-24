@@ -1,7 +1,7 @@
 // Presentation only, serialized into the existing isolated renderer.
 export function createCameraRig(T,camera){
  const aim=new T.Vector3(),heading=new T.Vector3(1,0,0),desired=new T.Vector3(),goal=new T.Vector3();
- let initialized=false,lastRound=null,lastPlayer=null,previousAt=null;
+ let occlusionSide=1;let initialized=false,lastRound=null,lastPlayer=null,previousAt=null;
  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
  return {update(f,d,at){
   const dt=previousAt===null?0:clamp((at-previousAt)/1000,0,.25);previousAt=at;
@@ -18,11 +18,25 @@ export function createCameraRig(T,camera){
   else if(mode==='Front'){goal.copy(head).addScaledVector(heading,-.3);goal.y=1;desired.copy(head).addScaledVector(heading,7.5).addScaledVector(side,1.4);desired.y=4.4;}
   else if(mode==='Action'){goal.copy(head).lerp(localGoal,.3);goal.y=.6;desired.copy(head).addScaledVector(side,9).addScaledVector(heading,2);desired.y=7.5;}
   else{goal.copy(head).lerp(localGoal,.25).addScaledVector(heading,1.4);goal.y=.4;desired.copy(head).addScaledVector(heading,-9).addScaledVector(side,1.5);desired.y=8;}
+  // Conservative line-of-sight probes against bodies, independent of game physics.
+  // The attached neck is excluded; it must not be mistaken for an obstruction.
+  const blockers=f.players.flatMap((snake,i)=>snake.body.slice(i===index?3:0).map(b=>new T.Vector3(b.x-7.5,.65,b.y-11.5)));
+  const blocked=position=>{const ray=position.clone().sub(head),length=ray.lengthSq();return blockers.some(b=>{const u=b.clone().sub(head).dot(ray)/Math.max(.001,length);return u>.09&&u<.96&&b.distanceTo(head.clone().addScaledVector(ray,u))<.85;});};
+  let occlusionCorrected=false;
+  if(mode!=='Tactical'&&blocked(desired)){
+   const original=desired.clone();
+   for(const offset of [occlusionSide*3,-occlusionSide*3,occlusionSide*5]){
+    desired.copy(original).addScaledVector(side,offset);desired.y+=2;
+    if(!blocked(desired)){occlusionSide=Math.sign(offset);occlusionCorrected=true;break;}
+   }
+   if(blocked(desired)){desired.copy(head).addScaledVector(side,7);desired.y=11;occlusionCorrected=true;}
+  }
   desired.y=Math.max(3.2,desired.y);
   for(const rock of f.obstacles||[]){const r=new T.Vector3(rock.x-7.5,.4,rock.y-11.5);if(r.distanceTo(desired)<2)desired.y=Math.max(desired.y,4.5);}
   const ease=1-Math.exp(-dt*4);
   if(reset){camera.position.copy(desired);aim.copy(goal);}else{camera.position.lerp(desired,ease);aim.lerp(goal,ease);}
   if(mode!=='Tactical')aim.lerp(head,1-Math.exp(-dt*8));
+  if(mode!=='Tactical'&&blocked(camera.position)){camera.position.y=Math.max(camera.position.y,desired.y+1);occlusionCorrected=true;}
   camera.lookAt(aim);camera.updateMatrixWorld();
   const anchors=mode==='Tactical'?f.players.flatMap(p=>p.body).concat(f.food||[]).map(v=>new T.Vector3(v.x-7.5,1.3,v.y-11.5)):[head.clone().add(new T.Vector3(0,1.3,0)),head.clone().add(new T.Vector3(0,-.6,0))];
   if(mode==='Follow')anchors.push(localGoal);
@@ -31,6 +45,6 @@ export function createCameraRig(T,camera){
   for(;fit<24;fit++){camera.updateMatrixWorld();if(safe.every(v=>{const q=v.clone().project(camera);return q.z>-1&&q.z<1&&Math.abs(q.x)<(mode==='Tactical'?.90:.8)&&q.y>(mode==='Tactical'?-.55:-.42)&&q.y<.64;}))break;camera.position.sub(aim).multiplyScalar(1.08).add(aim);camera.lookAt(aim);}
   if(fit===24){mode='Tactical';fallback='UNSAFE_FRAMING';camera.position.set(0,42,40);aim.set(0,0,0);camera.lookAt(aim);}
   camera.updateMatrixWorld();initialized=true;lastRound=f.round;lastPlayer=p.id;
-  return {shot:mode,fallback,player:index,focus:aim.toArray(),camera:camera.position.toArray(),anchors:anchors.map(v=>v.clone().project(camera).toArray()),arenaCorners:corners.map(v=>v.clone().project(camera).toArray()),head:head.clone().project(camera).toArray(),cut:reset};
+  return {shot:mode,occlusionCorrected,fallback,player:index,focus:aim.toArray(),camera:camera.position.toArray(),anchors:anchors.map(v=>v.clone().project(camera).toArray()),arenaCorners:corners.map(v=>v.clone().project(camera).toArray()),head:head.clone().project(camera).toArray(),cut:reset};
  }};
 }
