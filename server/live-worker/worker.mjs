@@ -54,7 +54,7 @@ async function encodeWorker(c,{transmit=false,output='live-preview.mp4',seconds=
   const kill=setTimeout(()=>encoder.kill('SIGKILL'),3000);await exited;clearTimeout(kill);
   status=failed||exitCode!==0?'ERROR':'STOPPED';try{await heartbeat();}catch{/* revocation/backend outage; no secret logged */}
  }
- const usage=process.cpuUsage(cpu);const report={preparationMs,failureReason,heartbeatIntervalMs:750,stages,codecTimingNote:"Pipe timing includes backpressure, not isolated H264/AAC codec time. GPU submit is not GPU completion.",direction:director.counts,status,profile,fps,maxRenderMs,lateFrames,maxPipelineLagMs,frames,bytes,durationMs:Date.now()-started,renderedFrames:frame,rssBytes:process.memoryUsage().rss,rendererCpuMs:(usage.user+usage.system)/1000,encoderCpuMs:null,networkBytes:null,publicTransmission:'UNCONFIRMED',audio:mixer.metrics,aiCalls:0};
+ const usage=process.cpuUsage(cpu);const report={preparationMs,failureReason,heartbeatIntervalMs:750,stages,codecTimingNote:"Pipe timing includes backpressure, not isolated H264/AAC codec time. GPU submit is not GPU completion.",direction:director.counts,cameraCuts:director.shots,status,profile,fps,maxRenderMs,lateFrames,maxPipelineLagMs,frames,bytes,durationMs:Date.now()-started,renderedFrames:frame,rssBytes:process.memoryUsage().rss,rendererCpuMs:(usage.user+usage.system)/1000,encoderCpuMs:null,networkBytes:null,publicTransmission:'UNCONFIRMED',audio:mixer.metrics,aiCalls:0};
  if(status==='ERROR')throw Object.assign(new Error('Encoder interrompido. Revise destino, FFmpeg, backend e autorização. Não houve confirmação pública.'),{report});
  return report;
 }
