@@ -1,0 +1,65 @@
+{
+  "provenance": "Summary recovered from actual tool outputs after workspace cleanup; not a replacement for lost raw logs.",
+  "testedProductionCommit": "0ec1fdad8c0e7f81fc1d105370860f7c775a5f6f",
+  "video": {
+    "file": "Lume-4.7-186s.mp4",
+    "sha256": "0ee7e4e0fdc93cb3330a94d97a1fdebfcc9481abbcc25dd87119e40257b7edcb",
+    "durationSeconds": 186.026167,
+    "width": 360,
+    "height": 640,
+    "fps": 15,
+    "decodedFrames": 2790,
+    "distinctFrames": 2790,
+    "identicalAdjacent": 0
+  },
+  "tests": {
+    "backend": {
+      "total": 207,
+      "passed": 206,
+      "failed": 0,
+      "skipped": 1,
+      "skip": "optional Piper"
+    },
+    "frontendBuild": "passed; existing >500kB chunk warning",
+    "moduleLint": "passed",
+    "rtmp186Seconds": "passed with final production code"
+  },
+  "runtime": {
+    "lateFrames": 26,
+    "maxPipelineLagMs": 249.66666666666424,
+    "nodeRssBytes": 340647936,
+    "neuralSyntheses": 23,
+    "ttsFailures": 0,
+    "musicFailures": 0,
+    "fallback": 0
+  },
+  "latency": {
+    "firstSpeech": {
+      "meanMs": 2191.764705882353,
+      "p95Ms": 4259,
+      "maxMs": 4259
+    },
+    "firstEffect": {
+      "meanMs": 501.3333333333333,
+      "maxMs": 703
+    },
+    "firstMusic": {
+      "meanMs": 6923.333333333333,
+      "maxMs": 8220
+    },
+    "complete": {
+      "meanMs": 7105.041748046875,
+      "maxMs": 16902.666748046875
+    }
+  },
+  "cameraFramesIncludingPreparation": {
+    "Tactical": 358,
+    "Action": 690,
+    "Front": 1024,
+    "Follow": 719
+  },
+  "auditoryReview": "NOT_PERFORMED",
+  "artisticApproval": "PENDING",
+  "paidApiCalls": 0,
+  "publicTransmission": "UNCONFIRMED"
+}
