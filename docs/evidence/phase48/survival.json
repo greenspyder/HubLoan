@@ -1,0 +1,663 @@
+{
+  "method": "Deterministic simulation; one 15-minute trajectory per participant count, not random trials or wall-clock audiovisual performance.",
+  "reports": [
+    {
+      "participants": 2,
+      "simulatedMs": 900000,
+      "roundLimitMs": 75000,
+      "completedRounds": 13,
+      "rounds": [
+        {
+          "round": 1,
+          "durationMs": 65200,
+          "winner": "Bot 0",
+          "winnerId": "0",
+          "participantId": null,
+          "aliveCount": 1,
+          "scores": [
+            30,
+            27
+          ],
+          "at": 66200
+        },
+        {
+          "round": 2,
+          "durationMs": 75000,
+          "winner": "Bot 0",
+          "winnerId": "0",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            31,
+            27
+          ],
+          "at": 144200
+        },
+        {
+          "round": 3,
+          "durationMs": 33400,
+          "winner": "Bot 1",
+          "winnerId": "1",
+          "participantId": null,
+          "aliveCount": 1,
+          "scores": [
+            18,
+            18
+          ],
+          "at": 180600
+        },
+        {
+          "round": 4,
+          "durationMs": 63000,
+          "winner": "Bot 1",
+          "winnerId": "1",
+          "participantId": null,
+          "aliveCount": 1,
+          "scores": [
+            19,
+            21
+          ],
+          "at": 246600
+        },
+        {
+          "round": 5,
+          "durationMs": 75000,
+          "winner": "Bot 1",
+          "winnerId": "1",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            26,
+            30
+          ],
+          "at": 324600
+        },
+        {
+          "round": 6,
+          "durationMs": 75000,
+          "winner": "Bot 1",
+          "winnerId": "1",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            20,
+            26
+          ],
+          "at": 402600
+        },
+        {
+          "round": 7,
+          "durationMs": 75000,
+          "winner": "Bot 1",
+          "winnerId": "1",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            9,
+            13
+          ],
+          "at": 480600
+        },
+        {
+          "round": 8,
+          "durationMs": 75000,
+          "winner": "Bot 1",
+          "winnerId": "1",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            30,
+            31
+          ],
+          "at": 558600
+        },
+        {
+          "round": 9,
+          "durationMs": 75000,
+          "winner": "Bot 1",
+          "winnerId": "1",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            23,
+            27
+          ],
+          "at": 636600
+        },
+        {
+          "round": 10,
+          "durationMs": 51800,
+          "winner": "Bot 1",
+          "winnerId": "1",
+          "participantId": null,
+          "aliveCount": 1,
+          "scores": [
+            17,
+            25
+          ],
+          "at": 691400
+        },
+        {
+          "round": 11,
+          "durationMs": 75000,
+          "winner": "Bot 0",
+          "winnerId": "0",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            39,
+            30
+          ],
+          "at": 769400
+        },
+        {
+          "round": 12,
+          "durationMs": 75000,
+          "winner": "Bot 0",
+          "winnerId": "0",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            28,
+            26
+          ],
+          "at": 847400
+        },
+        {
+          "round": 13,
+          "durationMs": 20600,
+          "winner": "Bot 0",
+          "winnerId": "0",
+          "participantId": null,
+          "aliveCount": 1,
+          "scores": [
+            10,
+            10
+          ],
+          "at": 871000
+        }
+      ],
+      "firstEliminationMsByRound": {
+        "1": 65200,
+        "3": 33400,
+        "4": 63000,
+        "10": 51800,
+        "13": 20600
+      },
+      "minMs": 20600,
+      "meanMs": 64153.846153846156,
+      "p95Ms": 75000,
+      "maxMs": 75000
+    },
+    {
+      "participants": 4,
+      "simulatedMs": 900000,
+      "roundLimitMs": 75000,
+      "completedRounds": 14,
+      "rounds": [
+        {
+          "round": 1,
+          "durationMs": 48800,
+          "winner": "Bot 1",
+          "winnerId": "1",
+          "participantId": null,
+          "aliveCount": 1,
+          "scores": [
+            15,
+            24,
+            25,
+            21
+          ],
+          "at": 49800
+        },
+        {
+          "round": 2,
+          "durationMs": 75000,
+          "winner": "Bot 1",
+          "winnerId": "1",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            13,
+            40,
+            27,
+            35
+          ],
+          "at": 127800
+        },
+        {
+          "round": 3,
+          "durationMs": 75000,
+          "winner": "Bot 3",
+          "winnerId": "3",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            10,
+            10,
+            37,
+            40
+          ],
+          "at": 205800
+        },
+        {
+          "round": 4,
+          "durationMs": 47200,
+          "winner": "Bot 2",
+          "winnerId": "2",
+          "participantId": null,
+          "aliveCount": 1,
+          "scores": [
+            15,
+            24,
+            30,
+            25
+          ],
+          "at": 256000
+        },
+        {
+          "round": 5,
+          "durationMs": 74000,
+          "winner": "Bot 1",
+          "winnerId": "1",
+          "participantId": null,
+          "aliveCount": 1,
+          "scores": [
+            13,
+            30,
+            42,
+            18
+          ],
+          "at": 333000
+        },
+        {
+          "round": 6,
+          "durationMs": 36800,
+          "winner": "Bot 2",
+          "winnerId": "2",
+          "participantId": null,
+          "aliveCount": 1,
+          "scores": [
+            13,
+            14,
+            26,
+            8
+          ],
+          "at": 372800
+        },
+        {
+          "round": 7,
+          "durationMs": 52800,
+          "winner": "Bot 1",
+          "winnerId": "1",
+          "participantId": null,
+          "aliveCount": 1,
+          "scores": [
+            39,
+            26,
+            16,
+            19
+          ],
+          "at": 428600
+        },
+        {
+          "round": 8,
+          "durationMs": 42000,
+          "winner": "Bot 1",
+          "winnerId": "1",
+          "participantId": null,
+          "aliveCount": 1,
+          "scores": [
+            30,
+            16,
+            18,
+            11
+          ],
+          "at": 473600
+        },
+        {
+          "round": 9,
+          "durationMs": 75000,
+          "winner": "Bot 1",
+          "winnerId": "1",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            17,
+            46,
+            10,
+            41
+          ],
+          "at": 551600
+        },
+        {
+          "round": 10,
+          "durationMs": 75000,
+          "winner": "Bot 2",
+          "winnerId": "2",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            28,
+            27,
+            38,
+            25
+          ],
+          "at": 629600
+        },
+        {
+          "round": 11,
+          "durationMs": 62600,
+          "winner": "Bot 0",
+          "winnerId": "0",
+          "participantId": null,
+          "aliveCount": 1,
+          "scores": [
+            30,
+            4,
+            49,
+            8
+          ],
+          "at": 695200
+        },
+        {
+          "round": 12,
+          "durationMs": 69000,
+          "winner": "Bot 2",
+          "winnerId": "2",
+          "participantId": null,
+          "aliveCount": 1,
+          "scores": [
+            23,
+            11,
+            38,
+            31
+          ],
+          "at": 767200
+        },
+        {
+          "round": 13,
+          "durationMs": 75000,
+          "winner": "Bot 0",
+          "winnerId": "0",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            47,
+            41,
+            26,
+            15
+          ],
+          "at": 845200
+        },
+        {
+          "round": 14,
+          "durationMs": 34800,
+          "winner": "Bot 1",
+          "winnerId": "1",
+          "participantId": null,
+          "aliveCount": 1,
+          "scores": [
+            16,
+            16,
+            18,
+            16
+          ],
+          "at": 883000
+        }
+      ],
+      "firstEliminationMsByRound": {
+        "1": 21400,
+        "2": 29000,
+        "3": 12200,
+        "4": 29800,
+        "5": 41400,
+        "6": 18200,
+        "7": 25200,
+        "8": 32000,
+        "9": 22000,
+        "10": 52000,
+        "11": 20400,
+        "12": 44000,
+        "13": 36200,
+        "14": 34800,
+        "15": 7000
+      },
+      "minMs": 34800,
+      "meanMs": 60214.28571428572,
+      "p95Ms": 75000,
+      "maxMs": 75000
+    },
+    {
+      "participants": 6,
+      "simulatedMs": 900000,
+      "roundLimitMs": 75000,
+      "completedRounds": 12,
+      "rounds": [
+        {
+          "round": 1,
+          "durationMs": 75000,
+          "winner": "Bot 3",
+          "winnerId": "3",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            8,
+            33,
+            43,
+            42,
+            18,
+            24
+          ],
+          "at": 76000
+        },
+        {
+          "round": 2,
+          "durationMs": 75000,
+          "winner": "Bot 0",
+          "winnerId": "0",
+          "participantId": null,
+          "aliveCount": 3,
+          "scores": [
+            42,
+            7,
+            26,
+            19,
+            21,
+            24
+          ],
+          "at": 154000
+        },
+        {
+          "round": 3,
+          "durationMs": 75000,
+          "winner": "Bot 4",
+          "winnerId": "4",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            17,
+            12,
+            9,
+            34,
+            44,
+            20
+          ],
+          "at": 232000
+        },
+        {
+          "round": 4,
+          "durationMs": 75000,
+          "winner": "Bot 2",
+          "winnerId": "2",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            6,
+            38,
+            41,
+            30,
+            7,
+            10
+          ],
+          "at": 310000
+        },
+        {
+          "round": 5,
+          "durationMs": 75000,
+          "winner": "Bot 3",
+          "winnerId": "3",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            18,
+            2,
+            27,
+            48,
+            38,
+            13
+          ],
+          "at": 388000
+        },
+        {
+          "round": 6,
+          "durationMs": 75000,
+          "winner": "Bot 5",
+          "winnerId": "5",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            12,
+            42,
+            9,
+            1,
+            9,
+            44
+          ],
+          "at": 466000
+        },
+        {
+          "round": 7,
+          "durationMs": 67400,
+          "winner": "Bot 3",
+          "winnerId": "3",
+          "participantId": null,
+          "aliveCount": 1,
+          "scores": [
+            25,
+            18,
+            4,
+            45,
+            9,
+            23
+          ],
+          "at": 536400
+        },
+        {
+          "round": 8,
+          "durationMs": 75000,
+          "winner": "Bot 2",
+          "winnerId": "2",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            24,
+            8,
+            45,
+            37,
+            9,
+            17
+          ],
+          "at": 614400
+        },
+        {
+          "round": 9,
+          "durationMs": 48800,
+          "winner": "Bot 3",
+          "winnerId": "3",
+          "participantId": null,
+          "aliveCount": 1,
+          "scores": [
+            31,
+            21,
+            10,
+            17,
+            4,
+            27
+          ],
+          "at": 666200
+        },
+        {
+          "round": 10,
+          "durationMs": 75000,
+          "winner": "Bot 2",
+          "winnerId": "2",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            7,
+            8,
+            43,
+            44,
+            2,
+            38
+          ],
+          "at": 744200
+        },
+        {
+          "round": 11,
+          "durationMs": 75000,
+          "winner": "Bot 4",
+          "winnerId": "4",
+          "participantId": null,
+          "aliveCount": 2,
+          "scores": [
+            39,
+            18,
+            16,
+            5,
+            43,
+            45
+          ],
+          "at": 822200
+        },
+        {
+          "round": 12,
+          "durationMs": 58200,
+          "winner": "Bot 4",
+          "winnerId": "4",
+          "participantId": null,
+          "aliveCount": 1,
+          "scores": [
+            19,
+            3,
+            19,
+            17,
+            25,
+            25
+          ],
+          "at": 883400
+        }
+      ],
+      "firstEliminationMsByRound": {
+        "1": 14200,
+        "2": 18200,
+        "3": 24800,
+        "4": 8000,
+        "5": 9600,
+        "6": 6200,
+        "7": 4600,
+        "8": 12200,
+        "9": 6600,
+        "10": 7200,
+        "11": 19400,
+        "12": 11400,
+        "13": 11600
+      },
+      "minMs": 48800,
+      "meanMs": 70783.33333333333,
+      "p95Ms": 75000,
+      "maxMs": 75000
+    }
+  ]
+}

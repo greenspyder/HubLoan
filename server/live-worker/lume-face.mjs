@@ -2,6 +2,7 @@
 // Self-contained because the existing isolated WebGL worker serializes this factory.
 export function createLumeFace(T, color, design='jade') {
  const styles={jade:{width:.72,height:.65,muzzle:.59,depth:.79,eye:.245,spread:.38},pearl:{width:.84,height:.61,muzzle:.73,depth:.63,eye:.27,spread:.49},ember:{width:.65,height:.79,muzzle:.47,depth:.88,eye:.27,spread:.36}};
+ Object.assign(styles,{snake:styles.jade,dragon:styles.ember,cat:{...styles.pearl,muzzle:.44},crocodile:{...styles.pearl,muzzle:.75,depth:.88},fox:{...styles.ember,muzzle:.41,spread:.42}});
  const s=styles[design]||styles.jade,g=new T.Group();
  const ball=new T.SphereGeometry(1,24,16),materials=new Map();
  function part(c,parent,x,y,z,sx,sy,sz){if(!materials.has(c))materials.set(c,new T.MeshStandardMaterial({color:c,roughness:.36,metalness:.02}));const m=new T.Mesh(ball,materials.get(c));m.position.set(x,y,z);m.scale.set(sx,sy,sz);parent.add(m);return m;}
@@ -33,6 +34,8 @@ export function createLumeFace(T, color, design='jade') {
  }
  // A swept crown scale gives each silhouette a recognizable profile without hair/eyelashes.
  const crest=part('#a7dfb1',g,0,s.height*.86,-.32,design==='pearl'?.36:.18,.24,design==='ember'?.57:.35);crest.rotation.x=-.45;
+ if(['cat','fox','dragon'].includes(design))for(const sign of [-1,1]){const ear=part(design==='dragon'?'#f2d5a2':color,g,sign*.46,.79,-.1,.14,design==='fox'?.42:.30,.17);ear.rotation.z=-sign*.25;}
+ if(design==='crocodile')for(let i=0;i<3;i++)part('#e2e7b6',g,(i-1)*.32,.61,-.4,.11,.14,.18);
  let last=null,open=0,expression='neutral';const pose=[0,0,0];
  const states={suspicious:[-.14,.19,.035],determined:[-.16,-.23,.02],proud:[.10,-.16,.08],confused:[-.05,.24,.07],frustrated:[-.18,-.20,.04],neutral:[0,0,0],happy:[.14,-.10,.12],joy:[.14,-.10,.12],surprise:[.28,.20,.30],irritated:[-.18,-.28,.04],confident:[-.08,-.10,.04],teasing:[-.12,.16,.09],sad:[-.09,.25,.04],celebrating:[.22,-.12,.22],fear:[.20,.28,.22],focused:[-.12,-.16,0],laughing:[.10,-.18,.32]};
  return {g,skull,eyes,pupils,mouth,tongue,jaw,design,animate(at,level,joy,sad,emotion='neutral',gaze=0){

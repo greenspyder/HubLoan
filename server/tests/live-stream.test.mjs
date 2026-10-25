@@ -50,8 +50,8 @@ test('real FFmpeg RTMP receiver receives continuous H264 + AAC, and encoder fail
  const listener=createServer();await new Promise(r=>listener.listen(0,'127.0.0.1',r));const port=listener.address().port;await new Promise(r=>listener.close(r));
  const destination=`rtmp://127.0.0.1:${port}/live/controlled-test`,output=join(dir,'received.flv');
  const receiver=spawn('ffmpeg',['-hide_banner','-loglevel','error','-y','-listen','1','-i',destination,'-c','copy',output],{stdio:['ignore','ignore','pipe']});let receiverLog='';receiver.stderr.on('data',b=>receiverLog+=b);const reception=new Promise(r=>receiver.once('close',r));t.after(()=>receiver.kill('SIGKILL'));await wait(500);
- const report=await runWorker({backend,...grant,destination,authorizedDestination:true},{transmit:true,seconds:18});await Promise.race([reception,wait(4000)]);
- assert.ok(report.preparationMs>=0);assert.equal(report.failureReason,null);assert.equal(report.heartbeatIntervalMs,750);assert.ok(report.frames>150,JSON.stringify(report));assert.equal(report.publicTransmission,'UNCONFIRMED');
+ const report=await runWorker({backend,...grant,destination,authorizedDestination:true},{transmit:true,seconds:18,profile:process.env.LIVE_TEST_PROFILE||'light'});await Promise.race([reception,wait(4000)]);
+ assert.ok(report.preparationMs>=0);assert.equal(report.failureReason,null);assert.equal(report.heartbeatIntervalMs,750);assert.ok(report.frames>report.fps*15,JSON.stringify(report));assert.equal(report.publicTransmission,'UNCONFIRMED');
  const probe=JSON.parse(await mediaCommand('ffprobe',['-v','error','-show_streams','-show_format','-of','json',output]));assert.ok(probe.streams.some(s=>s.codec_name==='h264'&&s.width===360&&s.height===640));assert.ok(probe.streams.some(s=>s.codec_name==='aac'));assert.ok(Number(probe.format.duration)>=15);
  await mediaCommand('ffmpeg',['-v','error','-threads','1','-i',output,'-f','null','-']);
  const hashes=await mediaCommand('ffmpeg',['-v','error','-i',output,'-map','0:v','-frames:v','120','-f','framemd5','-']);assert.ok(new Set(hashes.split('\n').filter(x=>!x.startsWith('#')).map(x=>x.split(',').at(-1))).size>5,'received frames must change');
