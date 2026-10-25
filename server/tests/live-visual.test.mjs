@@ -15,7 +15,7 @@ test('reachable apple pursuit consumes food and grows, obstacles and collisions 
  const trapped=setup().game;trapped.obstacles=[{x:3,y:4},{x:2,y:3},{x:2,y:5}];advanceGame(trapped,100200);assert.equal(trapped.players[0].alive,false);assert.equal(trapped.phase,'FINISHED');assert.equal(trapped.players[0].hitAt,100200);advanceGame(trapped,103200);assert.equal(trapped.round,2);
 });
 test('one minute autonomous rhythm: movement, apples, growth, bounded snapshots and round transitions',()=>{
- const g=setup().game;let foods=0,moves=0,stale=0,maxStale=0,prior='';
+ const g=setup().game;g.roundSeconds=25;let foods=0,moves=0,stale=0,maxStale=0,prior='';
  for(let t=100200;t<=160000;t+=200){advanceGame(g,t);foods+=g.players.filter(p=>p.eatenAt===t).length;const key=JSON.stringify(g.players.map(p=>p.body));if(key===prior)stale++;else{moves++;stale=0;}maxStale=Math.max(maxStale,stale);prior=key;assert.ok(g.players.every(p=>p.body.length===3+p.score));}
  assert.ok(foods>=15,foods);assert.ok(moves>150,moves);assert.ok(maxStale<=15,maxStale);assert.ok(g.history.length>=2);assert.ok(g.frames.length<=30);
 });

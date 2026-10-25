@@ -24,3 +24,17 @@ test('gifts/rank metadata cannot change scores or commands; identity is isolated
  const a=createGame(config(6),1000),b=createGame(config(6),1000),state=JSON.stringify(a.players.map(({rank,...p})=>p));syncChampions(a,top(),1000);assert.equal(JSON.stringify(a.players.map(({rank,...p})=>p)),state);assert.deepEqual(b.identities,{});assert.deepEqual(a.ranking,[0,0,0,0,0,0]);
  assert.throws(()=>gameConfig({...config(6),names:Array(7).fill('bot')}));assert.throws(()=>gameConfig({...config(6),champions:'true'}));
 });
+
+test('runtime associates deduplicated gifts with actors and rejects foreign sessions',async()=>{
+ const {initialWorkspace}=await import('../domain.mjs'),{liveAction,advanceLive}=await import('../live-factory.mjs'),{performanceDefaults}=await import('../live-performance.mjs');
+ const w=initialWorkspace();liveAction(w,'create',{},100000);const e=w.liveFactory.experiences[0];liveAction(w,'performance-configure',{id:e.id,version:1,config:{...performanceDefaults(),enabled:true}},100000);liveAction(w,'game-configure',{id:e.id,version:2,config:{...config(6),roundSeconds:15}},100000);liveAction(w,'start',{id:e.id},100000);advanceLive(w,'test',100000);
+ const event=(i,at)=>({id:e.id,sessionId:e.sessionId,eventId:'champion-'+at,at,source:'SIMULATED_OPERATOR',participantId:'demo-person'+i,name:'Pessoa '+i,type:'gift',quantity:1,gift:'rosa'});
+ for(let i=0;i<6;i++){const at=101000+i*1000;liveAction(w,'performance-event',event(i,at),at);advanceLive(w,'test',at);}
+ for(let at=106200;at<=119000;at+=200)advanceLive(w,'test',at);
+ assert.equal(e.game.players.filter(p=>p.participantId).length,6);
+ const identity=e.game.players.find(p=>p.participantId==='demo-person0').id;
+ const ev=event(0,120000);liveAction(w,'performance-event',ev,120000);advanceLive(w,'test',120000);const actor=e.game.players.find(p=>p.id===identity);assert.equal(actor.giftKind,'rose');assert.equal(actor.giftAt,120000);
+ liveAction(w,'performance-event',ev,120000);advanceLive(w,'test',120000);assert.equal(e.performance.top.find(p=>p.id==='demo-person0').quantity,2);
+ assert.throws(()=>liveAction(initialWorkspace(),'performance-event',ev,120000));assert.throws(()=>liveAction(w,'performance-event',{...ev,eventId:'bad-session',sessionId:'foreign'},120000));
+ liveAction(w,'stop',{id:e.id},121000);liveAction(w,'start',{id:e.id},122000);assert.deepEqual(e.game.identities,{});
+});

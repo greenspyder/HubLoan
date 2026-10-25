@@ -56,7 +56,11 @@ function step(g,at){
   function area(n){const seen=new Set([n.x+16*n.y]),q=[n];for(let i=0;i<q.length;i++)for(const [dx,dy] of dirs){const x=q[i].x+dx,y=q[i].y+dy,k=x+16*y;if(x>=0&&x<16&&y>=0&&y<24&&!blocked.has(k)&&!seen.has(k)){seen.add(k);q.push({x,y});}}return q.length;}
   const scored=options.map(n=>({...n,area:area(n)}));
   const viable=scored.filter(n=>n.area>=Math.min(p.body.length+3,24));
-  const pool=viable.length?viable:scored;
+  const candidates=viable.length?viable:scored;
+  // Prefer open escape routes and avoid predicted congestion beside rival heads.
+  for(const option of candidates){option.exits=dirs.filter(([dx,dy])=>{const x=option.x+dx,y=option.y+dy;return x>=0&&x<16&&y>=0&&y<24&&!blocked.has(x+16*y);}).length;option.risk=g.players.filter(other=>other!==p&&other.alive&&Math.abs(other.body[0].x-option.x)+Math.abs(other.body[0].y-option.y)<=2).length;}
+  const open=candidates.filter(n=>n.exits>=2),space=open.length?open:candidates,minRisk=Math.min(...space.map(n=>n.risk));
+  const pool=space.filter(n=>n.risk===minRisk);
   const n=(p.command!=null?pool.find(n=>n.d===p.command):null)||pool.find(n=>n.d===found?.d)||pool.sort((a,b)=>b.area-a.area||a.d-b.d)[0]||null;
   moves[playerIndex]=n;if(n)reserved.add(n.x+16*n.y);
  }
