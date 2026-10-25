@@ -1,0 +1,16 @@
+{
+  "sourceCommit": "05389f9667263b61a57cc738da2624051c64c50b",
+  "backend": {
+    "passed": 207,
+    "failed": 0,
+    "skipped": 4,
+    "command": "LIVE_TEST_PROFILE=cpu node --test --test-concurrency=1 server/tests/*.test.mjs",
+    "rtmpProfile": "360x640 at 8 FPS; existing cpu profile"
+  },
+  "frontendBuild": "PASS; bundle-size warning remains",
+  "frontendLint": "PASS",
+  "backendSyntax": "PASS",
+  "sixMinuteCapture": "NOT_VALIDATED",
+  "artisticApproval": "PENDING",
+  "auditoryReview": "NOT_PERFORMED"
+}
