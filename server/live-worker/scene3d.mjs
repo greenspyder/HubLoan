@@ -1,6 +1,6 @@
 // Browser-side presentation only. Receives interpolated snapshots, never advances the game.
 // Procedural original meshes; no external assets, fetch, clocks or autonomous render loop.
-export function bootScene3D(T,width=360,height=640,createFace,design='jade',createRig) {
+export function bootScene3D(T,width=360,height=640,createFace,design='jade',createRig,encodePixels) {
  const rgb=new Uint8Array(width*height*3);
  const renderer=new T.WebGLRenderer({antialias:false,alpha:false,preserveDrawingBuffer:true,powerPreference:'low-power'});
  renderer.setSize(width,height);renderer.setPixelRatio(1);renderer.outputColorSpace=T.SRGBColorSpace;renderer.setClearColor('#163940');
@@ -91,7 +91,7 @@ const eat=at-v.eatenAt,giftAge=at-(v.giftAt||0),giftActive=giftAge>=0&&giftAge<1
   label(paused?'PAUSADO':'PERSONAGENS VIRTUAIS • INTERAÇÕES SIMULADAS',180,631,9,'#b8d8d7','center');ctx.restore();
   lastPresentation={...framing,cameraMode,cue:currentDirection?.cue?.kind||null,mouth:music&&!vocal?0:voice?.level||0,presenterVisible:portrait.g.visible,face:portrait.inspect(),headScale:snakes[0].head.g.scale.x,round:f.round,camera:camera.position.toArray(),bodyLengths:f.players.map(v=>v.body.length),avatarCount:(p?.top||[]).filter((_,i)=>audience[i].g.visible).length};
   const overlaid=performance.now(),data=ctx.getImageData(0,0,width,height).data,readback=performance.now();for(let i=0,j=0;i<data.length;i+=4){rgb[j++]=data[i];rgb[j++]=data[i+1];rgb[j++]=data[i+2];}
-  const converted=performance.now();let pixels;if(typeof rgb.toBase64==='function'){pixels=rgb.toBase64();}else{let binary='';for(let i=0;i<rgb.length;i+=32768)binary+=String.fromCharCode(...rgb.subarray(i,i+32768));pixels=btoa(binary);}return {pixels,visual:{shot:framing.shot,occlusionCorrected:framing.occlusionCorrected,pacing:direction.pacing,player:framing.player,fallback:framing.fallback,head:framing.head,camera:framing.camera,round:f.round,phase:f.phase,emotion:direction.emotion,avatarCount:lastPresentation.avatarCount,presenterVisible:portrait.g.visible},timings:{sceneMs:staged-began,threeSubmitMs:rendered-staged,captureMs:captured-rendered,overlayMs:overlaid-captured,readbackMs:readback-overlaid,pixelConversionMs:converted-readback,serializationMs:performance.now()-converted}};
+  const converted=performance.now();const pixels=encodePixels(rgb);return {pixels,visual:{shot:framing.shot,occlusionCorrected:framing.occlusionCorrected,pacing:direction.pacing,player:framing.player,fallback:framing.fallback,head:framing.head,camera:framing.camera,round:f.round,phase:f.phase,emotion:direction.emotion,avatarCount:lastPresentation.avatarCount,presenterVisible:portrait.g.visible},timings:{sceneMs:staged-began,threeSubmitMs:rendered-staged,captureMs:captured-rendered,overlayMs:overlaid-captured,readbackMs:readback-overlaid,pixelConversionMs:converted-readback,serializationMs:performance.now()-converted}};
  }
  return {draw,resources,portrait(designEmotion='neutral',level=0,at=1000){
  const visibility=scene.children.map(o=>[o,o.visible]);for(const o of scene.children)if(!o.isLight&&o!==camera)o.visible=false;

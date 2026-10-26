@@ -1,13 +1,14 @@
-✔ Top6 binds stable identities only at round boundary; rank changes never reset live physics (435.354571ms)
-✔ two/four/six deterministic competitors have safe spawns and sustained complete rounds (872.066339ms)
-✔ gifts/rank metadata cannot change scores or commands; identity is isolated by game/session (0.707521ms)
-✔ runtime associates deduplicated gifts with actors and rejects foreign sessions (58.423728ms)
-✔ survival records individual eliminations independently of round duration and survives persistence (419.034004ms)
-ℹ tests 5
+✔ Top6 binds stable identities only at round boundary; rank changes never reset live physics (407.847168ms)
+✔ two/four/six deterministic competitors have safe spawns and sustained complete rounds (867.943426ms)
+✔ gifts/rank metadata cannot change scores or commands; identity is isolated by game/session (0.789216ms)
+✔ runtime associates deduplicated gifts with actors and rejects foreign sessions (59.209214ms)
+✔ browser RGB transport round-trips every profile without changing pixels (33.049474ms)
+✔ survival records individual eliminations independently of round duration and survives persistence (391.613277ms)
+ℹ tests 6
 ℹ suites 0
-ℹ pass 5
+ℹ pass 6
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 1609.008615
+ℹ duration_ms 1632.763763

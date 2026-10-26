@@ -1,3 +1,4 @@
+import {encodePixels} from './pixels.mjs';
 import {createDirector} from '../live-director.mjs';
 import {rssOf} from './process-usage.mjs';
 import puppeteer from 'puppeteer-core';
@@ -20,7 +21,7 @@ export async function create3DRenderer({width=360,height=640,design='jade',execu
   await page.setRequestInterception(true);page.on('request',r=>r.url().startsWith('data:image/png;base64,')?r.continue():r.abort());
   await page.setContent('<html><body style="margin:0"></body></html>');
   await page.addScriptTag({content:'var exports={};\n'+await readFile(require.resolve('three'),'utf8')+'\nwindow.THREE=exports;'});
-  await page.evaluate((source,face,rig,w,h,d)=>{window.stage=(0,eval)('('+source+')')(window.THREE,w,h,(0,eval)('('+face+')'),d,(0,eval)('('+rig+')'));},bootScene3D.toString(),createLumeFace.toString(),createCameraRig.toString(),width,height,design);
+  await page.evaluate((source,face,rig,encode,w,h,d)=>{window.stage=(0,eval)('('+source+')')(window.THREE,w,h,(0,eval)('('+face+')'),d,(0,eval)('('+rig+')'),(0,eval)('('+encode+')'));},bootScene3D.toString(),createLumeFace.toString(),createCameraRig.toString(),encodePixels.toString(),width,height,design);
   Object.assign(metrics,await page.evaluate(()=>({gpu:window.stage.resources.gpu,nativeBase64:window.stage.resources.nativeBase64})));
   return {metrics,close,async portrait(emotion='neutral',level=0,at=1000){return Buffer.from((await page.evaluate((e,l,t)=>window.stage.portrait(e,l,t),emotion,level,at)).split(',')[1],'base64');},async render(e,at,presentation,direction){
    if(closed||busy)throw Error('Renderer fechado ou ocupado');busy=true;const started=Date.now();let timer;
