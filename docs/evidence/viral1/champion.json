@@ -1,0 +1,431 @@
+{
+  "width": 360,
+  "height": 640,
+  "seconds": 12,
+  "fps": 15,
+  "distinctFrames": 180,
+  "audio": true,
+  "format": "champion",
+  "voiceEngine": "espeak-fallback",
+  "voice": null,
+  "music": [],
+  "renderer": {
+    "engine": "three-webgl2",
+    "width": 360,
+    "height": 640,
+    "frames": 180,
+    "maxFrameMs": 281,
+    "softwareRequested": true,
+    "sandboxDisabled": true,
+    "gpu": "WebKit WebGL",
+    "geometryCount": 40,
+    "textureCount": 1,
+    "timings": {
+      "sceneMs": {
+        "totalMs": 253.49999999965075,
+        "maxMs": 6.199999999953434
+      },
+      "threeSubmitMs": {
+        "totalMs": 309.39999999967404,
+        "maxMs": 105.20000000006985
+      },
+      "captureMs": {
+        "totalMs": 162.30000000062864,
+        "maxMs": 8.900000000023283
+      },
+      "overlayMs": {
+        "totalMs": 201.2000000005355,
+        "maxMs": 21.5
+      },
+      "readbackMs": {
+        "totalMs": 5326.39999999979,
+        "maxMs": 120.59999999997672
+      },
+      "pixelConversionMs": {
+        "totalMs": 234.79999999969732,
+        "maxMs": 12.5
+      },
+      "serializationMs": {
+        "totalMs": 4092.29999999993,
+        "maxMs": 52.10000000009313
+      },
+      "decodeMs": {
+        "totalMs": 13.536183000011079,
+        "maxMs": 0.4867249999952037
+      }
+    },
+    "shots": {
+      "Front": 180
+    },
+    "cameraSamples": [
+      {
+        "at": 100000,
+        "frame": 1,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.024984618957544013,
+          -0.10397914579700664,
+          0.9770466813465276
+        ],
+        "camera": [
+          2,
+          4.4,
+          -6.1
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 101000,
+        "frame": 16,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.0636985876269376,
+          -0.10063492270093173,
+          0.9732277149168198
+        ],
+        "camera": [
+          5.634575231836678,
+          4.4,
+          -6.1
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 102000,
+        "frame": 31,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.23992946428967923,
+          -0.01645044539771141,
+          0.9753481350686279
+        ],
+        "camera": [
+          9.060250236233076,
+          4.4,
+          -5.062336508897252
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 103000,
+        "frame": 46,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.2519019784047866,
+          -0.09259958565176382,
+          0.9700294587432061
+        ],
+        "camera": [
+          -3.740400837081756,
+          4.4,
+          -13.823739002797312
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 104000,
+        "frame": 61,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.24118142142106977,
+          -0.024079336027614674,
+          0.975340553777965
+        ],
+        "camera": [
+          -11.309480626678186,
+          4.4,
+          -10.105842051963394
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 105000,
+        "frame": 76,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.20978341814949322,
+          -0.1208109937741482,
+          0.9672014442143556
+        ],
+        "camera": [
+          1.2043177402460379,
+          4.6845145377415,
+          -4.981293947533281
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 106000,
+        "frame": 91,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 1,
+        "fallback": null,
+        "head": [
+          0.01487579354947869,
+          -0.061385639565865166,
+          0.9770634386676105
+        ],
+        "camera": [
+          -12,
+          4.4,
+          -3.899999999999999
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 107000,
+        "frame": 106,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 1,
+        "fallback": null,
+        "head": [
+          0.2311287166961192,
+          -0.08769033662036223,
+          0.9715254795815919
+        ],
+        "camera": [
+          -10.97195091567246,
+          4.4,
+          4.197944176690857
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 108000,
+        "frame": 121,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 1,
+        "fallback": null,
+        "head": [
+          -0.13313048041691508,
+          -0.1006550951777525,
+          0.9719989403999073
+        ],
+        "camera": [
+          -1.4328737043842068,
+          4.4,
+          8.575210250925332
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 109000,
+        "frame": 136,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 1,
+        "fallback": null,
+        "head": [
+          -0.18998632825475903,
+          -0.07021690302894118,
+          0.9732510932498454
+        ],
+        "camera": [
+          4.096047951464446,
+          4.4,
+          8.401778456012638
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 110000,
+        "frame": 151,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 1,
+        "fallback": null,
+        "head": [
+          -0.2415291175184074,
+          -0.08413904847376434,
+          0.9710769284121527
+        ],
+        "camera": [
+          -6.580220707463651,
+          4.4,
+          13.271674726190795
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 111000,
+        "frame": 166,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 1,
+        "fallback": null,
+        "head": [
+          0.21986710772936907,
+          0.009024642505440777,
+          0.9742500026718013
+        ],
+        "camera": [
+          -9.035098131593466,
+          4.4,
+          15.324386339327424
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      }
+    ],
+    "nativeBase64": false,
+    "browserCpuMs": null,
+    "browserRssBytes": null
+  },
+  "renderMs": {
+    "mean": 68.72703257777773,
+    "p95": 88.19798699999956,
+    "max": 280.6408880000017
+  },
+  "wallMs": 13634,
+  "simulationHistory": [],
+  "mixer": {
+    "playback": [
+      {
+        "text": "Lume ou Faísca?",
+        "role": "host",
+        "createdAt": 100000,
+        "startedAt": 100000,
+        "source": "EDITORIAL_SCRIPT"
+      },
+      {
+        "text": "Escolha sua campeã!",
+        "role": "host",
+        "createdAt": 106000,
+        "startedAt": 106000,
+        "source": "EDITORIAL_SCRIPT"
+      }
+    ],
+    "latency": {
+      "reaction": {
+        "count": 2,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "queue": {
+        "count": 2,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "preloaded": {
+        "count": 2,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "segment": {
+        "count": 2,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "firstSpeech": {
+        "count": 2,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "complete": {
+        "count": 2,
+        "meanMs": 1566.6666666666715,
+        "p95Ms": 1733.333333333343,
+        "maxMs": 1733.333333333343
+      }
+    },
+    "interrupted": 0,
+    "staleDropped": 0,
+    "synthesized": 0,
+    "cacheHits": 2,
+    "ttsFailures": 0,
+    "dropped": 0,
+    "ttsMs": 0,
+    "maxPlaybackLatencyMs": 0,
+    "musicFailures": 0,
+    "ambientFrames": 0,
+    "ambientTransitions": 0,
+    "ambientTrackId": null,
+    "trackPlays": {},
+    "played": {
+      "host": 2,
+      "comment": 0,
+      "chant": 0,
+      "music": 0
+    },
+    "peak": 0.3539470962260131,
+    "aiCalls": 0
+  },
+  "technicalStatus": "TECHNICALLY_VALID",
+  "qualityStatus": "REQUIRES_HUMAN_REVIEW",
+  "providerCalls": 0,
+  "infrastructureCost": "UNKNOWN",
+  "offline": true
+}

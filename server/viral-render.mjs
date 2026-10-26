@@ -19,7 +19,7 @@ export async function renderShort({config,signal,checkpoint=async(_k,_l,_i,run)=
  let renderer,mixer,neural,video,audio;
  try{
   const result=await checkpoint('short-render','Renderizar vídeo 3D offline',[1,config,[...repertoire.assets.values()].map(a=>a.track.hash)],async()=>{
-   let now=100000;const e={sessionId:'offline',status:'TESTING',config:{audio:{muted:false,volume:.8}},performanceConfig:{...performanceDefaults(),enabled:true},performance:{jobs:[],top:[]},game:createGame({template:'seed-snake',names:config.characters,roundSeconds:Math.max(15,config.seconds-3)},now)};
+   let now=100000;const e={offline:true,sessionId:'offline',status:'TESTING',config:{audio:{muted:false,volume:.8}},performanceConfig:{...performanceDefaults(),enabled:true},performance:{jobs:[],top:[]},game:createGame({template:'seed-snake',names:config.characters,roundSeconds:Math.max(15,config.seconds-3)},now)};
    let synthesize=localSpeech,voiceEngine='espeak-fallback';
    if(process.env.HUBLOAN_KOKORO_MODEL){neural=await createNeuralSpeech({engine:'kokoro'});synthesize=neural.synthesize;voiceEngine='kokoro-with-local-fallback';}
    // Finish all voice preparation before rendering; no live queue stalls or stale comments.

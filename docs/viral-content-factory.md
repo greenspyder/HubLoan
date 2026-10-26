@@ -17,3 +17,9 @@ Reproduzir demonstrações: `HUBLOAN_EVIDENCE_DIR=/diretorio node server/tests/f
 ## Revisão obrigatória / pendências
 
 Revisar imagem, áudio, direitos, legendas e alegações do roteiro antes de distribuir. Aprovação técnica não atesta qualidade artística, naturalidade, viralidade ou retenção. Faltam edição de roteiro salvo/versões dedicadas, escolha musical no painel, covers editoriais, edição de highlights e avaliação artística dos três vídeos. Integração Astra/experimentos/distribuição é uma entrega separada. Custos de infraestrutura desconhecidos; chamadas de provedores pagas: zero.
+
+## Capturas técnicas executadas
+
+Três MP4s independentes gerados pelo adaptador operacional, decodificados por FFmpeg: comedy 10s/150 frames distintos, battle 20s/300, champion 12s/180. Todos 360×640 H.264/AAC, eSpeak fallback e efeitos locais, sem trilha aprovada selecionada. Última execução: 12,098s / 21,000s / 13,634s de tempo total, incluindo síntese/captura/codificação. Relatórios por vídeo em docs/evidence/viral1.
+
+Inspeção visual de capa e frames em 7/12/8s: cabeças, frutas e corpos reconhecíveis; fundo ainda simples e expressões procedurais. Corrigida sobreposição do texto de fala com SRT e removido rótulo ao vivo do modo offline. Não houve escuta perceptiva nem avaliação integral contínua; naturalidade e humor não aprovados. Battle é uma captura real, porém ainda não um highlight editado; não há promessa de vitória fabricada no roteiro. Os exemplos não atendem à meta artística final.
