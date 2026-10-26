@@ -52,7 +52,7 @@ export function bootScene3D(T,width=360,height=640,createFace,design='jade',crea
 
   const celebrating=f.phase==='FINISHED';
   for(let i=0;i<6;i++){const s=snakes[i],v=f.players[i];for(const object of [s.head.g,s.body,s.scales,s.shadow])object.visible=!!v;if(!v)continue;
-   const identity=v.participantId?v.archetype:(i?'ember':design);
+   const identity=(v.participantId||direction.editorial)?v.archetype:(i?'ember':design);
    const identityKey=identity+':'+v.color;
    if(s.identity!==identityKey){const geometries=new Set(),materials=new Set();s.head.g.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)materials.add(o.material);});s.head.g.removeFromParent();geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());s.head=face(v.color,identity);scene.add(s.head.g);s.identity=identityKey;}
    s.body.material.color.set(v.color);

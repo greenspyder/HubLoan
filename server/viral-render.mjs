@@ -30,7 +30,7 @@ export async function renderShort({config,signal,checkpoint=async(_k,_l,_i,run)=
    // No procedural bed presented as licensed soundtrack: music only with approved assets.
    e.performanceConfig.music=repertoire.assets.size>0;
    renderer=await create3DRenderer({width,height});video=await open(join(dir,'frames.rgb'),'w');audio=await open(join(dir,'audio.pcm'),'w');
-   const captions=[],hashes=new Set(),timing=[],board=shortStoryboard(config);let next=0,availableAt=0,cover;
+   const captions=[],hashes=new Set(),timing=[],board=shortStoryboard(config);let next=0,availableAt=0,cover,blackRun=0,maxBlackRun=0;
    for(let index=0;index<config.seconds*fps;index++){
     if(signal?.aborted)throw Error('Renderização cancelada');if(Date.now()-started>600000)throw Error('Limite offline de dez minutos excedido');
     const seconds=index/fps;now=100000+seconds*1000;const edit=editorialFrame(recording,timeline,seconds,now);e.game=edit.game;
@@ -42,6 +42,7 @@ export async function renderShort({config,signal,checkpoint=async(_k,_l,_i,run)=
     mixer.observe(e,now);const pcm=mixer.mix(e,now,48000/fps);const presentation=mixer.presentation();
     const direction=edit.direction;
     const before=performance.now(),rgb=await renderer.render(e,now,presentation,direction);timing.push(performance.now()-before);
+    let light=0;for(let j=0;j<rgb.length;j+=96)light+=rgb[j];blackRun=light/(rgb.length/96)<3?blackRun+1:0;maxBlackRun=Math.max(maxBlackRun,blackRun);if(maxBlackRun>fps)throw Error('Quadros pretos por mais de um segundo');
     hashes.add(createHash('sha256').update(rgb).digest('hex'));await video.write(rgb);await audio.write(pcm);
     if(!cover)cover=(await sharp(rgb,{raw:{width,height,channels:3}}).png().toBuffer()).toString('base64');
    }
@@ -54,7 +55,7 @@ export async function renderShort({config,signal,checkpoint=async(_k,_l,_i,run)=
    if(!probe.streams.some(s=>s.codec_name==='h264'&&s.width===width&&s.height===height)||!probe.streams.some(s=>s.codec_name==='aac')||Math.abs(Number(probe.format.duration)-config.seconds)>.2)throw Error('MP4 inválido');
    await mediaCommand('ffmpeg',['-v','error','-i',join(dir,'short.mp4'),'-f','null','-'],{signal});
    timing.sort((a,b)=>a-b);
-   return {base64:bytes.toString('base64'),preview:cover,srt,report:{width,height,seconds:config.seconds,fps,distinctFrames:hashes.size,distinctMediaFps:hashes.size/config.seconds,captionTiming:"word-count estimate inside PCM interval; not forced alignment",audio:true,format:config.format,voiceEngine,voice:neural?.metrics||null,music:[...repertoire.assets.values()].map(a=>({id:a.track.id,hash:a.track.hash})),renderer:renderer.metrics,renderMs:{mean:timing.reduce((a,b)=>a+b,0)/timing.length,p95:timing[Math.ceil(timing.length*.95)-1],max:timing.at(-1)},wallMs:Date.now()-started,timeline,script:config.lines,captions:blocks,simulationHistory:recording.history,mixer:mixer.metrics,technicalStatus:'TECHNICALLY_VALID',qualityStatus:'REQUIRES_HUMAN_REVIEW',providerCalls:0,infrastructureCost:'UNKNOWN',offline:true}};
+   return {base64:bytes.toString('base64'),preview:cover,srt,report:{width,height,seconds:config.seconds,fps,maxBlackRun,distinctFrames:hashes.size,distinctMediaFps:hashes.size/config.seconds,captionTiming:"word-count estimate inside PCM interval; not forced alignment",audio:true,format:config.format,voiceEngine,voice:neural?.metrics||null,music:[...repertoire.assets.values()].map(a=>({id:a.track.id,hash:a.track.hash})),renderer:renderer.metrics,renderMs:{mean:timing.reduce((a,b)=>a+b,0)/timing.length,p95:timing[Math.ceil(timing.length*.95)-1],max:timing.at(-1)},wallMs:Date.now()-started,timeline,script:config.lines,captions:blocks,simulationHistory:recording.history,mixer:mixer.metrics,technicalStatus:'TECHNICALLY_VALID',qualityStatus:'REQUIRES_HUMAN_REVIEW',providerCalls:0,infrastructureCost:'UNKNOWN',offline:true}};
   });return result;
  }finally{await video?.close();await audio?.close();mixer?.close();neural?.close();await renderer?.close();await rm(dir,{recursive:true,force:true});}
 }
