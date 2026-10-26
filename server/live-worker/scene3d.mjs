@@ -52,7 +52,7 @@ export function bootScene3D(T,width=360,height=640,createFace,design='jade',crea
 
   const celebrating=f.phase==='FINISHED';
   for(let i=0;i<6;i++){const s=snakes[i],v=f.players[i];for(const object of [s.head.g,s.body,s.scales,s.shadow])object.visible=!!v;if(!v)continue;
-   const identity=v.participantId?v.archetype:(i?'ember':design);
+   const identity=(v.participantId||direction.editorial)?v.archetype:(i?'ember':design);
    const identityKey=identity+':'+v.color;
    if(s.identity!==identityKey){const geometries=new Set(),materials=new Set();s.head.g.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)materials.add(o.material);});s.head.g.removeFromParent();geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());s.head=face(v.color,identity);scene.add(s.head.g);s.identity=identityKey;}
    s.body.material.color.set(v.color);
@@ -80,8 +80,9 @@ const eat=at-v.eatenAt,giftAge=at-(v.giftAt||0),giftActive=giftAge>=0&&giftAge<1
   const voice=presentation?.role&&presentation.role!=='comment'?presentation:null,chant=voice?.role==='chant'||music;portrait.g.visible=!!voice||direction.cue?.kind==='community';portrait.animate(at,music&&!vocal?0:voice?.level||0,chant||direction.emotion==='joy',direction.emotion==='sad',direction.emotion,(h.x-7.5)*.015);portrait.g.rotation.y=(h.x-7.5)*.035;portrait.g.rotation.z=chant?Math.sin((voice.elapsedMs||0)/210)*(music?.08*musicEnergy:.07):Math.sin(t*2)*.025;portrait.g.position.y=-1.78+(music?Math.sin((voice.elapsedMs||0)/210)*.08*musicEnergy:voice?Math.sin(t*5)*.05:0);
   audience.forEach((a,i)=>{const person=p?.top?.[i];a.g.visible=!!person&&visibility>0;if(!a.g.visible)return;const side=i%2?1:-1;a.g.position.set(-1.45+i*.58,1.4+Math.sin(t*4+i)*.035,-9);a.g.scale.setScalar(visibility*(i===0?.36:.29));a.g.rotation.y=side*-.12;a.crown.visible=i===0;});
   const staged=performance.now();renderer.render(scene,camera);const rendered=performance.now();ctx.drawImage(renderer.domElement,0,0);const captured=performance.now();ctx.save();ctx.scale(width/360,height/640);
-  card(16,16,310,47,'#123740e0');label(`${offline?'LUME • VÍDEO EDITORIAL':'LUME AO VIVO'} • RODADA ${f.round}`,28,35,12,'#b8e7b6');
+  if(!direction.editorial){card(16,16,310,47,'#123740e0');label(`${offline?'LUME • VÍDEO EDITORIAL':'LUME AO VIVO'} • RODADA ${f.round}`,28,35,12,'#b8e7b6');
   label(f.players.length>2?`${f.players.filter(p=>p.alive).length}/${f.players.length} na arena · pontos do jogo`:`${f.players[0].name.slice(0,12)} ${f.players[0].score}  ×  ${f.players[1].score} ${f.players[1].name.slice(0,12)}`,28,54,14);
+  }else{card(22,42,284,46,'#123740c0');label((direction.title||'Lume').slice(0,28),164,70,16,'#fff3cb','center');}
   const labelBoxes=[];for(const [i,actor] of f.players.entries()){if(!actor.participantId)continue;const pos=snakes[i].head.g.position.clone().add(new T.Vector3(0,2.1,0)).project(camera),x=(pos.x+1)*180,y=(1-pos.y)*320;if(pos.z>-1&&pos.z<1&&x>50&&x<310&&y>110&&y<440&&!labelBoxes.some(b=>Math.abs(x-b.x)<100&&Math.abs(y-b.y)<28)){labelBoxes.push({x,y});card(x-49,y-15,98,26,'#123740e0');label(`${actor.rank?'#'+actor.rank+' ':''}${actor.name.slice(0,10)}`,x,y+2,12,'#fff3cb','center');}}
   if(host.participantId){card(16,444,310,24,'#123740e0');label(`${host.rank?'#'+host.rank+' · ':''}${host.name.slice(0,24)} · ${host.score} pontos no jogo`,28,461,13,'#fff3cb');}
   if(ambient){label(`Música: ${ambient.title.slice(0,38)}`,28,80,11,'#c8edb2');label(`${ambient.creator.slice(0,32)} · ${ambient.license.split(' — ')[0].slice(0,20)}`,28,95,11,'#c8edb2');}

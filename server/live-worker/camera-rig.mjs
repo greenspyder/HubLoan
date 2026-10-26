@@ -1,7 +1,7 @@
 // Presentation only, serialized into the existing isolated renderer.
 export function createCameraRig(T,camera){
  const aim=new T.Vector3(),heading=new T.Vector3(1,0,0),desired=new T.Vector3(),goal=new T.Vector3();
- let occlusionSide=1;let initialized=false,lastRound=null,lastPlayer=null,previousAt=null;
+ let occlusionSide=1;let initialized=false,lastRound=null,lastPlayer=null,previousAt=null,lastCut=null;
  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
  return {update(f,d,at){
   const dt=previousAt===null?0:clamp((at-previousAt)/1000,0,.25);previousAt=at;
@@ -9,7 +9,7 @@ export function createCameraRig(T,camera){
   const p=f.players[index]||f.players[0],h=p.body[0],target=p.target||h;
   let mode=d.shot||'Tactical',fallback=null;
   if(index!==d.player){mode='Tactical';fallback='TARGET_LOST';}
-  const reset=!initialized||lastRound!==f.round||lastPlayer!==p.id;
+  const reset=d.cutId!==lastCut||!initialized||lastRound!==f.round||lastPlayer!==p.id;
   const yaw=(p.visualDirection??p.direction??0)*Math.PI/2,forward=new T.Vector3(Math.cos(yaw),0,Math.sin(yaw));
   if(reset)heading.copy(forward);else{heading.lerp(forward,1-Math.exp(-dt*5));if(heading.lengthSq()<.01)heading.copy(forward);heading.normalize();}
   const head=new T.Vector3(h.x-7.5,.7,h.y-11.5),objective=new T.Vector3(target.x-7.5,.5,target.y-11.5);
@@ -44,7 +44,7 @@ export function createCameraRig(T,camera){
   const safe=mode==='Tactical'?anchors.concat(corners):anchors;let fit=0;
   for(;fit<24;fit++){camera.updateMatrixWorld();if(safe.every(v=>{const q=v.clone().project(camera);return q.z>-1&&q.z<1&&Math.abs(q.x)<(mode==='Tactical'?.90:.8)&&q.y>(mode==='Tactical'?-.55:-.42)&&q.y<.64;}))break;camera.position.sub(aim).multiplyScalar(1.08).add(aim);camera.lookAt(aim);}
   if(fit===24){mode='Tactical';fallback='UNSAFE_FRAMING';camera.position.set(0,42,40);aim.set(0,0,0);camera.lookAt(aim);}
-  camera.updateMatrixWorld();initialized=true;lastRound=f.round;lastPlayer=p.id;
+  camera.updateMatrixWorld();initialized=true;lastCut=d.cutId;lastRound=f.round;lastPlayer=p.id;
   return {shot:mode,occlusionCorrected,fallback,player:index,focus:aim.toArray(),camera:camera.position.toArray(),anchors:anchors.map(v=>v.clone().project(camera).toArray()),arenaCorners:corners.map(v=>v.clone().project(camera).toArray()),head:head.clone().project(camera).toArray(),cut:reset};
  }};
 }
