@@ -1,3 +1,5 @@
+import {renderShort} from './viral-render.mjs';
+import {decodeMusic} from './live-worker/repertoire.mjs';
 import { renderVideo } from './video-production.mjs';
 import { REFERENCE_RULES, productionBottleneck } from './market-references.mjs';
 import { factoryContext } from './factories.mjs';
@@ -55,11 +57,13 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
           }
           current.phase = 'Montando MP4 no servidor';
         });
-        const result = await renderVideo({brief:mission.brief, images:mission.videoImages || [], signal:controller.signal, checkpoint});
+        let repertoire={assets:new Map(),failures:0};
+        if(mission.liveShort?.music){const selection=mission.liveShort.music,current=(await store.read(id)).workspace;const e=current.liveFactory?.experiences.find(e=>e.id===selection.experienceId),track=e?.musicCatalog?.find(t=>t.id===selection.trackId&&t.approved&&t.category==='ambient');if(!track)throw new AppError('Música ambiente não aprovada neste espaço.');const bytes=await store.readLiveAudio(`${id}:${e.id}:${track.id}`);repertoire.assets.set(track.id,decodeMusic(bytes,track));}
+        const result = mission.liveShort?await renderShort({config:mission.liveShort,repertoire,signal:controller.signal,checkpoint}):await renderVideo({brief:mission.brief, images:mission.videoImages || [], signal:controller.signal, checkpoint});
         await update(id, mission.id, current => {
           current.artifact = {base64:result.base64,preview:result.preview,mime:'video/mp4',filename:`hubloan-${mission.id}.mp4`};
           current.videoReport = result.report;
-          current.output = '## Vídeo vertical produzido\n\nMP4 H.264, 720×1280, sem áudio. Legendas sincronizadas. Validação técnica concluída; qualidade, direitos do roteiro e divulgação comercial exigem revisão humana. Sem publicação externa. Nenhuma chamada paga; custo de infraestrutura a apurar.\n\n### Legendas SRT\n```srt\n'+result.srt+'\n```';
+          current.output = (mission.liveShort?'## Vídeo 3D offline produzido\n\nMP4 H.264/AAC, 360×640, 15 FPS de saída offline (não comprova transmissão em tempo real). Roteiro editorial e simulação determinística. Voz: '+result.report.voiceEngine+'. Música: '+(result.report.music.length?'catálogo aprovado':'sem trilha')+'. Revisão humana obrigatória.\n\n### Legendas SRT\n```srt\n'+result.srt+'\n```':'## Vídeo vertical produzido\n\nMP4 H.264, 720×1280, sem áudio. Legendas sincronizadas. Validação técnica concluída; qualidade, direitos do roteiro e divulgação comercial exigem revisão humana. Sem publicação externa. Nenhuma chamada paga; custo de infraestrutura a apurar.\n\n### Legendas SRT\n```srt\n'+result.srt+'\n```');
           current.status = 'review'; current.phase = 'Vídeo pronto para revisão humana';
           current.events.push({at:new Date().toISOString(),message:'MP4 validado e preservado no Armazém. Publicação não autorizada.'});
         });

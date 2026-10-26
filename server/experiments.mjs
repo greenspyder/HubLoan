@@ -1,3 +1,4 @@
+import {audienceAction,audienceLearning} from './viral-distribution.mjs';
 import { referenceAction, originalityCurrent } from './market-references.mjs';
 import { commercialAction, marketplaceMetrics, salesChannel } from './commercial.mjs';
 import { validationAction, validationReadiness } from './validation.mjs';
@@ -21,7 +22,8 @@ export function createExperiment(w, input, now = Date.now()) {
   const ids = input.missionIds;
   if (!Array.isArray(ids) || ids.length > 30 || ids.some(id => typeof id !== 'string') || new Set(ids).size !== ids.length) throw new AppError('Seleção de entregas inválida.');
   for (const id of ids) { if (!w.missions.some(m => m.id === id && m.purpose !== 'experiment-preparation')) throw new AppError('Escolha entregas deste espaço, sem kits privados.'); if (w.experiments.some(e => e.missionIds.includes(id))) throw new AppError('Uma entrega só pode pertencer a um experimento.', 409); }
-  const e = { id: randomUUID(), name: text(input.name, 'Nome', 100), hypothesis: text(input.hypothesis, 'Hipótese', 1000), audience: text(input.audience, 'Público', 300), channel: text(input.channel, 'Canal', 200), budgetMinor: integer(input.budgetMinor, 'Orçamento', 1), minSales: integer(input.minSales, 'Meta de vendas', 1, 10000), minNetMinor: integer(input.minNetMinor, 'Meta de resultado'), missionIds: ids, createdAt: new Date(now).toISOString(), endsAt: new Date(now + days * 86400000).toISOString(), costs: [], review: null };
+  const e = { id: randomUUID(), name: text(input.name, 'Nome', 100), hypothesis: text(input.hypothesis, 'Hipótese', 1000), audience: text(input.audience, 'Público', 300), channel: text(input.channel, 'Canal', 200), budgetMinor: integer(input.budgetMinor, 'Orçamento', 1), minSales: input.kind==='audience'?null:integer(input.minSales, 'Meta de vendas', 1, 10000), minNetMinor: input.kind==='audience'?null:integer(input.minNetMinor, 'Meta de resultado'), missionIds: ids, createdAt: new Date(now).toISOString(), endsAt: new Date(now + days * 86400000).toISOString(), costs: [], review: null };
+  if(input.kind==='audience'){if(!ids.length||ids.some(id=>!w.missions.find(m=>m.id===id)?.liveShort)||input.salesChannel)throw new AppError('Selecione vídeos curtos deste espaço.');e.kind='audience';e.audiencePublications=[];e.audienceObservations=[];}
   if(input.projectId) {
     const project=w.autonomy?.projects.find(p=>p.id===input.projectId);
     if(!project) throw new AppError('Projeto não encontrado.',404);
@@ -43,6 +45,8 @@ export function createExperiment(w, input, now = Date.now()) {
 }
 export function experimentAction(w, id, action, input = {}, now = Date.now()) {
   const e = find(w, id);
+  if(e.kind==='audience'&&!['cost','void','review','close'].includes(action)&&!action.startsWith('audience-'))throw new AppError('Use o fluxo de audiência para este experimento.');
+  if(action.startsWith('audience-'))return audienceAction(w,e,action,input,now);
   if (['market-reference','originality-review'].includes(action)) return referenceAction(w,e,action,input,now);
   if (action.startsWith('marketplace-')) return commercialAction(w,e,action,input,now);
   if (action.startsWith('validation-')) return validationAction(w,e,action,input,now);
@@ -70,6 +74,7 @@ export function publicExperiments(w, now = Date.now()) {
     const recommendation = costMinor >= e.budgetMinor ? 'budget' : !costComplete ? 'incomplete' : sales >= e.minSales && balanceMinor >= e.minNetMinor ? 'validated' : ended ? 'stop' : 'observe';
     const { review, ...safe } = e;
     const metrics = { grossMinor, refundedMinor, heldMinor, sales, costMinor, balanceMinor, costComplete, resultMinor: costComplete ? balanceMinor : null, recommendation, budgetRemainingMinor: e.budgetMinor - costMinor };
+    if(e.kind==='audience')return {...safe,ended,audienceLearning:audienceLearning(e),currency:'BRL',metrics:{costMinor,budgetRemainingMinor:e.budgetMinor-costMinor,resultMinor:null,recommendation:'audience-review-required'}};
     return { ...safe, originalityCurrent: originalityCurrent(w,e), reviewedAt: review?.at, currency: 'BRL', ended, metrics, marketplaceMetrics: marketplaceMetrics(e,costComplete,costMinor), validationReadiness: validationReadiness(w,e,metrics,now) };
   });
 }

@@ -31,3 +31,9 @@ A conversão Base64 antiga usava spread/string/btoa em Chromium sem toBase64 nat
 A segunda tentativa ultrapassou dois minutos sem falha observada, mas o arquivo/relatório de encerramento não permaneceu disponível na retomada. **Não há captura de seis minutos validada nesta entrega.** Não declarar estabilidade, ganho final de FPS ou aceite audiovisual a partir dessa tentativa incompleta. A otimização permanece em rascunho para nova medição operacional persistida.
 
 PR B #23 entrega três MP4s offline reais e PR C #24 integra experimentos de audiência. Essas entregas não substituem o aceite RTMP. Acabamento dos personagens, sobrevivência precoce, voz neural e trilha aprovada continuam pendentes de validação nesta fase.
+
+## Resolução de conflitos após #23 e #24
+
+Master cf5dee04 incorpora #23. #24 foi mergeada em codex/viral-content1 (a499afa0), não diretamente em master. Esta atualização da #22 inclui ambos os históricos para preservar os experimentos/distribuição assistida.
+
+Conflito textual em render3d.mjs resolvido combinando offline=true com preparationMs/evaluateWallMs. scene3d.mjs preserva legenda editorial, supressão da caixa de fala duplicada e encodePixels. Sem alteração de watchdog, grants ou limites. Teste WebGL real de dois frames validou live/offline, decodificação RGB e telemetria. Build e lint aprovados. Isso não substitui o aceite audiovisual longo ainda pendente.

@@ -37,6 +37,7 @@ export function mediaCommand(command, args, { signal, timeout = 90000 } = {}) {
     const stop = () => child.kill('SIGKILL');
     const timer = setTimeout(stop, timeout);
     signal?.addEventListener('abort', stop, { once: true });
+    child.stderr.on('data', () => {}); // Drain stderr so a full pipe cannot deadlock FFmpeg.
     child.stdout.on('data', b => { output = (output + b).slice(-32768); });
     const finish = error => { if(settled)return; settled=true; clearTimeout(timer); signal?.removeEventListener('abort',stop); error ? reject(error) : resolve(output); };
     child.on('error', () => finish(new Error('FFmpeg/ffprobe indisponível no servidor.')));

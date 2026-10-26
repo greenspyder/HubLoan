@@ -1,0 +1,385 @@
+{
+  "width": 360,
+  "height": 640,
+  "seconds": 10,
+  "fps": 15,
+  "distinctFrames": 150,
+  "audio": true,
+  "format": "comedy",
+  "voiceEngine": "espeak-fallback",
+  "voice": null,
+  "music": [],
+  "renderer": {
+    "engine": "three-webgl2",
+    "width": 360,
+    "height": 640,
+    "frames": 150,
+    "maxFrameMs": 315,
+    "softwareRequested": true,
+    "sandboxDisabled": true,
+    "gpu": "WebKit WebGL",
+    "geometryCount": 40,
+    "textureCount": 1,
+    "timings": {
+      "sceneMs": {
+        "totalMs": 229.0999999997439,
+        "maxMs": 6.5
+      },
+      "threeSubmitMs": {
+        "totalMs": 309.0000000008149,
+        "maxMs": 122
+      },
+      "captureMs": {
+        "totalMs": 157.79999999899883,
+        "maxMs": 7.900000000023283
+      },
+      "overlayMs": {
+        "totalMs": 232.70000000088476,
+        "maxMs": 26.29999999993015
+      },
+      "readbackMs": {
+        "totalMs": 4665.599999999511,
+        "maxMs": 133.80000000004657
+      },
+      "pixelConversionMs": {
+        "totalMs": 224.2000000011176,
+        "maxMs": 11.70000000006985
+      },
+      "serializationMs": {
+        "totalMs": 3399.9999999996508,
+        "maxMs": 41.59999999997672
+      },
+      "decodeMs": {
+        "totalMs": 17.55021000000272,
+        "maxMs": 4.15371899999991
+      }
+    },
+    "shots": {
+      "Front": 150
+    },
+    "cameraSamples": [
+      {
+        "at": 100000,
+        "frame": 1,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.024984618957544013,
+          -0.10397914579700664,
+          0.9770466813465276
+        ],
+        "camera": [
+          2,
+          4.4,
+          -6.1
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 101000,
+        "frame": 16,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.0636985876269376,
+          -0.10063492270093173,
+          0.9732277149168198
+        ],
+        "camera": [
+          5.634575231836678,
+          4.4,
+          -6.1
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 102000,
+        "frame": 31,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.23992946428967923,
+          -0.01645044539771141,
+          0.9753481350686279
+        ],
+        "camera": [
+          9.060250236233076,
+          4.4,
+          -5.062336508897252
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 103000,
+        "frame": 46,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.2519019784047866,
+          -0.09259958565176382,
+          0.9700294587432061
+        ],
+        "camera": [
+          -3.740400837081756,
+          4.4,
+          -13.823739002797312
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 104000,
+        "frame": 61,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.24118142142106977,
+          -0.024079336027614674,
+          0.975340553777965
+        ],
+        "camera": [
+          -11.309480626678186,
+          4.4,
+          -10.105842051963394
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 105000,
+        "frame": 76,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 1,
+        "fallback": null,
+        "head": [
+          0.01487579354947984,
+          -0.061385639565865444,
+          0.9770634386676105
+        ],
+        "camera": [
+          -2.8999999999999995,
+          4.4,
+          3
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 106000,
+        "frame": 91,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 1,
+        "fallback": null,
+        "head": [
+          -0.12351910649569006,
+          -0.112852839543084,
+          0.9706094110481828
+        ],
+        "camera": [
+          -9.51339025253046,
+          4.4,
+          -0.1263271232997878
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 107000,
+        "frame": 106,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 1,
+        "fallback": null,
+        "head": [
+          0.22552573546764468,
+          -0.08832345296297388,
+          0.9716448189448271
+        ],
+        "camera": [
+          -10.914764128410352,
+          4.4,
+          4.316639176339911
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 108000,
+        "frame": 121,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 1,
+        "fallback": null,
+        "head": [
+          -0.13310813879443065,
+          -0.10059979916364885,
+          0.9720077835252658
+        ],
+        "camera": [
+          -1.4312696277554742,
+          4.4,
+          8.577198570872069
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 109000,
+        "frame": 136,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 1,
+        "fallback": null,
+        "head": [
+          -0.1899849887656832,
+          -0.07021635448605484,
+          0.9732512438962799
+        ],
+        "camera": [
+          4.0960832708808566,
+          4.4,
+          8.401811079182114
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      }
+    ],
+    "nativeBase64": false,
+    "browserCpuMs": null,
+    "browserRssBytes": null
+  },
+  "renderMs": {
+    "mean": 71.56394657999995,
+    "p95": 92.33043199999975,
+    "max": 315.341189
+  },
+  "wallMs": 12098,
+  "simulationHistory": [],
+  "mixer": {
+    "playback": [
+      {
+        "text": "Eu vim pela maçã.",
+        "role": "host",
+        "createdAt": 100000,
+        "startedAt": 100000,
+        "source": "EDITORIAL_SCRIPT"
+      },
+      {
+        "text": "A curva veio por mim!",
+        "role": "host",
+        "createdAt": 105000,
+        "startedAt": 105000,
+        "source": "EDITORIAL_SCRIPT"
+      }
+    ],
+    "latency": {
+      "reaction": {
+        "count": 2,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "queue": {
+        "count": 2,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "preloaded": {
+        "count": 2,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "segment": {
+        "count": 2,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "firstSpeech": {
+        "count": 2,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "complete": {
+        "count": 2,
+        "meanMs": 1600.0000000000073,
+        "p95Ms": 1733.333333333343,
+        "maxMs": 1733.333333333343
+      }
+    },
+    "interrupted": 0,
+    "staleDropped": 0,
+    "synthesized": 0,
+    "cacheHits": 2,
+    "ttsFailures": 0,
+    "dropped": 0,
+    "ttsMs": 0,
+    "maxPlaybackLatencyMs": 0,
+    "musicFailures": 0,
+    "ambientFrames": 0,
+    "ambientTransitions": 0,
+    "ambientTrackId": null,
+    "trackPlays": {},
+    "played": {
+      "host": 2,
+      "comment": 0,
+      "chant": 0,
+      "music": 0
+    },
+    "peak": 0.36379181628205726,
+    "aiCalls": 0
+  },
+  "technicalStatus": "TECHNICALLY_VALID",
+  "qualityStatus": "REQUIRES_HUMAN_REVIEW",
+  "providerCalls": 0,
+  "infrastructureCost": "UNKNOWN",
+  "offline": true
+}

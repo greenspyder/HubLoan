@@ -1,0 +1,652 @@
+{
+  "width": 360,
+  "height": 640,
+  "seconds": 20,
+  "fps": 15,
+  "distinctFrames": 300,
+  "audio": true,
+  "format": "battle",
+  "voiceEngine": "espeak-fallback",
+  "voice": null,
+  "music": [],
+  "renderer": {
+    "engine": "three-webgl2",
+    "width": 360,
+    "height": 640,
+    "frames": 300,
+    "maxFrameMs": 322,
+    "softwareRequested": true,
+    "sandboxDisabled": true,
+    "gpu": "WebKit WebGL",
+    "geometryCount": 40,
+    "textureCount": 1,
+    "timings": {
+      "sceneMs": {
+        "totalMs": 497.300000000163,
+        "maxMs": 7.199999999953434
+      },
+      "threeSubmitMs": {
+        "totalMs": 355.9000000001397,
+        "maxMs": 68.09999999997672
+      },
+      "captureMs": {
+        "totalMs": 268.2000000003027,
+        "maxMs": 5.299999999930151
+      },
+      "overlayMs": {
+        "totalMs": 384.2999999994645,
+        "maxMs": 19
+      },
+      "readbackMs": {
+        "totalMs": 7620.600000000093,
+        "maxMs": 198.20000000006985
+      },
+      "pixelConversionMs": {
+        "totalMs": 379.99999999976717,
+        "maxMs": 11.300000000046566
+      },
+      "serializationMs": {
+        "totalMs": 6689.100000001723,
+        "maxMs": 39.300000000046566
+      },
+      "decodeMs": {
+        "totalMs": 21.377540000043155,
+        "maxMs": 0.631930999999895
+      }
+    },
+    "shots": {
+      "Tactical": 27,
+      "Front": 75,
+      "Follow": 75,
+      "Action": 123
+    },
+    "cameraSamples": [
+      {
+        "at": 100000,
+        "frame": 1,
+        "shot": "Tactical",
+        "occlusionCorrected": false,
+        "pacing": "reaction",
+        "player": 0,
+        "fallback": null,
+        "head": [
+          -0.4209943031444396,
+          0.33085886072547194,
+          0.9968316363158877
+        ],
+        "camera": [
+          0,
+          34.87739750400001,
+          32.651735040000005
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 101000,
+        "frame": 16,
+        "shot": "Tactical",
+        "occlusionCorrected": false,
+        "pacing": "reaction",
+        "player": 0,
+        "fallback": null,
+        "head": [
+          -0.036856863353175964,
+          0.31862335667375113,
+          0.996973467939197
+        ],
+        "camera": [
+          0,
+          36.38428018296659,
+          33.971632277051015
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 102000,
+        "frame": 31,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "pacing": "reaction",
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.06791602003875691,
+          0.051456972875929936,
+          0.9913778300418977
+        ],
+        "camera": [
+          6.5227076750478235,
+          15.408050831823848,
+          7.723313166994115
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 103000,
+        "frame": 46,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "pacing": "exploration",
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.24418505199435384,
+          -0.09891433697636184,
+          0.9699814136241872
+        ],
+        "camera": [
+          -3.7868775502972194,
+          4.601619483904516,
+          -13.589561660375825
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 104000,
+        "frame": 61,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "pacing": "exploration",
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.2411202406087936,
+          -0.024113366292030588,
+          0.9753456614569354
+        ],
+        "camera": [
+          -11.310331877374175,
+          4.403692789660128,
+          -10.10155294432368
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "joy",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 105000,
+        "frame": 76,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "pacing": "exploration",
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.20978538249546963,
+          -0.12080909285838987,
+          0.9672018262469818
+        ],
+        "camera": [
+          1.2043021490456864,
+          4.684582173543408,
+          -4.9812153897865965
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "joy",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 106000,
+        "frame": 91,
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "pacing": "exploration",
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.31695486941929535,
+          -0.08378134626381219,
+          0.967778927791014
+        ],
+        "camera": [
+          -6.322302256818473,
+          4.405212304324792,
+          -12.999064679111118
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 107000,
+        "frame": 106,
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "pacing": "exploration",
+        "player": 1,
+        "fallback": null,
+        "head": [
+          0.019985772205517748,
+          0.00592416491251691,
+          0.98438075899174
+        ],
+        "camera": [
+          -8,
+          8,
+          -9.265928338364635
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 108000,
+        "frame": 121,
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "pacing": "exploration",
+        "player": 1,
+        "fallback": null,
+        "head": [
+          0.06257141004465558,
+          0.005884358940466424,
+          0.9839528225043235
+        ],
+        "camera": [
+          -11.115411965811106,
+          8,
+          -3.301647505023391
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 109000,
+        "frame": 136,
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "pacing": "exploration",
+        "player": 1,
+        "fallback": null,
+        "head": [
+          0.10644432200295761,
+          -0.014044162895603788,
+          0.9838077962631192
+        ],
+        "camera": [
+          -10.530017491927978,
+          8,
+          3.0302174680647678
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "focused",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 110000,
+        "frame": 151,
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "pacing": "tension",
+        "player": 1,
+        "fallback": null,
+        "head": [
+          0.038580311591174796,
+          -0.009230129904223332,
+          0.9854216313542162
+        ],
+        "camera": [
+          -0.32431233203396714,
+          9.387723805055423,
+          -0.8099968407962825
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "fear",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 111000,
+        "frame": 166,
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "pacing": "tension",
+        "player": 1,
+        "fallback": null,
+        "head": [
+          -0.03810403799777242,
+          -0.022106802521510982,
+          0.989598875913795
+        ],
+        "camera": [
+          -0.7510471236094727,
+          12.702782168717935,
+          -2.4879157338035576
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "fear",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 112000,
+        "frame": 181,
+        "shot": "Action",
+        "occlusionCorrected": false,
+        "pacing": "tension",
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.08286119482572131,
+          -0.00013403816826491733,
+          0.9830319952153986
+        ],
+        "camera": [
+          6.734071661635366,
+          7.5,
+          14.5
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "fear",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 113000,
+        "frame": 196,
+        "shot": "Action",
+        "occlusionCorrected": false,
+        "pacing": "exploration",
+        "player": 0,
+        "fallback": null,
+        "head": [
+          -0.06150564617520765,
+          -0.04000590222822615,
+          0.9801340329415148
+        ],
+        "camera": [
+          1.1869352651357867,
+          7.5,
+          12.030380116632918
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "confident",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 114000,
+        "frame": 211,
+        "shot": "Action",
+        "occlusionCorrected": false,
+        "pacing": "tension",
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.17905967154664243,
+          0.02225942626520424,
+          0.9824433705720249
+        ],
+        "camera": [
+          0.29876414659178885,
+          7.5,
+          -1.049763722672619
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 115000,
+        "frame": 226,
+        "shot": "Action",
+        "occlusionCorrected": false,
+        "pacing": "tension",
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.08890265950670181,
+          -0.009382785599182507,
+          0.9822241765103891
+        ],
+        "camera": [
+          9.77682297440951,
+          7.5,
+          0.7697210267343131
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 116000,
+        "frame": 241,
+        "shot": "Action",
+        "occlusionCorrected": false,
+        "pacing": "tension",
+        "player": 0,
+        "fallback": null,
+        "head": [
+          0.09206885763902561,
+          -0.009027046706719213,
+          0.9829351494224481
+        ],
+        "camera": [
+          10.4848868650142,
+          7.5,
+          -3.137937825217978
+        ],
+        "round": 1,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 117000,
+        "frame": 256,
+        "shot": "Action",
+        "occlusionCorrected": false,
+        "pacing": "exploration",
+        "player": 1,
+        "fallback": null,
+        "head": [
+          0.06558553242715513,
+          0.005213932518547817,
+          0.9830333654659204
+        ],
+        "camera": [
+          7.5,
+          7.5,
+          -1.734071661635368
+        ],
+        "round": 1,
+        "phase": "FINISHED",
+        "emotion": "focused",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 118000,
+        "frame": 271,
+        "shot": "Action",
+        "occlusionCorrected": false,
+        "pacing": "reward",
+        "player": 1,
+        "fallback": null,
+        "head": [
+          -0.07881329509829704,
+          0.01314197499907813,
+          0.9831955485136542
+        ],
+        "camera": [
+          7.5,
+          7.5,
+          -2.485971533139867
+        ],
+        "round": 1,
+        "phase": "FINISHED",
+        "emotion": "joy",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 119000,
+        "frame": 286,
+        "shot": "Action",
+        "occlusionCorrected": false,
+        "pacing": "reward",
+        "player": 1,
+        "fallback": null,
+        "head": [
+          -0.07875708419586115,
+          0.013177186268996423,
+          0.9831992057476465
+        ],
+        "camera": [
+          7.5,
+          7.5,
+          -2.499743059666829
+        ],
+        "round": 1,
+        "phase": "FINISHED",
+        "emotion": "joy",
+        "avatarCount": 0,
+        "presenterVisible": false
+      }
+    ],
+    "nativeBase64": false,
+    "browserCpuMs": 1320,
+    "browserRssBytes": null
+  },
+  "renderMs": {
+    "mean": 63.71352485333344,
+    "p95": 80.6215880000018,
+    "max": 322.0403459999998
+  },
+  "wallMs": 21000,
+  "simulationHistory": [
+    {
+      "round": 1,
+      "durationMs": 17000,
+      "winner": "Faísca",
+      "winnerId": "1",
+      "participantId": null,
+      "aliveCount": 2,
+      "scores": [
+        7,
+        12
+      ],
+      "at": 117000
+    }
+  ],
+  "mixer": {
+    "playback": [
+      {
+        "text": "Duas cobras. Uma arena.",
+        "role": "host",
+        "createdAt": 100000,
+        "startedAt": 100000,
+        "source": "EDITORIAL_SCRIPT"
+      },
+      {
+        "text": "Quem acerta a próxima curva?",
+        "role": "host",
+        "createdAt": 110000,
+        "startedAt": 110000,
+        "source": "EDITORIAL_SCRIPT"
+      }
+    ],
+    "latency": {
+      "reaction": {
+        "count": 2,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "queue": {
+        "count": 2,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "preloaded": {
+        "count": 2,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "segment": {
+        "count": 2,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "firstSpeech": {
+        "count": 2,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "complete": {
+        "count": 2,
+        "meanMs": 2133.3333333333358,
+        "p95Ms": 2200,
+        "maxMs": 2200
+      }
+    },
+    "interrupted": 0,
+    "staleDropped": 0,
+    "synthesized": 0,
+    "cacheHits": 2,
+    "ttsFailures": 0,
+    "dropped": 0,
+    "ttsMs": 0,
+    "maxPlaybackLatencyMs": 0,
+    "musicFailures": 0,
+    "ambientFrames": 0,
+    "ambientTransitions": 0,
+    "ambientTrackId": null,
+    "trackPlays": {},
+    "played": {
+      "host": 2,
+      "comment": 0,
+      "chant": 0,
+      "music": 0
+    },
+    "peak": 0.41453202700090136,
+    "aiCalls": 0
+  },
+  "technicalStatus": "TECHNICALLY_VALID",
+  "qualityStatus": "REQUIRES_HUMAN_REVIEW",
+  "providerCalls": 0,
+  "infrastructureCost": "UNKNOWN",
+  "offline": true
+}

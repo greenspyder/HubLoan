@@ -1,0 +1,8 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {shortConfig,shortStoryboard} from '../viral-content.mjs';
+import {initialWorkspace,addMission,queueMission} from '../domain.mjs';
+import {executionIntent} from '../execution-checkpoints.mjs';
+const input={format:'comedy',seconds:15,characters:['Lume','Faísca'],lines:['Uma maçã!','Só falta acertar a curva.'],hypothesis:'Humor contextual',audience:'Adultos brasileiros'};
+test('short formats enforce duration, bounded scripts and original character selection',()=>{for(const [format,seconds] of [['comedy',15],['battle',25],['champion',20]])assert.equal(shortConfig({...input,format,seconds}).format,format);for(const patch of [{seconds:90},{format:'unknown'},{characters:['a','a']},{lines:['<script>','Oi']},{lines:['Oi']},{characters:Array(7).fill('a')}])assert.throws(()=>shortConfig({...input,...patch}));assert.equal(shortStoryboard(shortConfig(input))[1].plannedAtSeconds,7.5);});
+test('short production uses existing mission queue, isolates agents and fingerprints configuration',()=>{const w=initialWorkspace(),agent=w.agents.find(a=>a.enabled);const m=addMission(w,{title:'Teste',brief:'Roteiro editorial',agentId:agent.id,kind:'video',liveShort:input});assert.equal(m.status,'draft');assert.equal(m.storyboard.length,2);const old=executionIntent(m);m.liveShort.seconds=20;assert.notEqual(executionIntent(m),old);queueMission(w,m.id);assert.equal(m.status,'queued');assert.throws(()=>addMission(initialWorkspace(),{title:'T',brief:'B',kind:'video',agentId:'foreign',liveShort:input}));assert.equal(w.missions[0].tokens,0);});
