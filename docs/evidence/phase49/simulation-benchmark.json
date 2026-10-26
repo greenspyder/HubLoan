@@ -1,0 +1,38 @@
+[
+  {
+    "trial": 0,
+    "name": "before",
+    "elapsedMs": 912.685108,
+    "steps": 1500
+  },
+  {
+    "trial": 0,
+    "name": "after",
+    "elapsedMs": 592.4500129999999,
+    "steps": 1500
+  },
+  {
+    "trial": 1,
+    "name": "before",
+    "elapsedMs": 767.4010329999999,
+    "steps": 1500
+  },
+  {
+    "trial": 1,
+    "name": "after",
+    "elapsedMs": 487.08044900000004,
+    "steps": 1500
+  },
+  {
+    "trial": 2,
+    "name": "before",
+    "elapsedMs": 817.6180850000001,
+    "steps": 1500
+  },
+  {
+    "trial": 2,
+    "name": "after",
+    "elapsedMs": 475.83812899999975,
+    "steps": 1500
+  }
+]

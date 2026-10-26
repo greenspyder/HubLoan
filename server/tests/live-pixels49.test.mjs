@@ -1,0 +1,2 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {randomBytes} from 'node:crypto';import {encodePixels} from '../live-worker/pixels.mjs';
+test('browser RGB transport round-trips every profile without changing pixels',()=>{for(const size of [0,3,216*384*3,360*640*3,720*1280*3]){const input=new Uint8Array(randomBytes(size));input.toBase64=undefined;assert.deepEqual(Buffer.from(encodePixels(input),'base64'),Buffer.from(input));}assert.throws(()=>encodePixels(new Uint8Array(2)));});

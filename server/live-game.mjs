@@ -53,7 +53,8 @@ function step(g,at){
   p.target=found?{x:found.x,y:found.y}:null;
   const options=dirs.map(([dx,dy],d)=>({x:head.x+dx,y:head.y+dy,d})).filter(n=>n.d!==(p.direction+2)%4&&n.x>=0&&n.x<16&&n.y>=0&&n.y<24&&!blocked.has(n.x+16*n.y));
   // If all food is sealed off, seek the largest reachable area instead of oscillating.
-  function area(n){const seen=new Set([n.x+16*n.y]),q=[n];for(let i=0;i<q.length;i++)for(const [dx,dy] of dirs){const x=q[i].x+dx,y=q[i].y+dy,k=x+16*y;if(x>=0&&x<16&&y>=0&&y<24&&!blocked.has(k)&&!seen.has(k)){seen.add(k);q.push({x,y});}}return q.length;}
+  const componentAreas=new Map();
+  function area(n){const key=n.x+16*n.y;if(componentAreas.has(key))return componentAreas.get(key);const seen=new Set([n.x+16*n.y]),q=[n];for(let i=0;i<q.length;i++)for(const [dx,dy] of dirs){const x=q[i].x+dx,y=q[i].y+dy,k=x+16*y;if(x>=0&&x<16&&y>=0&&y<24&&!blocked.has(k)&&!seen.has(k)){seen.add(k);q.push({x,y});}}for(const key of seen)componentAreas.set(key,q.length);return q.length;}
   const scored=options.map(n=>({...n,area:area(n)}));
   const viable=scored.filter(n=>n.area>=Math.min(p.body.length+3,24));
   const candidates=viable.length?viable:scored;
@@ -73,7 +74,7 @@ function step(g,at){
  }
  if(g.players.filter(p=>p.alive).length<2||at-g.roundAt>=g.roundSeconds*1000){
   const sorted=[...g.players].sort((a,b)=>Number(b.alive)-Number(a.alive)||b.score-a.score);g.winner=sorted[0].alive===sorted[1].alive&&sorted[0].score===sorted[1].score?'Empate':sorted[0].name;
-  g.winnerId=g.winner==='Empate'?null:sorted[0].id;g.totalScores||={};g.players.forEach((p,i)=>{g.totalScores[p.id]=(g.totalScores[p.id]||0)+p.score+(p.id===g.winnerId?5:0);g.ranking[i]=g.totalScores[p.id];});g.phase='FINISHED';g.endedAt=at;g.soundAt=at;g.history.push({round:g.round,durationMs:at-g.roundAt,winner:g.winner,winnerId:g.winnerId,participantId:g.winnerId?(sorted[0].participantId||null):null,aliveCount:g.players.filter(p=>p.alive).length,scores:g.players.map(p=>p.score),at});g.history=g.history.slice(-30);
+  g.winnerId=g.winner==='Empate'?null:sorted[0].id;g.totalScores||={};g.players.forEach((p,i)=>{g.totalScores[p.id]=(g.totalScores[p.id]||0)+p.score+(p.id===g.winnerId?5:0);g.ranking[i]=g.totalScores[p.id];});g.phase='FINISHED';g.endedAt=at;g.soundAt=at;g.history.push({round:g.round,durationMs:at-g.roundAt,winner:g.winner,winnerId:g.winnerId,participantId:g.winnerId?(sorted[0].participantId||null):null,aliveCount:g.players.filter(p=>p.alive).length,scores:g.players.map(p=>p.score),survival:g.players.map(p=>({id:p.id,participantId:p.participantId||null,alive:p.alive,survivalMs:(p.alive?at:p.hitAt)-g.roundAt})),at});g.history=g.history.slice(-30);
  }
 }
 export function advanceGame(g,now){
