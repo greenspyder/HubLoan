@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { AppError, missionById } from './domain.mjs';
 export const digest=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
-export function executionIntent(mission) { return digest(['production-v1',mission.title,mission.brief,mission.kind,mission.agentId]); }
+export function executionIntent(mission) { const intent=['production-v1',mission.title,mission.brief,mission.kind,mission.agentId];if(mission.liveShort)intent.push(mission.liveShort);return digest(intent); }
 export function remainingOperations(kind,checkpoints=[]) {
  const required={sprites:['text','text','image','image','image','image','vision'],thumbnail:['text','text','image','vision'],model3d:['text','text'],image:['text','text','image'],text:['text','text','text']}[kind];
  const remaining=[...required];
