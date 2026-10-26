@@ -1,3 +1,4 @@
+import {shortConfig,shortStoryboard} from './viral-content.mjs';
 import { publicLive } from './live-factory.mjs';
 import { publicAffiliates } from './affiliates.mjs';
 import { videoScenes } from './video-production.mjs';
@@ -59,7 +60,7 @@ export function addMission(workspace, body) {
   if (!workspace.agents.some(agent => agent.id === body.agentId && agent.enabled)) throw new AppError('Escolha um agente disponível.');
   if (!['text', 'image', 'thumbnail', 'sprites', 'model3d', 'video'].includes(body.kind)) throw new AppError('Tipo de entrega inválido.');
   const mission = { id: randomUUID(), title: text(body.title, 'Título', 100), brief: text(body.brief, 'Briefing', 6000), agentId: body.agentId, kind: body.kind, status: 'draft', output: '', error: '', phase: 'Pronta para executar', createdAt: new Date().toISOString(), events: [], tokens: 0, images: 0, attempt: 0 };
-  if (body.kind === 'video') { try { videoScenes(mission.brief); } catch(e) { throw new AppError(e.message); } }
+  if (body.kind === 'video') { try { if(body.liveShort){mission.liveShort=shortConfig(body.liveShort);mission.storyboard=shortStoryboard(mission.liveShort);}else videoScenes(mission.brief); } catch(e) { throw new AppError(e.message); } }
   if (body.factoryId) { requireFactoryProduction(workspace, body.factoryId, body.kind); mission.factoryId = body.factoryId; }
   workspace.missions.unshift(mission);
   return mission;

@@ -1,0 +1,10 @@
+✔ short formats enforce duration, bounded scripts and original character selection (1.167238ms)
+✔ short production uses existing mission queue, isolates agents and fingerprints configuration (1.644445ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 202.96269
