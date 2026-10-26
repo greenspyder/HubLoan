@@ -1,0 +1,14 @@
+✔ money is calculated in cents from real in-window payments, with refunds and disputes; test and unrelated sales are excluded (4.503177ms)
+✔ zero-cost review is explicit; fresh production, costs and payments invalidate it, and budget/expiry recommend stopping without claiming enforced spend caps (0.784806ms)
+✔ validation prevents foreign missions, duplicate attribution, private kits, fractional money and invalid costs; linking and closure are explicit (3.500746ms)
+Live runtime: shutdown sem persistência; heartbeat expirará.
+✔ API isolates experiment ledgers, requires owner auth and persists them across store restart (64.953952ms)
+✔ assisted distribution requires approval/version, snapshots do not sum or invent revenue (4.956512ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 388.569191
