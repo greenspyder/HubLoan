@@ -1,0 +1,12 @@
+✔ autonomous presentation comments on real results, respects cooldown, never fills audience (219.058054ms)
+✔ neural unavailable falls back locally, rejects unsafe input and cancels (24.281735ms)
+﹣ real neural pt-BR synthesis, bounded PCM and model reuse (1.325779ms) # SKIP
+✔ real WebGL frames, camera, PCM mouth, game immutable, avatars, bounded geometry and cleanup (7949.916467ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 8969.032975

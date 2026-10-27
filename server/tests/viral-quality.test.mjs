@@ -12,3 +12,10 @@ test('fallback approval is blocked on backend even with human override',()=>{
  m.status='review';m.videoReport={...valid,voice:{neural:0,fallback:2,failures:0}};assert.throws(()=>approveMission(w,m.id,{override:true}),/bloqueada/);assert.equal(m.status,'review');
  m.videoReport=valid;approveMission(w,m.id);assert.equal(m.status,'approved');
 });
+
+import {shortConfig} from '../viral-content.mjs';
+test('AV controls are bounded and neural is the default',()=>{
+ const c={format:'comedy',seconds:15,characters:['Lume','Faísca'],lines:['Oi!','Uma maçã!'],hypothesis:'Teste',audience:'Adultos'};
+ assert.equal(shortConfig(c).voiceMode,'neural');assert.equal(shortConfig({...c,voiceMode:'technical'}).voiceMode,'technical');
+ for(const change of [{voiceMode:'remote-paid'},{headScale:2},{headScale:NaN},{effectsGain:-1},{effectsGain:2}])assert.throws(()=>shortConfig({...c,...change}));
+});

@@ -1,0 +1,140 @@
+[
+  {
+    "format": "comedy",
+    "sha256": "5f6bba5eb57435f4ea2e2641911429dbfe0d7dc00774f7dbca6b860046061855",
+    "duration": "18.000000",
+    "video": [
+      {
+        "codec_name": "h264",
+        "width": 360,
+        "height": 640,
+        "avg_frame_rate": "15/1",
+        "nb_read_frames": "270",
+        "sample_rate": null
+      },
+      {
+        "codec_name": "aac",
+        "width": null,
+        "height": null,
+        "avg_frame_rate": "0/0",
+        "nb_read_frames": "844",
+        "sample_rate": "48000"
+      }
+    ],
+    "distinctFrames": 270,
+    "distinctMediaFps": 15,
+    "wallMs": 59860,
+    "renderMs": {
+      "mean": 130.78752032592587,
+      "p95": 239.68042699999933,
+      "max": 733.9343690000023
+    },
+    "voice": {
+      "engine": "kokoro",
+      "voice": "pf_dora (pt-BR feminina)",
+      "quality": "HUMAN_REVIEW_REQUIRED",
+      "ready": true,
+      "neural": 4,
+      "fallback": 0,
+      "failures": 0,
+      "maxSynthesisMs": 3300
+    },
+    "geometryCount": 35,
+    "audioPeak": 0.26800954028584817,
+    "ambientFrames": 270,
+    "decode": "passed",
+    "blackRun": 0
+  },
+  {
+    "format": "battle",
+    "sha256": "3fe19a5387089a8b1fb59f458e1352b3d891b2874191c81b4455de9a1e4ecf03",
+    "duration": "25.000000",
+    "video": [
+      {
+        "codec_name": "h264",
+        "width": 360,
+        "height": 640,
+        "avg_frame_rate": "15/1",
+        "nb_read_frames": "375",
+        "sample_rate": null
+      },
+      {
+        "codec_name": "aac",
+        "width": null,
+        "height": null,
+        "avg_frame_rate": "0/0",
+        "nb_read_frames": "1172",
+        "sample_rate": "48000"
+      }
+    ],
+    "distinctFrames": 375,
+    "distinctMediaFps": 15,
+    "wallMs": 48307,
+    "renderMs": {
+      "mean": 83.58043519733307,
+      "p95": 137.1940079999913,
+      "max": 754.5330870000034
+    },
+    "voice": {
+      "engine": "kokoro",
+      "voice": "pf_dora (pt-BR feminina)",
+      "quality": "HUMAN_REVIEW_REQUIRED",
+      "ready": true,
+      "neural": 4,
+      "fallback": 0,
+      "failures": 0,
+      "maxSynthesisMs": 2092
+    },
+    "geometryCount": 34,
+    "audioPeak": 0.2716860186404667,
+    "ambientFrames": 375,
+    "decode": "passed",
+    "blackRun": 0
+  },
+  {
+    "format": "champion",
+    "sha256": "6df81d96d588c6f36976f9be9bcd8889c7bc7f92f4c10fbbc4622118f154482e",
+    "duration": "20.000000",
+    "video": [
+      {
+        "codec_name": "h264",
+        "width": 360,
+        "height": 640,
+        "avg_frame_rate": "15/1",
+        "nb_read_frames": "300",
+        "sample_rate": null
+      },
+      {
+        "codec_name": "aac",
+        "width": null,
+        "height": null,
+        "avg_frame_rate": "0/0",
+        "nb_read_frames": "938",
+        "sample_rate": "48000"
+      }
+    ],
+    "distinctFrames": 300,
+    "distinctMediaFps": 15,
+    "wallMs": 43137,
+    "renderMs": {
+      "mean": 93.85372740000021,
+      "p95": 178.78531800000928,
+      "max": 509.9816220000066
+    },
+    "voice": {
+      "engine": "kokoro",
+      "voice": "pf_dora (pt-BR feminina)",
+      "quality": "HUMAN_REVIEW_REQUIRED",
+      "ready": true,
+      "neural": 4,
+      "fallback": 0,
+      "failures": 0,
+      "maxSynthesisMs": 1395
+    },
+    "geometryCount": 32,
+    "audioPeak": 0.3310331491667641,
+    "ambientFrames": 300,
+    "decode": "passed",
+    "blackRun": 0
+  }
+]
