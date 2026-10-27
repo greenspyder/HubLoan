@@ -1,3 +1,4 @@
+import {audiovisualEligibility} from './viral-quality.mjs';
 // Offline adapter for the existing renderer, game, director, speech and PCM mixer.
 // No RTMP session, public destination, generative API or second audiovisual engine.
 import {mkdtemp,open,writeFile,readFile,rm} from 'node:fs/promises';
@@ -18,13 +19,13 @@ export async function renderShort({config,signal,checkpoint=async(_k,_l,_i,run)=
  config=shortConfig(config);const dir=await mkdtemp(join(tmpdir(),'hubloan-short-')),started=Date.now(),width=360,height=640,fps=15;
  let renderer,mixer,neural,video,audio;
  try{
-  const result=await checkpoint('short-render','Renderizar vídeo 3D offline',[2,config,[...repertoire.assets.values()].map(a=>a.track.hash)],async()=>{
+  const result=await checkpoint('short-render','Renderizar vídeo 3D offline',[3,config,[...repertoire.assets.values()].map(a=>a.track.hash)],async()=>{
    const recording=recordGameplay(config),timeline=createEditorial(config,recording);let now=100000;const e={offline:true,sessionId:'offline',status:'TESTING',config:{audio:{muted:false,volume:.8}},performanceConfig:{...performanceDefaults(),enabled:true},performance:{jobs:[],top:[]},game:null};
    let synthesize=localSpeech,voiceEngine='espeak-fallback';
-   if(process.env.HUBLOAN_KOKORO_MODEL){neural=await createNeuralSpeech({engine:'kokoro'});synthesize=neural.synthesize;voiceEngine='kokoro-with-local-fallback';}
+   if(process.env.HUBLOAN_KOKORO_MODEL){neural=await createNeuralSpeech({engine:'kokoro',timeout:20000});synthesize=neural.synthesize;voiceEngine='kokoro-pf_dora';}
    // Finish all voice preparation before rendering; no live queue stalls or stale comments.
    const prepared=new Map(),segments=config.lines.map(text=>({role:'host',voice:'host',text,delivery:'warm'}));
-   for(const segment of segments){if(signal?.aborted)throw Error('Renderização cancelada');const pcm=await synthesize(segment.text,'host',{signal});if(!pcm?.length)throw Error('Narração vazia');prepared.set(segment.text,pcm);}
+   for(const segment of segments){if(signal?.aborted)throw Error('Renderização cancelada');const pcm=await synthesize(segment.text,'host',{signal,delivery:segment.delivery});if(!pcm?.length)throw Error('Narração vazia');prepared.set(segment.text,pcm);}
    const totalSpeech=segments.reduce((n,s)=>n+prepared.get(s.text).length/48000,0);if(totalSpeech>config.seconds-1)throw Error('Falas longas demais para a duração. Encurte o roteiro.');
    mixer=createMixer({clock:()=>now,synthesize:async text=>prepared.get(text)});await mixer.prime(segments);mixer.setRepertoire(repertoire,config.music?.trackId);
    // No procedural bed presented as licensed soundtrack: music only with approved assets.
@@ -56,6 +57,6 @@ export async function renderShort({config,signal,checkpoint=async(_k,_l,_i,run)=
    await mediaCommand('ffmpeg',['-v','error','-i',join(dir,'short.mp4'),'-f','null','-'],{signal});
    timing.sort((a,b)=>a-b);
    return {base64:bytes.toString('base64'),preview:cover,srt,report:{width,height,seconds:config.seconds,fps,maxBlackRun,distinctFrames:hashes.size,distinctMediaFps:hashes.size/config.seconds,captionTiming:"word-count estimate inside PCM interval; not forced alignment",audio:true,format:config.format,voiceEngine,voice:neural?.metrics||null,music:[...repertoire.assets.values()].map(a=>({id:a.track.id,hash:a.track.hash})),renderer:renderer.metrics,renderMs:{mean:timing.reduce((a,b)=>a+b,0)/timing.length,p95:timing[Math.ceil(timing.length*.95)-1],max:timing.at(-1)},wallMs:Date.now()-started,timeline,script:config.lines,captions:blocks,simulationHistory:recording.history,mixer:mixer.metrics,technicalStatus:'TECHNICALLY_VALID',qualityStatus:'REQUIRES_HUMAN_REVIEW',providerCalls:0,infrastructureCost:'UNKNOWN',offline:true}};
-  });return result;
+  });result.report.artisticEligibility=audiovisualEligibility(result.report);return result;
  }finally{await video?.close();await audio?.close();mixer?.close();neural?.close();await renderer?.close();await rm(dir,{recursive:true,force:true});}
 }

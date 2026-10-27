@@ -1,3 +1,4 @@
+import {audiovisualEligibility} from './viral-quality.mjs';
 import {shortConfig,shortStoryboard} from './viral-content.mjs';
 import { publicLive } from './live-factory.mjs';
 import { publicAffiliates } from './affiliates.mjs';
@@ -85,6 +86,7 @@ export function queueMission(workspace, id) {
 export function approveMission(workspace, id, body = {}) {
   const mission = missionById(workspace, id);
   if (mission.status !== 'review') throw new AppError('Somente entregas em revisão podem ser aprovadas.', 409);
+  if (mission.liveShort) {const gate=audiovisualEligibility(mission.videoReport);if(!gate.eligible)throw new AppError('Aprovação audiovisual bloqueada: '+gate.reasons.join(' '),409);}
   if (mission.qualityReview && mission.qualityReview.decision !== 'APPROVE') {
     if (body.override !== true || body.version !== releaseVersion(mission)) throw new AppError('Sentinel não aprovou a qualidade. Corrija os objetos ou justifique uma revisão humana explícita da versão atual.', 409);
     const reason = text(body.reason, 'Justificativa da revisão humana', 2000);
