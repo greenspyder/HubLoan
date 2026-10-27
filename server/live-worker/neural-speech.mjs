@@ -1,11 +1,13 @@
+import {voiceProfile,directedSpeed} from '../lume-voice.mjs';
 import {rssOf} from './process-usage.mjs';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { decodeWav, localSpeech, voiceProfiles } from './speech.mjs';
 
 // Owned by one worker; no HTTP listener, secrets or paid APIs. One request in flight.
-export async function createNeuralSpeech({engine='piper',model=process.env[engine==='kokoro'?'HUBLOAN_KOKORO_MODEL':'HUBLOAN_PIPER_MODEL'],python=process.env[engine==='kokoro'?'HUBLOAN_KOKORO_PYTHON':'HUBLOAN_PIPER_PYTHON']||'python3',timeout=5000,fallback=localSpeech}={}) {
- const metrics={engine,voice:engine==='kokoro'?'pf_dora (pt-BR feminina)':'Faber',quality:'HUMAN_REVIEW_REQUIRED',ready:false,neural:0,fallback:0,failures:0,maxSynthesisMs:0};
+export async function createNeuralSpeech({engine='piper',model=process.env[engine==='kokoro'?'HUBLOAN_KOKORO_MODEL':'HUBLOAN_PIPER_MODEL'],python=process.env[engine==='kokoro'?'HUBLOAN_KOKORO_PYTHON':'HUBLOAN_PIPER_PYTHON']||'python3',timeout=5000,fallback=localSpeech,profile}={}) {
+ const identity=voiceProfile(profile);
+ const metrics={profile:engine==='kokoro'?identity:null,engine,voice:engine==='kokoro'?'pf_dora (pt-BR feminina)':'Faber',quality:'HUMAN_REVIEW_REQUIRED',ready:false,neural:0,fallback:0,failures:0,maxSynthesisMs:0};
  if(!model)throw Error(`Configure ${engine==='kokoro'?'HUBLOAN_KOKORO_MODEL':'HUBLOAN_PIPER_MODEL'} para usar voz neural.`);
  let child,buffer='',pending=null,closed=false,failed=false;
  const fail=()=>{failed=true;metrics.ready=false;pending?.reject(Error('Piper indisponível'));pending=null;};
@@ -22,7 +24,7 @@ export async function createNeuralSpeech({engine='piper',model=process.env[engin
  return {metrics,async inspect(){metrics.rssBytes=await rssOf(child.pid);return metrics;},async synthesize(text,voice='host',{signal,musical=false,delivery='warm'}={}){
   if(typeof text!=='string'||!text.trim()||text.length>200||text.includes('[[')||!voiceProfiles[voice])throw Error('Fala inválida');
   if(closed||signal?.aborted)throw Error('TTS cancelado');const started=Date.now();
-  try{const result=await request(()=>child.stdin.write(JSON.stringify({text,voice,musical,delivery:['warm','wry','excited'].includes(delivery)?delivery:'warm'})+'\n'),timeout,signal);const pcm=decodeWav(Buffer.from(result.wav,'base64'));metrics.neural++;return pcm;}
+  try{const result=await request(()=>child.stdin.write(JSON.stringify({text,voice,musical,speed:directedSpeed(identity,delivery),delivery:['warm','wry','excited'].includes(delivery)?delivery:'warm'})+'\n'),timeout,signal);const pcm=decodeWav(Buffer.from(result.wav,'base64'));metrics.neural++;return pcm;}
   catch{metrics.failures++;if(signal?.aborted||closed)throw Error('TTS cancelado');metrics.fallback++;return await fallback(text,voice,{signal,musical});}
   finally{metrics.maxSynthesisMs=Math.max(metrics.maxSynthesisMs,Date.now()-started);}
  },close(){closed=true;fail();child.kill('SIGKILL');}};

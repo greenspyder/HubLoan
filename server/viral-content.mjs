@@ -1,3 +1,4 @@
+import {voiceProfile} from './lume-voice.mjs';
 // Structured editorial input, not generated claims about audience or game outcomes.
 export const shortFormats={comedy:{name:'Lume Comedy',min:10,max:25},battle:{name:'Snake Battles',min:15,max:40},champion:{name:'Choose Your Champion',min:10,max:30}};
 export function shortConfig(input){
@@ -11,6 +12,6 @@ export function shortConfig(input){
  const music=input.music==null?null:{experienceId:field(input.music.experienceId,40),trackId:field(input.music.trackId,40)};
  const voiceMode=input.voiceMode??'neural';if(!['neural','technical'].includes(voiceMode))throw Error('Modo de voz inválido');
  const headScale=input.headScale??1.08,effectsGain=input.effectsGain??.35;if(!Number.isFinite(headScale)||headScale<.95||headScale>1.15||!Number.isFinite(effectsGain)||effectsGain<0||effectsGain>1)throw Error('Parâmetros audiovisuais inválidos');
- return {version:2,voiceMode,headScale,effectsGain,format:input.format,seconds:input.seconds,characters,lines,hypothesis:field(input.hypothesis,500),audience:field(input.audience,200),music};
+ return {version:2,voiceProfile:voiceProfile(input.voiceProfile),voiceMode,headScale,effectsGain,format:input.format,seconds:input.seconds,characters,lines,hypothesis:field(input.hypothesis,500),audience:field(input.audience,200),music};
 }
 export function shortStoryboard(config){return config.lines.map((text,i)=>({index:i,text,plannedAtSeconds:i*config.seconds/config.lines.length,shot:config.format==='champion'?'Front':i===0?'Tactical':'Follow',character:config.characters[i%config.characters.length]}));}

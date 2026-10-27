@@ -20,7 +20,7 @@ for line in sys.stdin:
         if not isinstance(text,str) or not 0<len(text)<=200 or '[[' in text: raise ValueError()
         parts=[];remaining=24000*8
         with contextlib.redirect_stdout(sys.stderr), torch.no_grad():
-            for result in pipeline(text, voice=voices[r['voice']], speed=({'warm':0.96,'wry':0.98,'excited':1.06}.get(r.get('delivery'),0.96) if r['voice']=='host' else 1)):
+            for result in pipeline(text, voice=voices[r['voice']], speed=(max(.85,min(1.12,float(r.get('speed',.96)))) if r['voice']=='host' else 1)):
                 data=result.audio.detach().cpu().numpy()[:remaining];parts.append(data);remaining-=len(data)
                 if remaining<=0: break
         audio=(np.clip(np.concatenate(parts),-1,1)*32767).astype('<i2');output=io.BytesIO()

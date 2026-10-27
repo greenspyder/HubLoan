@@ -23,9 +23,9 @@ export async function renderShort({config,signal,checkpoint=async(_k,_l,_i,run)=
    const recording=recordGameplay(config),timeline=createEditorial(config,recording);let now=100000;const e={offline:true,sessionId:'offline',status:'TESTING',config:{audio:{muted:false,volume:.8}},performanceConfig:{...performanceDefaults(),effectsGain:config.effectsGain,enabled:true},performance:{jobs:[],top:[]},game:null};
    if(config.voiceMode==='neural'&&!process.env.HUBLOAN_KOKORO_MODEL)throw Error('Configure HUBLOAN_KOKORO_MODEL para renderização artística neural. Modo técnico permite fallback.');
    let synthesize=localSpeech,voiceEngine='espeak-fallback';
-   if(process.env.HUBLOAN_KOKORO_MODEL){neural=await createNeuralSpeech({engine:'kokoro',timeout:20000});synthesize=neural.synthesize;voiceEngine='kokoro-pf_dora';}
+   if(process.env.HUBLOAN_KOKORO_MODEL){neural=await createNeuralSpeech({engine:'kokoro',timeout:20000,profile:config.voiceProfile});synthesize=neural.synthesize;voiceEngine='kokoro-pf_dora';}
    // Finish all voice preparation before rendering; no live queue stalls or stale comments.
-   const prepared=new Map(),segments=config.lines.map(text=>({role:'host',voice:'host',text,delivery:'warm'}));
+   const prepared=new Map(),segments=config.lines.map((text,i)=>({role:'host',voice:'host',text,delivery:(config.format==='battle'?['suspense','mysterious','surprised','playful']:config.format==='comedy'?['calm','playful','mysterious','playful']:['warm','playful','mysterious','warm'])[i%4]}));
    for(const segment of segments){if(signal?.aborted)throw Error('Renderização cancelada');const pcm=await synthesize(segment.text,'host',{signal,delivery:segment.delivery});if(!pcm?.length)throw Error('Narração vazia');prepared.set(segment.text,pcm);}
    if(config.voiceMode==='neural'&&(!neural?.metrics.neural||neural.metrics.fallback||neural.metrics.failures))throw Error('Síntese neural indisponível; aprovação artística bloqueada.');
    if(neural?.metrics.fallback)voiceEngine='kokoro-with-espeak-fallback';

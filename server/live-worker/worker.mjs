@@ -63,13 +63,14 @@ export async function runWorker(c,options={}){
  validateConfig(c,options.transmit);const kind=options.renderer||'svg',voice=options.voice||c.voice||'local';
  if(!['svg','three'].includes(kind)||!['neural','kokoro','local'].includes(voice))throw Error('Renderer/voz inválidos');
  if(['economy','hd'].includes(options.profile)&&kind!=='three')throw Error('Economy/HD requer renderer 3D');
- let stage,speech;
+ let stage,speech,voiceUnavailable=false;
  try{
   if(kind==='three'){const video=videoProfiles[options.profile||'light'];if(!video)throw Error('Perfil inválido');const {create3DRenderer}=await import('./render3d.mjs');stage=await create3DRenderer(video);}
-  if(voice==='neural'||voice==='kokoro'){const {createNeuralSpeech}=await import('./neural-speech.mjs');speech=await createNeuralSpeech({engine:voice==='kokoro'?'kokoro':'piper'});}
+  if(voice==='kokoro'&&!process.env.HUBLOAN_KOKORO_MODEL&&!options.voice){voiceUnavailable=true;}
+  else if(voice==='neural'||voice==='kokoro'){const {createNeuralSpeech}=await import('./neural-speech.mjs');speech=await createNeuralSpeech({engine:voice==='kokoro'?'kokoro':'piper',profile:c.voiceProfile});}
   const report=await encodeWorker(c,{...options,renderFrame:options.renderFrame||stage?.render||render,synthesize:options.synthesize||speech?.synthesize});
-  if(stage)await stage.inspect();if(speech)await speech.inspect();return {...report,renderer:stage?{...stage.metrics}:{engine:'svg-sharp'},speech:speech?{...speech.metrics}:{engine:'espeak-ng'}};
- }catch(error){if(error.report){error.report.renderer=stage?{...stage.metrics}:{engine:'svg-sharp'};error.report.speech=speech?{...speech.metrics}:{engine:'espeak-ng'};}throw error;}finally{speech?.close();await stage?.close();}
+  if(stage)await stage.inspect();if(speech)await speech.inspect();return {...report,renderer:stage?{...stage.metrics}:{engine:'svg-sharp'},speech:speech?{...speech.metrics}:{engine:'espeak-ng',fallbackReason:voiceUnavailable?'GLOBAL_NEURAL_MODEL_UNAVAILABLE':null}};
+ }catch(error){if(error.report){error.report.renderer=stage?{...stage.metrics}:{engine:'svg-sharp'};error.report.speech=speech?{...speech.metrics}:{engine:'espeak-ng',fallbackReason:voiceUnavailable?'GLOBAL_NEURAL_MODEL_UNAVAILABLE':null};}throw error;}finally{speech?.close();await stage?.close();}
 }
 async function main(){
  const args=process.argv.slice(2),file=args[args.indexOf('--config')+1];if(!args.includes('--config'))throw new Error('Use --config arquivo.json [--transmit] [--output previa.mp4] [--seconds 60].');
