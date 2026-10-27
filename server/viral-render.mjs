@@ -20,15 +20,19 @@ export async function renderShort({config,signal,checkpoint=async(_k,_l,_i,run)=
  let renderer,mixer,neural,video,audio;
  try{
   const result=await checkpoint('short-render','Renderizar vídeo 3D offline',[3,config,[...repertoire.assets.values()].map(a=>a.track.hash)],async()=>{
-   const recording=recordGameplay(config),timeline=createEditorial(config,recording);let now=100000;const e={offline:true,sessionId:'offline',status:'TESTING',config:{audio:{muted:false,volume:.8}},performanceConfig:{...performanceDefaults(),enabled:true},performance:{jobs:[],top:[]},game:null};
+   const recording=recordGameplay(config),timeline=createEditorial(config,recording);let now=100000;const e={offline:true,sessionId:'offline',status:'TESTING',config:{audio:{muted:false,volume:.8}},performanceConfig:{...performanceDefaults(),effectsGain:config.effectsGain,enabled:true},performance:{jobs:[],top:[]},game:null};
+   if(config.voiceMode==='neural'&&!process.env.HUBLOAN_KOKORO_MODEL)throw Error('Configure HUBLOAN_KOKORO_MODEL para renderização artística neural. Modo técnico permite fallback.');
    let synthesize=localSpeech,voiceEngine='espeak-fallback';
    if(process.env.HUBLOAN_KOKORO_MODEL){neural=await createNeuralSpeech({engine:'kokoro',timeout:20000});synthesize=neural.synthesize;voiceEngine='kokoro-pf_dora';}
    // Finish all voice preparation before rendering; no live queue stalls or stale comments.
    const prepared=new Map(),segments=config.lines.map(text=>({role:'host',voice:'host',text,delivery:'warm'}));
    for(const segment of segments){if(signal?.aborted)throw Error('Renderização cancelada');const pcm=await synthesize(segment.text,'host',{signal,delivery:segment.delivery});if(!pcm?.length)throw Error('Narração vazia');prepared.set(segment.text,pcm);}
+   if(config.voiceMode==='neural'&&(!neural?.metrics.neural||neural.metrics.fallback||neural.metrics.failures))throw Error('Síntese neural indisponível; aprovação artística bloqueada.');
+   if(neural?.metrics.fallback)voiceEngine='kokoro-with-espeak-fallback';
    const totalSpeech=segments.reduce((n,s)=>n+prepared.get(s.text).length/48000,0);if(totalSpeech>config.seconds-1)throw Error('Falas longas demais para a duração. Encurte o roteiro.');
    mixer=createMixer({clock:()=>now,synthesize:async text=>prepared.get(text)});await mixer.prime(segments);mixer.setRepertoire(repertoire,config.music?.trackId);
    // No procedural bed presented as licensed soundtrack: music only with approved assets.
+   e.musicCatalog=[...repertoire.assets.values()].map(a=>a.track);e.musicAmbientTrackId=config.music?.trackId;
    e.performanceConfig.music=repertoire.assets.size>0;
    renderer=await create3DRenderer({width,height});video=await open(join(dir,'frames.rgb'),'w');audio=await open(join(dir,'audio.pcm'),'w');
    const captions=[],hashes=new Set(),timing=[],board=shortStoryboard(config);let next=0,availableAt=0,cover,blackRun=0,maxBlackRun=0;
@@ -41,7 +45,7 @@ export async function renderShort({config,signal,checkpoint=async(_k,_l,_i,run)=
      e.performance.jobs=[{id:`line-${next}`,sessionId:e.sessionId,createdAt:now,expiresAt:now+6000,priority:3,source:'EDITORIAL_SCRIPT',segments:[segment]}];captions.push({text:segment.text,start:seconds,end:seconds+duration});availableAt=seconds+duration+.15;next++;
     }
     mixer.observe(e,now);const pcm=mixer.mix(e,now,48000/fps);const presentation=mixer.presentation();
-    const direction=edit.direction;
+    const direction={...edit.direction,headScale:config.headScale};
     const before=performance.now(),rgb=await renderer.render(e,now,presentation,direction);timing.push(performance.now()-before);
     let light=0;for(let j=0;j<rgb.length;j+=96)light+=rgb[j];blackRun=light/(rgb.length/96)<3?blackRun+1:0;maxBlackRun=Math.max(maxBlackRun,blackRun);if(maxBlackRun>fps)throw Error('Quadros pretos por mais de um segundo');
     hashes.add(createHash('sha256').update(rgb).digest('hex'));await video.write(rgb);await audio.write(pcm);
@@ -56,7 +60,7 @@ export async function renderShort({config,signal,checkpoint=async(_k,_l,_i,run)=
    if(!probe.streams.some(s=>s.codec_name==='h264'&&s.width===width&&s.height===height)||!probe.streams.some(s=>s.codec_name==='aac')||Math.abs(Number(probe.format.duration)-config.seconds)>.2)throw Error('MP4 inválido');
    await mediaCommand('ffmpeg',['-v','error','-i',join(dir,'short.mp4'),'-f','null','-'],{signal});
    timing.sort((a,b)=>a-b);
-   return {base64:bytes.toString('base64'),preview:cover,srt,report:{width,height,seconds:config.seconds,fps,maxBlackRun,distinctFrames:hashes.size,distinctMediaFps:hashes.size/config.seconds,captionTiming:"word-count estimate inside PCM interval; not forced alignment",audio:true,format:config.format,voiceEngine,voice:neural?.metrics||null,music:[...repertoire.assets.values()].map(a=>({id:a.track.id,hash:a.track.hash})),renderer:renderer.metrics,renderMs:{mean:timing.reduce((a,b)=>a+b,0)/timing.length,p95:timing[Math.ceil(timing.length*.95)-1],max:timing.at(-1)},wallMs:Date.now()-started,timeline,script:config.lines,captions:blocks,simulationHistory:recording.history,mixer:mixer.metrics,technicalStatus:'TECHNICALLY_VALID',qualityStatus:'REQUIRES_HUMAN_REVIEW',providerCalls:0,infrastructureCost:'UNKNOWN',offline:true}};
+   return {base64:bytes.toString('base64'),preview:cover,srt,report:{width,height,seconds:config.seconds,fps,maxBlackRun,distinctFrames:hashes.size,distinctMediaFps:hashes.size/config.seconds,captionTiming:"word-count estimate inside PCM interval; not forced alignment",audio:true,format:config.format,voiceEngine,voice:neural?{...neural.metrics}:null,music:[...repertoire.assets.values()].map(a=>({id:a.track.id,hash:a.track.hash,title:a.track.title,creator:a.track.creator,license:a.track.license,source:a.track.source})),renderer:renderer.metrics,renderMs:{mean:timing.reduce((a,b)=>a+b,0)/timing.length,p95:timing[Math.ceil(timing.length*.95)-1],max:timing.at(-1)},wallMs:Date.now()-started,timeline,script:config.lines,captions:blocks,simulationHistory:recording.history,mixer:mixer.metrics,technicalStatus:'TECHNICALLY_VALID',qualityStatus:'REQUIRES_HUMAN_REVIEW',providerCalls:0,infrastructureCost:'UNKNOWN',offline:true}};
   });result.report.artisticEligibility=audiovisualEligibility(result.report);return result;
  }finally{await video?.close();await audio?.close();mixer?.close();neural?.close();await renderer?.close();await rm(dir,{recursive:true,force:true});}
 }

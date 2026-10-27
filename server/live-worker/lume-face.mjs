@@ -59,5 +59,5 @@ export function createLumeFace(T, color, design='jade') {
   lids.forEach((l,i)=>{l.position.y=.18-blink*.24+lift*.15;l.scale.y=.065+blink*.20;eyes[i].scale.y=s.eye*1.12*(1-blink*.80);brows[i].rotation.z=(i?1:-1)*browAngle+(expression==='teasing'||expression==='confused'?(i?.12:-.08):0);brows[i].position.y=.28+lift*.35;pupils[i].position.x=Math.max(-.055,Math.min(.055,gaze));pupils[i].scale.y=s.eye*.69*(1-blink*.80);});
   tongue.scale.z=.17+(expression==='teasing'||expression==='focused'?Math.max(0,Math.sin(at/700))*.08:0);tongue.position.z=.67+open*.12;
   muzzle.position.y=-.08+Math.sin(at/900)*.009+open*.025;skull.scale.y=s.height*(1+Math.sin(at/1300)*.012);skull.rotation.z=(expression==='confused'?.035:expression==='teasing'?-.025:0);
- },inspect(){return {design,expression,jawOpen:open,lipSync:'audio-envelope',geometryCount:2};}};
+ },inspect(){return {design,expression,jawOpen:open,lipSync:'audio-envelope',geometryCount:new Set([...function*(){const geometries=[];g.traverse(o=>{if(o.geometry)geometries.push(o.geometry)});yield* geometries;}()]).size};}};
 }
