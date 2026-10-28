@@ -21,7 +21,7 @@ export function createCameraRig(T,camera){
   // Conservative line-of-sight probes against bodies, independent of game physics.
   // The attached neck is excluded; it must not be mistaken for an obstruction.
   const blockers=f.players.flatMap((snake,i)=>snake.body.slice(i===index?3:0).map(b=>new T.Vector3(b.x-7.5,.65,b.y-11.5)));
-  const faceTarget=head.clone().addScaledVector(heading,.7);faceTarget.y=1.1;
+  const faceTarget=head.clone();faceTarget.y=.85;
   const blocked=position=>{const ray=position.clone().sub(faceTarget),length=ray.lengthSq();return blockers.some(b=>{const u=b.clone().sub(faceTarget).dot(ray)/Math.max(.001,length);return u>.05&&u<.96&&b.distanceTo(faceTarget.clone().addScaledVector(ray,u))<.9;});};
   let occlusionCorrected=false;
   if(mode!=='Tactical'&&blocked(desired)){
@@ -54,6 +54,8 @@ export function createCameraRig(T,camera){
   const safe=mode==='Tactical'?anchors.concat(corners):anchors;let fit=0;
   for(;fit<24;fit++){camera.updateMatrixWorld();if(safe.every(v=>{const q=v.clone().project(camera);return q.z>-1&&q.z<1&&Math.abs(q.x)<(mode==='Tactical'?.90:.8)&&q.y>(mode==='Tactical'?-.55:-.42)&&q.y<.64;}))break;camera.position.sub(aim).multiplyScalar(1.08).add(aim);camera.lookAt(aim);}
   if(fit===24){mode='Tactical';fallback='UNSAFE_FRAMING';camera.position.set(0,42,40);aim.set(0,0,0);camera.lookAt(aim);}
+  // Recheck after heading correction and zoom fitting, which can change the sight line.
+  if(mode!=='Tactical')for(let repair=0;repair<4&&blocked(camera.position);repair++){camera.position.y+=1;camera.lookAt(aim);occlusionCorrected=true;}
   camera.updateMatrixWorld();initialized=true;lastCut=d.cutId;lastRound=f.round;lastPlayer=p.id;
   const projected=faceBounds.map(v=>v.clone().project(camera));
   const bounds={left:Math.min(...projected.map(v=>v.x)),right:Math.max(...projected.map(v=>v.x)),bottom:Math.min(...projected.map(v=>v.y)),top:Math.max(...projected.map(v=>v.y))};

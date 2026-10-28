@@ -1,0 +1,194 @@
+[
+  {
+    "file": "battle-voice12.mp4",
+    "sha256": "050570766d8a0ec6948cde2e3a66962be37efe8d7c589de5f60792c7d6f62446",
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 360,
+        "height": 640,
+        "r_frame_rate": "15/1",
+        "duration": "25.000000",
+        "sample_rate": null
+      },
+      {
+        "codec_name": "aac",
+        "width": null,
+        "height": null,
+        "r_frame_rate": "0/0",
+        "duration": "25.000000",
+        "sample_rate": "48000"
+      }
+    ],
+    "duration": "25.000000",
+    "decode": "passed",
+    "decodedFrames": 375,
+    "decodedDistinctFrames": 375,
+    "distinctMediaFps": 15.0,
+    "renderMs": {
+      "mean": 59.75388836533295,
+      "p95": 161.52119200000016,
+      "max": 379.17127099999925
+    },
+    "wallMs": 35255,
+    "voice": {
+      "profile": {
+        "version": 1,
+        "candidateId": "dora-calm",
+        "engine": "kokoro",
+        "model": "Kokoro-82M-v1.0",
+        "voice": "pf_dora",
+        "language": "pt-BR",
+        "speed": 0.9,
+        "style": "Dora \u00b7 dire\u00e7\u00e3o contida",
+        "normalization": "existing-mixer-limiter",
+        "fallback": "espeak-technical-only",
+        "license": "Apache-2.0",
+        "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+        "emotionControl": "text-and-speed-only"
+      },
+      "engine": "kokoro",
+      "voice": "pf_dora (pt-BR feminina)",
+      "quality": "HUMAN_REVIEW_REQUIRED",
+      "ready": true,
+      "neural": 4,
+      "fallback": 0,
+      "failures": 0,
+      "maxSynthesisMs": 1342
+    },
+    "framingQuality": {
+      "checked": 375,
+      "corrected": 113,
+      "issues": {}
+    },
+    "auditoryReview": "PENDING_HUMAN"
+  },
+  {
+    "file": "champion-voice12.mp4",
+    "sha256": "e90877a11b472794c168dbf0eb7bce68c0d59e470960db688d71e7852c267aa1",
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 360,
+        "height": 640,
+        "r_frame_rate": "15/1",
+        "duration": "20.000000",
+        "sample_rate": null
+      },
+      {
+        "codec_name": "aac",
+        "width": null,
+        "height": null,
+        "r_frame_rate": "0/0",
+        "duration": "20.000000",
+        "sample_rate": "48000"
+      }
+    ],
+    "duration": "20.000000",
+    "decode": "passed",
+    "decodedFrames": 300,
+    "decodedDistinctFrames": 300,
+    "distinctMediaFps": 15.0,
+    "renderMs": {
+      "mean": 42.68832986666617,
+      "p95": 51.121132000000216,
+      "max": 280.2082459999947
+    },
+    "wallMs": 24596,
+    "voice": {
+      "profile": {
+        "version": 1,
+        "candidateId": "dora-calm",
+        "engine": "kokoro",
+        "model": "Kokoro-82M-v1.0",
+        "voice": "pf_dora",
+        "language": "pt-BR",
+        "speed": 0.9,
+        "style": "Dora \u00b7 dire\u00e7\u00e3o contida",
+        "normalization": "existing-mixer-limiter",
+        "fallback": "espeak-technical-only",
+        "license": "Apache-2.0",
+        "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+        "emotionControl": "text-and-speed-only"
+      },
+      "engine": "kokoro",
+      "voice": "pf_dora (pt-BR feminina)",
+      "quality": "HUMAN_REVIEW_REQUIRED",
+      "ready": true,
+      "neural": 4,
+      "fallback": 0,
+      "failures": 0,
+      "maxSynthesisMs": 1369
+    },
+    "framingQuality": {
+      "checked": 300,
+      "corrected": 173,
+      "issues": {}
+    },
+    "auditoryReview": "PENDING_HUMAN"
+  },
+  {
+    "file": "comedy-voice12.mp4",
+    "sha256": "500ce65774500c2b04241b99bd09f2c17ea028ce09950a38c24092514fc40e17",
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 360,
+        "height": 640,
+        "r_frame_rate": "15/1",
+        "duration": "18.000000",
+        "sample_rate": null
+      },
+      {
+        "codec_name": "aac",
+        "width": null,
+        "height": null,
+        "r_frame_rate": "0/0",
+        "duration": "18.000000",
+        "sample_rate": "48000"
+      }
+    ],
+    "duration": "18.000000",
+    "decode": "passed",
+    "decodedFrames": 270,
+    "decodedDistinctFrames": 270,
+    "distinctMediaFps": 15.0,
+    "renderMs": {
+      "mean": 46.469030500000045,
+      "p95": 58.73464900000181,
+      "max": 348.83470300000045
+    },
+    "wallMs": 24351,
+    "voice": {
+      "profile": {
+        "version": 1,
+        "candidateId": "dora-calm",
+        "engine": "kokoro",
+        "model": "Kokoro-82M-v1.0",
+        "voice": "pf_dora",
+        "language": "pt-BR",
+        "speed": 0.9,
+        "style": "Dora \u00b7 dire\u00e7\u00e3o contida",
+        "normalization": "existing-mixer-limiter",
+        "fallback": "espeak-technical-only",
+        "license": "Apache-2.0",
+        "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+        "emotionControl": "text-and-speed-only"
+      },
+      "engine": "kokoro",
+      "voice": "pf_dora (pt-BR feminina)",
+      "quality": "HUMAN_REVIEW_REQUIRED",
+      "ready": true,
+      "neural": 4,
+      "fallback": 0,
+      "failures": 0,
+      "maxSynthesisMs": 1379
+    },
+    "framingQuality": {
+      "checked": 270,
+      "corrected": 98,
+      "issues": {}
+    },
+    "auditoryReview": "PENDING_HUMAN"
+  }
+]

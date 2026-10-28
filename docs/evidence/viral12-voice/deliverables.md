@@ -18,3 +18,13 @@ Três direções da **mesma voz** Kokoro pf_dora; não são três modelos ou tim
 - [dora-flow-D.wav](https://chatgpt.com/library?file_id=libfile_ccf5b258d6888191be4cdf088bd5cbd9&account_id=personal)
 - [dora-flow-E.wav](https://chatgpt.com/library?file_id=libfile_573f5705c22081919e667f6288f40afe&account_id=personal)
 - [voice-lab.json](https://chatgpt.com/library?file_id=libfile_398243398944819187a997f673d41160&account_id=personal)
+
+## MP4s novos e evidências desta revisão
+
+- [comedy-voice12.mp4](https://chatgpt.com/library?file_id=libfile_9f16f004fe248191a768f1bf3f738387&account_id=personal)
+- [battle-voice12.mp4](https://chatgpt.com/library?file_id=libfile_309e689ca6648191aaef54363ed98493&account_id=personal)
+- [champion-voice12.mp4](https://chatgpt.com/library?file_id=libfile_bf8e3acd09388191bc73966812475f60&account_id=personal)
+- [comedy-voice12-frames.jpg](https://chatgpt.com/library?file_id=libfile_1e6d75c47a4481918ab2713db1c1150b&account_id=personal)
+- [champion-voice12-frames.jpg](https://chatgpt.com/library?file_id=libfile_fad8e2c5bce48191ac15124e7fe6dbb9&account_id=personal)
+- [battle-voice12-frames.jpg](https://chatgpt.com/library?file_id=libfile_68130831020c8191a21b9d38e0c3770d&account_id=personal)
+- [battle-comparison.jpg](https://chatgpt.com/library?file_id=libfile_dc4dae4883088191945f58690f4aa389&account_id=personal)
