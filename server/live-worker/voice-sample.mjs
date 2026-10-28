@@ -5,7 +5,7 @@ let busy=false;
 export async function voiceSample(profile,index=0){
  if(busy)throw Error('Laboratório ocupado; tente após a síntese atual');
  if(!Number.isInteger(index)||index<0||index>=voicePhrases.length)throw Error('Frase inválida');
- busy=true;let speech;try{speech=await createNeuralSpeech({engine:'kokoro',profile:voiceProfile(profile),timeout:20000,fallback:async()=>{throw Error('Voz neural indisponível; configure os modelos locais')}});
+ busy=true;let speech;try{speech=await createNeuralSpeech({engine:voiceProfile(profile).engine,profile:voiceProfile(profile),timeout:180000,initializationTimeout:60000,maxSeconds:20,fallback:async()=>{throw Error('Voz neural indisponível; configure os modelos locais')}});
  const pcm=await speech.synthesize(voicePhrases[index],'host',{delivery:['mysterious','playful','suspense','warm','surprised'][index]});return {wav:pcmWav(pcm),metrics:{...speech.metrics}};
  }finally{speech?.close();busy=false;}
 }

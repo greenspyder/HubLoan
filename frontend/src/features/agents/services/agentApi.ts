@@ -36,8 +36,8 @@ export type ProjectInput = Pick<Project, 'name' | 'goal' | 'kind' | 'maxDeliveri
 export type CostTotals = { hasConfirmedCosts: boolean; confirmedMinor: number; reservedMinor: number; unknownMinor: number; exposureMinor: number };
 export type AiCosts = { day?: CostTotals; month?: CostTotals; taskMinor: number; enabled: boolean; dailyMinor: number; monthlyMinor: number; callMinor: number; ceilings: Record<string, number>; dayMinor: number; monthMinor: number; entries: { id: string; taskId: string; agentId: string; model: string; kind: string; reservedMinor: number; exposureMinor?: number; confirmedMinor?: number | null; sentAt?: string | null; executionId?: string; status: string; tokens: number; estimatedTextUsd?:number|null; actualModel?:string; searches?:number }[] };
 export type Factory = { id: string; name: string; kind: ProductionKind | "video" | "service" | "software"; role: string; audience: string; channel: string; blocker: string | null; missions: number; running: number; queued: number; delivered: number; projects: number; reservedMinor: number; grossMinor: number; costMinor: number; resultMinor: number | null; experimentIds: string[]; mixedExperiments: number };
-export type VoiceProfile = {candidateId:string;speed:number;version:number;engine:string;voice:string;style:string};
-export type VoiceStudioState = {active:VoiceProfile;draft:VoiceProfile|null;revision:number;candidates:{id:string;name:string;speed:number}[];phrases:string[]};
+export type VoiceProfile = {candidateId:string;speed:number;exaggeration?:number;version:number;engine:string;voice:string;style:string};
+export type VoiceStudioState = {active:VoiceProfile;draft:VoiceProfile|null;revision:number;candidates:{id:string;name:string;speed:number;engine:string;installed:boolean;license:string;referenceOnly?:boolean}[];phrases:string[]};
 export type Workspace = { voiceStudio?:VoiceStudioState; liveFactory?:LiveFactory; affiliates?:Affiliates; etsy?:Etsy;
   salesJourneyVersion?: number; factories?: Factory[]; aiCosts?: AiCosts; version: 2; strategy?: { validationPriorities?: { id: string; title: string; instruction: string }[] }; knowledge?: Knowledge; experiments?: BusinessExperiment[]; engineering?: Engineering; marketing?: Marketing; shop?: Shop; commerce?: Commerce; autonomy: { enabled: boolean; durable: boolean; projects: Project[] }; agents: Agent[]; missions: Mission[]; settings: { workerModel?:string;decisionModel?:string;availableModels?:string[];modelsCheckedAt?:string;modelCatalog?:{id:string;input:number;cached:number;output:number;role:string}[]; model: string; imageModel: string; maxOutputTokens: number; configured: boolean }; storage: 'postgres' | 'sqlite' };
 const accessKey = 'hubloan.workspace.access.v2';
@@ -66,7 +66,7 @@ async function request<T>(path: string, method = 'GET', body?: object): Promise<
 export const agentApi = {
   voiceStudio: (input: object) => request<Workspace>('/voice-studio','POST',input),
   async voiceSample(current:boolean,index:number) {
-    const response=await fetch(`${base}/voice-studio/sample`,{method:'POST',headers:{Authorization:`Bearer ${getAccessCode()}`,'Content-Type':'application/json'},body:JSON.stringify({current,index}),signal:AbortSignal.timeout(60000)});
+    const response=await fetch(`${base}/voice-studio/sample`,{method:'POST',headers:{Authorization:`Bearer ${getAccessCode()}`,'Content-Type':'application/json'},body:JSON.stringify({current,index}),signal:AbortSignal.timeout(250000)});
     if(!response.ok){const data=await response.json().catch(()=>({}));throw new Error(data.error||'Voz neural indisponível. Configure os modelos locais.');}
     return response.blob();
   },

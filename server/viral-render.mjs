@@ -21,9 +21,9 @@ export async function renderShort({config,signal,checkpoint=async(_k,_l,_i,run)=
  try{
   const result=await checkpoint('short-render','Renderizar vídeo 3D offline',[3,config,[...repertoire.assets.values()].map(a=>a.track.hash)],async()=>{
    const recording=recordGameplay(config),timeline=createEditorial(config,recording);let now=100000;const e={offline:true,sessionId:'offline',status:'TESTING',config:{audio:{muted:false,volume:.8}},performanceConfig:{...performanceDefaults(),effectsGain:config.effectsGain,enabled:true},performance:{jobs:[],top:[]},game:null};
-   if(config.voiceMode==='neural'&&!process.env.HUBLOAN_KOKORO_MODEL)throw Error('Configure HUBLOAN_KOKORO_MODEL para renderização artística neural. Modo técnico permite fallback.');
+   if(config.voiceMode==='neural'&&!process.env[`HUBLOAN_${config.voiceProfile.engine.toUpperCase()}_MODEL`])throw Error('Configure HUBLOAN_KOKORO_MODEL para renderização artística neural. Modo técnico permite fallback.');
    let synthesize=localSpeech,voiceEngine='espeak-fallback';
-   if(process.env.HUBLOAN_KOKORO_MODEL){neural=await createNeuralSpeech({engine:'kokoro',timeout:20000,profile:config.voiceProfile});synthesize=neural.synthesize;voiceEngine='kokoro-pf_dora';}
+   if(process.env[`HUBLOAN_${config.voiceProfile.engine.toUpperCase()}_MODEL`]){neural=await createNeuralSpeech({engine:config.voiceProfile.engine,timeout:180000,initializationTimeout:60000,profile:config.voiceProfile});synthesize=neural.synthesize;voiceEngine=config.voiceProfile.engine+'-'+config.voiceProfile.voice;}
    // Finish all voice preparation before rendering; no live queue stalls or stale comments.
    const prepared=new Map(),segments=config.lines.map((text,i)=>({role:'host',voice:'host',text,delivery:(config.format==='battle'?['suspense','mysterious','surprised','playful']:config.format==='comedy'?['calm','playful','mysterious','playful']:['warm','playful','mysterious','warm'])[i%4]}));
    for(const segment of segments){if(signal?.aborted)throw Error('Renderização cancelada');const pcm=await synthesize(segment.text,'host',{signal,delivery:segment.delivery});if(!pcm?.length)throw Error('Narração vazia');prepared.set(segment.text,pcm);}

@@ -36,3 +36,15 @@ test('offline jobs and live grants share active identity without client override
  const grant=authorizeWorker(w,e.id,'preview',at);assert.equal(grant.voiceProfile.version,3);assert.equal(grant.voice,'kokoro');
  w.voiceStudio.active=voiceProfile({candidateId:'dora-calm',version:4});assert.equal(m.liveShort.voiceProfile.version,3);assert.equal(grant.voiceProfile.version,3);
 });
+test('new identities are distinct references with validated neural controls, not Dora presets',()=>{
+ const a=voiceProfile({candidateId:'chatterbox-heart'}),b=voiceProfile({candidateId:'chatterbox-emma'});
+ assert.equal(a.engine,'chatterbox');assert.notEqual(a.reference,b.reference);assert.notEqual(a.voice,'pf_dora');
+ assert.equal(a.liveValidated,false);assert.equal(a.emotionControl,'neural-exaggeration-not-emotion-labels');
+ assert.throws(()=>voiceProfile({candidateId:a.candidateId,exaggeration:Infinity}));
+ assert.throws(()=>voiceProfile({candidateId:a.candidateId,exaggeration:.8}));
+ const w={},original=activeVoice(w);voiceStudioAction(w,{action:'save',revision:0,profile:a});
+ assert.deepEqual(activeVoice(w),original);assert.equal(w.voiceStudio.draft.reference,'af_heart');
+ const c=shortConfig({format:'comedy',seconds:12,characters:['Lume','Jade'],lines:['Um plano.','Uma curva.'],hypothesis:'Teste',audience:'Teste',voiceProfile:a});
+ a.reference='bf_emma';assert.equal(c.voiceProfile.reference,'af_heart');
+ assert.ok(voiceStudioState(w).candidates.every(c=>!c.legacy));
+});
