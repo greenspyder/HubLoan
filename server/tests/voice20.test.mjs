@@ -42,3 +42,25 @@ test('resident protocol rejects simultaneous speech and aborts without fallback'
  const control=new AbortController(),first=s.synthesize('Espera.','host',{signal:control.signal});await assert.rejects(s.synthesize('Outra fala.'),/ocupado/);control.abort();await assert.rejects(first,/cancelado/);assert.equal(calls,0);
  }finally{s?.close();await rm(dir,{recursive:true,force:true});}
 });
+
+test('editorial camera anticipates a turning face without crossing its center',()=>{
+ const camera=new T.PerspectiveCamera(48,360/640,.1,300);camera.position.set(0,4,9);camera.lookAt(0,0,0);
+ const head=new T.Group();head.add(new T.Mesh(new T.SphereGeometry(.7),new T.MeshBasicMaterial()));
+ const body=new T.Mesh(new T.BoxGeometry(.1,.1,.1),new T.MeshBasicMaterial());body.position.y=-4;body.updateMatrixWorld(true);
+ const rig=createCameraRig(T,camera),actors=[{head:{g:head},body}];
+ for(let n=0;n<20;n++){
+  head.rotation.y=n*.12;head.updateMatrixWorld(true);
+  const out=rig.refine({}, {shot:'Action',format:'battle'},actors,{player:0,cut:n===0,quality:{issues:[],corrected:false}},n*1000/15);
+  assert.deepEqual(out.quality.issues,[],`frame ${n}`);assert.ok(out.quality.cameraJump<3);
+  assert.ok(camera.position.distanceTo(head.position)>5);
+ }
+});
+
+test('scenery occlusion is measured even with no blocking snake body',()=>{
+ const camera=new T.PerspectiveCamera(48,360/640,.1,300);camera.position.set(0,4,9);camera.lookAt(0,0,0);camera.updateMatrixWorld();
+ const head=new T.Group();head.add(new T.Mesh(new T.SphereGeometry(.7),new T.MeshBasicMaterial()));head.updateMatrixWorld(true);
+ const body=new T.Mesh(new T.BoxGeometry(.1,.1,.1),new T.MeshBasicMaterial());body.visible=false;
+ const scenery=new T.InstancedMesh(new T.BoxGeometry(4,4,4),new T.MeshBasicMaterial({side:T.DoubleSide}),1);scenery.setMatrixAt(0,new T.Matrix4());scenery.updateMatrixWorld(true);
+ const out=createCameraRig(T,camera).refine({}, {shot:'Front'},[{head:{g:head},body}],{player:0,cut:true,quality:{issues:[],corrected:false}},1000,[scenery]);
+ assert.ok(out.quality.issues.includes('MESH_FACE_OCCLUSION'));assert.equal(out.quality.blockedFaceRays,9);
+});

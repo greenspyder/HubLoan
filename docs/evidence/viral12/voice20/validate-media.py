@@ -1,7 +1,7 @@
 import json,pathlib,subprocess,hashlib,io,wave,sys
 import numpy as np
 from scipy.signal import correlate
-root=pathlib.Path(sys.argv[1]).resolve() if len(sys.argv)>1 else pathlib.Path.cwd();out=root/'video20-final';rows=json.loads((root/'assets/measurements.json').read_text());results=[]
+root=pathlib.Path(sys.argv[1]).resolve() if len(sys.argv)>1 else pathlib.Path.cwd();out=root/(sys.argv[2] if len(sys.argv)>2 else 'video20-final');rows=json.loads((root/'assets/measurements.json').read_text());results=[]
 for name in ['comedy','battle','champion']:
  p=out/f'{name}-voice20.mp4';report=json.loads((out/f'{name}-voice20.json').read_text())
  probe=json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(p)]))

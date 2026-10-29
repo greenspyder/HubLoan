@@ -64,11 +64,11 @@ export function createCameraRig(T,camera){
   if(mode!=='Tactical'&&blocked(camera.position))issues.push('POSSIBLE_BODY_OCCLUSION');
   if(bounds.bottom<-.42&&mode!=='Tactical')issues.push('CAPTION_SAFE_AREA');
   return {quality:{method:'conservative-projected-envelope-and-body-probes',bounds,issues,fitSteps:fit,corrected:fit>0||occlusionCorrected},shot:mode,occlusionCorrected,fallback,player:index,focus:aim.toArray(),camera:camera.position.toArray(),anchors:anchors.map(v=>v.clone().project(camera).toArray()),arenaCorners:corners.map(v=>v.clone().project(camera).toArray()),head:head.clone().project(camera).toArray(),cut:reset};
- },refine(f,d,actors,framing,at){
+ },refine(f,d,actors,framing,at,scenery=[]){
   const subject=actors[framing.player];if(!subject)return framing;
   const head=subject.head.g,center=head.getWorldPosition(new T.Vector3()),corners=[];
   head.traverse(o=>{if(!o.isMesh)return;o.geometry.computeBoundingBox();const box=o.geometry.boundingBox;for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z])corners.push(new T.Vector3(x,y,z).applyMatrix4(o.matrixWorld));});
-  const blockers=actors.flatMap((a,i)=>[a.body,...(i===framing.player?[]:[a.head.g])]).filter(a=>a.visible);
+  const blockers=actors.flatMap((a,i)=>[a.body,...(i===framing.player?[]:[a.head.g])]).concat(scenery).filter(a=>a.visible);
   // Actual eye / muzzle heights in createLumeFace, not points above the skull.
   const targets=[];for(const x of [-.32,0,.32])for(const y of [-.22,.1,.38])targets.push(head.localToWorld(new T.Vector3(x,y,.7)));
   const eventHeads=d.format==='battle'?actors.filter((a,i)=>i!==framing.player&&a.head.g.visible&&a.head.g.position.distanceTo(center)<3.5).map(a=>a.head.g.getWorldPosition(new T.Vector3())):[];
@@ -88,22 +88,48 @@ export function createCameraRig(T,camera){
    return {bounds,issues,blocked,facing};
   };
   const initial=camera.position.clone(),initialQuaternion=camera.quaternion.clone(),focus=center.clone().add(new T.Vector3(0,.55,0));
-  const score=r=>r.issues.length*100+r.blocked*12+(1-r.facing)*10+(lastRefined&&!framing.cut?r.position.distanceTo(lastRefined)*4:0);
+  const score=r=>r.issues.length*(d.format==='battle'?10000:100)+r.blocked*(d.format==='battle'?100:12)+(1-r.facing)*(d.format==='battle'?150:10)+(lastRefined&&!framing.cut?r.position.distanceTo(lastRefined)*4:0);
   let best={position:initial.clone(),quaternion:initialQuaternion,...inspect()};
   if(lastRefined&&!framing.cut){camera.position.copy(lastRefined);camera.lookAt(focus);const held={position:camera.position.clone(),quaternion:camera.quaternion.clone(),...inspect()};if(score(held)<score(best))best=held;}
-  if(best.issues.length||d.shot==='Front'){
+  if(best.issues.length||d.shot==='Front'||d.format==='battle'){
    for(const angle of [0,.4,-.4,.85,-.85,1.3,-1.3])for(const height of [2.2,4,7,11,15]){
     camera.position.copy(center).add(forward.clone().applyAxisAngle(new T.Vector3(0,1,0),angle).multiplyScalar(8));camera.position.y=center.y+height;camera.lookAt(focus);
     let r=inspect();for(let fit=0;fit<12&&r.issues.some(x=>['MESH_FACE_CROPPED','CAPTION_SAFE_AREA','NEARBY_CONFRONTATION_OUT_OF_FRAME'].includes(x));fit++){camera.position.sub(focus).multiplyScalar(1.1).add(focus);camera.lookAt(focus);r=inspect();}
     const candidate={position:camera.position.clone(),quaternion:camera.quaternion.clone(),...r};if(score(candidate)<score(best))best=candidate;
    }
   }
+  // Prefer a nearby valid viewpoint over teleporting to a distant optimum.
+  if(d.format==='battle'&&lastRefined&&!framing.cut&&best.position.distanceTo(lastRefined)>2){
+   let local=null;
+   const horizontal=[-2,-1,0,1,2],vertical=[-2,-1,0,1,2];
+   for(const x of horizontal)for(const y of vertical)for(const z of horizontal){
+    if(Math.hypot(x,y,z)>2.9)continue;
+    camera.position.copy(lastRefined).add(new T.Vector3(x,y,z));camera.lookAt(focus);
+    const candidate={position:camera.position.clone(),quaternion:camera.quaternion.clone(),...inspect()};
+    if(!candidate.issues.length&&(!local||score(candidate)<score(local)))local=candidate;
+   }
+   if(local&&local.issues.length<=best.issues.length)best=local;
+  }
   camera.position.copy(best.position);camera.quaternion.copy(best.quaternion);
-  if(lastRefined&&!framing.cut&&camera.position.distanceTo(lastRefined)>2){camera.position.sub(lastRefined).clampLength(0,2).add(lastRefined);camera.lookAt(focus);best={...best,...inspect()};}
+  // Interpolate on an orbit, not a chord through the subject and its body.
+  // An unsafe interpolation is rejected, rather than destroying a valid repair.
+  let rejectedUnsafeInterpolation=false;
+  if(d.format!=='battle'&&lastRefined&&!framing.cut&&camera.position.distanceTo(lastRefined)>2){camera.position.sub(lastRefined).clampLength(0,2).add(lastRefined);camera.lookAt(focus);best={...best,...inspect()};}
+  if(d.format==='battle'&&lastRefined&&!framing.cut&&camera.position.distanceTo(lastRefined)>2){
+   const safePosition=camera.position.clone(),safeQuaternion=camera.quaternion.clone();
+   const from=lastRefined.clone().sub(focus),to=camera.position.clone().sub(focus);
+   const a=Math.atan2(from.x,from.z),b=Math.atan2(to.x,to.z),turn=Math.atan2(Math.sin(b-a),Math.cos(b-a));
+   const radius=Math.hypot(from.x,from.z),targetRadius=Math.hypot(to.x,to.z);
+   const theta=a+clamp(turn,-.18,.18),r=radius+clamp(targetRadius-radius,-1,1);
+   camera.position.set(focus.x+Math.sin(theta)*r,focus.y+from.y+clamp(to.y-from.y,-1,1),focus.z+Math.cos(theta)*r);camera.lookAt(focus);
+   const intermediate=inspect();
+   if(intermediate.issues.length>best.issues.length){camera.position.copy(safePosition);camera.quaternion.copy(safeQuaternion);rejectedUnsafeInterpolation=true;}
+   else best={...best,...intermediate};
+  }
   for(let fit=0;fit<8&&best.issues.some(x=>['MESH_FACE_CROPPED','CAPTION_SAFE_AREA','NEARBY_CONFRONTATION_OUT_OF_FRAME'].includes(x));fit++){camera.position.sub(focus).multiplyScalar(1.06).add(focus);camera.lookAt(focus);best={...best,...inspect()};}
   camera.updateMatrixWorld();
   const corrected=initial.distanceTo(camera.position)>.01,jump=lastRefined?lastRefined.distanceTo(camera.position):0;
   lastRefined=camera.position.clone();if(!framing.cut&&refinedAt!==null&&at-refinedAt<250&&jump>3)best.issues.push('ABRUPT_CAMERA_MOVE');refinedAt=at;
-  return {...framing,camera:camera.position.toArray(),head:center.clone().project(camera).toArray(),quality:{method:'rendered-mesh-bounds-and-nine-face-rays',bounds:best.bounds,issues:best.issues,blockedFaceRays:best.blocked,sampledFaceRays:9,nearbyEventHeads:eventHeads.length,corrected:corrected||framing.quality.corrected,previousProbeIssues:framing.quality.issues,cameraJump:jump}};
+  return {...framing,camera:camera.position.toArray(),head:center.clone().project(camera).toArray(),quality:{method:'rendered-mesh-bounds-and-nine-face-rays',bounds:best.bounds,issues:best.issues,blockedFaceRays:best.blocked,sampledFaceRays:9,nearbyEventHeads:eventHeads.length,rejectedUnsafeInterpolation,corrected:corrected||framing.quality.corrected,previousProbeIssues:framing.quality.issues,cameraJump:jump}};
  }};
 }

@@ -1,3 +1,5 @@
+> **Revisão mais recente:** [correção adicional de câmera e novos vídeos](camera-followup/README.md). A batalha passa a quatro saltos de câmera, ainda bloqueada; os números abaixo descrevem a entrega inicial preservada como histórico.
+
 # Voice Identity 2.0 — PR #26
 
 ## Status real

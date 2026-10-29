@@ -1,0 +1,19 @@
+✔ artistic eligibility never mistakes technical success, fallback or absent music for complete AV (0.760337ms)
+✔ fallback approval is blocked on backend even with human override (2.006807ms)
+✔ AV controls are bounded and neural is the default (0.276978ms)
+✔ framing failures block even technically valid neural exports (0.144398ms)
+✔ distinct references remain drafts and never overwrite active workspace identity (2.441012ms)
+✔ archived speech binds exact text, hash and identity, and rejects truncation and fallback (12.487709ms)
+✔ mesh visibility detects obstruction missed by logical head-center probes (12.488551ms)
+✔ unavailable Chatterbox sample never silently becomes fallback audio (7.535929ms)
+✔ resident protocol rejects simultaneous speech and aborts without fallback (82.667097ms)
+✔ editorial camera anticipates a turning face without crossing its center (13.012622ms)
+✔ scenery occlusion is measured even with no blocking snake body (4.820653ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 268.474011

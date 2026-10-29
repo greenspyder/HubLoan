@@ -19,8 +19,8 @@ export function bootScene3D(T,width=360,height=640,createFace,design='jade',crea
  const plants=[];
  for(let i=0;i<20;i++){const x=(i%2?1:-1)*(10+(i%3)*.25),z=-13+Math.floor(i/2)*2.8;const g=new T.Group();g.position.set(x,-.4,z);scene.add(g);mesh(cylinder,'#466964',g,0,.3,0,.6,.8,.6);for(let k=0;k<3;k++){const leaf=mesh(sphere,k%2?'#7fceb0':'#46a58a',g,Math.sin(k*2)*.4,1+k*.3,Math.cos(k*2)*.3,.38,1.1,.23);leaf.rotation.z=(k-1)*.45;}plants.push(g);}
  // Batch static garden meshes by geometry/material to bound software-renderer draw calls.
- scene.updateMatrixWorld(true);const batches=new Map();scene.traverse(o=>{if(!o.isMesh)return;const key=o.geometry.uuid+o.material.uuid;if(!batches.has(key))batches.set(key,[]);batches.get(key).push(o);});
- for(const objects of batches.values()){const inst=new T.InstancedMesh(objects[0].geometry,objects[0].material,objects.length);objects.forEach((o,i)=>{inst.setMatrixAt(i,o.matrixWorld);o.removeFromParent();});scene.add(inst);}
+ scene.updateMatrixWorld(true);const batches=new Map(),staticScenery=[];scene.traverse(o=>{if(!o.isMesh)return;const key=o.geometry.uuid+o.material.uuid;if(!batches.has(key))batches.set(key,[]);batches.get(key).push(o);});
+ for(const objects of batches.values()){const inst=new T.InstancedMesh(objects[0].geometry,objects[0].material,objects.length);objects.forEach((o,i)=>{inst.setMatrixAt(i,o.matrixWorld);o.removeFromParent();});scene.add(inst);staticScenery.push(inst);}
  const rocks=[[-.5,-1.5],[.5,-1.5],[-.5,2.5]].map(([x,z])=>{const r=mesh(new T.DodecahedronGeometry(.65,0),'#708d8d',scene,x,.3,z);r.scale.y=.75;return r;});
  function face(color,identity=design){return createFace(T,color,identity);}
  const scaleCanvas=document.createElement('canvas');scaleCanvas.width=128;scaleCanvas.height=128;
@@ -72,6 +72,14 @@ const eat=at-v.eatenAt,giftAge=at-(v.giftAt||0),giftActive=giftAge>=0&&giftAge<1
    if(previous.attributes.position?.count===geometry.attributes.position.count){for(const key of ['position','normal']){previous.attributes[key].array.set(geometry.attributes[key].array);previous.attributes[key].needsUpdate=true;}previous.boundingSphere=null;geometry.dispose();}
    else{previous.dispose();s.body.geometry=geometry;}
    s.head.g.position.copy(points[0]);if(direction.editorial)s.head.g.position.y+=.7;s.head.g.position.y+=joy?Math.abs(Math.sin(t*12))*.2:0;s.head.g.rotation.y=Math.PI/2-(v.visualDirection??v.direction)*Math.PI/2;s.head.g.rotation.z=v.alive?Math.sin(t*4)*.035+(i===0&&music?Math.sin(t*6)*.06*musicEnergy:0):.3;
+   // Grid steering is instantaneous; editorial head acting eases across the turn.
+   // Keep simulation/body paths intact and reset pose at a deliberate scene cut.
+   if(direction.editorial&&direction.format==='battle'){
+    const targetYaw=s.head.g.rotation.y;
+    if(s.poseCut!==direction.cutId||s.poseYaw===undefined)s.poseYaw=targetYaw;
+    else s.poseYaw+=Math.max(-delta*2.4,Math.min(delta*2.4,Math.atan2(Math.sin(targetYaw-s.poseYaw),Math.cos(targetYaw-s.poseYaw))));
+    s.poseCut=direction.cutId;s.head.g.rotation.y=s.poseYaw;
+   }
    // Showcase pose: the featured character looks at the camera; body and simulation stay untouched.
    if(direction.editorial&&direction.format==='champion'&&direction.shot==='Front'&&i===direction.player)s.head.g.rotation.y=Math.atan2(camera.position.x-s.head.g.position.x,camera.position.z-s.head.g.position.z);
    s.head.g.scale.setScalar(direction.editorial?Math.max(.95,Math.min(1.15,direction.headScale||1.08)):1.08);s.head.animate(at,level,joy,!v.alive,direction.player===i?direction.emotion:(joy?'happy':'focused'),v.target?((v.target.x-v.body[0].x)*Math.sin((v.visualDirection??v.direction)*Math.PI/2)-(v.target.y-v.body[0].y)*Math.cos((v.visualDirection??v.direction)*Math.PI/2))*.015:0);s.shadow.position.set(points[0].x,.13,points[0].z);
@@ -80,8 +88,8 @@ const eat=at-v.eatenAt,giftAge=at-(v.giftAt||0),giftActive=giftAge>=0&&giftAge<1
   }
   f.obstacles?.forEach((r,i)=>{if(rocks[i])rocks[i].position.set(r.x-7.5,.3,r.y-11.5);});
   apples.forEach((a,i)=>{a.visible=!!f.food[i];if(a.visible){a.position.set(f.food[i].x-7.5,.1+Math.sin(t*2+i)*.06,f.food[i].y-11.5);a.rotation.y=Math.sin(t+i)*.12;a.scale.setScalar(f.food[i].golden?1.25:1);a.children[0].material=mat(f.food[i].golden?'#ffda58':'#ff5360');a.children[1].material=mat(f.food[i].golden?'#e8a92e':'#ed3b4c');}});
-  if(direction.editorial&&!direction.presenter){scene.updateMatrixWorld(true);framing=rig.refine(f,direction,snakes,framing,at);}
   plants.forEach((g,i)=>g.rotation.z=Math.sin(t*.7+i)*.025);
+  if(direction.editorial&&!direction.presenter){scene.updateMatrixWorld(true);framing=rig.refine(f,direction,snakes,framing,at,[...staticScenery,...rocks,...apples]);}
   const voice=presentation?.role&&presentation.role!=='comment'?presentation:null,chant=voice?.role==='chant'||music;portrait.g.visible=!!direction.presenter||!!voice||direction.cue?.kind==='community';portrait.animate(at,music&&!vocal?0:voice?.level||0,chant||direction.emotion==='joy',direction.emotion==='sad',direction.emotion,(h.x-7.5)*.015);portrait.g.rotation.y=(h.x-7.5)*.035;portrait.g.rotation.z=chant?Math.sin((voice.elapsedMs||0)/210)*(music?.08*musicEnergy:.07):Math.sin(t*2)*.025;portrait.g.position.y=-1.78+(music?Math.sin((voice.elapsedMs||0)/210)*.08*musicEnergy:voice?Math.sin(t*5)*.05:0);
   hostNeck.visible=!!direction.presenter;
   if(direction.presenter){portrait.g.position.set(0,.1+Math.sin(t*2)*.025,-5.5);portrait.g.scale.setScalar(.98);portrait.g.rotation.y=Math.sin(t*1.4)*.06;portrait.g.rotation.z=Math.sin(t*2.1)*.025;}else if(direction.editorial){portrait.g.position.set(1.15,1.45,-8);portrait.g.scale.setScalar(.4);}else{portrait.g.position.x=-.85;portrait.g.position.z=-8;portrait.g.scale.setScalar(.66);}
