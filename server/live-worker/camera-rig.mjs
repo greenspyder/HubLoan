@@ -83,7 +83,7 @@ export function createCameraRig(T,camera){
    if(bounds.top-bounds.bottom<.19)issues.push('SUBJECT_SMALL');
    if(blocked>2)issues.push('MESH_FACE_OCCLUSION');
    const facing=camera.position.clone().sub(center).normalize().dot(forward);
-   if(d.shot==='Front'&&facing<.25)issues.push('FACE_NOT_FRONTAL');
+   if(facing<.25)issues.push('FACE_NOT_FRONTAL');
    if(eventHeads.some(v=>{const p=v.clone().project(camera);return p.z<=-1||p.z>=1||Math.abs(p.x)>.92||p.y<-.5||p.y>.68;}))issues.push('NEARBY_CONFRONTATION_OUT_OF_FRAME');
    return {bounds,issues,blocked,facing};
   };
@@ -99,7 +99,8 @@ export function createCameraRig(T,camera){
    }
   }
   camera.position.copy(best.position);camera.quaternion.copy(best.quaternion);
-  if(lastRefined&&!framing.cut&&camera.position.distanceTo(lastRefined)>1.2){camera.position.sub(lastRefined).clampLength(0,1.2).add(lastRefined);camera.lookAt(focus);best={...best,...inspect()};}
+  if(lastRefined&&!framing.cut&&camera.position.distanceTo(lastRefined)>2){camera.position.sub(lastRefined).clampLength(0,2).add(lastRefined);camera.lookAt(focus);best={...best,...inspect()};}
+  for(let fit=0;fit<8&&best.issues.some(x=>['MESH_FACE_CROPPED','CAPTION_SAFE_AREA','NEARBY_CONFRONTATION_OUT_OF_FRAME'].includes(x));fit++){camera.position.sub(focus).multiplyScalar(1.06).add(focus);camera.lookAt(focus);best={...best,...inspect()};}
   camera.updateMatrixWorld();
   const corrected=initial.distanceTo(camera.position)>.01,jump=lastRefined?lastRefined.distanceTo(camera.position):0;
   lastRefined=camera.position.clone();if(!framing.cut&&refinedAt!==null&&at-refinedAt<250&&jump>3)best.issues.push('ABRUPT_CAMERA_MOVE');refinedAt=at;

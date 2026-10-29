@@ -31,3 +31,14 @@ test('unavailable Chatterbox sample never silently becomes fallback audio',async
  const s=await createNeuralSpeech({engine:'chatterbox',profile:{candidateId:'chatterbox-emma'},model:'/missing',python:'/missing',fallback:async()=>{throw Error('No fallback sample');}});
  try{await assert.rejects(s.synthesize('Oi.'),/No fallback sample/);assert.equal(s.metrics.neural,0);assert.equal(s.metrics.ready,false);}finally{s.close();}
 });
+
+import {mkdtemp,writeFile,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+test('resident protocol rejects simultaneous speech and aborts without fallback',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'tts-protocol-')),python=join(dir,'fixture');let calls=0,s;
+ await writeFile(python,`#!${process.execPath}\nconsole.log(JSON.stringify({ready:true}));process.stdin.resume();setInterval(()=>{},1000);`,{mode:0o700});
+ try{s=await createNeuralSpeech({engine:'chatterbox',profile:{candidateId:'chatterbox-heart'},python,model:dir,timeout:3000,fallback:async()=>{calls++;return new Float32Array(10);}});
+ const control=new AbortController(),first=s.synthesize('Espera.','host',{signal:control.signal});await assert.rejects(s.synthesize('Outra fala.'),/ocupado/);control.abort();await assert.rejects(first,/cancelado/);assert.equal(calls,0);
+ }finally{s?.close();await rm(dir,{recursive:true,force:true});}
+});

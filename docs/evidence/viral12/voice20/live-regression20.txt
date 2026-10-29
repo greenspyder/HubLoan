@@ -1,0 +1,13 @@
+✔ Top6: quantities, deterministic ties, overtaking, duplicate gifts, session/workspace isolation, safe inputs (14.480143ms)
+✔ ranking survives SQLite reopen; photos reject URLs, consent omission, SVG and oversized images; animated composition (42.647237ms)
+✔ mixer: continuous original music, ducking/recovery, limiter, voice cache, failure fallback and pause (49.095126ms)
+✔ real local pt-BR TTS creates distinct main and secondary voices (33.178379ms)
+✔ RTMP performance: received music, narrated comment, reply, gift verse, Top6 and photo avatar; game keeps moving (53229.650396ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 56175.291979
