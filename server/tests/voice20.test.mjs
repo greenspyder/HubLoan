@@ -64,3 +64,11 @@ test('scenery occlusion is measured even with no blocking snake body',()=>{
  const out=createCameraRig(T,camera).refine({}, {shot:'Front'},[{head:{g:head},body}],{player:0,cut:true,quality:{issues:[],corrected:false}},1000,[scenery]);
  assert.ok(out.quality.issues.includes('MESH_FACE_OCCLUSION'));assert.equal(out.quality.blockedFaceRays,9);
 });
+
+test('a precomputed camera position still undergoes actual mesh validation',()=>{
+ const camera=new T.PerspectiveCamera(48,360/640,.1,300),head=new T.Group();head.add(new T.Mesh(new T.SphereGeometry(.7),new T.MeshBasicMaterial()));head.updateMatrixWorld(true);
+ const body=new T.Mesh(new T.BoxGeometry(4,4,4),new T.MeshBasicMaterial({side:T.DoubleSide}));body.updateMatrixWorld(true);
+ camera.position.set(0,4,9);camera.lookAt(0,.55,0);camera.updateMatrixWorld();
+ const out=createCameraRig(T,camera).refine({}, {format:'battle',cameraPlan:{position:camera.position.toArray(),quaternion:camera.quaternion.toArray()}},[{head:{g:head},body}],{player:0,cut:true,quality:{issues:[],corrected:false}},1000);
+ assert.ok(out.quality.issues.includes('MESH_FACE_OCCLUSION'));assert.equal(out.quality.blockedFaceRays,9);
+});

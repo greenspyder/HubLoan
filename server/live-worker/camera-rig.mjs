@@ -88,6 +88,26 @@ export function createCameraRig(T,camera){
    return {bounds,issues,blocked,facing};
   };
   const initial=camera.position.clone(),initialQuaternion=camera.quaternion.clone(),focus=center.clone().add(new T.Vector3(0,.55,0));
+  // Offline preflight exposes real, inspected viewpoints. A later pass chooses
+  // a continuous path across the whole scene; live rendering never uses this.
+  if(d.format==='battle'&&(d.collectCameraViews||d.cameraPlan)){
+   const views=[];
+   if(d.collectCameraViews){
+    for(const radius of [8,11])for(const angle of [-1.2,-.8,-.4,0,.4,.8,1.2])for(const height of [2.5,4,6,9,12]){
+     camera.position.copy(center).add(forward.clone().applyAxisAngle(new T.Vector3(0,1,0),angle).multiplyScalar(radius));camera.position.y=center.y+height;camera.lookAt(focus);
+     let r=inspect();for(let fit=0;fit<12&&r.issues.some(x=>['MESH_FACE_CROPPED','CAPTION_SAFE_AREA','NEARBY_CONFRONTATION_OUT_OF_FRAME'].includes(x));fit++){camera.position.sub(focus).multiplyScalar(1.08).add(focus);camera.lookAt(focus);r=inspect();}
+     if(!r.issues.length)views.push({position:camera.position.toArray(),quaternion:camera.quaternion.toArray(),facing:r.facing,blocked:r.blocked,height:r.bounds.top-r.bounds.bottom,frontWeight:d.shot==='Front'?20:8,targetHeight:d.shot==='Front'?.55:.4});
+    }
+    if(views.length){camera.position.fromArray(views[0].position);camera.quaternion.fromArray(views[0].quaternion);}
+   }else{
+    if(d.cameraPlan.position?.length!==3||d.cameraPlan.quaternion?.length!==4||![...d.cameraPlan.position,...d.cameraPlan.quaternion].every(Number.isFinite))throw Error('Plano de câmera inválido');
+    camera.position.fromArray(d.cameraPlan.position);camera.quaternion.fromArray(d.cameraPlan.quaternion);
+   }
+   const result=inspect(),jump=lastRefined?lastRefined.distanceTo(camera.position):0;
+   if(!framing.cut&&refinedAt!==null&&at-refinedAt<250&&jump>3)result.issues.push('ABRUPT_CAMERA_MOVE');
+   lastRefined=camera.position.clone();refinedAt=at;
+   return {...framing,camera:camera.position.toArray(),focus:focus.toArray(),head:center.clone().project(camera).toArray(),...(d.collectCameraViews?{candidateViews:views}:{}),quality:{method:'rendered-mesh-bounds-and-nine-face-rays',bounds:result.bounds,issues:result.issues,blockedFaceRays:result.blocked,sampledFaceRays:9,nearbyEventHeads:eventHeads.length,corrected:true,cameraJump:jump,planned:!d.collectCameraViews}};
+  }
   const score=r=>r.issues.length*(d.format==='battle'?10000:100)+r.blocked*(d.format==='battle'?100:12)+(1-r.facing)*(d.format==='battle'?150:10)+(lastRefined&&!framing.cut?r.position.distanceTo(lastRefined)*4:0);
   let best={position:initial.clone(),quaternion:initialQuaternion,...inspect()};
   if(lastRefined&&!framing.cut){camera.position.copy(lastRefined);camera.lookAt(focus);const held={position:camera.position.clone(),quaternion:camera.quaternion.clone(),...inspect()};if(score(held)<score(best))best=held;}
