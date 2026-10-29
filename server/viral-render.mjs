@@ -15,20 +15,21 @@ import {performanceDefaults} from './live-performance.mjs';
 import {mediaCommand} from './video-production.mjs';
 import {shortConfig,shortStoryboard} from './viral-content.mjs';
 const stamp=t=>new Date(Math.round(t*1000)).toISOString().slice(11,23).replace('.',',');
-export async function renderShort({config,signal,checkpoint=async(_k,_l,_i,run)=>run(),repertoire={assets:new Map(),failures:0}}){
+export async function renderShort({config,signal,offlineVoice=null,checkpoint=async(_k,_l,_i,run)=>run(),repertoire={assets:new Map(),failures:0}}){
  config=shortConfig(config);const dir=await mkdtemp(join(tmpdir(),'hubloan-short-')),started=Date.now(),width=360,height=640,fps=15;
  let renderer,mixer,neural,video,audio;
  try{
-  const result=await checkpoint('short-render','Renderizar vídeo 3D offline',[3,config,[...repertoire.assets.values()].map(a=>a.track.hash)],async()=>{
+  const result=await checkpoint('short-render','Renderizar vídeo 3D offline',[4,config,[...repertoire.assets.values()].map(a=>a.track.hash),offlineVoice?.cacheKey||null],async()=>{
    const recording=recordGameplay(config),timeline=createEditorial(config,recording);let now=100000;const e={offline:true,sessionId:'offline',status:'TESTING',config:{audio:{muted:false,volume:.8}},performanceConfig:{...performanceDefaults(),effectsGain:config.effectsGain,enabled:true},performance:{jobs:[],top:[]},game:null};
-   if(config.voiceMode==='neural'&&!process.env[`HUBLOAN_${config.voiceProfile.engine.toUpperCase()}_MODEL`])throw Error('Configure HUBLOAN_KOKORO_MODEL para renderização artística neural. Modo técnico permite fallback.');
+   if(config.voiceMode==='neural'&&!offlineVoice&&!process.env[`HUBLOAN_${config.voiceProfile.engine.toUpperCase()}_MODEL`])throw Error('Configure o modelo do perfil global para renderização artística neural. Modo técnico permite fallback.');
    let synthesize=localSpeech,voiceEngine='espeak-fallback';
-   if(process.env[`HUBLOAN_${config.voiceProfile.engine.toUpperCase()}_MODEL`]){neural=await createNeuralSpeech({engine:config.voiceProfile.engine,timeout:180000,initializationTimeout:60000,profile:config.voiceProfile});synthesize=neural.synthesize;voiceEngine=config.voiceProfile.engine+'-'+config.voiceProfile.voice;}
+   if(offlineVoice){if(JSON.stringify(offlineVoice.metrics.profile)!==JSON.stringify(config.voiceProfile))throw Error('Snapshot vocal incompatível');neural=offlineVoice;synthesize=neural.synthesize;voiceEngine=config.voiceProfile.engine+'-archived-'+config.voiceProfile.voice;}
+   else if(process.env[`HUBLOAN_${config.voiceProfile.engine.toUpperCase()}_MODEL`]){neural=await createNeuralSpeech({engine:config.voiceProfile.engine,timeout:180000,initializationTimeout:60000,profile:config.voiceProfile});synthesize=neural.synthesize;voiceEngine=config.voiceProfile.engine+'-'+config.voiceProfile.voice;}
    // Finish all voice preparation before rendering; no live queue stalls or stale comments.
    const prepared=new Map(),segments=config.lines.map((text,i)=>({role:'host',voice:'host',text,delivery:(config.format==='battle'?['suspense','mysterious','surprised','playful']:config.format==='comedy'?['calm','playful','mysterious','playful']:['warm','playful','mysterious','warm'])[i%4]}));
    for(const segment of segments){if(signal?.aborted)throw Error('Renderização cancelada');const pcm=await synthesize(segment.text,'host',{signal,delivery:segment.delivery});if(!pcm?.length)throw Error('Narração vazia');prepared.set(segment.text,pcm);}
    if(config.voiceMode==='neural'&&(!neural?.metrics.neural||neural.metrics.fallback||neural.metrics.failures))throw Error('Síntese neural indisponível; aprovação artística bloqueada.');
-   if(neural?.metrics.fallback)voiceEngine='kokoro-with-espeak-fallback';
+   if(neural?.metrics.fallback)voiceEngine=config.voiceProfile.engine+'-with-espeak-fallback';
    const totalSpeech=segments.reduce((n,s)=>n+prepared.get(s.text).length/48000,0);if(totalSpeech>config.seconds-1)throw Error('Falas longas demais para a duração. Encurte o roteiro.');
    mixer=createMixer({clock:()=>now,synthesize:async text=>prepared.get(text)});await mixer.prime(segments);mixer.setRepertoire(repertoire,config.music?.trackId);
    // No procedural bed presented as licensed soundtrack: music only with approved assets.
@@ -54,7 +55,7 @@ export async function renderShort({config,signal,checkpoint=async(_k,_l,_i,run)=
    if(next!==segments.length)throw Error('Nem todas as falas foram reproduzidas');
    await video.close();video=null;await audio.close();audio=null;await renderer.inspect();
    const blocks=captionBlocks(captions);const srt=blocks.map((c,i)=>`${i+1}\n${stamp(c.start)} --> ${stamp(c.end)}\n${c.text}\n`).join('\n');await writeFile(join(dir,'captions.srt'),srt);
-   await mediaCommand('ffmpeg',['-v','error','-y','-f','rawvideo','-pixel_format','rgb24','-video_size',`${width}x${height}`,'-framerate',String(fps),'-i',join(dir,'frames.rgb'),'-f','s16le','-ar','48000','-ac','1','-i',join(dir,'audio.pcm'),'-vf',`subtitles=${join(dir,'captions.srt')}:force_style='FontName=DejaVu Sans,FontSize=16,MarginV=70,MarginL=28,MarginR=40,Outline=2'`,'-c:v','libx264','-threads','2','-preset','ultrafast','-crf','24','-pix_fmt','yuv420p','-c:a','aac','-b:a','96k','-t',String(config.seconds),'-movflags','+faststart',join(dir,'short.mp4')],{signal,timeout:90000});
+   await mediaCommand('ffmpeg',['-v','error','-y','-f','rawvideo','-pixel_format','rgb24','-video_size',`${width}x${height}`,'-framerate',String(fps),'-i',join(dir,'frames.rgb'),'-f','s16le','-ar','48000','-ac','1','-i',join(dir,'audio.pcm'),'-vf',`subtitles=${join(dir,'captions.srt')}:force_style='FontName=DejaVu Sans,FontSize=16,MarginV=40,MarginL=28,MarginR=40,Outline=2'`,'-c:v','libx264','-threads','2','-preset','ultrafast','-crf','24','-pix_fmt','yuv420p','-c:a','aac','-b:a','96k','-t',String(config.seconds),'-movflags','+faststart',join(dir,'short.mp4')],{signal,timeout:90000});
    const bytes=await readFile(join(dir,'short.mp4'));if(bytes.length>8*1024*1024)throw Error('Vídeo excede 8 MB');
    const probe=JSON.parse(await mediaCommand('ffprobe',['-v','error','-show_streams','-show_format','-of','json',join(dir,'short.mp4')],{signal}));
    if(!probe.streams.some(s=>s.codec_name==='h264'&&s.width===width&&s.height===height)||!probe.streams.some(s=>s.codec_name==='aac')||Math.abs(Number(probe.format.duration)-config.seconds)>.2)throw Error('MP4 inválido');

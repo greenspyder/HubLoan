@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {audiovisualEligibility} from '../viral-quality.mjs';
 import {initialWorkspace,addMission,approveMission} from '../domain.mjs';
-const valid={technicalStatus:'TECHNICALLY_VALID',voice:{neural:3,fallback:0,failures:0},music:[{hash:'approved'}]};
+const valid={technicalStatus:'TECHNICALLY_VALID',voice:{neural:3,fallback:0,failures:0},music:[{hash:'approved'}],renderer:{frames:3,framingQuality:{checked:3,issues:{}}}};
 test('artistic eligibility never mistakes technical success, fallback or absent music for complete AV',()=>{
  assert.equal(audiovisualEligibility(valid).eligible,true);assert.equal(audiovisualEligibility(valid).humanReviewRequired,true);
  for(const r of [undefined,{}, {...valid,voice:{neural:2,fallback:1,failures:1}},{...valid,music:[]},{...valid,technicalStatus:'FAILED'}])assert.equal(audiovisualEligibility(r).eligible,false);
@@ -19,3 +19,5 @@ test('AV controls are bounded and neural is the default',()=>{
  assert.equal(shortConfig(c).voiceMode,'neural');assert.equal(shortConfig({...c,voiceMode:'technical'}).voiceMode,'technical');
  for(const change of [{voiceMode:'remote-paid'},{headScale:2},{headScale:NaN},{effectsGain:-1},{effectsGain:2}])assert.throws(()=>shortConfig({...c,...change}));
 });
+
+test('framing failures block even technically valid neural exports',()=>{for(const framingQuality of [{checked:2,issues:{}},{checked:3,issues:{MESH_FACE_OCCLUSION:1}}])assert.equal(audiovisualEligibility({...valid,renderer:{frames:3,framingQuality}}).eligible,false);});

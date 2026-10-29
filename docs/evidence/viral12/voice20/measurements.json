@@ -1,0 +1,362 @@
+[
+  {
+    "file": "Lume-Chatterbox-af_heart-A.wav",
+    "voice": "af_heart",
+    "model": "Chatterbox-Multilingual-pt-br",
+    "reference": {
+      "voice": "af_heart",
+      "synthetic": true,
+      "realPersonImitation": false,
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+      "sha256": "cb80ab5d2c23395825ef03034c09031c8f3a4e14097d7a1ef77a8cb61dc20160",
+      "text": "There is something unusual happening in this arena. Stay a little longer. The most interesting part is about to begin."
+    },
+    "text": "Tem alguma coisa estranha acontecendo nessa arena... e eu acho que voc\u00eas ainda n\u00e3o perceberam.",
+    "seconds": 6.16,
+    "wallMs": 86501.68791600004,
+    "initialization": {
+      "ready": true,
+      "initializationMs": 17832.89512499982,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "metrics": {
+      "synthesisMs": 86492.35692000002,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "lufsBefore": -24.0616500505456,
+    "lufsAfter": -23.000000000000004,
+    "gainDb": 1.0616500505456017,
+    "sha256": "55c4ce473a3d030b6bf58c5b637c374b2d5a81fbe7cd19de8e68ce795ef1fc59",
+    "fallback": false,
+    "artisticReview": "PENDING_USER"
+  },
+  {
+    "file": "Lume-Chatterbox-af_heart-B.wav",
+    "voice": "af_heart",
+    "model": "Chatterbox-Multilingual-pt-br",
+    "reference": {
+      "voice": "af_heart",
+      "synthetic": true,
+      "realPersonImitation": false,
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+      "sha256": "cb80ab5d2c23395825ef03034c09031c8f3a4e14097d7a1ef77a8cb61dc20160",
+      "text": "There is something unusual happening in this arena. Stay a little longer. The most interesting part is about to begin."
+    },
+    "text": "Ela tinha um plano perfeito. Infelizmente, esqueceu de avisar a pr\u00f3pria cabe\u00e7a.",
+    "seconds": 6.2,
+    "wallMs": 78963.35561399997,
+    "initialization": {
+      "ready": true,
+      "initializationMs": 17832.89512499982,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "metrics": {
+      "synthesisMs": 78943.40390599996,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "lufsBefore": -26.0129432910143,
+    "lufsAfter": -23.000000000000004,
+    "gainDb": 3.012943291014299,
+    "sha256": "572cccad6a289e62175988838138d8303b1a75f6c54beecb77f79d118b0e75b5",
+    "fallback": false,
+    "artisticReview": "PENDING_USER"
+  },
+  {
+    "file": "Lume-Chatterbox-af_heart-C.wav",
+    "voice": "af_heart",
+    "model": "Chatterbox-Multilingual-pt-br",
+    "reference": {
+      "voice": "af_heart",
+      "synthetic": true,
+      "realPersonImitation": false,
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+      "sha256": "cb80ab5d2c23395825ef03034c09031c8f3a4e14097d7a1ef77a8cb61dc20160",
+      "text": "There is something unusual happening in this arena. Stay a little longer. The most interesting part is about to begin."
+    },
+    "text": "Espera... espera... n\u00e3o vira agora.",
+    "seconds": 3.28,
+    "wallMs": 47059.077725999945,
+    "initialization": {
+      "ready": true,
+      "initializationMs": 17832.89512499982,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "metrics": {
+      "synthesisMs": 47052.37612200017,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "lufsBefore": -25.532572849269602,
+    "lufsAfter": -23.0,
+    "gainDb": 2.5325728492696022,
+    "sha256": "1fb0f747f0f5ab794bfbb629f0e58d6e5d6d4efd7cf6ff6964c5f3328a63f6ed",
+    "fallback": false,
+    "artisticReview": "PENDING_USER"
+  },
+  {
+    "file": "Lume-Chatterbox-af_heart-D.wav",
+    "voice": "af_heart",
+    "model": "Chatterbox-Multilingual-pt-br",
+    "reference": {
+      "voice": "af_heart",
+      "synthetic": true,
+      "realPersonImitation": false,
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+      "sha256": "cb80ab5d2c23395825ef03034c09031c8f3a4e14097d7a1ef77a8cb61dc20160",
+      "text": "There is something unusual happening in this arena. Stay a little longer. The most interesting part is about to begin."
+    },
+    "text": "Olha quem apareceu... estava esperando voc\u00ea chegar.",
+    "seconds": 2.92,
+    "wallMs": 44889.95072099988,
+    "initialization": {
+      "ready": true,
+      "initializationMs": 17832.89512499982,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "metrics": {
+      "synthesisMs": 44883.62771900006,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "lufsBefore": -26.12070506750874,
+    "lufsAfter": -23.000000000000004,
+    "gainDb": 3.1207050675087404,
+    "sha256": "086b5aa444060a1d64a3468b648beb7796b6e5782efad1650fc86d93746b1295",
+    "fallback": false,
+    "artisticReview": "PENDING_USER"
+  },
+  {
+    "file": "Lume-Chatterbox-af_heart-E.wav",
+    "voice": "af_heart",
+    "model": "Chatterbox-Multilingual-pt-br",
+    "reference": {
+      "voice": "af_heart",
+      "synthetic": true,
+      "realPersonImitation": false,
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+      "sha256": "cb80ab5d2c23395825ef03034c09031c8f3a4e14097d7a1ef77a8cb61dc20160",
+      "text": "There is something unusual happening in this arena. Stay a little longer. The most interesting part is about to begin."
+    },
+    "text": "Eu n\u00e3o acredito que ela conseguiu escapar dessa!",
+    "seconds": 3.36,
+    "wallMs": 49090.677149000156,
+    "initialization": {
+      "ready": true,
+      "initializationMs": 17832.89512499982,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "metrics": {
+      "synthesisMs": 49079.79167299982,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "lufsBefore": -24.866090771211653,
+    "lufsAfter": -22.999999999999996,
+    "gainDb": 1.8660907712116528,
+    "sha256": "468e9837d4873759e3e9ea18bf39e64956d4bd23a5561a54d936feccaf3f373b",
+    "fallback": false,
+    "artisticReview": "PENDING_USER"
+  },
+  {
+    "file": "Lume-Chatterbox-bf_emma-A.wav",
+    "voice": "bf_emma",
+    "model": "Chatterbox-Multilingual-pt-br",
+    "reference": {
+      "voice": "bf_emma",
+      "synthetic": true,
+      "realPersonImitation": false,
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+      "sha256": "fdd36bc8c4653dcd547a5225007cef1141f4541ca6a4a2bdb83e72ee33d7c863",
+      "text": "There is something unusual happening in this arena. Stay a little longer. The most interesting part is about to begin."
+    },
+    "text": "Tem alguma coisa estranha acontecendo nessa arena... e eu acho que voc\u00eas ainda n\u00e3o perceberam.",
+    "seconds": 4.72,
+    "wallMs": 63504.43215400014,
+    "initialization": {
+      "ready": true,
+      "initializationMs": 17832.89512499982,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "metrics": {
+      "synthesisMs": 63494.29714199982,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "lufsBefore": -23.750095340254187,
+    "lufsAfter": -23.0,
+    "gainDb": 0.7500953402541868,
+    "sha256": "7f9df5bbfde1cc5c6ee0f1ff1e4aab0ae27758c39ae8fc6431eb640cf78d789b",
+    "fallback": false,
+    "artisticReview": "PENDING_USER"
+  },
+  {
+    "file": "Lume-Chatterbox-bf_emma-B.wav",
+    "voice": "bf_emma",
+    "model": "Chatterbox-Multilingual-pt-br",
+    "reference": {
+      "voice": "bf_emma",
+      "synthetic": true,
+      "realPersonImitation": false,
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+      "sha256": "fdd36bc8c4653dcd547a5225007cef1141f4541ca6a4a2bdb83e72ee33d7c863",
+      "text": "There is something unusual happening in this arena. Stay a little longer. The most interesting part is about to begin."
+    },
+    "text": "Ela tinha um plano perfeito. Infelizmente, esqueceu de avisar a pr\u00f3pria cabe\u00e7a.",
+    "seconds": 4.64,
+    "wallMs": 63788.03229999994,
+    "initialization": {
+      "ready": true,
+      "initializationMs": 17832.89512499982,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "metrics": {
+      "synthesisMs": 63779.97125599995,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "lufsBefore": -20.9067595713074,
+    "lufsAfter": -23.000000000000004,
+    "gainDb": -2.0932404286925994,
+    "sha256": "97d2ce7c11ba2328214247f629cfa8ada1db6cda3c3484cf7fa2e083ab895734",
+    "fallback": false,
+    "artisticReview": "PENDING_USER"
+  },
+  {
+    "file": "Lume-Chatterbox-bf_emma-C.wav",
+    "voice": "bf_emma",
+    "model": "Chatterbox-Multilingual-pt-br",
+    "reference": {
+      "voice": "bf_emma",
+      "synthetic": true,
+      "realPersonImitation": false,
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+      "sha256": "fdd36bc8c4653dcd547a5225007cef1141f4541ca6a4a2bdb83e72ee33d7c863",
+      "text": "There is something unusual happening in this arena. Stay a little longer. The most interesting part is about to begin."
+    },
+    "text": "Espera... espera... n\u00e3o vira agora.",
+    "seconds": 2.72,
+    "wallMs": 42899.47243699999,
+    "initialization": {
+      "ready": true,
+      "initializationMs": 17832.89512499982,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "metrics": {
+      "synthesisMs": 42891.572499000176,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "lufsBefore": -22.052236031222588,
+    "lufsAfter": -23.000000000000004,
+    "gainDb": -0.9477639687774122,
+    "sha256": "4b2b639199111a8a5017ce29d7ca79a8cad7af556573e1a27e03f661b042c03c",
+    "fallback": false,
+    "artisticReview": "PENDING_USER"
+  },
+  {
+    "file": "Lume-Chatterbox-bf_emma-D.wav",
+    "voice": "bf_emma",
+    "model": "Chatterbox-Multilingual-pt-br",
+    "reference": {
+      "voice": "bf_emma",
+      "synthetic": true,
+      "realPersonImitation": false,
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+      "sha256": "fdd36bc8c4653dcd547a5225007cef1141f4541ca6a4a2bdb83e72ee33d7c863",
+      "text": "There is something unusual happening in this arena. Stay a little longer. The most interesting part is about to begin."
+    },
+    "text": "Olha quem apareceu... estava esperando voc\u00ea chegar.",
+    "seconds": 3.44,
+    "wallMs": 49331.29199099995,
+    "initialization": {
+      "ready": true,
+      "initializationMs": 17832.89512499982,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "metrics": {
+      "synthesisMs": 49323.92026200023,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "lufsBefore": -20.728838085482497,
+    "lufsAfter": -23.0,
+    "gainDb": -2.2711619145175024,
+    "sha256": "e849a8548bc52f9a9aead9ac6d15db6c7f54e8e72d579b2037633f0dc7fe70b5",
+    "fallback": false,
+    "artisticReview": "PENDING_USER"
+  },
+  {
+    "file": "Lume-Chatterbox-bf_emma-E.wav",
+    "voice": "bf_emma",
+    "model": "Chatterbox-Multilingual-pt-br",
+    "reference": {
+      "voice": "bf_emma",
+      "synthetic": true,
+      "realPersonImitation": false,
+      "license": "Apache-2.0",
+      "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+      "sha256": "fdd36bc8c4653dcd547a5225007cef1141f4541ca6a4a2bdb83e72ee33d7c863",
+      "text": "There is something unusual happening in this arena. Stay a little longer. The most interesting part is about to begin."
+    },
+    "text": "Eu n\u00e3o acredito que ela conseguiu escapar dessa!",
+    "seconds": 2.72,
+    "wallMs": 42689.58967399976,
+    "initialization": {
+      "ready": true,
+      "initializationMs": 17832.89512499982,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "metrics": {
+      "synthesisMs": 42679.18510800018,
+      "peakRssBytes": 4982104064,
+      "vramBytes": null,
+      "device": "cpu"
+    },
+    "lufsBefore": -19.874239437942077,
+    "lufsAfter": -22.999999999999996,
+    "gainDb": -3.1257605620579225,
+    "sha256": "08a2e4f60f360b3e4f9cb4857531321bd89c4db6a5b491c6e71c51bf4cea01c9",
+    "fallback": false,
+    "artisticReview": "PENDING_USER"
+  }
+]

@@ -1,7 +1,7 @@
 // Presentation only, serialized into the existing isolated renderer.
 export function createCameraRig(T,camera){
  const aim=new T.Vector3(),heading=new T.Vector3(1,0,0),desired=new T.Vector3(),goal=new T.Vector3();
- let occlusionSide=1;let initialized=false,lastRound=null,lastPlayer=null,previousAt=null,lastCut=null;
+ let lastRefined=null,refinedAt=null;let occlusionSide=1;let initialized=false,lastRound=null,lastPlayer=null,previousAt=null,lastCut=null;
  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
  return {update(f,d,at){
   const dt=previousAt===null?0:clamp((at-previousAt)/1000,0,.25);previousAt=at;
@@ -64,5 +64,45 @@ export function createCameraRig(T,camera){
   if(mode!=='Tactical'&&blocked(camera.position))issues.push('POSSIBLE_BODY_OCCLUSION');
   if(bounds.bottom<-.42&&mode!=='Tactical')issues.push('CAPTION_SAFE_AREA');
   return {quality:{method:'conservative-projected-envelope-and-body-probes',bounds,issues,fitSteps:fit,corrected:fit>0||occlusionCorrected},shot:mode,occlusionCorrected,fallback,player:index,focus:aim.toArray(),camera:camera.position.toArray(),anchors:anchors.map(v=>v.clone().project(camera).toArray()),arenaCorners:corners.map(v=>v.clone().project(camera).toArray()),head:head.clone().project(camera).toArray(),cut:reset};
+ },refine(f,d,actors,framing,at){
+  const subject=actors[framing.player];if(!subject)return framing;
+  const head=subject.head.g,center=head.getWorldPosition(new T.Vector3()),corners=[];
+  head.traverse(o=>{if(!o.isMesh)return;o.geometry.computeBoundingBox();const box=o.geometry.boundingBox;for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z])corners.push(new T.Vector3(x,y,z).applyMatrix4(o.matrixWorld));});
+  const blockers=actors.flatMap((a,i)=>[a.body,...(i===framing.player?[]:[a.head.g])]).filter(a=>a.visible);
+  // Actual eye / muzzle heights in createLumeFace, not points above the skull.
+  const targets=[];for(const x of [-.32,0,.32])for(const y of [-.22,.1,.38])targets.push(head.localToWorld(new T.Vector3(x,y,.7)));
+  const eventHeads=d.format==='battle'?actors.filter((a,i)=>i!==framing.player&&a.head.g.visible&&a.head.g.position.distanceTo(center)<3.5).map(a=>a.head.g.getWorldPosition(new T.Vector3())):[];
+  const forward=new T.Vector3(0,0,1).transformDirection(head.matrixWorld),ray=new T.Raycaster();
+  const inspect=()=>{
+   camera.updateMatrixWorld();const q=corners.map(v=>v.clone().project(camera));
+   const bounds={left:Math.min(...q.map(v=>v.x)),right:Math.max(...q.map(v=>v.x)),bottom:Math.min(...q.map(v=>v.y)),top:Math.max(...q.map(v=>v.y))};
+   let blocked=0;for(const v of targets){const delta=v.clone().sub(camera.position);ray.set(camera.position,delta.clone().normalize());ray.near=0;ray.far=delta.length()-.06;if(ray.intersectObjects(blockers,true).length)blocked++;}
+   const issues=[];
+   if(q.some(v=>v.z<=-1||v.z>=1)||bounds.left<-.95||bounds.right>.95||bounds.top>.68||bounds.bottom<-.9)issues.push('MESH_FACE_CROPPED');
+   if(bounds.bottom<-.48)issues.push('CAPTION_SAFE_AREA');
+   if(bounds.top-bounds.bottom<.19)issues.push('SUBJECT_SMALL');
+   if(blocked>2)issues.push('MESH_FACE_OCCLUSION');
+   const facing=camera.position.clone().sub(center).normalize().dot(forward);
+   if(d.shot==='Front'&&facing<.25)issues.push('FACE_NOT_FRONTAL');
+   if(eventHeads.some(v=>{const p=v.clone().project(camera);return p.z<=-1||p.z>=1||Math.abs(p.x)>.92||p.y<-.5||p.y>.68;}))issues.push('NEARBY_CONFRONTATION_OUT_OF_FRAME');
+   return {bounds,issues,blocked,facing};
+  };
+  const initial=camera.position.clone(),initialQuaternion=camera.quaternion.clone(),focus=center.clone().add(new T.Vector3(0,.55,0));
+  const score=r=>r.issues.length*100+r.blocked*12+(1-r.facing)*10+(lastRefined&&!framing.cut?r.position.distanceTo(lastRefined)*4:0);
+  let best={position:initial.clone(),quaternion:initialQuaternion,...inspect()};
+  if(lastRefined&&!framing.cut){camera.position.copy(lastRefined);camera.lookAt(focus);const held={position:camera.position.clone(),quaternion:camera.quaternion.clone(),...inspect()};if(score(held)<score(best))best=held;}
+  if(best.issues.length||d.shot==='Front'){
+   for(const angle of [0,.4,-.4,.85,-.85,1.3,-1.3])for(const height of [2.2,4,7,11,15]){
+    camera.position.copy(center).add(forward.clone().applyAxisAngle(new T.Vector3(0,1,0),angle).multiplyScalar(8));camera.position.y=center.y+height;camera.lookAt(focus);
+    let r=inspect();for(let fit=0;fit<12&&r.issues.some(x=>['MESH_FACE_CROPPED','CAPTION_SAFE_AREA','NEARBY_CONFRONTATION_OUT_OF_FRAME'].includes(x));fit++){camera.position.sub(focus).multiplyScalar(1.1).add(focus);camera.lookAt(focus);r=inspect();}
+    const candidate={position:camera.position.clone(),quaternion:camera.quaternion.clone(),...r};if(score(candidate)<score(best))best=candidate;
+   }
+  }
+  camera.position.copy(best.position);camera.quaternion.copy(best.quaternion);
+  if(lastRefined&&!framing.cut&&camera.position.distanceTo(lastRefined)>1.2){camera.position.sub(lastRefined).clampLength(0,1.2).add(lastRefined);camera.lookAt(focus);best={...best,...inspect()};}
+  camera.updateMatrixWorld();
+  const corrected=initial.distanceTo(camera.position)>.01,jump=lastRefined?lastRefined.distanceTo(camera.position):0;
+  lastRefined=camera.position.clone();if(!framing.cut&&refinedAt!==null&&at-refinedAt<250&&jump>3)best.issues.push('ABRUPT_CAMERA_MOVE');refinedAt=at;
+  return {...framing,camera:camera.position.toArray(),head:center.clone().project(camera).toArray(),quality:{method:'rendered-mesh-bounds-and-nine-face-rays',bounds:best.bounds,issues:best.issues,blockedFaceRays:best.blocked,sampledFaceRays:9,nearbyEventHeads:eventHeads.length,corrected:corrected||framing.quality.corrected,previousProbeIssues:framing.quality.issues,cameraJump:jump}};
  }};
 }

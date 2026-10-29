@@ -48,7 +48,7 @@ export function bootScene3D(T,width=360,height=640,createFace,design='jade',crea
   if(!f?.players?.length)throw Error('3D exige Seed Snake');const t=at/1000;await updatePhotos(p?.top||[]);
   const delta=previousAt===null?1:Math.min(.25,Math.max(0,(at-previousAt)/1000));previousAt=at;const host=f.players[direction.player||0]||f.players[0];
   cameraMode=direction.mode;currentDirection=direction;
-  const h=host.body[0],framing=rig.update(f,direction,at);
+  const h=host.body[0];let framing=rig.update(f,direction,at);
   const music=presentation?.role==='music',vocal=music&&presentation.vocalActive===true;musicEnergy+=((music?presentation.level||0:0)-musicEnergy)*(1-Math.exp(-delta*7));sun.intensity=2.3+.18*musicEnergy;fill.intensity=1.2+.12*musicEnergy;
 
 
@@ -71,17 +71,28 @@ const eat=at-v.eatenAt,giftAge=at-(v.giftAt||0),giftActive=giftAge>=0&&giftAge<1
    // Reuse GPU attributes while topology is unchanged; growth still reallocates explicitly.
    if(previous.attributes.position?.count===geometry.attributes.position.count){for(const key of ['position','normal']){previous.attributes[key].array.set(geometry.attributes[key].array);previous.attributes[key].needsUpdate=true;}previous.boundingSphere=null;geometry.dispose();}
    else{previous.dispose();s.body.geometry=geometry;}
-   s.head.g.position.copy(points[0]);s.head.g.position.y+=joy?Math.abs(Math.sin(t*12))*.2:0;s.head.g.rotation.y=Math.PI/2-(v.visualDirection??v.direction)*Math.PI/2;s.head.g.rotation.z=v.alive?Math.sin(t*4)*.035+(i===0&&music?Math.sin(t*6)*.06*musicEnergy:0):.3;
+   s.head.g.position.copy(points[0]);if(direction.editorial)s.head.g.position.y+=.42;s.head.g.position.y+=joy?Math.abs(Math.sin(t*12))*.2:0;s.head.g.rotation.y=Math.PI/2-(v.visualDirection??v.direction)*Math.PI/2;s.head.g.rotation.z=v.alive?Math.sin(t*4)*.035+(i===0&&music?Math.sin(t*6)*.06*musicEnergy:0):.3;
    s.head.g.scale.setScalar(direction.editorial?Math.max(.95,Math.min(1.15,direction.headScale||1.08)):1.08);s.head.animate(at,level,joy,!v.alive,direction.player===i?direction.emotion:(joy?'happy':'focused'),v.target?((v.target.x-v.body[0].x)*Math.sin((v.visualDirection??v.direction)*Math.PI/2)-(v.target.y-v.body[0].y)*Math.cos((v.visualDirection??v.direction)*Math.PI/2))*.015:0);s.shadow.position.set(points[0].x,.13,points[0].z);
    s.scales.count=Math.min(96,v.body.length*2-2);for(let k=0;k<s.scales.count;k++){const u=k/Math.max(1,s.scales.count),taper=u>.7?Math.max(.015,(1-u)/.3):1,pt=curve.getPointAt(u);scaleTransform.scale.set(.10*taper,.012,.16*taper);scaleTransform.position.set(pt.x,pt.y+.43*taper,pt.z);scaleTransform.updateMatrix();s.scales.setMatrixAt(k,scaleTransform.matrix);}s.scales.instanceMatrix.needsUpdate=true;
    for(let k=0;k<12;k++){const part=particles[i*12+k],age=at-Math.max(v.alive?v.eatenAt:v.hitAt,v.giftAt||0);part.visible=age>=0&&age<(v.giftAt>v.eatenAt?1800:700);if(part.visible){const u=age/(v.giftAt>v.eatenAt?1800:700),a=k*Math.PI/6;part.position.set(points[0].x+Math.cos(a)*u*1.7,.5+Math.sin(u*Math.PI)*1.6,points[0].z+Math.sin(a)*u*1.7);part.scale.setScalar((1-u)*(giftActive&&v.giftKind==='special'?1.7:1));part.material=mat(giftActive?(v.giftKind==='rose'?'#ff92bc':v.giftKind==='special'?'#ffe275':'#c5e9ff'):'#fff2aa');}}
   }
   f.obstacles?.forEach((r,i)=>{if(rocks[i])rocks[i].position.set(r.x-7.5,.3,r.y-11.5);});
   apples.forEach((a,i)=>{a.visible=!!f.food[i];if(a.visible){a.position.set(f.food[i].x-7.5,.1+Math.sin(t*2+i)*.06,f.food[i].y-11.5);a.rotation.y=Math.sin(t+i)*.12;a.scale.setScalar(f.food[i].golden?1.25:1);a.children[0].material=mat(f.food[i].golden?'#ffda58':'#ff5360');a.children[1].material=mat(f.food[i].golden?'#e8a92e':'#ed3b4c');}});
+  if(direction.editorial&&!direction.presenter){scene.updateMatrixWorld(true);framing=rig.refine(f,direction,snakes,framing,at);}
   plants.forEach((g,i)=>g.rotation.z=Math.sin(t*.7+i)*.025);
   const voice=presentation?.role&&presentation.role!=='comment'?presentation:null,chant=voice?.role==='chant'||music;portrait.g.visible=!!direction.presenter||!!voice||direction.cue?.kind==='community';portrait.animate(at,music&&!vocal?0:voice?.level||0,chant||direction.emotion==='joy',direction.emotion==='sad',direction.emotion,(h.x-7.5)*.015);portrait.g.rotation.y=(h.x-7.5)*.035;portrait.g.rotation.z=chant?Math.sin((voice.elapsedMs||0)/210)*(music?.08*musicEnergy:.07):Math.sin(t*2)*.025;portrait.g.position.y=-1.78+(music?Math.sin((voice.elapsedMs||0)/210)*.08*musicEnergy:voice?Math.sin(t*5)*.05:0);
   hostNeck.visible=!!direction.presenter;
-  if(direction.presenter){portrait.g.position.set(0,-.2+Math.sin(t*2)*.025,-5.5);portrait.g.scale.setScalar(.98);portrait.g.rotation.y=Math.sin(t*1.4)*.06;portrait.g.rotation.z=Math.sin(t*2.1)*.025;}else{portrait.g.position.x=-.85;portrait.g.position.z=-8;portrait.g.scale.setScalar(.66);}
+  if(direction.presenter){portrait.g.position.set(0,-.2+Math.sin(t*2)*.025,-5.5);portrait.g.scale.setScalar(.98);portrait.g.rotation.y=Math.sin(t*1.4)*.06;portrait.g.rotation.z=Math.sin(t*2.1)*.025;}else if(direction.editorial){portrait.g.position.set(1.15,1.45,-8);portrait.g.scale.setScalar(.4);}else{portrait.g.position.x=-.85;portrait.g.position.z=-8;portrait.g.scale.setScalar(.66);}
+  if(direction.editorial&&direction.presenter){
+   scene.updateMatrixWorld(true);const q=[];
+   portrait.g.traverse(o=>{if(!o.isMesh||o===hostNeck)return;o.geometry.computeBoundingBox();const box=o.geometry.boundingBox;for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z])q.push(new T.Vector3(x,y,z).applyMatrix4(o.matrixWorld).project(camera));});
+   const bounds={left:Math.min(...q.map(v=>v.x)),right:Math.max(...q.map(v=>v.x)),bottom:Math.min(...q.map(v=>v.y)),top:Math.max(...q.map(v=>v.y))},issues=[];
+   if(q.some(v=>v.z<=-1||v.z>=1)||bounds.left<-.95||bounds.right>.95||bounds.top>.68)issues.push('PRESENTER_FACE_CROPPED');
+   if(bounds.bottom<-.48)issues.push('CAPTION_SAFE_AREA');if(bounds.top-bounds.bottom<.3)issues.push('SUBJECT_SMALL');
+   const ray=new T.Raycaster(),blockers=snakes.flatMap(s=>[s.body,s.head.g]).filter(o=>o.visible);let blocked=0;
+   for(const x of [-.32,0,.32])for(const y of [-.22,.1,.38]){const target=portrait.g.localToWorld(new T.Vector3(x,y,.7)),delta=target.sub(camera.position);ray.set(camera.position,delta.clone().normalize());ray.far=delta.length()-.06;if(ray.intersectObjects(blockers,true).length)blocked++;}
+   if(blocked>2)issues.push('PRESENTER_FACE_OCCLUSION');framing={...framing,quality:{method:'presenter-mesh-bounds-and-nine-face-rays',bounds,issues,blockedFaceRays:blocked,sampledFaceRays:9,corrected:false}};
+  }
   audience.forEach((a,i)=>{const person=p?.top?.[i];a.g.visible=!!person&&visibility>0;if(!a.g.visible)return;const side=i%2?1:-1;a.g.position.set(-1.45+i*.58,1.4+Math.sin(t*4+i)*.035,-9);a.g.scale.setScalar(visibility*(i===0?.36:.29));a.g.rotation.y=side*-.12;a.crown.visible=i===0;});
   const staged=performance.now();renderer.render(scene,camera);const rendered=performance.now();ctx.drawImage(renderer.domElement,0,0);const captured=performance.now();ctx.save();ctx.scale(width/360,height/640);
   if(!direction.editorial){card(16,16,310,47,'#123740e0');label(`${offline?'LUME • VÍDEO EDITORIAL':'LUME AO VIVO'} • RODADA ${f.round}`,28,35,12,'#b8e7b6');

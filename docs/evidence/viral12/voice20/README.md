@@ -13,3 +13,13 @@ Primeira inferência desta execução: inicialização 17.83 s; fala A 86.49 s p
 Voice Studio reutilizado: mecanismo/identidade reais, presença local, licenças, controle suportado, escuta do perfil salvo antes da aprovação, revisionamento e isolamento existentes. Presets antigos são mantidos apenas para snapshots e retirados da lista de candidatas.
 
 Amostras em geração e revisão cinematográfica ainda pendentes. Este checkpoint não conclui a missão. PR deve permanecer em rascunho, sem merge/deploy/publicação. A integração automática Vercel está desabilitada para esta branch.
+
+## Retomada com arquivos preservados
+
+As duas identidades possuem cinco WAVs e demonstrações contínuas de 30 segundos, já preservadas. Consulte comparison.md e measurements.json. Os novos renders reutilizam esses WAVs com texto/perfil/hash verificados, sem nova inferência e sem alterar a voz aprovada. Isso é pré-síntese offline, não evidência de latência live.
+
+Setup reproduzível: instale requirements-chatterbox.txt em ambiente isolado com torch/torchaudio CPU 2.6.0 e execute `python server/live-worker/setup-voice20.py /diretorio/modelos`. O script confere hashes oficiais, gera referências sintéticas e registra sua proveniência; não aprova perfis. Configure `HUBLOAN_CHATTERBOX_MODEL=/diretorio/modelos/chatterbox` e `HUBLOAN_CHATTERBOX_PYTHON=/venv/bin/python`. A síntese do painel nunca substitui falhas por amostras de fallback.
+
+Câmera: inspeção dos limites locais das malhas projetadas após deformação, nove raios sobre olhos/focinho, verificação de rivais próximas e seleção de planos alternativos. A cabeça recebe elevação visual uniforme de 0.42 unidade nos vídeos, sem mudança de física. Retrato secundário no topo, legendas abaixo do rosto. Continuidade limitada a 1.2 unidade por quadro entre cortes. A comédia mede o rosto da apresentadora, excluindo o pescoço da região facial. Os alertas remanescentes bloqueiam aprovação, mesmo com override humano; ausência de alertas não prova qualidade artística.
+
+Regressão RTMP: a execução inicial falhou ao exigir duas partidas de 22 s em uma gravação de 42 s; o fixture foi aumentado para 52 s para não depender de colisões precoces. Isso não altera física nem duração das partidas do produto. Resultados finais serão registrados nos arquivos de evidência.

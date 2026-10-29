@@ -4,3 +4,5 @@ chatterbox-tts @ git+https://github.com/resemble-ai/chatterbox.git@5de7a54aa4e5e
 kokoro==0.9.4
 pyloudnorm==0.2.0
 soundfile>=0.13,<0.15
+# English synthetic references require spaCy's English tokenizer model.
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
