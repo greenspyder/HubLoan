@@ -87,7 +87,7 @@ export function createCameraRig(T,camera){
    if(eventHeads.some(v=>{const p=v.clone().project(camera);return p.z<=-1||p.z>=1||Math.abs(p.x)>.92||p.y<-.5||p.y>.68;}))issues.push('NEARBY_CONFRONTATION_OUT_OF_FRAME');
    return {bounds,issues,blocked,facing};
   };
-  const initial=camera.position.clone(),initialQuaternion=camera.quaternion.clone(),focus=center.clone().add(new T.Vector3(0,.55,0));
+  const initial=camera.position.clone(),initialQuaternion=camera.quaternion.clone(),focus=center.clone().add(new T.Vector3(0,d.format==='battle'?-.15:.55,0));
   // Offline preflight exposes real, inspected viewpoints. A later pass chooses
   // a continuous path across the whole scene; live rendering never uses this.
   if(d.format==='battle'&&(d.collectCameraViews||d.cameraPlan)){
