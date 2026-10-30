@@ -64,25 +64,32 @@ const eat=at-v.eatenAt,giftAge=at-(v.giftAt||0),giftActive=giftAge>=0&&giftAge<1
    let points=logical;
    for(let pass=0;pass<2;pass++){const rounded=[points[0]];for(let j=0;j<points.length-1;j++){rounded.push(points[j].clone().lerp(points[j+1],.25),points[j].clone().lerp(points[j+1],.75));}rounded.push(points.at(-1));points=rounded;}
 
-   const curve=new T.CatmullRomCurve3(points,false,'centripetal');const segments=Math.max(12,Math.min(160,v.body.length*7));const geometry=new T.TubeGeometry(curve,segments,.43,8,false);
+   s.head.g.position.copy(points[0]);if(direction.editorial)s.head.g.position.y+=.7;s.head.g.position.y+=joy?Math.abs(Math.sin(t*12))*.2:0;s.head.g.rotation.y=Math.PI/2-(v.visualDirection??v.direction)*Math.PI/2;s.head.g.rotation.z=v.alive?Math.sin(t*4)*.035+(i===0&&music?Math.sin(t*6)*.06*musicEnergy:0):.3;
+   // sceneFrame already interpolates steering from recorded simulation frames.
+   // No wall-clock easing: replay, slow motion and random access produce the same pose.
+   s.head.g.scale.setScalar(direction.editorial?Math.max(.95,Math.min(1.15,direction.headScale||1.08)):1.08);s.head.animate(at,level,joy,!v.alive,direction.player===i?direction.emotion:(joy?'happy':'focused'),v.target?((v.target.x-v.body[0].x)*Math.sin((v.visualDirection??v.direction)*Math.PI/2)-(v.target.y-v.body[0].y)*Math.cos((v.visualDirection??v.direction)*Math.PI/2))*.015:0);s.shadow.position.set(points[0].x,.13,points[0].z);
+   // The rendered spine starts INSIDE the skull, then joins the unchanged simulation path.
+   // Both live and offline use the final head transform (including lean and celebration).
+   s.head.g.updateMatrixWorld(true);
+   const socket=s.head.g.localToWorld(s.head.neckSocket.clone());
+   const shoulder=socket.clone().lerp(points[0],.55);
+   const spine=[socket,shoulder,...points];
+   const curve=new T.CatmullRomCurve3(spine,false,'centripetal');const segments=Math.max(12,Math.min(160,v.body.length*7));const geometry=new T.TubeGeometry(curve,segments,.43,8,false);
    const positions=geometry.attributes.position,center=new T.Vector3(),vertex=new T.Vector3();
    for(let ring=0;ring<=segments;ring++){const u=ring/segments,scale=u>.7?Math.max(.015,(1-u)/.3):1;curve.getPointAt(u,center);for(let j=0;j<=8;j++){const index=ring*9+j;vertex.fromBufferAttribute(positions,index).sub(center).multiplyScalar(scale).add(center);positions.setXYZ(index,vertex.x,vertex.y,vertex.z);}}
    geometry.computeVertexNormals();const previous=s.body.geometry;
    // Reuse GPU attributes while topology is unchanged; growth still reallocates explicitly.
    if(previous.attributes.position?.count===geometry.attributes.position.count){for(const key of ['position','normal']){previous.attributes[key].array.set(geometry.attributes[key].array);previous.attributes[key].needsUpdate=true;}previous.boundingSphere=null;geometry.dispose();}
    else{previous.dispose();s.body.geometry=geometry;}
-   s.head.g.position.copy(points[0]);if(direction.editorial)s.head.g.position.y+=.7;s.head.g.position.y+=joy?Math.abs(Math.sin(t*12))*.2:0;s.head.g.rotation.y=Math.PI/2-(v.visualDirection??v.direction)*Math.PI/2;s.head.g.rotation.z=v.alive?Math.sin(t*4)*.035+(i===0&&music?Math.sin(t*6)*.06*musicEnergy:0):.3;
-   // Grid steering is instantaneous; editorial head acting eases across the turn.
-   // Keep simulation/body paths intact and reset pose at a deliberate scene cut.
-   if(direction.editorial&&direction.format==='battle'){
-    const targetYaw=s.head.g.rotation.y;
-    if(s.poseCut!==direction.cutId||s.poseYaw===undefined)s.poseYaw=targetYaw;
-    else s.poseYaw+=Math.max(-delta*2.4,Math.min(delta*2.4,Math.atan2(Math.sin(targetYaw-s.poseYaw),Math.cos(targetYaw-s.poseYaw))));
-    s.poseCut=direction.cutId;s.head.g.rotation.y=s.poseYaw;
-   }
-   // Showcase pose: the featured character looks at the camera; body and simulation stay untouched.
-   if(direction.editorial&&direction.format==='champion'&&direction.shot==='Front'&&i===direction.player)s.head.g.rotation.y=Math.atan2(camera.position.x-s.head.g.position.x,camera.position.z-s.head.g.position.z);
-   s.head.g.scale.setScalar(direction.editorial?Math.max(.95,Math.min(1.15,direction.headScale||1.08)):1.08);s.head.animate(at,level,joy,!v.alive,direction.player===i?direction.emotion:(joy?'happy':'focused'),v.target?((v.target.x-v.body[0].x)*Math.sin((v.visualDirection??v.direction)*Math.PI/2)-(v.target.y-v.body[0].y)*Math.cos((v.visualDirection??v.direction)*Math.PI/2))*.015:0);s.shadow.position.set(points[0].x,.13,points[0].z);
+
+   const connection=new T.Vector3();
+   for(let k=0;k<8;k++)connection.add(new T.Vector3().fromBufferAttribute(s.body.geometry.attributes.position,k));
+   connection.multiplyScalar(1/8);
+   const gap=connection.distanceTo(socket),inside=s.head.skull.worldToLocal(connection.clone()).length();
+   const targetYaw=Math.PI/2-(v.visualDirection??v.direction)*Math.PI/2;
+   const orientationError=Math.abs(Math.atan2(Math.sin(s.head.g.rotation.y-targetYaw),Math.cos(s.head.g.rotation.y-targetYaw)));
+   const finite=Array.from(s.body.geometry.attributes.position.array).every(Number.isFinite);
+   s.anatomy={player:i,gap,skullNormalizedRadius:inside,orientationError,finite,headToBody:s.head.g.position.distanceTo(logical[0]),socket:socket.toArray(),spineStart:connection.toArray(),issues:[...(gap>1e-5?['detached-neck']:[]),...(inside>.8?['neck-outside-skull']:[]),...(!finite?['invalid-spine']:[]),...(orientationError>.01?['head-steering-mismatch']:[])]};
    s.scales.count=Math.min(96,v.body.length*2-2);for(let k=0;k<s.scales.count;k++){const u=k/Math.max(1,s.scales.count),taper=u>.7?Math.max(.015,(1-u)/.3):1,pt=curve.getPointAt(u);scaleTransform.scale.set(.10*taper,.012,.16*taper);scaleTransform.position.set(pt.x,pt.y+.43*taper,pt.z);scaleTransform.updateMatrix();s.scales.setMatrixAt(k,scaleTransform.matrix);}s.scales.instanceMatrix.needsUpdate=true;
    for(let k=0;k<12;k++){const part=particles[i*12+k],age=at-Math.max(v.alive?v.eatenAt:v.hitAt,v.giftAt||0);part.visible=age>=0&&age<(v.giftAt>v.eatenAt?1800:700);if(part.visible){const u=age/(v.giftAt>v.eatenAt?1800:700),a=k*Math.PI/6;part.position.set(points[0].x+Math.cos(a)*u*1.7,.5+Math.sin(u*Math.PI)*1.6,points[0].z+Math.sin(a)*u*1.7);part.scale.setScalar((1-u)*(giftActive&&v.giftKind==='special'?1.7:1));part.material=mat(giftActive?(v.giftKind==='rose'?'#ff92bc':v.giftKind==='special'?'#ffe275':'#c5e9ff'):'#fff2aa');}}
   }
@@ -91,7 +98,7 @@ const eat=at-v.eatenAt,giftAge=at-(v.giftAt||0),giftActive=giftAge>=0&&giftAge<1
   plants.forEach((g,i)=>g.rotation.z=Math.sin(t*.7+i)*.025);
   if(direction.editorial&&!direction.presenter){scene.updateMatrixWorld(true);framing=rig.refine(f,direction,snakes,framing,at,[...staticScenery,...rocks,...apples]);}
   const voice=presentation?.role&&presentation.role!=='comment'?presentation:null,chant=voice?.role==='chant'||music;portrait.g.visible=!!direction.presenter||!!voice||direction.cue?.kind==='community';portrait.animate(at,music&&!vocal?0:voice?.level||0,chant||direction.emotion==='joy',direction.emotion==='sad',direction.emotion,(h.x-7.5)*.015);portrait.g.rotation.y=(h.x-7.5)*.035;portrait.g.rotation.z=chant?Math.sin((voice.elapsedMs||0)/210)*(music?.08*musicEnergy:.07):Math.sin(t*2)*.025;portrait.g.position.y=-1.78+(music?Math.sin((voice.elapsedMs||0)/210)*.08*musicEnergy:voice?Math.sin(t*5)*.05:0);
-  hostNeck.visible=!!direction.presenter;
+  hostNeck.visible=true;
   if(direction.presenter){portrait.g.position.set(0,.1+Math.sin(t*2)*.025,-5.5);portrait.g.scale.setScalar(.98);portrait.g.rotation.y=Math.sin(t*1.4)*.06;portrait.g.rotation.z=Math.sin(t*2.1)*.025;}else if(direction.editorial){portrait.g.position.set(1.15,1.45,-8);portrait.g.scale.setScalar(.4);}else{portrait.g.position.x=-.85;portrait.g.position.z=-8;portrait.g.scale.setScalar(.66);}
   if(direction.editorial&&direction.presenter){
    scene.updateMatrixWorld(true);const q=[];
@@ -116,9 +123,10 @@ const eat=at-v.eatenAt,giftAge=at-(v.giftAt||0),giftActive=giftAge>=0&&giftAge<1
   if(!offline&&presentation?.text){card(130,472,212,86,'#123740ed');label(voice?'LUME • '+(music?(vocal?'FAIXA VOCAL':'INSTRUMENTAL'):chant?'NO RITMO':'FALANDO'):'COMENTÁRIO • SIMULADO',140,488,10,'#c8edb2');wrap(presentation.text,140,510,191);}
   if(p?.top?.length){const expanded=visibility>0;card(16,expanded?560:590,310,expanded?61:25,'#123740e0');label(expanded?'TOP 6 • QUANTIDADE SIMULADA':`LÍDER DEMO • ${p.top[0].name.slice(0,20)}`,28,expanded?575:607,12,'#ffdc81');if(expanded)(p.top||[]).forEach((person,i)=>label(`${i+1} ${person.name.slice(0,8)}`,28+(i%3)*98,594+Math.floor(i/3)*18,13,i?'#dcf0ed':'#ffdc81'));}
   label(paused?'PAUSADO':'PERSONAGENS VIRTUAIS • INTERAÇÕES SIMULADAS',180,631,9,'#b8d8d7','center');ctx.restore();
-  lastPresentation={...framing,cameraMode,cue:currentDirection?.cue?.kind||null,mouth:music&&!vocal?0:voice?.level||0,presenterVisible:portrait.g.visible,face:portrait.inspect(),headScale:snakes[0].head.g.scale.x,round:f.round,camera:camera.position.toArray(),bodyLengths:f.players.map(v=>v.body.length),avatarCount:(p?.top||[]).filter((_,i)=>audience[i].g.visible).length};
+  for(const s of snakes.filter(s=>s.head.g.visible)){const a=new T.Vector3(...s.anatomy.socket).project(camera),b=new T.Vector3(...s.anatomy.spineStart).project(camera);s.anatomy.projectedGapPixels=Math.hypot((a.x-b.x)*width/2,(a.y-b.y)*height/2);}
+  lastPresentation={...framing,anatomy:snakes.filter(s=>s.head.g.visible).map(s=>s.anatomy),cameraMode,cue:currentDirection?.cue?.kind||null,mouth:music&&!vocal?0:voice?.level||0,presenterVisible:portrait.g.visible,face:portrait.inspect(),headScale:snakes[0].head.g.scale.x,round:f.round,camera:camera.position.toArray(),bodyLengths:f.players.map(v=>v.body.length),avatarCount:(p?.top||[]).filter((_,i)=>audience[i].g.visible).length};
   const overlaid=performance.now(),data=ctx.getImageData(0,0,width,height).data,readback=performance.now();for(let i=0,j=0;i<data.length;i+=4){rgb[j++]=data[i];rgb[j++]=data[i+1];rgb[j++]=data[i+2];}
-  const converted=performance.now();const pixels=encodePixels(rgb);return {pixels,visual:{cut:framing.cut,...(framing.candidateViews?{candidateViews:framing.candidateViews}:{}),quality:framing.quality,shot:framing.shot,occlusionCorrected:framing.occlusionCorrected,pacing:direction.pacing,player:framing.player,fallback:framing.fallback,head:framing.head,camera:framing.camera,round:f.round,phase:f.phase,emotion:direction.emotion,avatarCount:lastPresentation.avatarCount,presenterVisible:portrait.g.visible},timings:{sceneMs:staged-began,threeSubmitMs:rendered-staged,captureMs:captured-rendered,overlayMs:overlaid-captured,readbackMs:readback-overlaid,pixelConversionMs:converted-readback,serializationMs:performance.now()-converted}};
+  const converted=performance.now();const pixels=encodePixels(rgb);return {pixels,visual:{cut:framing.cut,...(framing.candidateViews?{candidateViews:framing.candidateViews}:{}),anatomy:lastPresentation.anatomy,quality:framing.quality,shot:framing.shot,occlusionCorrected:framing.occlusionCorrected,pacing:direction.pacing,player:framing.player,fallback:framing.fallback,head:framing.head,camera:framing.camera,round:f.round,phase:f.phase,emotion:direction.emotion,avatarCount:lastPresentation.avatarCount,presenterVisible:portrait.g.visible},timings:{sceneMs:staged-began,threeSubmitMs:rendered-staged,captureMs:captured-rendered,overlayMs:overlaid-captured,readbackMs:readback-overlaid,pixelConversionMs:converted-readback,serializationMs:performance.now()-converted}};
  }
  return {draw,resources,portrait(designEmotion='neutral',level=0,at=1000){
  const visibility=scene.children.map(o=>[o,o.visible]);for(const o of scene.children)if(!o.isLight&&o!==camera)o.visible=false;

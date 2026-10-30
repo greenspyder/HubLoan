@@ -72,3 +72,12 @@ test('a precomputed camera position still undergoes actual mesh validation',()=>
  const out=createCameraRig(T,camera).refine({}, {format:'battle',cameraPlan:{position:camera.position.toArray(),quaternion:camera.quaternion.toArray()}},[{head:{g:head},body}],{player:0,cut:true,quality:{issues:[],corrected:false}},1000);
  assert.ok(out.quality.issues.includes('MESH_FACE_OCCLUSION'));assert.equal(out.quality.blockedFaceRays,9);
 });
+
+test('offline camera candidates remain world-aligned while a skull turns',()=>{
+ const camera=new T.PerspectiveCamera(48,360/640,.1,300),head=new T.Group();head.add(new T.Mesh(new T.SphereGeometry(.7),new T.MeshBasicMaterial()));
+ const body=new T.Mesh(new T.SphereGeometry(.2),new T.MeshBasicMaterial());body.position.set(0,-4,0);body.updateMatrixWorld(true);
+ const rig=createCameraRig(T,camera),views=[];
+ for(const yaw of [0,.7]){head.rotation.y=yaw;head.updateMatrixWorld(true);camera.position.set(0,4,9);camera.lookAt(0,0,0);camera.updateMatrixWorld();
+ const result=rig.refine({}, {format:'champion',collectCameraViews:true},[{head:{g:head},body}],{player:0,cut:true,quality:{issues:[],corrected:false}},1000);views.push(result.candidateViews.map(v=>v.position.map(x=>x.toFixed(6)).join(',')));}
+ assert.ok(views.every(v=>v.length>0&&v.length<=200));assert.ok(views[0].filter(v=>views[1].includes(v)).length>20,'turning must preserve shared camera positions');
+});

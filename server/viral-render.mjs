@@ -20,7 +20,7 @@ export async function renderShort({config,signal,offlineVoice=null,checkpoint=as
  config=shortConfig(config);const dir=await mkdtemp(join(tmpdir(),'hubloan-short-')),started=Date.now(),width=360,height=640,fps=15;
  let renderer,mixer,neural,video,audio;
  try{
-  const result=await checkpoint('short-render','Renderizar vídeo 3D offline',[5,config,[...repertoire.assets.values()].map(a=>a.track.hash),offlineVoice?.cacheKey||null],async()=>{
+  const result=await checkpoint('short-render','Renderizar vídeo 3D offline',[6,config,[...repertoire.assets.values()].map(a=>a.track.hash),offlineVoice?.cacheKey||null],async()=>{
    const recording=recordGameplay(config),timeline=createEditorial(config,recording);let now=100000;const e={offline:true,sessionId:'offline',status:'TESTING',config:{audio:{muted:false,volume:.8}},performanceConfig:{...performanceDefaults(),effectsGain:config.effectsGain,enabled:true},performance:{jobs:[],top:[]},game:null};
    if(config.voiceMode==='neural'&&!offlineVoice&&!process.env[`HUBLOAN_${config.voiceProfile.engine.toUpperCase()}_MODEL`])throw Error('Configure o modelo do perfil global para renderização artística neural. Modo técnico permite fallback.');
    let synthesize=localSpeech,voiceEngine='espeak-fallback';
@@ -37,7 +37,7 @@ export async function renderShort({config,signal,offlineVoice=null,checkpoint=as
    e.musicCatalog=[...repertoire.assets.values()].map(a=>a.track);e.musicAmbientTrackId=config.music?.trackId;
    e.performanceConfig.music=repertoire.assets.size>0;
    renderer=await create3DRenderer({width,height});video=await open(join(dir,'frames.rgb'),'w');audio=await open(join(dir,'audio.pcm'),'w');
-   const replay=[],preflight=config.format==='battle',captions=[],hashes=new Set(),timing=[],board=shortStoryboard(config);let cameraPlanning=null;let next=0,availableAt=0,cover,blackRun=0,maxBlackRun=0;
+   const replay=[],preflight=['battle','champion'].includes(config.format),captions=[],hashes=new Set(),timing=[],board=shortStoryboard(config);let cameraPlanning=null;let next=0,availableAt=0,cover,blackRun=0,maxBlackRun=0;
    for(let index=0;index<config.seconds*fps;index++){
     if(signal?.aborted)throw Error('Renderização cancelada');if(Date.now()-started>600000)throw Error('Limite offline de dez minutos excedido');
     const seconds=index/fps;now=100000+seconds*1000;const edit=editorialFrame(recording,timeline,seconds,now);e.game=edit.game;

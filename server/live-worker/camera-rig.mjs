@@ -90,11 +90,15 @@ export function createCameraRig(T,camera){
   const initial=camera.position.clone(),initialQuaternion=camera.quaternion.clone(),focus=center.clone().add(new T.Vector3(0,d.format==='battle'?-.15:.55,0));
   // Offline preflight exposes real, inspected viewpoints. A later pass chooses
   // a continuous path across the whole scene; live rendering never uses this.
-  if(d.format==='battle'&&(d.collectCameraViews||d.cameraPlan)){
+  if(['battle','champion'].includes(d.format)&&(d.collectCameraViews||d.cameraPlan)){
    const views=[];
    if(d.collectCameraViews){
-    for(const radius of [8,11])for(const angle of [-1.2,-.8,-.4,0,.4,.8,1.2])for(const height of [2.5,4,6,9,12]){
-     camera.position.copy(center).add(forward.clone().applyAxisAngle(new T.Vector3(0,1,0),angle).multiplyScalar(radius));camera.position.y=center.y+height;camera.lookAt(focus);
+    // World-aligned azimuths do not jump when the head turns. The old
+    // head-relative lattice rotated all candidates simultaneously at grid turns.
+    for(const radius of [8,11])for(let azimuth=0;azimuth<32;azimuth++)for(const height of [2.5,4,6,9,12]){
+     const angle=azimuth*Math.PI/16,offset=new T.Vector3(Math.sin(angle)*radius,height,Math.cos(angle)*radius);
+     if(offset.clone().normalize().dot(forward)<.25)continue;
+     camera.position.copy(center).add(offset);camera.lookAt(focus);
      let r=inspect();for(let fit=0;fit<12&&r.issues.some(x=>['MESH_FACE_CROPPED','CAPTION_SAFE_AREA','NEARBY_CONFRONTATION_OUT_OF_FRAME'].includes(x));fit++){camera.position.sub(focus).multiplyScalar(1.08).add(focus);camera.lookAt(focus);r=inspect();}
      if(!r.issues.length)views.push({position:camera.position.toArray(),quaternion:camera.quaternion.toArray(),facing:r.facing,blocked:r.blocked,height:r.bounds.top-r.bounds.bottom,frontWeight:d.shot==='Front'?20:8,targetHeight:d.shot==='Front'?.55:.4});
     }

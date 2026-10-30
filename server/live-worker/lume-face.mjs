@@ -50,7 +50,7 @@ export function createLumeFace(T, color, design='jade') {
  if(design==='crocodile')for(let i=0;i<3;i++)part('#e2e7b6',g,(i-1)*.32,.61,-.4,.11,.14,.18);
  let last=null,open=0,expression='neutral';const pose=[0,0,0];
  const states={suspicious:[-.14,.19,.035],determined:[-.16,-.23,.02],proud:[.10,-.16,.08],confused:[-.05,.24,.07],frustrated:[-.18,-.20,.04],neutral:[0,0,0],happy:[.14,-.10,.12],joy:[.14,-.10,.12],surprise:[.28,.20,.30],irritated:[-.18,-.28,.04],confident:[-.08,-.10,.04],teasing:[-.12,.16,.09],sad:[-.09,.25,.04],celebrating:[.22,-.12,.22],fear:[.20,.28,.22],focused:[-.12,-.16,0],laughing:[.10,-.18,.32]};
- return {g,skull,eyes,pupils,mouth,tongue,jaw,design,animate(at,level,joy,sad,emotion='neutral',gaze=0){
+ return {g,skull,neckSocket:new T.Vector3(0,-.12,-.25),eyes,pupils,mouth,tongue,jaw,design,animate(at,level,joy,sad,emotion='neutral',gaze=0){
   const dt=last===null?.1:Math.max(0,Math.min(.2,(at-last)/1000));last=at;const ease=1-Math.exp(-dt*14);
   expression=sad?'sad':joy&&emotion==='neutral'?'happy':states[emotion]?emotion:'neutral';pose.forEach((v,i)=>pose[i]+=(states[expression][i]-v)*(1-Math.exp(-dt*6)));const [lift,browAngle,rest]=pose;
   open+=((Math.max(0,Math.min(1,level))*.55+rest)-open)*ease;
