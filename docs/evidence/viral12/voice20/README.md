@@ -1,4 +1,4 @@
-> **Revisão mais recente:** [correção adicional de câmera e novos vídeos](camera-followup/README.md). A batalha passa a quatro saltos de câmera, ainda bloqueada; os números abaixo descrevem a entrega inicial preservada como histórico.
+> **Revisão mais recente:** [R3 — trajetórias contínuas, três MP4s e validação](camera-r3/README.md). Os quatro saltos da batalha foram corrigidos; os três renders R3 não registraram alertas geométricos. Aprovação audiovisual humana e escolha da voz permanecem pendentes. Os resultados abaixo são o histórico das entregas anteriores.
 
 # Voice Identity 2.0 — PR #26
 

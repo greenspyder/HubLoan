@@ -1,0 +1,1682 @@
+{
+  "width": 360,
+  "height": 640,
+  "seconds": 25,
+  "fps": 15,
+  "maxBlackRun": 0,
+  "distinctFrames": 375,
+  "distinctMediaFps": 15,
+  "captionTiming": "word-count estimate inside PCM interval; not forced alignment",
+  "audio": true,
+  "format": "battle",
+  "voiceEngine": "chatterbox-archived-af_heart",
+  "voice": {
+    "engine": "chatterbox",
+    "voice": "af_heart",
+    "profile": {
+      "version": 1,
+      "candidateId": "chatterbox-heart",
+      "engine": "chatterbox",
+      "model": "Chatterbox-Multilingual-pt-br",
+      "voice": "af_heart",
+      "reference": "af_heart",
+      "language": "pt-BR",
+      "speed": 1,
+      "exaggeration": 0.35,
+      "style": "Chatterbox PT-BR · Heart sintética",
+      "normalization": "existing-mixer-limiter",
+      "fallback": "espeak-technical-only",
+      "license": "MIT; synthetic reference Apache-2.0",
+      "source": "https://huggingface.co/ResembleAI/Chatterbox-Multilingual-pt-br",
+      "emotionControl": "neural-exaggeration-not-emotion-labels",
+      "liveValidated": false
+    },
+    "neural": 3,
+    "fallback": 0,
+    "failures": 0,
+    "synthesisCalls": 0,
+    "source": "VERIFIED_ARCHIVED_NEURAL_TAKES",
+    "used": [
+      {
+        "text": "Tem alguma coisa estranha acontecendo nessa arena... e eu acho que vocês ainda não perceberam.",
+        "sha256": "55c4ce473a3d030b6bf58c5b637c374b2d5a81fbe7cd19de8e68ce795ef1fc59",
+        "sourceSynthesisMs": 86492.35692000002
+      },
+      {
+        "text": "Espera... espera... não vira agora.",
+        "sha256": "1fb0f747f0f5ab794bfbb629f0e58d6e5d6d4efd7cf6ff6964c5f3328a63f6ed",
+        "sourceSynthesisMs": 47052.37612200017
+      },
+      {
+        "text": "Ela tinha um plano perfeito. Infelizmente, esqueceu de avisar a própria cabeça.",
+        "sha256": "572cccad6a289e62175988838138d8303b1a75f6c54beecb77f79d118b0e75b5",
+        "sourceSynthesisMs": 78943.40390599996
+      }
+    ]
+  },
+  "music": [
+    {
+      "id": "00000000-0000-4000-8000-000000000012",
+      "hash": "ac907c95596fc433d14aea4ea76f00c833bd6dcc4a4c1bd16f18eea72250a3e5",
+      "title": "Brazilian Sunsets",
+      "creator": "Ketsa",
+      "license": "CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/",
+      "source": "https://freemusicarchive.org/music/Ketsa/cc-by-free-to-use-for-anything/brazilian-sunsets/"
+    }
+  ],
+  "renderer": {
+    "engine": "three-webgl2",
+    "width": 360,
+    "height": 640,
+    "frames": 375,
+    "maxFrameMs": 427,
+    "softwareRequested": true,
+    "sandboxDisabled": true,
+    "gpu": "WebKit WebGL",
+    "geometryCount": 34,
+    "textureCount": 1,
+    "timings": {
+      "sceneMs": {
+        "totalMs": 1759.2999999998137,
+        "maxMs": 31.099999999976717
+      },
+      "threeSubmitMs": {
+        "totalMs": 464.5000000001164,
+        "maxMs": 92.20000000006985
+      },
+      "captureMs": {
+        "totalMs": 46.29999999888241,
+        "maxMs": 1.1999999999534339
+      },
+      "overlayMs": {
+        "totalMs": 51.90000000153668,
+        "maxMs": 7.800000000046566
+      },
+      "readbackMs": {
+        "totalMs": 11243.499999999418,
+        "maxMs": 275.79999999993015
+      },
+      "pixelConversionMs": {
+        "totalMs": 474.500000001397,
+        "maxMs": 12.300000000046566
+      },
+      "serializationMs": {
+        "totalMs": 44.89999999792781,
+        "maxMs": 0.9000000000232831
+      },
+      "preparationMs": {
+        "totalMs": 9.246981999996933,
+        "maxMs": 0.10498799999186303
+      },
+      "evaluateWallMs": {
+        "totalMs": 18446.70904699994,
+        "maxMs": 425.9963509999943
+      },
+      "decodeMs": {
+        "totalMs": 22.743985999986762,
+        "maxMs": 0.4342040000046836
+      }
+    },
+    "shots": {
+      "Front": 150,
+      "Follow": 138,
+      "Action": 87
+    },
+    "cameraSamples": [
+      {
+        "at": 100000,
+        "frame": 1,
+        "cut": true,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.2747064014478104,
+            "right": 0.274818249724121,
+            "bottom": -0.34879071139183704,
+            "top": 0.2510597073305208
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0,
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          -2.945270247638351e-16,
+          0.01841642725442469,
+          0.9840516962713941
+        ],
+        "camera": [
+          -5.500000000000001,
+          10.216382737303366,
+          -6.5
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "confused",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 101000,
+        "frame": 16,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.26333410077031094,
+            "right": 0.24748908764230473,
+            "bottom": -0.3201737016490985,
+            "top": 0.23836758540230182
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 1.9470535306145784,
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          3.4065111604722377e-16,
+          0.01704040979696901,
+          0.985293131153783
+        ],
+        "camera": [
+          -11.336001879961945,
+          11.09763804850686,
+          10.871081702276362
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "confused",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 102000,
+        "frame": 31,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.3196002969088547,
+            "right": 0.29147941976438285,
+            "bottom": -0.3625389342787843,
+            "top": 0.27667385329349703
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 0.005699837315191303,
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0,
+          0.018416427254424564,
+          0.9840516962713941
+        ],
+        "camera": [
+          -5.5,
+          10.21010256327597,
+          12.5
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "confused",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 103000,
+        "frame": 46,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.3190624779483868,
+            "right": 0.29112119657614877,
+            "bottom": -0.36178509138469206,
+            "top": 0.27611226389286425
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.006313611264754826,
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0,
+          0.01841642725442456,
+          0.9840516962713941
+        ],
+        "camera": [
+          -5.5,
+          10.209095202976169,
+          12.5
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "confused",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 104000,
+        "frame": 61,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.39336212683048083,
+            "right": 0.3590077114768364,
+            "bottom": -0.39468082214852757,
+            "top": 0.3126607308691981
+          },
+          "issues": [],
+          "blockedFaceRays": 2,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 0.0025538661404462815,
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0,
+          0.02671203298994149,
+          0.9806588052259857
+        ],
+        "camera": [
+          -5.5,
+          7.244153138746909,
+          12.5
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "confused",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 105000,
+        "frame": 76,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.44436454317525736,
+            "right": 0.6221271061415928,
+            "bottom": -0.3771133367237692,
+            "top": 0.2942030725558883
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 1.533165965697109,
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          3.5467066098284686e-16,
+          0.02671203298994089,
+          0.9806588052259857
+        ],
+        "camera": [
+          5.273637616294358,
+          7.243238286020859,
+          -14.482844333118464
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 106000,
+        "frame": 91,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.4510113830202142,
+            "right": 0.6211076026498017,
+            "bottom": -0.380806420478531,
+            "top": 0.29872399501769786
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 1.5383162999076645,
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          -7.093413219656937e-16,
+          0.02671203298994074,
+          0.9806588052259857
+        ],
+        "camera": [
+          12.505990335616467,
+          7.2228688717155105,
+          1.990197173144014
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 107000,
+        "frame": 106,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.4983616641340574,
+            "right": 0.7217732572491016,
+            "bottom": -0.3558892176300813,
+            "top": 0.2966479649324791
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 1.525262145128659,
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          3.965497561990323e-16,
+          0.033439753457631255,
+          0.9782962741905927
+        ],
+        "camera": [
+          -4.4064092433819475,
+          5.236919853715832,
+          -4.9701200253108375
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 108000,
+        "frame": 121,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.7216056371296632,
+            "right": 0.5008543609052114,
+            "bottom": -0.3546333433247956,
+            "top": 0.2987459445089179
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 1.6105963726324268,
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0,
+          0.03343975345763081,
+          0.9782962741905927
+        ],
+        "camera": [
+          -5.36801010083277,
+          5.1950120193898925,
+          -3.802789907030249
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 109000,
+        "frame": 136,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.49805744262544094,
+            "right": 0.7223329437805074,
+            "bottom": -0.3521035431615212,
+            "top": 0.2967258768012259
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 1.4741222972579466,
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          9.91374390497581e-17,
+          0.0334397534576311,
+          0.9782962741905927
+        ],
+        "camera": [
+          -1.9994895833671444,
+          5.235746614532289,
+          6.278040888107281
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 110000,
+        "frame": 151,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.5181851809715472,
+            "right": 0.7925565172148344,
+            "bottom": -0.2861643579640693,
+            "top": 0.292541537282338
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.6421232110416542,
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          -5.289858833786271e-17,
+          0.03816274872474415,
+          0.9767934874901923
+        ],
+        "camera": [
+          -6.448003349168494,
+          3.825696555053189,
+          7.115403621545349
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 111000,
+        "frame": 166,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.791107185320731,
+            "right": 0.5236143561027526,
+            "bottom": -0.29306723727385003,
+            "top": 0.2948820406050781
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 1.9691352037412777,
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          4.231887067029017e-16,
+          0.03816274872474442,
+          0.9767934874901922
+        ],
+        "camera": [
+          -5.849615212855486,
+          3.69849788039053,
+          11.397176495381682
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 112000,
+        "frame": 181,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.39334581913673744,
+            "right": 0.37499151956755483,
+            "bottom": -0.34895585559405723,
+            "top": 0.28419315563709796
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 1.6237934193122712,
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          3.965497561990324e-16,
+          0.033439753457630936,
+          0.9782962741905927
+        ],
+        "camera": [
+          -12.496588824332038,
+          5.243706814303904,
+          3.0164038215895896
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 113000,
+        "frame": 196,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.8726325052527856,
+            "right": 0.5726935504162852,
+            "bottom": -0.2750074387324779,
+            "top": 0.2723664097004515
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 1.6293134242671594,
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          5.504486396265234e-16,
+          0.0309450310878698,
+          0.9799652001642463
+        ],
+        "camera": [
+          -11.956221443483741,
+          5.542510503727979,
+          9.449197531023263
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 114000,
+        "frame": 211,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.2272765964693913,
+            "right": 0.2326067590144835,
+            "bottom": -0.2550420578618217,
+            "top": 0.2027782709702842
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.21675753845363685,
+          "planned": true
+        },
+        "shot": "Action",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          -2.495359740787744e-16,
+          0.018224542301165044,
+          0.9865897824695247
+        ],
+        "camera": [
+          -6.5,
+          10.208698683102925,
+          14.366666666666715
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 115000,
+        "frame": 226,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.26916974482119177,
+            "right": 0.2477615222716881,
+            "bottom": -0.27253075503191737,
+            "top": 0.2268705245113795
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.0057179128901729825,
+          "planned": true
+        },
+        "shot": "Action",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0,
+          0.018224542301165533,
+          0.9865897824695247
+        ],
+        "camera": [
+          -5.5,
+          10.244263563666282,
+          15.5
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 116000,
+        "frame": 241,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.2694577394271597,
+            "right": 0.24797655246028394,
+            "bottom": -0.27422495523230117,
+            "top": 0.22721843573689393
+          },
+          "issues": [],
+          "blockedFaceRays": 2,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 0.0030797288563935155,
+          "planned": true
+        },
+        "shot": "Action",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0,
+          0.018224542301165603,
+          0.9865897824695247
+        ],
+        "camera": [
+          -5.5,
+          10.199581869677308,
+          15.5
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 117000,
+        "frame": 256,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.2694215479541362,
+            "right": 0.2479495363293582,
+            "bottom": -0.27517256484019914,
+            "top": 0.22717471516955873
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 0.006470924269992295,
+          "planned": true
+        },
+        "shot": "Action",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0,
+          0.018224542301165606,
+          0.9865897824695247
+        ],
+        "camera": [
+          -5.5,
+          10.222428797604497,
+          15.5
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 118000,
+        "frame": 271,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.2690815752761909,
+            "right": 0.2476956685432117,
+            "bottom": -0.27496232243489616,
+            "top": 0.22676400982379455
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.0053796278839488565,
+          "planned": true
+        },
+        "shot": "Action",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0,
+          0.018224542301165294,
+          0.9865897824695247
+        ],
+        "camera": [
+          -5.5,
+          10.237242994201594,
+          15.5
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 119000,
+        "frame": 286,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.26862941937491186,
+            "right": 0.24735778989747004,
+            "bottom": -0.2738297758441412,
+            "top": 0.2262177630511241
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 0.0005617946279361519,
+          "planned": true
+        },
+        "shot": "Action",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0,
+          0.01822454230116526,
+          0.9865897824695248
+        ],
+        "camera": [
+          -5.5,
+          10.19502965606658,
+          15.5
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 120000,
+        "frame": 301,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.3084762089885385,
+            "right": 0.2849191283293714,
+            "bottom": -0.2632661426765145,
+            "top": 0.23627949939749432
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 0.0046452009343784795,
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0,
+          0.02347030194390088,
+          0.9846989571807658
+        ],
+        "camera": [
+          -5.5,
+          7.2354004178441045,
+          15.5
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "teasing",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 121000,
+        "frame": 316,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.30848406059429695,
+            "right": 0.2849252127836254,
+            "bottom": -0.2638622436296064,
+            "top": 0.2362898075602359
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.006634406544709037,
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0,
+          0.02347030194390088,
+          0.9846989571807658
+        ],
+        "camera": [
+          -5.5,
+          7.2248375741685535,
+          15.5
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "teasing",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 122000,
+        "frame": 331,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.3088461091684076,
+            "right": 0.28520570318479394,
+            "bottom": -0.2654981923774059,
+            "top": 0.23676512377764025
+          },
+          "issues": [],
+          "blockedFaceRays": 2,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 0.004027874097950246,
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          -2.830534395083583e-16,
+          0.023470301943900724,
+          0.9846989571807658
+        ],
+        "camera": [
+          -5.5,
+          7.198275483164437,
+          15.5
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "teasing",
+        "avatarCount": 0,
+        "presenterVisible": true
+      },
+      {
+        "at": 123000,
+        "frame": 346,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.30935863900956084,
+            "right": 0.2856025341906651,
+            "bottom": -0.2663535075214773,
+            "top": 0.23743797402936628
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.0013688181251749754,
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0,
+          0.023470301943900884,
+          0.9846989571807658
+        ],
+        "camera": [
+          -5.5,
+          7.243562609523266,
+          15.5
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "teasing",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 124000,
+        "frame": 361,
+        "cut": false,
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.30973304579276345,
+            "right": 0.2858922430372431,
+            "bottom": -0.265477588323381,
+            "top": 0.23792947707076814
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.005817312569236677,
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0,
+          0.023470301943900918,
+          0.9846989571807658
+        ],
+        "camera": [
+          -5.5,
+          7.210921418023997,
+          15.5
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "teasing",
+        "avatarCount": 0,
+        "presenterVisible": false
+      }
+    ],
+    "framingQuality": {
+      "checked": 375,
+      "corrected": 375,
+      "issues": {},
+      "failures": []
+    },
+    "nativeBase64": true,
+    "browserCpuMs": null,
+    "browserRssBytes": null
+  },
+  "cameraPlanning": {
+    "method": "offline-global-path",
+    "frames": 375,
+    "candidates": 22819,
+    "maxStep": 2.8,
+    "maxTurn": 0.25,
+    "observedMaxStep": 2.739407832249447,
+    "observedMaxTurn": 0.24000000000002414,
+    "addedCuts": 0
+  },
+  "renderMs": {
+    "mean": 49.313068829333254,
+    "p95": 69.16648400000122,
+    "max": 426.35050699999556
+  },
+  "wallMs": 95243,
+  "timeline": {
+    "format": "battle",
+    "version": 3,
+    "source": "DETERMINISTIC_GAME",
+    "scenes": [
+      {
+        "id": "scene-0",
+        "phase": "Gancho",
+        "start": 0,
+        "end": 4.533333333333333,
+        "shot": "Front",
+        "player": 3,
+        "emotion": "confused",
+        "sourceStart": 144800,
+        "speed": 1,
+        "transition": "cut",
+        "replay": false,
+        "preview": true
+      },
+      {
+        "id": "scene-1",
+        "phase": "Desenvolvimento",
+        "start": 4.533333333333333,
+        "end": 13.733333333333333,
+        "shot": "Follow",
+        "player": 3,
+        "emotion": "determined",
+        "sourceStart": 136783.33333333334,
+        "speed": 1,
+        "transition": "cut",
+        "replay": false
+      },
+      {
+        "id": "scene-2",
+        "phase": "Momento principal",
+        "start": 13.733333333333333,
+        "end": 19.533333333333335,
+        "shot": "Action",
+        "player": 3,
+        "emotion": "surprise",
+        "sourceStart": 145200,
+        "speed": 0.65,
+        "transition": "cut",
+        "replay": true
+      },
+      {
+        "id": "scene-3",
+        "phase": "Conclusão",
+        "start": 19.533333333333335,
+        "end": 25,
+        "shot": "Front",
+        "player": 3,
+        "emotion": "teasing",
+        "sourceStart": 146400,
+        "speed": 1,
+        "transition": "cut",
+        "replay": false
+      }
+    ],
+    "highlights": [
+      {
+        "id": "elimination:146000:3",
+        "type": "elimination",
+        "at": 146000,
+        "round": 2,
+        "player": 3,
+        "reason": "Ember foi eliminada",
+        "weight": 9,
+        "score": 9.333333333333334,
+        "scoreExplanation": "peso 9 + raridade 1/3; não mede retenção"
+      },
+      {
+        "id": "elimination:175600:0",
+        "type": "elimination",
+        "at": 175600,
+        "round": 3,
+        "player": 0,
+        "reason": "Lume foi eliminada",
+        "weight": 9,
+        "score": 9.333333333333334,
+        "scoreExplanation": "peso 9 + raridade 1/3; não mede retenção"
+      },
+      {
+        "id": "elimination:189800:2",
+        "type": "elimination",
+        "at": 189800,
+        "round": 3,
+        "player": 2,
+        "reason": "Jade foi eliminada",
+        "weight": 9,
+        "score": 9.333333333333334,
+        "scoreExplanation": "peso 9 + raridade 1/3; não mede retenção"
+      },
+      {
+        "id": "result:130000:0",
+        "type": "result",
+        "at": 130000,
+        "round": 1,
+        "player": 0,
+        "reason": "Resultado: Lume",
+        "weight": 8,
+        "score": 8.5,
+        "scoreExplanation": "peso 8 + raridade 1/2; não mede retenção"
+      },
+      {
+        "id": "result:163000:0",
+        "type": "result",
+        "at": 163000,
+        "round": 2,
+        "player": 0,
+        "reason": "Resultado: Lume",
+        "weight": 8,
+        "score": 8.5,
+        "scoreExplanation": "peso 8 + raridade 1/2; não mede retenção"
+      },
+      {
+        "id": "proximity:101000:1",
+        "type": "proximity",
+        "at": 101000,
+        "round": 1,
+        "player": 1,
+        "reason": "Faísca a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:101000:3",
+        "type": "proximity",
+        "at": 101000,
+        "round": 1,
+        "player": 3,
+        "reason": "Ember a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:104400:1",
+        "type": "proximity",
+        "at": 104400,
+        "round": 1,
+        "player": 1,
+        "reason": "Faísca a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:104400:3",
+        "type": "proximity",
+        "at": 104400,
+        "round": 1,
+        "player": 3,
+        "reason": "Ember a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:104600:0",
+        "type": "proximity",
+        "at": 104600,
+        "round": 1,
+        "player": 0,
+        "reason": "Lume a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:105400:2",
+        "type": "proximity",
+        "at": 105400,
+        "round": 1,
+        "player": 2,
+        "reason": "Jade a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:108400:1",
+        "type": "proximity",
+        "at": 108400,
+        "round": 1,
+        "player": 1,
+        "reason": "Faísca a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:108400:3",
+        "type": "proximity",
+        "at": 108400,
+        "round": 1,
+        "player": 3,
+        "reason": "Ember a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:121200:1",
+        "type": "proximity",
+        "at": 121200,
+        "round": 1,
+        "player": 1,
+        "reason": "Faísca a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:121200:3",
+        "type": "proximity",
+        "at": 121200,
+        "round": 1,
+        "player": 3,
+        "reason": "Ember a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:124200:0",
+        "type": "proximity",
+        "at": 124200,
+        "round": 1,
+        "player": 0,
+        "reason": "Lume a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:124200:2",
+        "type": "proximity",
+        "at": 124200,
+        "round": 1,
+        "player": 2,
+        "reason": "Jade a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:127000:1",
+        "type": "proximity",
+        "at": 127000,
+        "round": 1,
+        "player": 1,
+        "reason": "Faísca a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:127000:3",
+        "type": "proximity",
+        "at": 127000,
+        "round": 1,
+        "player": 3,
+        "reason": "Ember a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:129000:2",
+        "type": "proximity",
+        "at": 129000,
+        "round": 1,
+        "player": 2,
+        "reason": "Jade a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      }
+    ],
+    "selectedHighlight": {
+      "id": "elimination:146000:3",
+      "type": "elimination",
+      "at": 146000,
+      "round": 2,
+      "player": 3,
+      "reason": "Ember foi eliminada",
+      "weight": 9,
+      "score": 9.333333333333334,
+      "scoreExplanation": "peso 9 + raridade 1/3; não mede retenção"
+    },
+    "fallback": false,
+    "review": {
+      "status": "HUMAN_REVIEW_REQUIRED",
+      "rubric": [
+        "Gancho",
+        "Contexto e desfecho",
+        "Ritmo e silêncio",
+        "Expressividade",
+        "Voz e música",
+        "Originalidade"
+      ],
+      "viralPotential": "NOT_MEASURED"
+    }
+  },
+  "script": [
+    "Tem alguma coisa estranha acontecendo nessa arena... e eu acho que vocês ainda não perceberam.",
+    "Espera... espera... não vira agora.",
+    "Ela tinha um plano perfeito. Infelizmente, esqueceu de avisar a própria cabeça."
+  ],
+  "captions": [
+    {
+      "text": "Tem alguma coisa estranha acontecendo",
+      "start": 0,
+      "end": 2.0533333333333332
+    },
+    {
+      "text": "nessa arena... e eu acho",
+      "start": 2.0533333333333332,
+      "end": 4.1066666666666665
+    },
+    {
+      "text": "que vocês ainda não perceberam.",
+      "start": 4.1066666666666665,
+      "end": 6.16
+    },
+    {
+      "text": "Espera... espera... não vira agora.",
+      "start": 8.333333333333334,
+      "end": 11.613333333333333
+    },
+    {
+      "text": "Ela tinha um plano perfeito.",
+      "start": 16.666666666666668,
+      "end": 19.25
+    },
+    {
+      "text": "Infelizmente, esqueceu de avisar a",
+      "start": 19.25,
+      "end": 21.833333333333336
+    },
+    {
+      "text": "própria cabeça.",
+      "start": 21.833333333333336,
+      "end": 22.866666666666667
+    }
+  ],
+  "simulationHistory": [
+    {
+      "round": 1,
+      "durationMs": 30000,
+      "winner": "Lume",
+      "winnerId": "0",
+      "participantId": null,
+      "aliveCount": 4,
+      "scores": [
+        27,
+        14,
+        22,
+        11
+      ],
+      "survival": [
+        {
+          "id": "0",
+          "participantId": null,
+          "alive": true,
+          "survivalMs": 30000
+        },
+        {
+          "id": "1",
+          "participantId": null,
+          "alive": true,
+          "survivalMs": 30000
+        },
+        {
+          "id": "2",
+          "participantId": null,
+          "alive": true,
+          "survivalMs": 30000
+        },
+        {
+          "id": "3",
+          "participantId": null,
+          "alive": true,
+          "survivalMs": 30000
+        }
+      ],
+      "at": 130000
+    },
+    {
+      "round": 2,
+      "durationMs": 30000,
+      "winner": "Lume",
+      "winnerId": "0",
+      "participantId": null,
+      "aliveCount": 3,
+      "scores": [
+        25,
+        13,
+        19,
+        10
+      ],
+      "survival": [
+        {
+          "id": "0",
+          "participantId": null,
+          "alive": true,
+          "survivalMs": 30000
+        },
+        {
+          "id": "1",
+          "participantId": null,
+          "alive": true,
+          "survivalMs": 30000
+        },
+        {
+          "id": "2",
+          "participantId": null,
+          "alive": true,
+          "survivalMs": 30000
+        },
+        {
+          "id": "3",
+          "participantId": null,
+          "alive": false,
+          "survivalMs": 13000
+        }
+      ],
+      "at": 163000
+    }
+  ],
+  "mixer": {
+    "playback": [
+      {
+        "text": "Tem alguma coisa estranha acontecendo nessa arena... e eu acho que vocês ainda não perceberam.",
+        "role": "host",
+        "createdAt": 100000,
+        "startedAt": 100000,
+        "source": "EDITORIAL_SCRIPT"
+      },
+      {
+        "text": "Espera... espera... não vira agora.",
+        "role": "host",
+        "createdAt": 108333.33333333333,
+        "startedAt": 108333.33333333333,
+        "source": "EDITORIAL_SCRIPT"
+      },
+      {
+        "text": "Ela tinha um plano perfeito. Infelizmente, esqueceu de avisar a própria cabeça.",
+        "role": "host",
+        "createdAt": 116666.66666666667,
+        "startedAt": 116666.66666666667,
+        "source": "EDITORIAL_SCRIPT"
+      }
+    ],
+    "latency": {
+      "reaction": {
+        "count": 3,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "queue": {
+        "count": 3,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "preloaded": {
+        "count": 3,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "segment": {
+        "count": 3,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "firstSpeech": {
+        "count": 3,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "complete": {
+        "count": 3,
+        "meanMs": 5244.444444444448,
+        "p95Ms": 6200,
+        "maxMs": 6200
+      }
+    },
+    "interrupted": 0,
+    "staleDropped": 0,
+    "synthesized": 0,
+    "cacheHits": 3,
+    "ttsFailures": 0,
+    "dropped": 0,
+    "ttsMs": 0,
+    "maxPlaybackLatencyMs": 0,
+    "musicFailures": 0,
+    "ambientFrames": 375,
+    "ambientTransitions": 0,
+    "ambientTrackId": "00000000-0000-4000-8000-000000000012",
+    "trackPlays": {},
+    "played": {
+      "host": 3,
+      "comment": 0,
+      "chant": 0,
+      "music": 0
+    },
+    "peak": 0.31808561640081723,
+    "aiCalls": 0
+  },
+  "technicalStatus": "TECHNICALLY_VALID",
+  "qualityStatus": "REQUIRES_HUMAN_REVIEW",
+  "providerCalls": 0,
+  "infrastructureCost": "UNKNOWN",
+  "offline": true,
+  "artisticEligibility": {
+    "eligible": true,
+    "reasons": [],
+    "humanReviewRequired": true
+  },
+  "voiceApproval": "PROVISIONAL_NOT_APPROVED",
+  "audioPreparation": "Previously synthesized WAVs verified by SHA-256; no inference during rendering",
+  "reviewOnly": true
+}

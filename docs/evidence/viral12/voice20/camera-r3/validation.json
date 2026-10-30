@@ -1,0 +1,167 @@
+[
+  {
+    "file": "comedy-voice20.mp4",
+    "sha256": "b2f62d444f1de361eda991bbca448d9cb829976302dff26f458b627108a12a69",
+    "bytes": 4040539,
+    "duration": 18.0,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 360,
+        "height": 640,
+        "r_frame_rate": "15/1",
+        "sample_rate": null
+      },
+      {
+        "codec_name": "aac",
+        "width": null,
+        "height": null,
+        "r_frame_rate": "0/0",
+        "sample_rate": "48000"
+      }
+    ],
+    "decodedFrames": 270,
+    "distinctFrames": 270,
+    "decode": "PASS",
+    "audioSync": [
+      {
+        "text": "Ela tinha um plano perfeito. Infelizmente, esqueceu de avisar a pr\u00f3pria cabe\u00e7a.",
+        "pcmStartSeconds": 0,
+        "measuredStartSeconds": 0.0,
+        "correlation": 0.97080542287943
+      },
+      {
+        "text": "Tem alguma coisa estranha acontecendo nessa arena... e eu acho que voc\u00eas ainda n\u00e3o perceberam.",
+        "pcmStartSeconds": 9,
+        "measuredStartSeconds": 9.0,
+        "correlation": 0.9787223621924187
+      }
+    ],
+    "framing": {
+      "checked": 270,
+      "corrected": 0,
+      "issues": {},
+      "failures": []
+    },
+    "artisticEligibility": {
+      "eligible": true,
+      "reasons": [],
+      "humanReviewRequired": true
+    },
+    "newRender": true,
+    "voice": "provisional Chatterbox Heart; archived neural takes; no new inference",
+    "differentFromR2": true
+  },
+  {
+    "file": "battle-voice20.mp4",
+    "sha256": "9dbc3209b05384ef4a9c1711c0901ca5fcdf4d9141dcf9cd9f4368cce0bef0b6",
+    "bytes": 5038810,
+    "duration": 25.0,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 360,
+        "height": 640,
+        "r_frame_rate": "15/1",
+        "sample_rate": null
+      },
+      {
+        "codec_name": "aac",
+        "width": null,
+        "height": null,
+        "r_frame_rate": "0/0",
+        "sample_rate": "48000"
+      }
+    ],
+    "decodedFrames": 375,
+    "distinctFrames": 375,
+    "decode": "PASS",
+    "audioSync": [
+      {
+        "text": "Tem alguma coisa estranha acontecendo nessa arena... e eu acho que voc\u00eas ainda n\u00e3o perceberam.",
+        "pcmStartSeconds": 0,
+        "measuredStartSeconds": 0.0,
+        "correlation": 0.9753091071468819
+      },
+      {
+        "text": "Espera... espera... n\u00e3o vira agora.",
+        "pcmStartSeconds": 8.333333333333334,
+        "measuredStartSeconds": 8.333333333333334,
+        "correlation": 0.972302251539461
+      },
+      {
+        "text": "Ela tinha um plano perfeito. Infelizmente, esqueceu de avisar a pr\u00f3pria cabe\u00e7a.",
+        "pcmStartSeconds": 16.666666666666668,
+        "measuredStartSeconds": 16.666666666666668,
+        "correlation": 0.9787948359687232
+      }
+    ],
+    "framing": {
+      "checked": 375,
+      "corrected": 375,
+      "issues": {},
+      "failures": []
+    },
+    "artisticEligibility": {
+      "eligible": true,
+      "reasons": [],
+      "humanReviewRequired": true
+    },
+    "newRender": true,
+    "voice": "provisional Chatterbox Heart; archived neural takes; no new inference",
+    "differentFromR2": true
+  },
+  {
+    "file": "champion-voice20.mp4",
+    "sha256": "569229866706c729caecf1ae2f6ca8db0e589a121a4593f1b89802c87f249d70",
+    "bytes": 3315231,
+    "duration": 20.0,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 360,
+        "height": 640,
+        "r_frame_rate": "15/1",
+        "sample_rate": null
+      },
+      {
+        "codec_name": "aac",
+        "width": null,
+        "height": null,
+        "r_frame_rate": "0/0",
+        "sample_rate": "48000"
+      }
+    ],
+    "decodedFrames": 300,
+    "distinctFrames": 300,
+    "decode": "PASS",
+    "audioSync": [
+      {
+        "text": "Olha quem apareceu... estava esperando voc\u00ea chegar.",
+        "pcmStartSeconds": 0,
+        "measuredStartSeconds": 0.0,
+        "correlation": 0.9448854267769032
+      },
+      {
+        "text": "Tem alguma coisa estranha acontecendo nessa arena... e eu acho que voc\u00eas ainda n\u00e3o perceberam.",
+        "pcmStartSeconds": 10,
+        "measuredStartSeconds": 10.0,
+        "correlation": 0.9608731884201651
+      }
+    ],
+    "framing": {
+      "checked": 300,
+      "corrected": 300,
+      "issues": {},
+      "failures": []
+    },
+    "artisticEligibility": {
+      "eligible": true,
+      "reasons": [],
+      "humanReviewRequired": true
+    },
+    "newRender": true,
+    "voice": "provisional Chatterbox Heart; archived neural takes; no new inference",
+    "differentFromR2": true
+  }
+]
