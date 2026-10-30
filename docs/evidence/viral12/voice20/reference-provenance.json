@@ -1,0 +1,20 @@
+[
+  {
+    "voice": "af_heart",
+    "synthetic": true,
+    "realPersonImitation": false,
+    "license": "Apache-2.0",
+    "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+    "sha256": "cb80ab5d2c23395825ef03034c09031c8f3a4e14097d7a1ef77a8cb61dc20160",
+    "text": "There is something unusual happening in this arena. Stay a little longer. The most interesting part is about to begin."
+  },
+  {
+    "voice": "bf_emma",
+    "synthetic": true,
+    "realPersonImitation": false,
+    "license": "Apache-2.0",
+    "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+    "sha256": "fdd36bc8c4653dcd547a5225007cef1141f4541ca6a4a2bdb83e72ee33d7c863",
+    "text": "There is something unusual happening in this arena. Stay a little longer. The most interesting part is about to begin."
+  }
+]

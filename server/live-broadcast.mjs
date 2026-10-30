@@ -1,3 +1,4 @@
+import {activeVoice} from './lume-voice.mjs';
 import { publicPerformance } from './live-performance.mjs';
 import { createHash, randomBytes } from 'node:crypto';
 import { AppError } from './domain.mjs';
@@ -11,7 +12,7 @@ export function authorizeWorker(w,id,mode,now=Date.now()){
  if(e.workerGrant&&!e.workerGrant.revoked&&e.workerGrant.expiresAt>now)throw new AppError('Encerre o worker anterior antes de gerar outra autorização.',409);
  const token=randomBytes(32).toString('hex');e.workerGrant={hash:hash(token),sessionId:e.sessionId,expiresAt:e.deadline,mode};
  e.transmission={status:'READY',mode,publicStatus:'UNCONFIRMED',heartbeat:null,frames:0,bytes:0,error:null};
- return {token,expiresAt:e.deadline};
+ return {token,expiresAt:e.deadline,voiceProfile:activeVoice(w),voice:activeVoice(w).engine};
 }
 export function revokeWorker(e,now=Date.now()) {if(e.workerGrant){e.workerGrant.revoked=true;e.workerGrant.revokedAt=now;}if(e.transmission){e.transmission.status=e.workerGrant?.instance&&['STARTING','PREVIEW','SENDING_MEDIA'].includes(e.transmission.status)?'STOP_REQUESTED':'STOPPED';e.transmission.endedAt=now;}}
 export function workerHeartbeat(w,id,token,input,now=Date.now()){

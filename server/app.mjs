@@ -1,3 +1,5 @@
+import {voiceStudioAction,voiceStudioState} from './lume-voice.mjs';
+import {voiceSample} from './live-worker/voice-sample.mjs';
 import {musicTrack} from './live-music.mjs';
 import { normalizeAvatar } from './live-avatar.mjs';
 import { authorizeWorker, workerHeartbeat, workerMusic } from './live-broadcast.mjs';
@@ -125,6 +127,16 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       // unlock the workspace; persisted grants are restored by the workers.
       if (shouldUnlockBackgroundWorkers(request.method)) {
         runner.unlock(id, token); commerce.unlock(id, token);
+      }
+      if(route==='/voice-studio'&&request.method==='POST'){
+        const input=await body(request,2048);const updated=await store.mutate(id,w=>{try{return voiceStudioAction(w,input);}catch(error){throw new AppError(error.message,400);}});return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey)));
+      }
+      if(route==='/voice-studio/sample'&&request.method==='POST'){
+        const input=await body(request,1024),w=(await store.read(id)).workspace,state=voiceStudioState(w),profile=input.current?state.active:state.draft;
+        if(!profile)throw new AppError('Salve uma candidata de teste primeiro');
+        let result;try{result=await voiceSample(profile,input.index??0);}catch{throw new AppError('Não foi possível gerar a amostra neural. Verifique os modelos locais ou aguarde a síntese atual.',503);}
+        if(!input.current)await store.mutate(id,w=>{if(JSON.stringify(w.voiceStudio?.draft)===JSON.stringify(profile))w.voiceStudio.previewed=JSON.stringify(profile);});
+        return send(response,200,result.wav,{'Content-Type':'audio/wav'});
       }
       if (route === '/factories' && request.method === 'POST') { const input = await body(request); const updated = await store.mutate(id, w => createFactory(w, input)); return send(response, 201, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey))); }
       if (route === '/ai-costs' && request.method === 'POST') { const input = await body(request); const updated = await store.mutate(id, w => configureCosts(w, input)); return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey))); }

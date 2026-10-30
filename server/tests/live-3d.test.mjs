@@ -30,3 +30,13 @@ test('real WebGL frames, camera, PCM mouth, game immutable, avatars, bounded geo
  for(const m of Object.values(r.metrics.timings)){assert.ok(Number.isFinite(m.totalMs)&&m.totalMs>=0);assert.ok(m.maxMs<=m.totalMs);}
  }finally{await r.close();}await assert.rejects(r.render({},0));
 });
+
+test('offline preflight transports safe views and final rendering rechecks the selected pose',{skip:!process.env.HUBLOAN_CHROMIUM,timeout:30000},async()=>{
+ const r=await create3DRenderer();try{
+  const game=createGame({template:'seed-snake',names:['Lume','Faísca'],roundSeconds:20},1000);advanceGame(game,5000);
+  const e={game,status:'TESTING',offline:true,performance:{top:[]}},direction={editorial:true,format:'battle',player:0,shot:'Front',cutId:'test',collectCameraViews:true};
+  await r.render(e,4000,null,direction);assert.equal(r.planningFrames.length,1);assert.equal(r.planningFrames[0].cut,true);assert.ok(r.planningFrames[0].views.length>0);
+  const pose=r.planningFrames[0].views[0];await r.render(e,4000,null,{...direction,collectCameraViews:false,cameraPlan:pose});
+  const final=await r.inspect();assert.deepEqual(final.camera,pose.position);assert.deepEqual(final.quality.issues,[]);assert.equal(final.quality.planned,true);assert.equal(r.planningFrames.length,1);
+ }finally{await r.close();}
+});

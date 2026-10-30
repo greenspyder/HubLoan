@@ -1,0 +1,20 @@
+✔ autonomous presentation comments on real results, respects cooldown, never fills audience (109.8865ms)
+✔ neural unavailable falls back locally, rejects unsafe input and cancels (5.763648ms)
+﹣ real neural pt-BR synthesis, bounded PCM and model reuse (0.175262ms) # SKIP
+✔ real WebGL frames, camera, PCM mouth, game immutable, avatars, bounded geometry and cleanup (4359.652884ms)
+✔ artistic eligibility never mistakes technical success, fallback or absent music for complete AV (1.279314ms)
+✔ fallback approval is blocked on backend even with human override (2.398917ms)
+✔ AV controls are bounded and neural is the default (0.395681ms)
+✔ framing failures block even technically valid neural exports (0.21988ms)
+✔ distinct references remain drafts and never overwrite active workspace identity (2.009597ms)
+✔ archived speech binds exact text, hash and identity, and rejects truncation and fallback (12.207279ms)
+✔ mesh visibility detects obstruction missed by logical head-center probes (17.857711ms)
+✔ unavailable Chatterbox sample never silently becomes fallback audio (4.97663ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 4920.824798
