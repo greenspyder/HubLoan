@@ -1,0 +1,257 @@
+[
+  {
+    "file": "comedy-voice20.mp4",
+    "sha256": "e31e7fb4b968c6a1e62140835d385ad98216ebfd40cf8aae43356da5c74e855c",
+    "bytes": 4043918,
+    "duration": 18.0,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 360,
+        "height": 640,
+        "r_frame_rate": "15/1",
+        "sample_rate": null
+      },
+      {
+        "codec_name": "aac",
+        "width": null,
+        "height": null,
+        "r_frame_rate": "0/0",
+        "sample_rate": "48000"
+      }
+    ],
+    "decodedFrames": 270,
+    "distinctFrames": 270,
+    "decode": "PASS",
+    "audioSync": [
+      {
+        "text": "Ela tinha um plano perfeito. Infelizmente, esqueceu de avisar a pr\u00f3pria cabe\u00e7a.",
+        "pcmStartSeconds": 0,
+        "measuredStartSeconds": 0.0,
+        "correlation": 0.97080542287943
+      },
+      {
+        "text": "Tem alguma coisa estranha acontecendo nessa arena... e eu acho que voc\u00eas ainda n\u00e3o perceberam.",
+        "pcmStartSeconds": 9,
+        "measuredStartSeconds": 9.0,
+        "correlation": 0.9787223621924187
+      }
+    ],
+    "framing": {
+      "checked": 270,
+      "corrected": 0,
+      "issues": {},
+      "failures": []
+    },
+    "artisticEligibility": {
+      "eligible": true,
+      "reasons": [],
+      "humanReviewRequired": true
+    },
+    "newRender": true,
+    "voice": "provisional Chatterbox Heart; archived neural takes; no new inference"
+  },
+  {
+    "file": "battle-voice20.mp4",
+    "sha256": "144f6a659270f43c207857ba00023c050cb84936b20502c9a3036153b9df93fe",
+    "bytes": 5027887,
+    "duration": 25.0,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 360,
+        "height": 640,
+        "r_frame_rate": "15/1",
+        "sample_rate": null
+      },
+      {
+        "codec_name": "aac",
+        "width": null,
+        "height": null,
+        "r_frame_rate": "0/0",
+        "sample_rate": "48000"
+      }
+    ],
+    "decodedFrames": 375,
+    "distinctFrames": 375,
+    "decode": "PASS",
+    "audioSync": [
+      {
+        "text": "Tem alguma coisa estranha acontecendo nessa arena... e eu acho que voc\u00eas ainda n\u00e3o perceberam.",
+        "pcmStartSeconds": 0,
+        "measuredStartSeconds": 0.0,
+        "correlation": 0.9753091071468819
+      },
+      {
+        "text": "Espera... espera... n\u00e3o vira agora.",
+        "pcmStartSeconds": 8.333333333333334,
+        "measuredStartSeconds": 8.333333333333334,
+        "correlation": 0.972302251539461
+      },
+      {
+        "text": "Ela tinha um plano perfeito. Infelizmente, esqueceu de avisar a pr\u00f3pria cabe\u00e7a.",
+        "pcmStartSeconds": 16.666666666666668,
+        "measuredStartSeconds": 16.666666666666668,
+        "correlation": 0.9787948359687232
+      }
+    ],
+    "framing": {
+      "checked": 375,
+      "corrected": 366,
+      "issues": {
+        "ABRUPT_CAMERA_MOVE": 4
+      },
+      "failures": [
+        {
+          "at": 103933.33333333333,
+          "frame": 60,
+          "shot": "Front",
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.81316251132157,
+            "right": 0.5454140289713237,
+            "bottom": -0.4495779009973417,
+            "top": 0.1188346300673618
+          },
+          "issues": [
+            "ABRUPT_CAMERA_MOVE"
+          ],
+          "blockedFaceRays": 1,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "rejectedUnsafeInterpolation": true,
+          "corrected": true,
+          "previousProbeIssues": [],
+          "cameraJump": 10.047846752838899
+        },
+        {
+          "at": 106066.66666666667,
+          "frame": 92,
+          "shot": "Follow",
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.8088416699231475,
+            "right": 0.5186199845075858,
+            "bottom": -0.4609755696395838,
+            "top": 0.103926095177831
+          },
+          "issues": [
+            "ABRUPT_CAMERA_MOVE"
+          ],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "rejectedUnsafeInterpolation": true,
+          "corrected": true,
+          "previousProbeIssues": [],
+          "cameraJump": 9.082983773648733
+        },
+        {
+          "at": 107333.33333333333,
+          "frame": 111,
+          "shot": "Follow",
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.2796386306056387,
+            "right": 0.27295484470849096,
+            "bottom": -0.28409383680314404,
+            "top": 0.07082577232221782
+          },
+          "issues": [
+            "ABRUPT_CAMERA_MOVE"
+          ],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "rejectedUnsafeInterpolation": true,
+          "corrected": true,
+          "previousProbeIssues": [],
+          "cameraJump": 7.10222067532646
+        },
+        {
+          "at": 110200,
+          "frame": 154,
+          "shot": "Follow",
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.5746972735256836,
+            "right": 0.3944285486889136,
+            "bottom": -0.3148193467398178,
+            "top": 0.07685498999772383
+          },
+          "issues": [
+            "ABRUPT_CAMERA_MOVE"
+          ],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "rejectedUnsafeInterpolation": true,
+          "corrected": true,
+          "previousProbeIssues": [],
+          "cameraJump": 4.080293665684853
+        }
+      ]
+    },
+    "artisticEligibility": {
+      "eligible": false,
+      "reasons": [
+        "Alertas geom\u00e9tricos pendentes; corrija antes de aprovar."
+      ],
+      "humanReviewRequired": true
+    },
+    "newRender": true,
+    "voice": "provisional Chatterbox Heart; archived neural takes; no new inference"
+  },
+  {
+    "file": "champion-voice20.mp4",
+    "sha256": "de3f3a41e844797b15a8fd741bc64a89cd9f160115efce38931fa9ff77c5e872",
+    "bytes": 3357167,
+    "duration": 20.0,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 360,
+        "height": 640,
+        "r_frame_rate": "15/1",
+        "sample_rate": null
+      },
+      {
+        "codec_name": "aac",
+        "width": null,
+        "height": null,
+        "r_frame_rate": "0/0",
+        "sample_rate": "48000"
+      }
+    ],
+    "decodedFrames": 300,
+    "distinctFrames": 300,
+    "decode": "PASS",
+    "audioSync": [
+      {
+        "text": "Olha quem apareceu... estava esperando voc\u00ea chegar.",
+        "pcmStartSeconds": 0,
+        "measuredStartSeconds": 0.0,
+        "correlation": 0.9448854267769032
+      },
+      {
+        "text": "Tem alguma coisa estranha acontecendo nessa arena... e eu acho que voc\u00eas ainda n\u00e3o perceberam.",
+        "pcmStartSeconds": 10,
+        "measuredStartSeconds": 10.0,
+        "correlation": 0.9608731884201651
+      }
+    ],
+    "framing": {
+      "checked": 300,
+      "corrected": 300,
+      "issues": {},
+      "failures": []
+    },
+    "artisticEligibility": {
+      "eligible": true,
+      "reasons": [],
+      "humanReviewRequired": true
+    },
+    "newRender": true,
+    "voice": "provisional Chatterbox Heart; archived neural takes; no new inference"
+  }
+]

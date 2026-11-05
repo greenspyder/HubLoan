@@ -1,0 +1,11 @@
+✔ rig keeps head visible through turns, growth and target loss without changing physics (425.435698ms)
+✔ director uses contextual shots, stable holds, leader choice and session reset (242.273045ms)
+✔ rapid compass turns keep camera travel bounded (7.659226ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 953.652681

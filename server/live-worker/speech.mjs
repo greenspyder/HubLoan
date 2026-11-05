@@ -1,9 +1,9 @@
 import { spawn } from 'node:child_process';
 export const voiceProfiles={host:{voice:'pt-br',pitch:35,speed:165},bright:{voice:'pt-br',pitch:78,speed:185},deep:{voice:'pt-br',pitch:15,speed:150}};
-export function decodeWav(bytes){
+export function decodeWav(bytes,maxSeconds=8){
  if(bytes.length<44||bytes.toString('ascii',0,4)!=='RIFF')throw Error('WAV inválido');let rate,channels,bits,offset=12,data;
  while(offset+8<=bytes.length){const kind=bytes.toString('ascii',offset,offset+4),size=bytes.readUInt32LE(offset+4),start=offset+8;if(kind==='fmt '){if(size<16||start+16>bytes.length||bytes.readUInt16LE(start)!==1)throw Error('PCM inválido');channels=bytes.readUInt16LE(start+2);rate=bytes.readUInt32LE(start+4);bits=bytes.readUInt16LE(start+14);}if(kind==='data'){data=bytes.subarray(start,Math.min(bytes.length,start+size));break;}offset=start+size+(size%2);}
- if(!data||channels!==1||bits!==16||rate<8000||rate>48000)throw Error('Formato inválido');const count=Math.min(48000*8,Math.floor(data.length/2*48000/rate)),out=new Float32Array(count);
+ if(!data||channels!==1||bits!==16||rate<8000||rate>48000)throw Error('Formato inválido');const count=Math.min(48000*maxSeconds,Math.floor(data.length/2*48000/rate)),out=new Float32Array(count);
  for(let i=0;i<count;i++){const p=i*rate/48000,a=Math.floor(p),b=Math.min(a+1,data.length/2-1);out[i]=(data.readInt16LE(a*2)*(1-(p-a))+data.readInt16LE(b*2)*(p-a))/32768;}return out;
 }
 export function localSpeech(text,voice='host',{signal,timeout=3000,musical=false}={}){

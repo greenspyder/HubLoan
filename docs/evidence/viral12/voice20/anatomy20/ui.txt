@@ -1,0 +1,1 @@
+PASS: real identities listed, persisted draft, active Dora unchanged, missing models explicit, approval disabled without listening. No model inference in this UI smoke test.

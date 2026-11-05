@@ -1,0 +1,1 @@
+PASS: Voice Studio renders, saves draft, survives reload and keeps approval disabled without listening.
