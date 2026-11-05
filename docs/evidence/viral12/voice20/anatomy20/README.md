@@ -33,3 +33,19 @@ A inspeção visual é amostral, com poses isoladas, confronto, close-ups e repl
 - A última inspeção identificou a ponta aberta do corpo do retrato; ela foi fechada e afilada antes dos renders finais.
 
 Voz dos vídeos: Chatterbox Heart provisória, usando os WAVs previamente medidos e verificados por hash. Nenhuma inferência nova ou aprovação da voz global nesta correção. Música: Brazilian Sunsets, Ketsa, CC BY 4.0.
+
+## Novos MP4s e comparação
+
+| Formato | Vídeo | Antes/depois | Quadros |
+|---|---|---|---|
+| Lume Comedy | [MP4](https://chatgpt.com/library?file_id=libfile_63a2607db2e0819181cedc1f3e117dac&account_id=personal) | [R3 / Anatomia 2.0](https://chatgpt.com/library?file_id=libfile_ab9d7eb037048191800b34911d171ff9&account_id=personal) | [Contato](https://chatgpt.com/library?file_id=libfile_e53c60206d04819192a8b17a7254be86&account_id=personal) |
+| Snake Battles | [MP4](https://chatgpt.com/library?file_id=libfile_0584672b7b908191b6c618da767cc1f4&account_id=personal) | [R3 / Anatomia 2.0](https://chatgpt.com/library?file_id=libfile_7471ddba105c8191914a11111e3ecf49&account_id=personal) | [Contato](https://chatgpt.com/library?file_id=libfile_3d020e3a1cd4819199f5980d94113fb8&account_id=personal) |
+| Choose Your Champion | [MP4](https://chatgpt.com/library?file_id=libfile_ee7c2d1099888191885f10f68213b58a&account_id=personal) | [R3 / Anatomia 2.0](https://chatgpt.com/library?file_id=libfile_209b2bbff3d481919dd4a82b3f039a18&account_id=personal) | [Contato](https://chatgpt.com/library?file_id=libfile_1961a647bf808191815c2be3325e2c84&account_id=personal) |
+
+[15 poses das cinco espécies](https://chatgpt.com/library?file_id=libfile_605a841811948191b29a093dba42bda2&account_id=personal).
+
+Os três vídeos foram decodificados integralmente: 270, 375 e 300 quadros distintos; H.264/AAC, 360×640, 15 fps; 18, 25 e 20 segundos. Os hashes diferem de R3. Os arquivos R3 usados na comparação tiveram seus hashes conferidos contra o relatório original. Áudio sincronizado por correlação PCM > 0,94.
+
+A ligação anatômica foi medida em 1.080, 1.500 e 1.200 instâncias de personagem/quadro, sem falhas. Desvio máximo do centro do anel em relação ao socket < 4,2e-7 unidades. A projeção bruta também inclui personagens fora do frustum/perto do plano da câmera: seu máximo (7,54 px na batalha) não deve ser interpretado como uma lacuna visível nem como aprovação; é preservado no relatório. A inspeção visual verificou 9 quadros de cada vídeo, 3 pares antes/depois por formato e 15 poses. Não foram observadas cabeças separadas do corpo nesses quadros. Ainda existe sobreposição entre participantes durante confrontos; não se afirma perfeição artística.
+
+Batalha: 45.373 vistas válidas, deslocamento máximo 2,702626 e rotação 0,198815 rad. Champion: 37.890 vistas, 1,900287 e 0,196350 rad. Nenhum corte extra. Tempos de render CPU/software WebGL: comédia 23,6 s; batalha 167,3 s; Champion 75,3 s (cargas concorrentes; não são benchmarks isolados).
