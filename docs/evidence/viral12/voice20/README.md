@@ -1,3 +1,5 @@
+> **Atualização — Character Anatomy 2.0:** R3 foi rejeitada por cabeças flutuantes. A correção e novas evidências estão em [anatomy20](anatomy20/README.md). Aprovação visual continua pendente.
+
 > **Revisão mais recente:** [R3 — trajetórias contínuas, três MP4s e validação](camera-r3/README.md). Os quatro saltos da batalha foram corrigidos; os três renders R3 não registraram alertas geométricos. Aprovação audiovisual humana e escolha da voz permanecem pendentes. Os resultados abaixo são o histórico das entregas anteriores.
 
 # Voice Identity 2.0 — PR #26

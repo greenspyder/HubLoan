@@ -1,0 +1,52 @@
+TAP version 13
+# Subtest: shared WebGL spine stays inside every skull through turns, elimination and replay
+ok 1 - shared WebGL spine stays inside every skull through turns, elimination and replay
+  ---
+  duration_ms: 3573.95148
+  type: 'test'
+  ...
+# Subtest: all archetypes retain their transformed neck socket in tight turns and slow replay
+ok 2 - all archetypes retain their transformed neck socket in tight turns and slow replay
+  ---
+  duration_ms: 4239.660276
+  type: 'test'
+  ...
+# Subtest: autonomous presentation comments on real results, respects cooldown, never fills audience
+ok 3 - autonomous presentation comments on real results, respects cooldown, never fills audience
+  ---
+  duration_ms: 150.459384
+  type: 'test'
+  ...
+# Subtest: neural unavailable falls back locally, rejects unsafe input and cancels
+ok 4 - neural unavailable falls back locally, rejects unsafe input and cancels
+  ---
+  duration_ms: 7.647205
+  type: 'test'
+  ...
+# Subtest: real neural pt-BR synthesis, bounded PCM and model reuse
+ok 5 - real neural pt-BR synthesis, bounded PCM and model reuse # SKIP
+  ---
+  duration_ms: 0.290228
+  type: 'test'
+  ...
+# Subtest: real WebGL frames, camera, PCM mouth, game immutable, avatars, bounded geometry and cleanup
+ok 6 - real WebGL frames, camera, PCM mouth, game immutable, avatars, bounded geometry and cleanup
+  ---
+  duration_ms: 6909.785227
+  type: 'test'
+  ...
+# Subtest: offline preflight transports safe views and final rendering rechecks the selected pose
+ok 7 - offline preflight transports safe views and final rendering rechecks the selected pose
+  ---
+  duration_ms: 1129.190824
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 1
+# todo 0
+# duration_ms 8673.477797

@@ -34,7 +34,14 @@ export function bootScene3D(T,width=360,height=640,createFace,design='jade',crea
  const particles=Array.from({length:72},(_,i)=>{const p=mesh(particleGeometry,'#fff2aa');p.visible=false;return p;});
  // A close-up of the same host design, on the foreground stage, not another simulation.
  const portrait=face('#67caaa');scene.add(camera);portrait.g.position.set(-.85,-1.78,-8);portrait.g.scale.setScalar(.66);camera.add(portrait.g);
- const hostNeck=mesh(new T.TubeGeometry(new T.CatmullRomCurve3([new T.Vector3(0,-.25,-.30),new T.Vector3(0,-.85,-.38),new T.Vector3(.35,-1.4,-.30),new T.Vector3(-.45,-1.65,.10),new T.Vector3(-.65,-1.45,.25)]),40,.27,10,false),'#67caaa',portrait.g);hostNeck.visible=false;
+ const hostNeck=mesh(new T.TubeGeometry(new T.CatmullRomCurve3([new T.Vector3(0,-.25,-.30),new T.Vector3(0,-.85,-.38),new T.Vector3(.35,-1.4,-.30),new T.Vector3(-.45,-1.65,.10),new T.Vector3(-.65,-1.45,.25)]),40,.27,10,false),'#67caaa',portrait.g);hostNeck.visible=true;
+ // Complete the presenter silhouette with a closed, tapered tail rather than an open pipe.
+ const hostPositions=hostNeck.geometry.attributes.position,hostCurve=hostNeck.geometry.parameters.path;
+ for(let ring=26;ring<=40;ring++){
+  const u=ring/40,center=hostCurve.getPointAt(u),taper=(1-u)/.35;
+  for(let j=0;j<=10;j++){const index=ring*11+j,v=new T.Vector3().fromBufferAttribute(hostPositions,index).sub(center).multiplyScalar(taper).add(center);hostPositions.setXYZ(index,v.x,v.y,v.z);}
+ }
+ hostNeck.geometry.computeVertexNormals();
  const audience=Array.from({length:6},(_,i)=>{const g=new T.Group();camera.add(g);mesh(sphere,i?'#6ba4b7':'#f6ce65',g,0,.4,0,.4,.5,.28);const head=mesh(sphere,'#d8eadc',g,0,1.02,0,.37,.37,.3);for(const x of [-.13,.13])mesh(sphere,'#203d4e',g,x,1.08,.28,.04,.05,.035);const photo=new T.Mesh(new T.PlaneGeometry(.65,.65),new T.MeshBasicMaterial({transparent:true}));photo.position.set(0,1.02,.32);photo.visible=false;g.add(photo);const crown=mesh(cone,'#ffe28a',g,0,1.55,0,.3,.3,.3);crown.visible=i===0;return {g,head,photo,crown,key:null};});
  const output=document.createElement('canvas');output.width=width;output.height=height;document.body.append(output);const ctx=output.getContext('2d',{willReadFrequently:true});
  let musicEnergy=0;let previousAt=null;let cameraMode='Overview',currentDirection=null;let lastPresentation=null;
