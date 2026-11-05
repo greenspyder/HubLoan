@@ -7,5 +7,6 @@ export function audiovisualEligibility(report){
  const framing=report?.renderer?.framingQuality;
  if(!framing||framing.checked!==report?.renderer?.frames||!framing.checked)reasons.push('Enquadramento não verificado em todos os quadros.');
  else if(Object.values(framing.issues||{}).some(n=>n>0))reasons.push('Alertas geométricos pendentes; corrija antes de aprovar.');
+ const visual=report?.renderer?.visualQuality;if(report?.timeline?.version>=4&&(!visual||visual.checked!==report.renderer.frames||visual.failures?.length))reasons.push('Anatomia visual incompleta ou reprovada.');
  return {eligible:reasons.length===0,reasons,humanReviewRequired:true};
 }

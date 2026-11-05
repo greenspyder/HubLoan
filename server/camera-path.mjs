@@ -10,7 +10,7 @@ export function planCameraPath(frames,{maxStep=2.8,maxTurn=.25}={}){
   if(views.length>200||views.some(v=>v.position?.length!==3||v.quaternion?.length!==4||![...v.position,...v.quaternion,v.facing,v.blocked,v.height].every(Number.isFinite)))throw Error('Candidata de câmera inválida');
   const next=new Float64Array(views.length).fill(Infinity),links=new Int32Array(views.length).fill(-1);
   for(let j=0;j<views.length;j++){
-   const v=views[j],composition=v.blocked*10+(1-v.facing)**2*(v.frontWeight??2)+Math.abs(v.height-(v.targetHeight??.45))*3;
+   const v=views[j],composition=(v.narrativeCost||0)+(v.visualCost||0)+v.blocked*10+(1-v.facing)**2*(v.frontWeight??2)+Math.abs(v.height-(v.targetHeight??.45))*3;
    if(!i){next[j]=composition;continue;}
    for(let k=0;k<frames[i-1].views.length;k++){
     if(!Number.isFinite(costs[k]))continue;
