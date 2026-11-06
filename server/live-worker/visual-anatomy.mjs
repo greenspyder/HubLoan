@@ -26,7 +26,8 @@ export function inspectVisualAnatomy(T,camera,actors,index,context={}){
   return {inside:true,visible:!blocked&&(!hasUnmodelled||ray.intersectObjects(blockers,true).length===0),q};
  };
  const neck=Array.from({length:6},(_,i)=>visible(curve.getPointAt(Math.min(.35,(.45+i*.22)/length))));
- const body=Array.from({length:12},(_,i)=>visible(curve.getPointAt(.13+i*.078)));
+ const bust=context.format==='comedy';
+ const body=Array.from({length:12},(_,i)=>visible(curve.getPointAt(bust?.05+i*.025:.13+i*.078)));
  const ratio=(points,key)=>points.filter(p=>p[key]).length/points.length;
  const neckVisible=ratio(neck,'visible'),bodyVisible=ratio(body,'visible'),bodyInFrame=ratio(body,'inside');
  const q=body.filter(p=>p.inside).map(p=>p.q),extent=q.length?Math.hypot(Math.max(...q.map(p=>p.x))-Math.min(...q.map(p=>p.x)),Math.max(...q.map(p=>p.y))-Math.min(...q.map(p=>p.y))):0;
@@ -34,5 +35,5 @@ export function inspectVisualAnatomy(T,camera,actors,index,context={}){
  if(bodyVisible<(context.showcase&&context.showcaseStage!==2?.65:.4))issues.push('BODY_HIDDEN');
  if(bodyInFrame<(context.showcase&&context.showcaseStage!==2?.85:.55))issues.push('BODY_CROPPED');
  if(extent<.24)issues.push('SILHOUETTE_COMPRESSED');
- return {method:'projected-spine-capsule-estimates-and-safe-frame-samples',neckSamples:6,bodySamples:12,neckVisibleFraction:neckVisible,bodyVisibleFraction:bodyVisible,bodyInFrameFraction:bodyInFrame,projectedBodyExtent:extent,issues,artisticApproval:false};
+ return {method:'projected-spine-capsule-estimates-and-safe-frame-samples',neckSamples:6,bodySamples:12,bodySampling:bust?'upper-body-for-deliberate-bust':'whole-spine',neckVisibleFraction:neckVisible,bodyVisibleFraction:bodyVisible,bodyInFrameFraction:bodyInFrame,projectedBodyExtent:extent,issues,artisticApproval:false};
 }

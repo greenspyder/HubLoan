@@ -81,7 +81,7 @@ const eat=at-v.eatenAt,giftAge=at-(v.giftAt||0),giftActive=giftAge>=0&&giftAge<1
    let points=logical;
    for(let pass=0;pass<2;pass++){const rounded=[points[0]];for(let j=0;j<points.length-1;j++){rounded.push(points[j].clone().lerp(points[j+1],.25),points[j].clone().lerp(points[j+1],.75));}rounded.push(points.at(-1));points=rounded;}
 
-   s.head.g.position.copy(points[0]);if(direction.editorial)s.head.g.position.y+=direction.showcase?.95:direction.format==='battle'?.85:.5;s.head.g.position.y+=joy?Math.abs(Math.sin(t*12))*.2:0;s.head.g.rotation.y=visualYaw;s.head.g.rotation.z=v.alive?Math.sin(t*4)*.035+(i===0&&music?Math.sin(t*6)*.06*musicEnergy:0):.3;
+   s.head.g.position.copy(points[0]);if(direction.editorial)s.head.g.position.y+=direction.showcase?.95:.85;s.head.g.position.y+=joy?Math.abs(Math.sin(t*12))*.2:0;s.head.g.rotation.y=visualYaw;s.head.g.rotation.z=v.alive?Math.sin(t*4)*.035+(i===0&&music?Math.sin(t*6)*.06*musicEnergy:0):.3;
    // sceneFrame already interpolates steering from recorded simulation frames.
    // No wall-clock easing: replay, slow motion and random access produce the same pose.
    s.head.g.scale.setScalar(direction.editorial?Math.max(.82,Math.min(1.02,(direction.headScale||1.08)*.86)):1.08);s.head.animate(at,level,joy,!v.alive,direction.player===i?direction.emotion:(joy?'happy':'focused'),v.target?((v.target.x-v.body[0].x)*Math.sin((v.visualDirection??v.direction)*Math.PI/2)-(v.target.y-v.body[0].y)*Math.cos((v.visualDirection??v.direction)*Math.PI/2))*.015:0);s.shadow.position.set(points[0].x,.13,points[0].z);
