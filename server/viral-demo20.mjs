@@ -14,7 +14,7 @@ const cases=[{format:'comedy',seconds:18,indices:[1,0]},{format:'battle',seconds
 for(const c of cases.filter(c=>!only||c.format===only)){
  const profile=voiceProfile({candidateId:'chatterbox-heart'}),config={...c,lines:c.indices.map(i=>voicePhrases[i]),voiceProfile:profile,characters:['Lume','Faísca','Jade','Ember'],hypothesis:'Revisão audiovisual privada, falas criativas; voz provisória não aprovada.',audience:'Público brasileiro',music:{experienceId:'demo',trackId:track.id}};
  console.log('NEW RENDER, provisional Chatterbox Heart, verified archived takes',c.format);
- const result=await renderShort({config,repertoire,offlineVoice:archivedSpeech(profile,records,files)});
+ const result=await renderShort({config,repertoire,onCameraPreflight:data=>writeFile(join(out,c.format+'-preflight.json'),JSON.stringify(data)),offlineVoice:archivedSpeech(profile,records,files)});
  result.report.voiceApproval='PROVISIONAL_NOT_APPROVED';result.report.audioPreparation='Previously synthesized WAVs verified by SHA-256; no inference during rendering';result.report.reviewOnly=true;
  for(const [ext,data] of [['mp4',Buffer.from(result.base64,'base64')],['png',Buffer.from(result.preview,'base64')],['json',JSON.stringify(result.report,null,2)],['srt',result.srt]])await writeFile(join(out,`${c.format}-voice20.${ext}`),data);
  console.log(c.format,result.report.wallMs,result.report.renderer.framingQuality,result.report.artisticEligibility);

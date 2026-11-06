@@ -7,7 +7,7 @@ export function planCameraPath(frames,{maxStep=2.8,maxTurn=.25}={}){
  let costs;const parents=[];
  for(let i=0;i<frames.length;i++){
   const {views,cut}=frames[i];if(!Array.isArray(views)||!views.length)throw Error(`Nenhum plano seguro no quadro ${i+1}`);
-  if(views.length>200||views.some(v=>v.position?.length!==3||v.quaternion?.length!==4||![...v.position,...v.quaternion,v.facing,v.blocked,v.height].every(Number.isFinite)))throw Error('Candidata de câmera inválida');
+  if(views.length>400||views.some(v=>v.position?.length!==3||v.quaternion?.length!==4||![...v.position,...v.quaternion,v.facing,v.blocked,v.height].every(Number.isFinite)))throw Error('Candidata de câmera inválida');
   const next=new Float64Array(views.length).fill(Infinity),links=new Int32Array(views.length).fill(-1);
   for(let j=0;j<views.length;j++){
    const v=views[j],composition=(v.narrativeCost||0)+(v.visualCost||0)+v.blocked*10+(1-v.facing)**2*(v.frontWeight??2)+Math.abs(v.height-(v.targetHeight??.45))*3;
@@ -20,7 +20,7 @@ export function planCameraPath(frames,{maxStep=2.8,maxTurn=.25}={}){
     if(value<next[j]){next[j]=value;links[j]=k;}
    }
   }
-  if(!next.some(Number.isFinite))throw Error(`Sem trajetória contínua no quadro ${i+1}; ${views.length} vistas seguras`);
+  if(!next.some(Number.isFinite)){const error=Error(`Sem trajetória contínua no quadro ${i+1}; ${views.length} vistas seguras`);error.frameIndex=i;throw error;}
   parents.push(links);costs=next;
  }
  let selected=costs.indexOf(Math.min(...costs));const path=new Array(frames.length);
@@ -28,4 +28,17 @@ export function planCameraPath(frames,{maxStep=2.8,maxTurn=.25}={}){
  let observedMaxStep=0,observedMaxTurn=0;
  for(let i=1;i<path.length;i++)if(!frames[i].cut){observedMaxStep=Math.max(observedMaxStep,Math.sqrt(distance2(path[i].position,path[i-1].position)));observedMaxTurn=Math.max(observedMaxTurn,turn(path[i].quaternion,path[i-1].quaternion));}
  return {path,metrics:{method:'offline-global-path',frames:frames.length,candidates:frames.reduce((n,f)=>n+f.views.length,0),maxStep,maxTurn,observedMaxStep,observedMaxTurn,addedCuts:0}};
+}
+
+export function planEditorialCamera(frames,actions,{fps=15,minShotSeconds=1.2}={}){
+ const checked=frames.map(f=>({...f})),corrections=[];
+ for(let attempt=0;attempt<=12;attempt++){
+  try{const plan=planCameraPath(checked);plan.metrics.addedCuts=corrections.length;plan.metrics.corrections=corrections;return plan;}
+  catch(error){
+   const i=error.frameIndex;if(!Number.isInteger(i)||!actions[i]||attempt===12)throw error;
+   const previous=checked.slice(0,i).findLastIndex(f=>f.cut);
+   if(i-previous<Math.ceil(fps*minShotSeconds))throw error;
+   checked[i].cut=true;corrections.push({frame:i,seconds:i/fps,reason:actions[i]});
+  }
+ }
 }

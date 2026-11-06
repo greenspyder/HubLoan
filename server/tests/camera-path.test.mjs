@@ -18,3 +18,12 @@ test('rotation discontinuity is rejected even when position stays fixed',()=>{
  const rotated={...view(0),quaternion:[0,Math.sin(.5),0,Math.cos(.5)]};
  assert.throws(()=>planCameraPath([{cut:true,views:[view(0)]},{cut:false,views:[rotated]}]),/Sem trajetória contínua/);
 });
+
+test('editorial repair records action cuts and refuses rapid or unmotivated cuts',async()=>{
+ const {planEditorialCamera}=await import('../camera-path.mjs');
+ const frames=Array.from({length:25},(_,i)=>({cut:i===0,views:[view(i<20?0:10)]}));
+ assert.throws(()=>planEditorialCamera(frames,frames.map(()=>null)),/Sem trajetória/);
+ const actions=frames.map((_,i)=>i===20?'TURN_IN_RECORDED_SIMULATION':null),result=planEditorialCamera(frames,actions);
+ assert.equal(result.metrics.addedCuts,1);assert.equal(result.metrics.corrections[0].frame,20);assert.equal(frames[20].cut,false);
+ assert.throws(()=>planEditorialCamera(frames.slice(15),actions.slice(15)),/Sem trajetória/);
+});

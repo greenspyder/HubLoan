@@ -95,13 +95,14 @@ export function createCameraRig(T,camera,measureVisual){
    if(d.collectCameraViews){
     // World-aligned azimuths do not jump when the head turns. The old
     // head-relative lattice rotated all candidates simultaneously at grid turns.
-    for(const radius of (d.showcase?[6,8,11]:[8,11]))for(let azimuth=0;azimuth<32;azimuth++)for(const height of (d.showcase?[2.5,4,6,9]:[2.5,4,6,9,12])){
-     const angle=azimuth*Math.PI/16,offset=new T.Vector3(Math.sin(angle)*radius,height,Math.cos(angle)*radius);
+    for(const radius of (d.showcase?[6,8,11]:[8,11]))for(let azimuth=0;azimuth<64;azimuth++)for(const height of (d.showcase?[2.5,4,6,9]:[2.5,4,6,8,10,12])){
+     const angle=azimuth*Math.PI/32,offset=new T.Vector3(Math.sin(angle)*radius,height,Math.cos(angle)*radius);
      if(offset.clone().normalize().dot(forward)<.25)continue;
      camera.position.copy(center).add(offset);camera.lookAt(focus);
      let r=inspect();for(let fit=0;fit<12&&r.issues.some(x=>['MESH_FACE_CROPPED','CAPTION_SAFE_AREA','NEARBY_CONFRONTATION_OUT_OF_FRAME','BODY_CROPPED'].includes(x));fit++){camera.position.sub(focus).multiplyScalar(1.08).add(focus);camera.lookAt(focus);r=inspect();}
      if(!r.issues.length)views.push({position:camera.position.toArray(),quaternion:camera.quaternion.toArray(),facing:r.facing,blocked:r.blocked,height:r.bounds.top-r.bounds.bottom,narrativeCost:d.showcase?(Math.atan2(Math.sin(angle-.65),Math.cos(angle-.65))**2*3+Math.abs(height-(d.showcaseStage===2?2.5:4))*.5):0,visualCost:r.visualAnatomy?(1-r.visualAnatomy.bodyVisibleFraction)*6+(1-r.visualAnatomy.neckVisibleFraction)*3:0,frontWeight:d.showcase?2:4,targetHeight:d.showcaseStage===2?.56:d.format==='battle'?(['elimination','proximity','approach','chase'].includes(d.sourceEvent)?.26:.34):.4});
     }
+    if(views.length>400){const kept=Array.from({length:400},(_,i)=>views[Math.floor(i*views.length/400)]);views.splice(0,views.length,...kept);}
     if(views.length){camera.position.fromArray(views[0].position);camera.quaternion.fromArray(views[0].quaternion);}
    }else{
     if(d.cameraPlan.position?.length!==3||d.cameraPlan.quaternion?.length!==4||![...d.cameraPlan.position,...d.cameraPlan.quaternion].every(Number.isFinite))throw Error('Plano de câmera inválido');

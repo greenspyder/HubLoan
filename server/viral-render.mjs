@@ -1,4 +1,4 @@
-import {planCameraPath} from './camera-path.mjs';
+import {planEditorialCamera} from './camera-path.mjs';
 import {audiovisualEligibility} from './viral-quality.mjs';
 // Offline adapter for the existing renderer, game, director, speech and PCM mixer.
 // No RTMP session, public destination, generative API or second audiovisual engine.
@@ -16,7 +16,7 @@ import {performanceDefaults} from './live-performance.mjs';
 import {mediaCommand} from './video-production.mjs';
 import {shortConfig,shortStoryboard} from './viral-content.mjs';
 const stamp=t=>new Date(Math.round(t*1000)).toISOString().slice(11,23).replace('.',',');
-export async function renderShort({config,signal,offlineVoice=null,checkpoint=async(_k,_l,_i,run)=>run(),repertoire={assets:new Map(),failures:0}}){
+export async function renderShort({config,signal,offlineVoice=null,onCameraPreflight=async()=>{},checkpoint=async(_k,_l,_i,run)=>run(),repertoire={assets:new Map(),failures:0}}){
  config=shortConfig(config);const dir=await mkdtemp(join(tmpdir(),'hubloan-short-')),started=Date.now(),width=360,height=640,fps=15;
  let renderer,mixer,neural,video,audio;
  try{
@@ -55,7 +55,15 @@ export async function renderShort({config,signal,offlineVoice=null,checkpoint=as
     if(!cover)cover=(await sharp(rgb,{raw:{width,height,channels:3}}).png().toBuffer()).toString('base64');
    }
    if(preflight){
-    const plan=planCameraPath(renderer.planningFrames);cameraPlanning=plan.metrics;
+    const actions=replay.map(frame=>{
+     const [a,b]=frame.game.frames||[],index=frame.direction.player,p=a?.players[index],q=b?.players[index];
+     if(p&&q&&p.direction!==q.direction)return 'TURN_IN_RECORDED_SIMULATION';
+     if(frame.direction.eventEvidence)return frame.direction.eventEvidence.type+':'+frame.direction.eventEvidence.at;
+     return null;
+    });
+    await onCameraPreflight({frames:renderer.planningFrames,actions});
+    const plan=planEditorialCamera(renderer.planningFrames,actions);cameraPlanning=plan.metrics;
+    let repair=0;for(let i=0;i<replay.length;i++){if(plan.metrics.corrections.some(c=>c.frame===i))repair++;replay[i].direction.cutId+=':repair-'+repair;}
     await renderer.close();renderer=await create3DRenderer({width,height});
     await video.close();video=await open(join(dir,'frames.rgb'),'w');hashes.clear();timing.length=0;cover=null;blackRun=0;maxBlackRun=0;
     for(let index=0;index<replay.length;index++){
