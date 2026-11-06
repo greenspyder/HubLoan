@@ -20,7 +20,7 @@ export async function renderShort({config,signal,offlineVoice=null,onCameraPrefl
  config=shortConfig(config);const dir=await mkdtemp(join(tmpdir(),'hubloan-short-')),started=Date.now(),width=360,height=640,fps=15;
  let renderer,mixer,neural,video,audio;
  try{
-  const result=await checkpoint('short-render','Renderizar vídeo 3D offline',[7,config,[...repertoire.assets.values()].map(a=>a.track.hash),offlineVoice?.cacheKey||null],async()=>{
+  const result=await checkpoint('short-render','Renderizar vídeo 3D offline',[8,config,[...repertoire.assets.values()].map(a=>a.track.hash),offlineVoice?.cacheKey||null],async()=>{
    const recording=recordGameplay(config),timeline=createEditorial(config,recording);let now=100000;const e={offline:true,sessionId:'offline',status:'TESTING',config:{audio:{muted:false,volume:.8}},performanceConfig:{...performanceDefaults(),effectsGain:config.effectsGain,enabled:true},performance:{jobs:[],top:[]},game:null};
    if(config.voiceMode==='neural'&&!offlineVoice&&!process.env[`HUBLOAN_${config.voiceProfile.engine.toUpperCase()}_MODEL`])throw Error('Configure o modelo do perfil global para renderização artística neural. Modo técnico permite fallback.');
    let synthesize=localSpeech,voiceEngine='espeak-fallback';
