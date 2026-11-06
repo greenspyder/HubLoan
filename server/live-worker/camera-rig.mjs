@@ -76,16 +76,19 @@ export function createCameraRig(T,camera,measureVisual){
   const inspect=()=>{
    camera.updateMatrixWorld();const q=corners.map(v=>v.clone().project(camera));
    const bounds={left:Math.min(...q.map(v=>v.x)),right:Math.max(...q.map(v=>v.x)),bottom:Math.min(...q.map(v=>v.y)),top:Math.max(...q.map(v=>v.y))};
-   let blocked=0;for(const v of targets){const delta=v.clone().sub(camera.position);ray.set(camera.position,delta.clone().normalize());ray.near=0;ray.far=delta.length()-.06;if(ray.intersectObjects(blockers,true).length)blocked++;}
    const issues=[];
    if(q.some(v=>v.z<=-1||v.z>=1)||bounds.left<-.95||bounds.right>.95||bounds.top>.68||bounds.bottom<-.9)issues.push('MESH_FACE_CROPPED');
    if(bounds.bottom<-.48)issues.push('CAPTION_SAFE_AREA');
    if(bounds.top-bounds.bottom<.19)issues.push('SUBJECT_SMALL');
-   if(blocked>2)issues.push('MESH_FACE_OCCLUSION');
    const facing=camera.position.clone().sub(center).normalize().dot(forward);
    if(facing<.25)issues.push('FACE_NOT_FRONTAL');
    if(eventHeads.some(v=>{const p=v.clone().project(camera);return p.z<=-1||p.z>=1||Math.abs(p.x)>.92||p.y<-.5||p.y>.68;}))issues.push('NEARBY_CONFRONTATION_OUT_OF_FRAME');
-   const visualAnatomy=!issues.length&&measureVisual?measureVisual(T,camera,actors,framing.player,d):null;if(visualAnatomy)issues.push(...visualAnatomy.issues);return {bounds,issues,blocked,facing,visualAnatomy};
+   if(issues.length)return {bounds,issues,blocked:0,faceRays:0,facing,visualAnatomy:null};
+   const visualAnatomy=measureVisual?measureVisual(T,camera,actors,framing.player,d):null;if(visualAnatomy)issues.push(...visualAnatomy.issues);
+   if(issues.length)return {bounds,issues,blocked:0,faceRays:0,facing,visualAnatomy};
+   let blocked=0;for(const v of targets){const delta=v.clone().sub(camera.position);ray.set(camera.position,delta.clone().normalize());ray.near=0;ray.far=delta.length()-.06;if(ray.intersectObjects(blockers,true).length)blocked++;}
+   if(blocked>2)issues.push('MESH_FACE_OCCLUSION');
+   return {bounds,issues,blocked,faceRays:9,facing,visualAnatomy};
   };
   const initial=camera.position.clone(),initialQuaternion=camera.quaternion.clone(),focus=center.clone().add(new T.Vector3(0,-.2,0));if(subject.spineCurve)focus.lerp(subject.spineCurve.getPointAt(d.performanceHold?.12:.35),d.showcase?.55:.25);
   // Offline preflight exposes real, inspected viewpoints. A later pass chooses
@@ -111,7 +114,7 @@ export function createCameraRig(T,camera,measureVisual){
    const result=inspect(),jump=lastRefined?lastRefined.distanceTo(camera.position):0;
    if(!framing.cut&&refinedAt!==null&&at-refinedAt<250&&jump>3)result.issues.push('ABRUPT_CAMERA_MOVE');
    lastRefined=camera.position.clone();refinedAt=at;
-   return {...framing,camera:camera.position.toArray(),focus:focus.toArray(),head:center.clone().project(camera).toArray(),...(d.collectCameraViews?{candidateViews:views}:{}),quality:{method:'rendered-mesh-bounds-and-nine-face-rays',bounds:result.bounds,issues:result.issues,blockedFaceRays:result.blocked,sampledFaceRays:9,nearbyEventHeads:eventHeads.length,corrected:true,cameraJump:jump,visualAnatomy:result.visualAnatomy,planned:!d.collectCameraViews}};
+   return {...framing,camera:camera.position.toArray(),focus:focus.toArray(),head:center.clone().project(camera).toArray(),...(d.collectCameraViews?{candidateViews:views}:{}),quality:{method:'rendered-mesh-bounds-and-nine-face-rays',bounds:result.bounds,issues:result.issues,blockedFaceRays:result.blocked,sampledFaceRays:result.faceRays,nearbyEventHeads:eventHeads.length,corrected:true,cameraJump:jump,visualAnatomy:result.visualAnatomy,planned:!d.collectCameraViews}};
   }
   const score=r=>r.issues.length*(d.format==='battle'?10000:100)+r.blocked*(d.format==='battle'?100:12)+(1-r.facing)*(d.format==='battle'?150:10)+(lastRefined&&!framing.cut?r.position.distanceTo(lastRefined)*4:0);
   let best={position:initial.clone(),quaternion:initialQuaternion,...inspect()};
@@ -155,6 +158,6 @@ export function createCameraRig(T,camera,measureVisual){
   camera.updateMatrixWorld();
   const corrected=initial.distanceTo(camera.position)>.01,jump=lastRefined?lastRefined.distanceTo(camera.position):0;
   lastRefined=camera.position.clone();if(!framing.cut&&refinedAt!==null&&at-refinedAt<250&&jump>3)best.issues.push('ABRUPT_CAMERA_MOVE');refinedAt=at;
-  return {...framing,camera:camera.position.toArray(),head:center.clone().project(camera).toArray(),quality:{method:'rendered-mesh-bounds-and-nine-face-rays',bounds:best.bounds,issues:best.issues,blockedFaceRays:best.blocked,sampledFaceRays:9,nearbyEventHeads:eventHeads.length,rejectedUnsafeInterpolation,corrected:corrected||framing.quality.corrected,previousProbeIssues:framing.quality.issues,cameraJump:jump}};
+  return {...framing,camera:camera.position.toArray(),head:center.clone().project(camera).toArray(),quality:{method:'rendered-mesh-bounds-and-nine-face-rays',bounds:best.bounds,issues:best.issues,blockedFaceRays:best.blocked,sampledFaceRays:best.faceRays,nearbyEventHeads:eventHeads.length,rejectedUnsafeInterpolation,corrected:corrected||framing.quality.corrected,previousProbeIssues:framing.quality.issues,cameraJump:jump}};
  }};
 }
