@@ -87,7 +87,7 @@ export function createCameraRig(T,camera,measureVisual){
    if(eventHeads.some(v=>{const p=v.clone().project(camera);return p.z<=-1||p.z>=1||Math.abs(p.x)>.92||p.y<-.5||p.y>.68;}))issues.push('NEARBY_CONFRONTATION_OUT_OF_FRAME');
    const visualAnatomy=!issues.length&&measureVisual?measureVisual(T,camera,actors,framing.player,d):null;if(visualAnatomy)issues.push(...visualAnatomy.issues);return {bounds,issues,blocked,facing,visualAnatomy};
   };
-  const initial=camera.position.clone(),initialQuaternion=camera.quaternion.clone(),focus=center.clone().add(new T.Vector3(0,-.2,0));if(subject.spineCurve)focus.lerp(subject.spineCurve.getPointAt(d.format==='comedy'?.12:.35),d.showcase?.55:.25);
+  const initial=camera.position.clone(),initialQuaternion=camera.quaternion.clone(),focus=center.clone().add(new T.Vector3(0,-.2,0));if(subject.spineCurve)focus.lerp(subject.spineCurve.getPointAt(d.performanceHold?.12:.35),d.showcase?.55:.25);
   // Offline preflight exposes real, inspected viewpoints. A later pass chooses
   // a continuous path across the whole scene; live rendering never uses this.
   if(['battle','champion','comedy'].includes(d.format)&&(d.collectCameraViews||d.cameraPlan)){
@@ -95,12 +95,12 @@ export function createCameraRig(T,camera,measureVisual){
    if(d.collectCameraViews){
     // World-aligned azimuths do not jump when the head turns. The old
     // head-relative lattice rotated all candidates simultaneously at grid turns.
-    for(const radius of (d.showcase?(d.showcaseStage===2?[4.5,6,8]:[6,8,11]):d.format==='comedy'?[4.5,6,8]:[8,11]))for(let azimuth=0;azimuth<64;azimuth++)for(const height of (d.showcase?[2.5,4,6,9]:[2.5,4,6,8,10,12])){
+    for(const radius of (d.showcase?(d.showcaseStage===2?[4.5,6,8]:[6,8,11]):d.performanceHold?[4.5,6,8]:[8,11]))for(let azimuth=0;azimuth<64;azimuth++)for(const height of (d.showcase?[2.5,4,6,9]:[2.5,4,6,8,10,12])){
      const angle=azimuth*Math.PI/32,offset=new T.Vector3(Math.sin(angle)*radius,height,Math.cos(angle)*radius);
      if(offset.clone().normalize().dot(forward)<.25)continue;
      camera.position.copy(center).add(offset);camera.lookAt(focus);
      let r=inspect();for(let fit=0;fit<12&&r.issues.some(x=>['MESH_FACE_CROPPED','CAPTION_SAFE_AREA','NEARBY_CONFRONTATION_OUT_OF_FRAME','BODY_CROPPED'].includes(x));fit++){camera.position.sub(focus).multiplyScalar(1.08).add(focus);camera.lookAt(focus);r=inspect();}
-     if(!r.issues.length)views.push({position:camera.position.toArray(),quaternion:camera.quaternion.toArray(),facing:r.facing,blocked:r.blocked,height:r.bounds.top-r.bounds.bottom,narrativeCost:d.showcase?(Math.atan2(Math.sin(angle-.65),Math.cos(angle-.65))**2*3+Math.abs(height-(d.showcaseStage===2?2.5:4))*.5):0,visualCost:r.visualAnatomy?(1-r.visualAnatomy.bodyVisibleFraction)*6+(1-r.visualAnatomy.neckVisibleFraction)*3:0,frontWeight:d.showcase?2:4,targetHeight:d.showcaseStage===2?.8:d.format==='battle'?(['elimination','proximity','approach','chase'].includes(d.sourceEvent)?.26:.34):d.showcase?.55:.7});
+     if(!r.issues.length)views.push({position:camera.position.toArray(),quaternion:camera.quaternion.toArray(),facing:r.facing,blocked:r.blocked,height:r.bounds.top-r.bounds.bottom,narrativeCost:d.showcase?(Math.atan2(Math.sin(angle-.65),Math.cos(angle-.65))**2*3+Math.abs(height-(d.showcaseStage===2?2.5:4))*.5):0,visualCost:r.visualAnatomy?(1-r.visualAnatomy.bodyVisibleFraction)*6+(1-r.visualAnatomy.neckVisibleFraction)*3:0,frontWeight:d.showcase?2:4,targetHeight:d.showcaseStage===2?.8:d.format==='battle'?(['elimination','proximity','approach','chase'].includes(d.sourceEvent)?.26:.34):d.showcase?.55:d.performanceHold?.7:.4});
     }
     if(views.length>400){const kept=Array.from({length:400},(_,i)=>views[Math.floor(i*views.length/400)]);views.splice(0,views.length,...kept);}
     if(views.length){camera.position.fromArray(views[0].position);camera.quaternion.fromArray(views[0].quaternion);}

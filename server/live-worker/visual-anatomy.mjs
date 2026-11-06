@@ -26,7 +26,7 @@ export function inspectVisualAnatomy(T,camera,actors,index,context={}){
   return {inside:true,visible:!blocked&&(!hasUnmodelled||ray.intersectObjects(blockers,true).length===0),q};
  };
  const neck=Array.from({length:6},(_,i)=>visible(curve.getPointAt(Math.min(.35,(.45+i*.22)/length))));
- const bust=context.format==='comedy';
+ const bust=context.performanceHold===true;
  const body=Array.from({length:12},(_,i)=>visible(curve.getPointAt(bust?.05+i*.025:.13+i*.078)));
  const ratio=(points,key)=>points.filter(p=>p[key]).length/points.length;
  const neckVisible=ratio(neck,'visible'),bodyVisible=ratio(body,'visible'),bodyInFrame=ratio(body,'inside');

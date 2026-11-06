@@ -25,3 +25,13 @@ test('version 4 cannot be eligible with geometric checks alone',()=>{
  const report={technicalStatus:'TECHNICALLY_VALID',voice:{neural:1,fallback:0,failures:0},music:[{}],timeline:{version:4},renderer:{frames:1,framingQuality:{checked:1,issues:{}}}};
  assert.equal(audiovisualEligibility(report).eligible,false);report.renderer.visualQuality={checked:1,failures:[]};assert.equal(audiovisualEligibility(report).eligible,true);assert.equal(audiovisualEligibility(report).humanReviewRequired,true);
 });
+
+test('comedy holds recorded poses for performance and retains two moving action scenes',()=>{
+ const config={format:'comedy',seconds:18,characters:['Lume','Faísca','Jade','Ember']},recording=recordGameplay(config),before=JSON.stringify(recording),timeline=createEditorial(config,recording);
+ assert.equal(timeline.scenes.filter(s=>s.hold).length,2);assert.equal(timeline.scenes.filter(s=>s.speed===1).length,2);
+ for(const scene of timeline.scenes.filter(s=>s.hold)){
+  const a=editorialFrame(recording,timeline,scene.start+.1,100000),b=editorialFrame(recording,timeline,scene.start+.5,100500);
+  assert.equal(a.sourceAt,b.sourceAt);assert.equal(a.direction.performanceHold,true);assert.match(a.direction.title,/pausa/);
+ }
+ assert.equal(JSON.stringify(recording),before);
+});
