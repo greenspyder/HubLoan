@@ -1,0 +1,2 @@
+NEW RENDER, provisional Chatterbox Heart, verified archived takes battle
+battle 166623 { checked: 375, corrected: 375, issues: {}, failures: [] } { eligible: true, reasons: [], humanReviewRequired: true }

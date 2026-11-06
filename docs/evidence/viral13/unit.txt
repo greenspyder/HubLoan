@@ -1,0 +1,21 @@
+✔ global camera path avoids a locally attractive dead end (2.131036ms)
+✔ unreachable or missing safe views fail closed without inventing cuts (0.677854ms)
+✔ only existing scene cuts may disconnect a camera path (0.321591ms)
+✔ rotation discontinuity is rejected even when position stays fixed (0.292779ms)
+✔ editorial repair records action cuts and refuses rapid or unmotivated cuts (0.970033ms)
+✔ highlights reflect reproducible observed transitions (554.047552ms)
+✔ timeline cuts and slow replay retain source evidence and do not mutate game (241.232894ms)
+✔ caption blocks are bounded, ordered and non-overlapping (0.616274ms)
+✔ visual gate distinguishes an intact spine from an offscreen or obstructed silhouette (17.610455ms)
+✔ every champion has five explicit presentation beats without mutating gameplay (306.787885ms)
+✔ event direction has measured simulation evidence, not invented crowd interactions (212.492244ms)
+✔ version 4 cannot be eligible with geometric checks alone (0.338196ms)
+✔ comedy holds recorded poses for performance and retains two moving action scenes (223.244647ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1107.542263

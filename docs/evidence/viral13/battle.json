@@ -1,0 +1,4717 @@
+{
+  "width": 360,
+  "height": 640,
+  "seconds": 25,
+  "fps": 15,
+  "maxBlackRun": 0,
+  "distinctFrames": 375,
+  "distinctMediaFps": 15,
+  "captionTiming": "word-count estimate inside PCM interval; not forced alignment",
+  "audio": true,
+  "format": "battle",
+  "voiceEngine": "chatterbox-archived-af_heart",
+  "voice": {
+    "engine": "chatterbox",
+    "voice": "af_heart",
+    "profile": {
+      "version": 1,
+      "candidateId": "chatterbox-heart",
+      "engine": "chatterbox",
+      "model": "Chatterbox-Multilingual-pt-br",
+      "voice": "af_heart",
+      "reference": "af_heart",
+      "language": "pt-BR",
+      "speed": 1,
+      "exaggeration": 0.35,
+      "style": "Chatterbox PT-BR · Heart sintética",
+      "normalization": "existing-mixer-limiter",
+      "fallback": "espeak-technical-only",
+      "license": "MIT; synthetic reference Apache-2.0",
+      "source": "https://huggingface.co/ResembleAI/Chatterbox-Multilingual-pt-br",
+      "emotionControl": "neural-exaggeration-not-emotion-labels",
+      "liveValidated": false
+    },
+    "neural": 3,
+    "fallback": 0,
+    "failures": 0,
+    "synthesisCalls": 0,
+    "source": "VERIFIED_ARCHIVED_NEURAL_TAKES",
+    "used": [
+      {
+        "text": "Tem alguma coisa estranha acontecendo nessa arena... e eu acho que vocês ainda não perceberam.",
+        "sha256": "55c4ce473a3d030b6bf58c5b637c374b2d5a81fbe7cd19de8e68ce795ef1fc59",
+        "sourceSynthesisMs": 86492.35692000002
+      },
+      {
+        "text": "Espera... espera... não vira agora.",
+        "sha256": "1fb0f747f0f5ab794bfbb629f0e58d6e5d6d4efd7cf6ff6964c5f3328a63f6ed",
+        "sourceSynthesisMs": 47052.37612200017
+      },
+      {
+        "text": "Ela tinha um plano perfeito. Infelizmente, esqueceu de avisar a própria cabeça.",
+        "sha256": "572cccad6a289e62175988838138d8303b1a75f6c54beecb77f79d118b0e75b5",
+        "sourceSynthesisMs": 78943.40390599996
+      }
+    ]
+  },
+  "music": [
+    {
+      "id": "00000000-0000-4000-8000-000000000012",
+      "hash": "ac907c95596fc433d14aea4ea76f00c833bd6dcc4a4c1bd16f18eea72250a3e5",
+      "title": "Brazilian Sunsets",
+      "creator": "Ketsa",
+      "license": "CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/",
+      "source": "https://freemusicarchive.org/music/Ketsa/cc-by-free-to-use-for-anything/brazilian-sunsets/"
+    }
+  ],
+  "renderer": {
+    "engine": "three-webgl2",
+    "width": 360,
+    "height": 640,
+    "frames": 375,
+    "maxFrameMs": 515,
+    "softwareRequested": true,
+    "sandboxDisabled": true,
+    "gpu": "WebKit WebGL",
+    "geometryCount": 32,
+    "textureCount": 1,
+    "timings": {
+      "sceneMs": {
+        "totalMs": 1876.0000000006985,
+        "maxMs": 34.399999999965075
+      },
+      "threeSubmitMs": {
+        "totalMs": 507.9000000000233,
+        "maxMs": 108.30000000004657
+      },
+      "captureMs": {
+        "totalMs": 56.899999999965075,
+        "maxMs": 1.1999999999534339
+      },
+      "overlayMs": {
+        "totalMs": 67.50000000017462,
+        "maxMs": 7.5
+      },
+      "readbackMs": {
+        "totalMs": 16379.899999999849,
+        "maxMs": 340.30000000004657
+      },
+      "pixelConversionMs": {
+        "totalMs": 440.2000000004191,
+        "maxMs": 11.200000000011642
+      },
+      "serializationMs": {
+        "totalMs": 44.499999998894054,
+        "maxMs": 0.7000000000116415
+      },
+      "preparationMs": {
+        "totalMs": 11.799364999867976,
+        "maxMs": 0.1889390000142157
+      },
+      "evaluateWallMs": {
+        "totalMs": 23721.379704999883,
+        "maxMs": 513.9011789999786
+      },
+      "decodeMs": {
+        "totalMs": 36.22937000010279,
+        "maxMs": 13.113438000000315
+      }
+    },
+    "shots": {
+      "Front": 150,
+      "Follow": 138,
+      "Action": 87
+    },
+    "cameraSamples": [
+      {
+        "at": 100000,
+        "frame": 1,
+        "cut": true,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 2.742498814077052e-8,
+            "skullNormalizedRadius": 0.36820295045580914,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -6.5033189117007355,
+              1.2373204418712134,
+              5.2678
+            ],
+            "spineStart": [
+              -6.503318905830383,
+              1.237320438027382,
+              5.267799973487854
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000001778237472643104
+          },
+          {
+            "player": 1,
+            "gap": 9.353868690485702e-8,
+            "skullNormalizedRadius": 0.29052745380624523,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              1.4966810882992647,
+              1.2373204418712134,
+              6.2678
+            ],
+            "spineStart": [
+              1.4966810941696167,
+              1.237320452928543,
+              6.2678000926971436
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000034250840785628543
+          },
+          {
+            "player": 2,
+            "gap": 9.302325908347872e-8,
+            "skullNormalizedRadius": 0.36365467161024445,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8676557212943453,
+            "socket": [
+              -1.5033189117007353,
+              1.2549761631655587,
+              8.2678
+            ],
+            "spineStart": [
+              -1.5033189058303833,
+              1.2549761682748795,
+              8.267800092697144
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000035104871122464925
+          },
+          {
+            "player": 3,
+            "gap": 1.8083891330800873e-8,
+            "skullNormalizedRadius": 0.4495050601780526,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8676557212943453,
+            "socket": [
+              -5.4966810882992645,
+              1.2549761631655587,
+              1.7322
+            ],
+            "spineStart": [
+              -5.496681094169617,
+              1.25497617572546,
+              1.7322000116109848
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000011168066512907753
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.8972433835153852,
+            "right": 0.2880147573761653,
+            "bottom": -0.1434358146466973,
+            "top": 0.21050297294135664
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 1,
+            "bodyVisibleFraction": 0.6666666666666666,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 1.0371985364770095,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          -0.17420055553369512,
+          0.026042024545333234,
+          0.9816308145311631
+        ],
+        "camera": [
+          -14.471001660784388,
+          6.092285062514872,
+          -1.305254336697692
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "confused",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 101000,
+        "frame": 16,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 8.868492203089943e-8,
+            "skullNormalizedRadius": 0.3690769023622728,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -5.496280175319478,
+              1.2824496813263575,
+              6.7678
+            ],
+            "spineStart": [
+              -5.496280193328857,
+              1.2824496924877167,
+              6.767799913883209
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.00000702294633288598
+          },
+          {
+            "player": 1,
+            "gap": 3.187368316629279e-8,
+            "skullNormalizedRadius": 0.2911665034844467,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -0.7678,
+              1.2824496813263575,
+              6.503719824680522
+            ],
+            "spineStart": [
+              -0.7678000032901764,
+              1.2824496552348137,
+              6.503719806671143
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000002014108871433392
+          },
+          {
+            "player": 2,
+            "gap": 9.341840022641542e-8,
+            "skullNormalizedRadius": 0.36438609400348715,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -1.4962801753194777,
+              1.2824496813263575,
+              10.7678
+            ],
+            "spineStart": [
+              -1.4962801784276962,
+              1.2824496924877167,
+              10.767800092697144
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.00001235521915501228
+          },
+          {
+            "player": 3,
+            "gap": 3.7860762886437497e-8,
+            "skullNormalizedRadius": 0.4507213135110042,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -6.496280175319478,
+              1.2824496813263575,
+              2.7678
+            ],
+            "spineStart": [
+              -6.496280193328857,
+              1.2824496775865555,
+              2.767800033092499
+            ],
+            "issues": [],
+            "projectedGapPixels": 7.842188248039999e-7
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.43891928911350897,
+            "right": 0.506846718439827,
+            "bottom": -0.10184706822651461,
+            "top": 0.2158897605752417
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 1.1863496394165696,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 0.6666666666666666,
+            "bodyVisibleFraction": 0.5,
+            "bodyInFrameFraction": 0.6666666666666666,
+            "projectedBodyExtent": 1.046618521173023,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          -0.04835897371726621,
+          0.05559918174209065,
+          0.9829245553829967
+        ],
+        "camera": [
+          -12.611272563215625,
+          3.893843589778957,
+          12.146165735327997
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "confused",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 102000,
+        "frame": 31,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 4.357626163592465e-8,
+            "skullNormalizedRadius": 0.37145908877490436,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8500000000000001,
+            "socket": [
+              -5.501544330770792,
+              1.248657262888425,
+              9.2678
+            ],
+            "spineStart": [
+              -5.50154435634613,
+              1.2486572861671448,
+              9.267799973487854
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000026082550827309983
+          },
+          {
+            "player": 1,
+            "gap": 3.767424788345663e-8,
+            "skullNormalizedRadius": 0.292908708322083,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8500000000000001,
+            "socket": [
+              -3.2678,
+              1.248657262888425,
+              6.498455669229208
+            ],
+            "spineStart": [
+              -3.2678000032901764,
+              1.2486572787165642,
+              6.498455703258514
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000010548645020167198
+          },
+          {
+            "player": 2,
+            "gap": 9.471292934708024e-8,
+            "skullNormalizedRadius": 0.36638129201509,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 1.0378977510040976,
+            "socket": [
+              0.2678,
+              1.4365550138925225,
+              11.501544330770791
+            ],
+            "spineStart": [
+              0.26779999770224094,
+              1.436555027961731,
+              11.50154423713684
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000006777335292599773
+          },
+          {
+            "player": 3,
+            "gap": 3.9432657210332184e-8,
+            "skullNormalizedRadius": 0.45403455180241553,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 1.0378977510040976,
+            "socket": [
+              -5.501544330770792,
+              1.4365550138925225,
+              4.2678
+            ],
+            "spineStart": [
+              -5.50154435634613,
+              1.436555027961731,
+              4.267799973487854
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000018614421386330617
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.13581790462474114,
+            "right": 0.49105897456667563,
+            "bottom": -0.21365597539342457,
+            "top": 0.16359488338234604
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 2.1024593074077518,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 0.3333333333333333,
+            "bodyVisibleFraction": 0.6666666666666666,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 1.027275944653927,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0.13458563374283056,
+          0.0010823861696480093,
+          0.9873141385011549
+        ],
+        "camera": [
+          -10.926867425878488,
+          10.55228384538561,
+          15.187507881724667
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "confused",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 103000,
+        "frame": 46,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 1.784070852051172e-7,
+            "skullNormalizedRadius": 0.3740443289796023,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 1.0453220633155775,
+            "socket": [
+              -4.165393337474494,
+              1.4429742547100128,
+              10.337012948291461
+            ],
+            "spineStart": [
+              -4.165393352508545,
+              1.4429742395877838,
+              10.337013125419617
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000010095111320442294
+          },
+          {
+            "player": 1,
+            "gap": 6.587698838026443e-8,
+            "skullNormalizedRadius": 0.2948003853869668,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -4.3346066625255055,
+              1.2476521913944352,
+              7.162987051708539
+            ],
+            "spineStart": [
+              -4.334606647491455,
+              1.2476522102952003,
+              7.162987112998962
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000028199338007275446
+          },
+          {
+            "player": 2,
+            "gap": 1.4607994774181715e-7,
+            "skullNormalizedRadius": 0.3685486269224624,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              2.7678,
+              1.2476521913944352,
+              11.50170150098258
+            ],
+            "spineStart": [
+              2.7678000032901764,
+              1.2476521879434586,
+              11.501701354980469
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000007693327317017
+          },
+          {
+            "player": 3,
+            "gap": 3.7966748812035535e-8,
+            "skullNormalizedRadius": 0.45777449080272076,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -5.467062499846354,
+              1.2526172192441847,
+              4.2678
+            ],
+            "spineStart": [
+              -5.467062473297119,
+              1.2526172250509262,
+              4.267799973487854
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000013771012798666096
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.15154645668973765,
+            "right": 0.5390120294500632,
+            "bottom": -0.22818506621322965,
+            "top": 0.16240621150312545
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 0.006313611264754826,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 0.5,
+            "bodyVisibleFraction": 0.9166666666666666,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 1.0290588140194872,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0.14840245064184288,
+          -0.009617306555709084,
+          0.9883682921062961
+        ],
+        "camera": [
+          -12.478326125800105,
+          13.359095202976167,
+          13.003114986990104
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "confused",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 104000,
+        "frame": 61,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 1.531512030384717e-7,
+            "skullNormalizedRadius": 0.37535146801741737,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -2.496231901053139,
+              1.2827608528096563,
+              11.2678
+            ],
+            "spineStart": [
+              -2.4962318539619446,
+              1.282760851085186,
+              11.267799854278564
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000008316876527733946
+          },
+          {
+            "player": 1,
+            "gap": 8.70382784884555e-8,
+            "skullNormalizedRadius": 0.29575712758814104,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -4.5037680989468605,
+              1.2827608528096563,
+              4.7322
+            ],
+            "spineStart": [
+              -4.503768086433411,
+              1.282760851085186,
+              4.732200086116791
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000034459720751233396
+          },
+          {
+            "player": 2,
+            "gap": 3.5752070918343305e-8,
+            "skullNormalizedRadius": 0.36964523865038923,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              3.496231901053139,
+              1.2827608528096563,
+              9.7322
+            ],
+            "spineStart": [
+              3.496231883764267,
+              1.2827608361840248,
+              9.732200026512146
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000014711195518228216
+          },
+          {
+            "player": 3,
+            "gap": 9.986278328999825e-8,
+            "skullNormalizedRadius": 0.4595908583022263,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -5.467062499846354,
+              1.2876751550149255,
+              4.2678
+            ],
+            "spineStart": [
+              -5.467062592506409,
+              1.2876751720905304,
+              4.267800033092499
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000031292425124131396
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.15140659629591532,
+            "right": 0.539114485796767,
+            "bottom": -0.22761940804599942,
+            "top": 0.16300904316834083
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 0.0025538661404453933,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 0.5,
+            "bodyVisibleFraction": 0.8333333333333334,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 1.0271790004038481,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0.14842207531063417,
+          -0.008874672688898144,
+          0.9883683065791685
+        ],
+        "camera": [
+          -12.478326125800105,
+          13.394153138746908,
+          13.003114986990104
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "confused",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 105000,
+        "frame": 76,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 8.744412068032566e-8,
+            "skullNormalizedRadius": 0.3746056648088632,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8500000000000001,
+            "socket": [
+              0.7306344319439079,
+              1.237920372023472,
+              -8.556222471266915
+            ],
+            "spineStart": [
+              0.7306344211101532,
+              1.2379203736782074,
+              -8.556222558021545
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000005112280925810275
+          },
+          {
+            "player": 1,
+            "gap": 3.8705130707043954e-8,
+            "skullNormalizedRadius": 0.29521122118177123,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8500000000000001,
+            "socket": [
+              2.450172168267118,
+              1.237920372023472,
+              -11.27020743832192
+            ],
+            "spineStart": [
+              2.450172185897827,
+              1.237920381128788,
+              -11.270207405090332
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000002147024534935175
+          },
+          {
+            "player": 2,
+            "gap": 7.633135956252264e-8,
+            "skullNormalizedRadius": 0.3690195198819148,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8939085791285293,
+            "socket": [
+              4.35113333333343,
+              1.2818289511520011,
+              9.503224909313248
+            ],
+            "spineStart": [
+              4.351133286952972,
+              1.2818289622664452,
+              9.503224968910217
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0014567917192733234
+          },
+          {
+            "player": 3,
+            "gap": 4.578570284474138e-8,
+            "skullNormalizedRadius": 0.4585547571973764,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8939085791285293,
+            "socket": [
+              4.7306344319439075,
+              1.2818289511520011,
+              -5.556222471266916
+            ],
+            "spineStart": [
+              4.730634450912476,
+              1.2818289250135422,
+              -5.556222438812256
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000003557617596211181
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.8864039630318966,
+            "right": 0.4593643676422757,
+            "bottom": -0.2248534925892312,
+            "top": 0.2849409643427812
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.9040270099545623,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 0.8333333333333334,
+            "bodyVisibleFraction": 0.9166666666666666,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 0.8178391664079618,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          -0.07512739876478192,
+          0.057626757041828555,
+          0.9782874344872979
+        ],
+        "camera": [
+          -1.684083626901895,
+          5.393238286020859,
+          -0.508187060024266
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 106000,
+        "frame": 91,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 6.835220646791829e-8,
+            "skullNormalizedRadius": 0.37225118543405855,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -0.3582904492220377,
+              1.2614137706979365,
+              -9.100610798433449
+            ],
+            "spineStart": [
+              -0.35829045344144106,
+              1.261413812637329,
+              -9.100610852241516
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000025419996277454296
+          },
+          {
+            "player": 1,
+            "gap": 5.417192723164553e-8,
+            "skullNormalizedRadius": 0.2934882486250526,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              0.6417095507779623,
+              1.2614137706979365,
+              -11.100610798433449
+            ],
+            "spineStart": [
+              0.6417095549404621,
+              1.2614137753844261,
+              -11.100610852241516
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000001636728472764334
+          },
+          {
+            "player": 2,
+            "gap": 2.5873697916939255e-8,
+            "skullNormalizedRadius": 0.36704512485952834,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              6.85113333333343,
+              1.2614137706979365,
+              9.49955234705127
+            ],
+            "spineStart": [
+              6.851133346557617,
+              1.2614137679338455,
+              9.499552369117737
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.00017117415755949427
+          },
+          {
+            "player": 3,
+            "gap": 4.351014868323882e-8,
+            "skullNormalizedRadius": 0.4552809807645535,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.9176439850693427,
+            "socket": [
+              5.85113333333343,
+              1.3290577557672794,
+              -6.500447652948729
+            ],
+            "spineStart": [
+              5.851133346557617,
+              1.329057738184929,
+              -6.500447690486908
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000022966952049220885
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.3672269805744884,
+            "right": 0.7045525332509912,
+            "bottom": -0.07857709831665055,
+            "top": 0.22356360793504915
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.20592476406285684,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 1,
+            "bodyVisibleFraction": 1,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 0.40340420302614155,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0.05716343324625597,
+          0.06551831059078965,
+          0.9829219279845264
+        ],
+        "camera": [
+          13.06165945913353,
+          3.940512856784853,
+          2.0031149869901075
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 107000,
+        "frame": 106,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 2.595662410269846e-8,
+            "skullNormalizedRadius": 0.36965311188276934,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8500000000000001,
+            "socket": [
+              -0.49736009999388103,
+              1.2754951218832726,
+              -6.648866666666569
+            ],
+            "spineStart": [
+              -0.49736011400818825,
+              1.2754951044917107,
+              -6.648866653442383
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000019608848403782394
+          },
+          {
+            "player": 1,
+            "gap": 1.0760708854598403e-8,
+            "skullNormalizedRadius": 0.29158782668418876,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 1.0080718682989427,
+            "socket": [
+              -1.3511333333334308,
+              1.4335669901822152,
+              -10.49736009999388
+            ],
+            "spineStart": [
+              -1.351133331656456,
+              1.4335669875144958,
+              -10.497360110282898
+            ],
+            "issues": [],
+            "projectedGapPixels": 3.3769011803881916e-7
+          },
+          {
+            "player": 2,
+            "gap": 5.1118610510225844e-8,
+            "skullNormalizedRadius": 0.3648685964290925,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8500000000000001,
+            "socket": [
+              7.497360099993881,
+              1.2754951218832726,
+              7.648866666666568
+            ],
+            "spineStart": [
+              7.497360050678253,
+              1.2754951193928719,
+              7.648866653442383
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.00004554870201492059
+          },
+          {
+            "player": 3,
+            "gap": 1.3074535377496803e-7,
+            "skullNormalizedRadius": 0.4516650165580289,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 1.0080718682989427,
+            "socket": [
+              7.502639900006119,
+              1.4335669901822152,
+              -5.648866666666569
+            ],
+            "spineStart": [
+              7.5026397705078125,
+              1.433567002415657,
+              -5.648866653442383
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000007511104023418756
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.2488233248089562,
+            "right": 0.4660789587215419,
+            "bottom": -0.0942925154083191,
+            "top": 0.22485638106520886
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 1.0520613910882104,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 0.3333333333333333,
+            "bodyVisibleFraction": 0.5833333333333334,
+            "bodyInFrameFraction": 0.75,
+            "projectedBodyExtent": 0.8315272943265605,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0.06170660275614125,
+          0.066150236514362,
+          0.9829214815927427
+        ],
+        "camera": [
+          4.306868550200912,
+          4.044991722014775,
+          5.109677026387728
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 108000,
+        "frame": 121,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 4.149047762527233e-8,
+            "skullNormalizedRadius": 0.368252796345298,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8500000000000001,
+            "socket": [
+              -1.8511333333334297,
+              1.2336242136084226,
+              -5.503898289264479
+            ],
+            "spineStart": [
+              -1.8511333018541336,
+              1.2336242198944092,
+              -5.5038982629776
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000003720078509050044
+          },
+          {
+            "player": 1,
+            "gap": 2.110322201778343e-8,
+            "skullNormalizedRadius": 0.29056398554750296,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8500000000000001,
+            "socket": [
+              -2.503898289264479,
+              1.2336242136084226,
+              -9.14886666666657
+            ],
+            "spineStart": [
+              -2.5038982927799225,
+              1.2336241975426674,
+              -9.148866653442383
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000013990926328051097
+          },
+          {
+            "player": 2,
+            "gap": 3.928181589142416e-8,
+            "skullNormalizedRadius": 0.36369650105112145,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8500000000000001,
+            "socket": [
+              7.503898289264479,
+              1.2336242136084226,
+              5.148866666666568
+            ],
+            "spineStart": [
+              7.503898322582245,
+              1.2336241975426674,
+              5.148866653442383
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000003047044340987333
+          },
+          {
+            "player": 3,
+            "gap": 4.5634846132266804e-8,
+            "skullNormalizedRadius": 0.4497147080543691,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 1.0491351585872646,
+            "socket": [
+              7.098510184138883,
+              1.432759372195687,
+              -3.6444471246251933
+            ],
+            "spineStart": [
+              7.098510205745697,
+              1.4327593892812729,
+              -3.644447088241577
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000002622919491051421
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.32818482361597906,
+            "right": 0.33084686972555466,
+            "bottom": -0.09856285574527018,
+            "top": 0.22017463618449853
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.1730021982071044,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 0.3333333333333333,
+            "bodyVisibleFraction": 0.75,
+            "bodyInFrameFraction": 0.9166666666666666,
+            "projectedBodyExtent": 0.954456705328499,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0.03597903189185254,
+          0.061043832181584344,
+          0.9829240199404724
+        ],
+        "camera": [
+          -0.06165945913353532,
+          4.044147177977157,
+          5.003114986990104
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 109000,
+        "frame": 136,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 3.12353060636061e-8,
+            "skullNormalizedRadius": 0.3687989632016148,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 1.0280101154944292,
+            "socket": [
+              -2.497543122478668,
+              1.452327812375845,
+              -3.6488666666665703
+            ],
+            "spineStart": [
+              -2.4975430965423584,
+              1.4523278176784515,
+              -3.648866683244705
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.00000422764764569463
+          },
+          {
+            "player": 1,
+            "gap": 1.4604228267266526e-7,
+            "skullNormalizedRadius": 0.29096329854762976,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -0.6488666666665692,
+              1.2743176968814158,
+              -8.502456877521333
+            ],
+            "spineStart": [
+              -0.6488666608929634,
+              1.2743176817893982,
+              -8.502457022666931
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000037057314539445315
+          },
+          {
+            "player": 2,
+            "gap": 4.044947934194791e-8,
+            "skullNormalizedRadius": 0.3641536145017947,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              7.4975431224786675,
+              1.2743176968814158,
+              2.6488666666665703
+            ],
+            "spineStart": [
+              7.497543156147003,
+              1.2743176817893982,
+              2.648866683244705
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000024931146155186587
+          },
+          {
+            "player": 3,
+            "gap": 3.2792381325468346e-8,
+            "skullNormalizedRadius": 0.4504755976115976,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              4.64886666666657,
+              1.2743176968814158,
+              -3.497543122478668
+            ],
+            "spineStart": [
+              4.648866653442383,
+              1.2743176817893982,
+              -3.4975430965423584
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000002097339451848211
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.8961910640636715,
+            "right": 0.3411541900201502,
+            "bottom": -0.2393059318427982,
+            "top": 0.2566184188345166
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.17823930846298588,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 1,
+            "bodyVisibleFraction": 1,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 0.6292993855344714,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          -0.1473034416103599,
+          0.028391080573818873,
+          0.9806450136116297
+        ],
+        "camera": [
+          -0.02789519749024727,
+          7.385746614532289,
+          3.151756898420362
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 110000,
+        "frame": 151,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 3.699380454877627e-8,
+            "skullNormalizedRadius": 0.3710019655912394,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.9512939227215397,
+            "socket": [
+              -2.8986984836189897,
+              1.3642426722098278,
+              -1.6408093896232223
+            ],
+            "spineStart": [
+              -2.8986985087394714,
+              1.364242672920227,
+              -1.640809416770935
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000032258095375854987
+          },
+          {
+            "player": 1,
+            "gap": 4.063724626137133e-8,
+            "skullNormalizedRadius": 0.2925743081787656,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              1.8511333333334299,
+              1.262948749488288,
+              -8.500686975354984
+            ],
+            "spineStart": [
+              1.8511333614587784,
+              1.2629487589001656,
+              -8.500687003135681
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000003940512381100381
+          },
+          {
+            "player": 2,
+            "gap": 7.043633973836473e-8,
+            "skullNormalizedRadius": 0.36599836089657256,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              7.100465108183423,
+              1.262948749488288,
+              0.6418994180083715
+            ],
+            "spineStart": [
+              7.100465178489685,
+              1.262948751449585,
+              0.6418994218111038
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000002479467957604283
+          },
+          {
+            "player": 3,
+            "gap": 3.451795866984994e-8,
+            "skullNormalizedRadius": 0.45354274794311955,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              3.4993130246450157,
+              1.262948749488288,
+              -4.85113333333343
+            ],
+            "spineStart": [
+              3.4993130564689636,
+              1.262948751449585,
+              -4.851133346557617
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000022434642673125326
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.8431317464599432,
+            "right": 0.3969850208796771,
+            "bottom": -0.2452664843884807,
+            "top": 0.24878215845231796
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.9320083248798805,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 0.6666666666666666,
+            "bodyVisibleFraction": 0.75,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 0.7802124202351873,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          -0.09549475036455594,
+          0.020948681772171383,
+          0.9806536293794935
+        ],
+        "camera": [
+          -3.151756898420362,
+          7.374402632331649,
+          -9.527895197490247
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 111000,
+        "frame": 166,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 2.3303737826837518e-8,
+            "skullNormalizedRadius": 0.37366291490487913,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8570555601262002,
+            "socket": [
+              -5.35113333333343,
+              1.244147936784354,
+              -1.5033546496293309
+            ],
+            "spineStart": [
+              -5.351133346557617,
+              1.2441479340195656,
+              -1.5033546686172485
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000004936718360603602
+          },
+          {
+            "player": 1,
+            "gap": 1.5770022520767483e-7,
+            "skullNormalizedRadius": 0.29452125010554264,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8570555601262002,
+            "socket": [
+              4.269348633546656,
+              1.244147936784354,
+              -8.443648898363392
+            ],
+            "spineStart": [
+              4.269348621368408,
+              1.2441479116678238,
+              -8.443649053573608
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.00000797564891100562
+          },
+          {
+            "player": 2,
+            "gap": 1.5654646657039334e-8,
+            "skullNormalizedRadius": 0.36822868008243403,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8500000000000001,
+            "socket": [
+              4.64886666666657,
+              1.2370923766581539,
+              0.49664535037066915
+            ],
+            "spineStart": [
+              4.648866653442383,
+              1.2370923832058907,
+              0.4966453555971384
+            ],
+            "issues": [],
+            "projectedGapPixels": 7.000705885582578e-7
+          },
+          {
+            "player": 3,
+            "gap": 4.527572370016904e-8,
+            "skullNormalizedRadius": 0.4572442178569176,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8500000000000001,
+            "socket": [
+              2.7297756271686446,
+              1.2370923766581539,
+              -6.4503007986368095
+            ],
+            "spineStart": [
+              2.7297756671905518,
+              1.2370923608541489,
+              -6.450300812721252
+            ],
+            "issues": [],
+            "projectedGapPixels": 3.821297378725232e-7
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.4183244309130852,
+            "right": 0.17253987496947965,
+            "bottom": -0.09983880028271415,
+            "top": 0.21896269176365535
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 1.1445563630795188,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 0.3333333333333333,
+            "bodyVisibleFraction": 0.5833333333333334,
+            "bodyInFrameFraction": 0.6666666666666666,
+            "projectedBodyExtent": 0.943103393288581,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          -0.09877029147444844,
+          0.06091197254564488,
+          0.9829193447291107
+        ],
+        "camera": [
+          -8.026343693054299,
+          3.84849788039053,
+          -3.2235352168674867
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 112000,
+        "frame": 181,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 3.625767662851156e-8,
+            "skullNormalizedRadius": 0.37526838915482813,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -6.5036984942758105,
+              1.2823121956004324,
+              -2.8511333333334297
+            ],
+            "spineStart": [
+              -6.503698527812958,
+              1.282312199473381,
+              -2.851133346557617
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000009397612455255161
+          },
+          {
+            "player": 1,
+            "gap": 3.34151546124583e-8,
+            "skullNormalizedRadius": 0.2956963458603738,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              5.361579808971966,
+              1.2823121956004324,
+              -7.103134812942739
+            ],
+            "spineStart": [
+              5.361579775810242,
+              1.2823121920228004,
+              -7.10313481092453
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000010291453397077295
+          },
+          {
+            "player": 2,
+            "gap": 3.78025226507186e-8,
+            "skullNormalizedRadius": 0.36957560329807515,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              2.6442886166035593,
+              1.2823121956004324,
+              0.901368188378306
+            ],
+            "spineStart": [
+              2.6442886292934418,
+              1.282312162220478,
+              0.9013682007789612
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000029230123730543496
+          },
+          {
+            "player": 3,
+            "gap": 2.3265752523843498e-8,
+            "skullNormalizedRadius": 0.45947562875351794,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              2.5036984942758105,
+              1.2823121956004324,
+              -4.14886666666657
+            ],
+            "spineStart": [
+              2.5036984980106354,
+              1.2823122143745422,
+              -4.148866653442383
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000013239053228647416
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.3168316293119358,
+            "right": 0.7584690851187867,
+            "bottom": -0.08883676752468174,
+            "top": 0.21735268219153167
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.16667138010205912,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 1,
+            "bodyVisibleFraction": 0.5,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 0.6448831029278147,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0.10987753788565924,
+          0.05757991429712806,
+          0.9829187501937369
+        ],
+        "camera": [
+          -6.003114986990106,
+          3.893706814303904,
+          3.0616594591335318
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 113000,
+        "frame": 196,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 9.673724615390915e-8,
+            "skullNormalizedRadius": 0.37487086148056253,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 1.0339957564755053,
+            "socket": [
+              -7.445506833684385,
+              1.4330600959982884,
+              -4.269593235372021
+            ],
+            "spineStart": [
+              -7.445506930351257,
+              1.4330600947141647,
+              -4.269593238830566
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000020584495339065255
+          },
+          {
+            "player": 1,
+            "gap": 1.0456902085565942e-7,
+            "skullNormalizedRadius": 0.295405322651212,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              5.498519317742309,
+              1.249064339522783,
+              -4.648866666666569
+            ],
+            "spineStart": [
+              5.498519420623779,
+              1.249064326286316,
+              -4.648866653442383
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.00000361485255049928
+          },
+          {
+            "player": 2,
+            "gap": 2.6802243217864582e-8,
+            "skullNormalizedRadius": 0.3692420117353945,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 1.0339957564755053,
+            "socket": [
+              2.498519317742309,
+              1.4330600959982884,
+              3.3511333333334297
+            ],
+            "spineStart": [
+              2.498519331216812,
+              1.4330600798130035,
+              3.351133316755295
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000015649438884188106
+          },
+          {
+            "player": 3,
+            "gap": 2.3057437590353396e-8,
+            "skullNormalizedRadius": 0.4589232616063382,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              2.498519317742309,
+              1.249064339522783,
+              -1.6488666666665701
+            ],
+            "spineStart": [
+              2.498519331216812,
+              1.249064326286316,
+              -1.6488666534423828
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000014174622264220485
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.29774615108566277,
+            "right": 0.7729448068026258,
+            "bottom": -0.08945413630808761,
+            "top": 0.21097557142466014
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.16676615171474,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 1,
+            "bodyVisibleFraction": 0.8333333333333334,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 0.798724765162723,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Follow",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0.12317940206806917,
+          0.05394747773096609,
+          0.9829177388155471
+        ],
+        "camera": [
+          -6.003114986990106,
+          3.86051050372798,
+          5.561659459133532
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "determined",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 114000,
+        "frame": 211,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 5.8718745366482456e-8,
+            "skullNormalizedRadius": 0.372707351763278,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -5.501763365833586,
+              1.247256633243203,
+              6.734466666666715
+            ],
+            "spineStart": [
+              -5.501763343811035,
+              1.2472566366195679,
+              6.73446661233902
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000004378473547406703
+          },
+          {
+            "player": 1,
+            "gap": 2.463615572847012e-8,
+            "skullNormalizedRadius": 0.293821924519559,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -0.7344666666667148,
+              1.247256633243203,
+              6.498236634166414
+            ],
+            "spineStart": [
+              -0.734466664493084,
+              1.2472566440701485,
+              6.498236656188965
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000001860755162327754
+          },
+          {
+            "player": 2,
+            "gap": 1.1621704894350758e-7,
+            "skullNormalizedRadius": 0.367427559537536,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -1.5017633658335856,
+              1.247256633243203,
+              10.734466666666714
+            ],
+            "spineStart": [
+              -1.5017633885145187,
+              1.2472566366195679,
+              10.734466552734375
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000023036765122042144
+          },
+          {
+            "player": 3,
+            "gap": 2.30095237253653e-8,
+            "skullNormalizedRadius": 0.45591535200730815,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -6.501763365833586,
+              1.247256633243203,
+              2.7344666666667146
+            ],
+            "spineStart": [
+              -6.501763343811035,
+              1.2472566291689873,
+              2.7344666719436646
+            ],
+            "issues": [],
+            "projectedGapPixels": 9.061697865944822e-7
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.6966440918175071,
+            "right": 0.28723441382289994,
+            "bottom": -0.13476819707056464,
+            "top": 0.2360563976577089
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.11683534201232514,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 1,
+            "bodyVisibleFraction": 0.8333333333333334,
+            "bodyInFrameFraction": 0.9166666666666666,
+            "projectedBodyExtent": 0.8114597423224474,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Action",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          -0.10448150349142803,
+          0.06910773897206862,
+          0.9846868098986388
+        ],
+        "camera": [
+          2.6461657353279975,
+          7.358698683102926,
+          9.07793922988234
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 115000,
+        "frame": 226,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 1.7065692126631912e-7,
+            "skullNormalizedRadius": 0.3700400714493724,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -5.496214680420365,
+              1.282871861588972,
+              8.484466666666714
+            ],
+            "spineStart": [
+              -5.496214807033539,
+              1.2828718721866608,
+              8.484466552734375
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000011741883498150102
+          },
+          {
+            "player": 1,
+            "gap": 1.005900511322523e-8,
+            "skullNormalizedRadius": 0.2918707850222959,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -2.4844666666667146,
+              1.282871861588972,
+              6.503785319579635
+            ],
+            "spineStart": [
+              -2.4844666719436646,
+              1.2828718572854996,
+              6.503785312175751
+            ],
+            "issues": [],
+            "projectedGapPixels": 4.671160974468621e-7
+          },
+          {
+            "player": 2,
+            "gap": 1.8693316790888705e-7,
+            "skullNormalizedRadius": 0.36519258619855477,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.9990387145457991,
+            "socket": [
+              -0.5155333333332852,
+              1.4319105761347712,
+              11.496214680420366
+            ],
+            "spineStart": [
+              -0.5155333429574966,
+              1.431910589337349,
+              11.496214866638184
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.00003134844159215269
+          },
+          {
+            "player": 3,
+            "gap": 2.7678459814476037e-8,
+            "skullNormalizedRadius": 0.45220379539984323,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.9990387145457991,
+            "socket": [
+              -5.717617788591523,
+              1.4319105761347712,
+              3.635588514659809
+            ],
+            "spineStart": [
+              -5.7176178097724915,
+              1.4319105744361877,
+              3.6355884969234467
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000010866825555323302
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.4050043206100247,
+            "right": 0.5883214893270378,
+            "bottom": -0.1864867050873739,
+            "top": 0.1827721160324358
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.18480249808466828,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 1,
+            "bodyVisibleFraction": 0.6666666666666666,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 0.9065575382251874,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Action",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          -0.007489922846702435,
+          0.017522106668105778,
+          0.984699314952531
+        ],
+        "camera": [
+          -3.354006457822589,
+          7.543302278212081,
+          14.50530475110225
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 116000,
+        "frame": 241,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 2.6287176813606727e-8,
+            "skullNormalizedRadius": 0.368360192632461,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -4.76538183160079,
+              1.238171403267915,
+              9.491028803745465
+            ],
+            "spineStart": [
+              -4.765381813049316,
+              1.238171398639679,
+              9.491028785705566
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000010574580346204237
+          },
+          {
+            "player": 1,
+            "gap": 4.5080166168449585e-8,
+            "skullNormalizedRadius": 0.29064252857463696,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -3.4910288037454644,
+              1.238171403267915,
+              7.23461816839921
+            ],
+            "spineStart": [
+              -3.4910287857055664,
+              1.238171398639679,
+              7.234618127346039
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000016001036651643005
+          },
+          {
+            "player": 2,
+            "gap": 1.873509227599898e-7,
+            "skullNormalizedRadius": 0.3637863712843885,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.9042043709727574,
+            "socket": [
+              1.2344666666667148,
+              1.2923757742406723,
+              11.503185578509692
+            ],
+            "spineStart": [
+              1.2344666719436646,
+              1.2923757657408714,
+              11.503185391426086
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000011014415818204943
+          },
+          {
+            "player": 3,
+            "gap": 6.141148342288314e-8,
+            "skullNormalizedRadius": 0.449864361046814,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.9042043709727574,
+            "socket": [
+              -5.503185578509693,
+              1.2923757742406723,
+              4.2678
+            ],
+            "spineStart": [
+              -5.5031856298446655,
+              1.2923757806420326,
+              4.267800033092499
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000020023725575806787
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.12278688135949611,
+            "right": 0.4528516197616301,
+            "bottom": -0.24392999718060976,
+            "top": 0.14414845174977972
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 1.0221638686786438,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 0.3333333333333333,
+            "bodyVisibleFraction": 0.8333333333333334,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 0.9649584441017016,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Action",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0.12608042580171896,
+          -0.01961407824601046,
+          0.9883702963785533
+        ],
+        "camera": [
+          -10.685364105085977,
+          13.403786240650065,
+          14.201133907831903
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 117000,
+        "frame": 256,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 1.3435602803903473e-7,
+            "skullNormalizedRadius": 0.3685701639924792,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.9075575684938669,
+            "socket": [
+              -3.9927504791277455,
+              1.318531010433422,
+              10.399693257071606
+            ],
+            "spineStart": [
+              -3.9927505254745483,
+              1.318531021475792,
+              10.399693131446838
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000007651465173063836
+          },
+          {
+            "player": 1,
+            "gap": 6.432554367337208e-8,
+            "skullNormalizedRadius": 0.2907959466663635,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -4.400377389570654,
+              1.260973441939555,
+              6.993076793590915
+            ],
+            "spineStart": [
+              -4.400377452373505,
+              1.2609734535217285,
+              6.993076801300049
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000015246296616501197
+          },
+          {
+            "player": 2,
+            "gap": 2.2156694361187028e-8,
+            "skullNormalizedRadius": 0.3639620626726357,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              2.9844666666667146,
+              1.260973441939555,
+              11.499621015038185
+            ],
+            "spineStart": [
+              2.9844666719436646,
+              1.2609734311699867,
+              11.499621033668518
+            ],
+            "issues": [],
+            "projectedGapPixels": 8.688806722685615e-7
+          },
+          {
+            "player": 3,
+            "gap": 4.497250895015999e-8,
+            "skullNormalizedRadius": 0.4501567907734926,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -5.467062499846354,
+              1.2659508138725135,
+              4.2678
+            ],
+            "spineStart": [
+              -5.467062473297119,
+              1.2659508287906647,
+              4.267800033092499
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000021441390977497925
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.15350608426071533,
+            "right": 0.6949239392554154,
+            "bottom": -0.15114089859357263,
+            "top": 0.1915573478395639
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 1.5253807078710624,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 1,
+            "bodyVisibleFraction": 0.8333333333333334,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 1.1713380988843245,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Action",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0.19287581557400696,
+          0.026269803907375478,
+          0.9871758547193197
+        ],
+        "camera": [
+          -15.756568008473327,
+          10.361040808031989,
+          10.370947102121134
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 118000,
+        "frame": 271,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 7.746374265784616e-8,
+            "skullNormalizedRadius": 0.37055862194066674,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -2.6707580611107122,
+              1.2758194680532398,
+              10.809295251465677
+            ],
+            "spineStart": [
+              -2.6707580387592316,
+              1.2758194729685783,
+              10.809295177459717
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000004820152411319506
+          },
+          {
+            "player": 1,
+            "gap": 6.547948579934545e-8,
+            "skullNormalizedRadius": 0.29225000494015013,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -4.502690307913014,
+              1.2758194680532398,
+              5.265533333333285
+            ],
+            "spineStart": [
+              -4.502690315246582,
+              1.2758194729685783,
+              5.265533268451691
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000003328911366489527
+          },
+          {
+            "player": 2,
+            "gap": 1.2510124629321914e-7,
+            "skullNormalizedRadius": 0.3656268107500633,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              3.4973096920869864,
+              1.2758194680532398,
+              10.265533333333286
+            ],
+            "spineStart": [
+              3.497309684753418,
+              1.2758194580674171,
+              10.265533208847046
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000059301736897831575
+          },
+          {
+            "player": 3,
+            "gap": 4.245044560691045e-8,
+            "skullNormalizedRadius": 0.452925683994376,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.85,
+            "socket": [
+              -5.467062499846354,
+              1.2807650104696113,
+              4.2678
+            ],
+            "spineStart": [
+              -5.467062473297119,
+              1.2807650119066238,
+              4.267800033092499
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000022034637051262313
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.16560026104092682,
+            "right": 0.76437733470285,
+            "bottom": -0.15707590365367488,
+            "top": 0.20820341856163935
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 0.0053796278839488565,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 1,
+            "bodyVisibleFraction": 0.6666666666666666,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 1.267738832312455,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Action",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0.21224172380790346,
+          0.031153439277107262,
+          0.9859355158960179
+        ],
+        "camera": [
+          -15.201133907831906,
+          9.387242994201594,
+          9.685364105085974
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 119000,
+        "frame": 286,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 1.878452110376073e-8,
+            "skullNormalizedRadius": 0.373250254546598,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -3.484466666666715,
+              1.2336417540650517,
+              11.496104461051713
+            ],
+            "spineStart": [
+              -3.4844666719436646,
+              1.2336417511105537,
+              11.49610447883606
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000012889135061053488
+          },
+          {
+            "player": 1,
+            "gap": 4.3417153456041344e-8,
+            "skullNormalizedRadius": 0.2942192280653614,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -4.496104461051713,
+              1.2336417540650517,
+              3.5155333333332854
+            ],
+            "spineStart": [
+              -4.496104419231415,
+              1.2336417436599731,
+              3.5155333280563354
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000010073092757812839
+          },
+          {
+            "player": 2,
+            "gap": 1.8784520932824075e-8,
+            "skullNormalizedRadius": 0.3678826512214519,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              3.5038955389482864,
+              1.2336417540650517,
+              8.515533333333286
+            ],
+            "spineStart": [
+              3.5038955211639404,
+              1.2336417511105537,
+              8.515533328056335
+            ],
+            "issues": [],
+            "projectedGapPixels": 5.119400428256955e-7
+          },
+          {
+            "player": 3,
+            "gap": 4.991157372889715e-8,
+            "skullNormalizedRadius": 0.45667033633777515,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -5.467062499846354,
+              1.2385516723345977,
+              4.2678
+            ],
+            "spineStart": [
+              -5.467062473297119,
+              1.2385516986250877,
+              4.267800033092499
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.00000255818935402739
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.16540226952852333,
+            "right": 0.7643440430938393,
+            "bottom": -0.15812101523328245,
+            "top": 0.2058930806457067
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 0.0005617946279361519,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 1,
+            "bodyVisibleFraction": 0.8333333333333334,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 1.2701223630640637,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Action",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0.2122171412541274,
+          0.029283604417402083,
+          0.9859356852072719
+        ],
+        "camera": [
+          -15.201133907831906,
+          9.34502965606658,
+          9.685364105085974
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "surprise",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 120000,
+        "frame": 301,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 1.5719050875135328e-7,
+            "skullNormalizedRadius": 0.37512577141984255,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -2.7236660682460996,
+              1.2739703224931662,
+              10.60424788983304
+            ],
+            "spineStart": [
+              -2.7236660718917847,
+              1.273970328271389,
+              10.604248046875
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.00000882227068628013
+          },
+          {
+            "player": 1,
+            "gap": 9.112831776963628e-8,
+            "skullNormalizedRadius": 0.29559195493113755,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -4.502402870383712,
+              1.2739703224931662,
+              5.565533333333286
+            ],
+            "spineStart": [
+              -4.50240296125412,
+              1.2739703208208084,
+              5.565533339977264
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000030801812599961066
+          },
+          {
+            "player": 2,
+            "gap": 1.1048154474465787e-7,
+            "skullNormalizedRadius": 0.36945597447091516,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              3.4975971296162887,
+              1.2739703224931662,
+              10.565533333333287
+            ],
+            "spineStart": [
+              3.4975972175598145,
+              1.2739703133702278,
+              10.56553339958191
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000032957883699611553
+          },
+          {
+            "player": 3,
+            "gap": 4.266509136662273e-8,
+            "skullNormalizedRadius": 0.45927753091716583,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -5.467062499846354,
+              1.2789224341121204,
+              4.2678
+            ],
+            "spineStart": [
+              -5.467062473297119,
+              1.278922438621521,
+              4.267800033092499
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000002038791320549463
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.15136838969449676,
+            "right": 0.695294973731593,
+            "bottom": -0.1579989361851299,
+            "top": 0.19140775934028947
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 0.004645200934380256,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 1,
+            "bodyVisibleFraction": 0.6666666666666666,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 1.1714330362078837,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0.19381391533194128,
+          0.023505553314169685,
+          0.9871923666630428
+        ],
+        "camera": [
+          -15.201133907831906,
+          11.385400417844103,
+          9.685364105085974
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "teasing",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 121000,
+        "frame": 316,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 1.2333560613267375e-7,
+            "skullNormalizedRadius": 0.37508349157949117,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -3.9344666666667147,
+              1.2633841302997546,
+              11.500754841562578
+            ],
+            "spineStart": [
+              -3.9344667196273804,
+              1.2633841410279274,
+              11.500754952430725
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000007332069683284848
+          },
+          {
+            "player": 1,
+            "gap": 2.858808225468889e-8,
+            "skullNormalizedRadius": 0.2955610399484566,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -4.500754841562578,
+              1.2633841302997546,
+              3.0655333333332844
+            ],
+            "spineStart": [
+              -4.5007548332214355,
+              1.2633841037750244,
+              3.0655333399772644
+            ],
+            "issues": [],
+            "projectedGapPixels": 9.383493175006183e-7
+          },
+          {
+            "player": 2,
+            "gap": 2.8588081868220676e-8,
+            "skullNormalizedRadius": 0.36942047513162624,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              3.499245158437421,
+              1.2633841302997546,
+              8.065533333333287
+            ],
+            "spineStart": [
+              3.4992451667785645,
+              1.2633841037750244,
+              8.065533339977264
+            ],
+            "issues": [],
+            "projectedGapPixels": 8.004645192382184e-7
+          },
+          {
+            "player": 3,
+            "gap": 9.705652863493549e-8,
+            "skullNormalizedRadius": 0.4592187606885262,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -5.467062499846354,
+              1.2683595904365694,
+              4.2678
+            ],
+            "spineStart": [
+              -5.467062473297119,
+              1.2683596014976501,
+              4.2678000926971436
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000004503996199168755
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.1509549714510733,
+            "right": 0.6957255204243968,
+            "bottom": -0.15990604210674056,
+            "top": 0.18977218866435017
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 0.006634406544707261,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 1,
+            "bodyVisibleFraction": 0.8333333333333334,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 1.17123260450946,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": true,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0.1942237623952737,
+          0.021867394876952734,
+          0.9871923986474126
+        ],
+        "camera": [
+          -15.201133907831906,
+          11.374837574168552,
+          9.685364105085974
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "teasing",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 122000,
+        "frame": 331,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 1.9349297808948651e-7,
+            "skullNormalizedRadius": 0.373148671332388,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -6.2748347983636235,
+              1.2368710293226965,
+              11.390157268187128
+            ],
+            "spineStart": [
+              -6.2748348116874695,
+              1.2368710339069366,
+              11.390157461166382
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000013609938057128095
+          },
+          {
+            "player": 1,
+            "gap": 1.0061586200445577e-7,
+            "skullNormalizedRadius": 0.294144842486726,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -4.4966106637488314,
+              1.2368710293226965,
+              0.5655333333332844
+            ],
+            "spineStart": [
+              -4.496610760688782,
+              1.2368710562586784,
+              0.5655333325266838
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000028196406998228027
+          },
+          {
+            "player": 2,
+            "gap": 1.199189656720113e-7,
+            "skullNormalizedRadius": 0.36779738735394846,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              3.503389336251168,
+              1.2368710293226965,
+              5.565533333333286
+            ],
+            "spineStart": [
+              3.503389298915863,
+              1.2368710115551949,
+              5.565533220767975
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000004488574396463968
+          },
+          {
+            "player": 3,
+            "gap": 9.839209647672214e-8,
+            "skullNormalizedRadius": 0.45652904855710447,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -5.467062499846354,
+              1.2417974994324537,
+              4.2678
+            ],
+            "spineStart": [
+              -5.467062592506409,
+              1.241797499358654,
+              4.267800033092499
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000032157692033309353
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.15132957533193034,
+            "right": 0.6955194888601542,
+            "bottom": -0.16085492216853034,
+            "top": 0.1897008754677689
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.004027874097950246,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 1,
+            "bodyVisibleFraction": 0.8333333333333334,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 1.173124521765304,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0.19399004170864909,
+          0.021560620703349118,
+          0.987192454643109
+        ],
+        "camera": [
+          -15.201133907831906,
+          11.348275483164437,
+          9.685364105085974
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "teasing",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 123000,
+        "frame": 346,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 9.854671082218333e-8,
+            "skullNormalizedRadius": 0.3704564458201261,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -6.503676005109415,
+              1.282167246413146,
+              9.065533333333287
+            ],
+            "spineStart": [
+              -6.503675937652588,
+              1.2821672186255455,
+              9.06553339958191
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000004613132177304427
+          },
+          {
+            "player": 1,
+            "gap": 7.1976919337296e-8,
+            "skullNormalizedRadius": 0.2921752978409875,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -4.503676005109415,
+              1.282167246413146,
+              -1.9344666666667159
+            ],
+            "spineStart": [
+              -4.503675937652588,
+              1.2821672335267067,
+              -1.9344666451215744
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.00000261254925316619
+          },
+          {
+            "player": 2,
+            "gap": 3.8289206187923854e-8,
+            "skullNormalizedRadius": 0.3655412834594751,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              3.496323994890585,
+              1.282167246413146,
+              3.0655333333332844
+            ],
+            "spineStart": [
+              3.4963240325450897,
+              1.282167248427868,
+              3.0655333399772644
+            ],
+            "issues": [],
+            "projectedGapPixels": 9.070691904509896e-7
+          },
+          {
+            "player": 3,
+            "gap": 3.860092830710928e-8,
+            "skullNormalizedRadius": 0.4527834087856957,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -5.467062499846354,
+              1.2870846257912827,
+              4.2678
+            ],
+            "spineStart": [
+              -5.467062473297119,
+              1.2870846167206764,
+              4.267799973487854
+            ],
+            "issues": [],
+            "projectedGapPixels": 9.712598083690252e-7
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.15163515600982863,
+            "right": 0.6954171438834235,
+            "bottom": -0.1591417984679186,
+            "top": 0.1920955600306005
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 0,
+          "corrected": true,
+          "cameraJump": 0.0013688181251740872,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 1,
+            "bodyVisibleFraction": 0.8333333333333334,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 1.1708688999743666,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0.19388761529215923,
+          0.023599435542421214,
+          0.9871923487269576
+        ],
+        "camera": [
+          -15.201133907831906,
+          11.393562609523267,
+          9.685364105085974
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "teasing",
+        "avatarCount": 0,
+        "presenterVisible": false
+      },
+      {
+        "at": 124000,
+        "frame": 361,
+        "cut": false,
+        "anatomy": [
+          {
+            "player": 0,
+            "gap": 5.6546698312855424e-8,
+            "skullNormalizedRadius": 0.3685235221931676,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -6.498583430734738,
+              1.249474420453327,
+              6.565533333333286
+            ],
+            "spineStart": [
+              -6.498583376407623,
+              1.2494744062423706,
+              6.565533339977264
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000002692004428779359
+          },
+          {
+            "player": 1,
+            "gap": 5.8862551807807985e-8,
+            "skullNormalizedRadius": 0.29076191248070926,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -4.498583430734738,
+              1.249474420453327,
+              -4.434466666666715
+            ],
+            "spineStart": [
+              -4.498583376407623,
+              1.24947439879179,
+              -4.434466660022736
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.0000020741395861889265
+          },
+          {
+            "player": 2,
+            "gap": 2.6004933335276405e-8,
+            "skullNormalizedRadius": 0.3639230227667747,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              3.5014165692652623,
+              1.249474420453327,
+              0.5655333333332844
+            ],
+            "spineStart": [
+              3.5014165937900543,
+              1.2494744285941124,
+              0.5655333362519741
+            ],
+            "issues": [],
+            "projectedGapPixels": 9.740736158511172e-7
+          },
+          {
+            "player": 3,
+            "gap": 3.7836296683863356e-8,
+            "skullNormalizedRadius": 0.4500918994810283,
+            "orientationError": 0,
+            "finite": true,
+            "headToBody": 0.8499999999999999,
+            "socket": [
+              -5.467062499846354,
+              1.2544434342920125,
+              4.2678
+            ],
+            "spineStart": [
+              -5.467062473297119,
+              1.2544434294104576,
+              4.267799973487854
+            ],
+            "issues": [],
+            "projectedGapPixels": 0.000001398926560235594
+          }
+        ],
+        "quality": {
+          "method": "rendered-mesh-bounds-and-nine-face-rays",
+          "bounds": {
+            "left": -0.17255639643301005,
+            "right": 0.5980618865827706,
+            "bottom": -0.2916539398812128,
+            "top": 0.17507199751056024
+          },
+          "issues": [],
+          "blockedFaceRays": 0,
+          "sampledFaceRays": 9,
+          "nearbyEventHeads": 1,
+          "corrected": true,
+          "cameraJump": 0.7851043415268586,
+          "visualAnatomy": {
+            "method": "projected-spine-capsule-estimates-and-safe-frame-samples",
+            "neckSamples": 6,
+            "bodySamples": 12,
+            "bodySampling": "whole-spine",
+            "neckVisibleFraction": 0.5,
+            "bodyVisibleFraction": 0.9166666666666666,
+            "bodyInFrameFraction": 1,
+            "projectedBodyExtent": 1.1537338024809232,
+            "issues": [],
+            "artisticApproval": false
+          },
+          "planned": true
+        },
+        "shot": "Front",
+        "occlusionCorrected": false,
+        "player": 3,
+        "fallback": null,
+        "head": [
+          0.16521815323580136,
+          -0.02604782562873435,
+          0.9867819578752307
+        ],
+        "camera": [
+          -10.575146273309167,
+          13.360921418023995,
+          10.684083626901893
+        ],
+        "round": 2,
+        "phase": "PLAYING",
+        "emotion": "teasing",
+        "avatarCount": 0,
+        "presenterVisible": false
+      }
+    ],
+    "anatomyQuality": {
+      "method": "rendered-first-ring-center-inside-skull-and-projected-socket",
+      "humanVisualReviewRequired": true,
+      "checked": 1500,
+      "failures": [],
+      "maxGap": 3.579756511903149e-7,
+      "maxProjectedGapPixels": 5.222075511286337
+    },
+    "visualQuality": {
+      "checked": 375,
+      "failures": [],
+      "minNeckVisible": 0.3333333333333333,
+      "minBodyVisible": 0.4166666666666667
+    },
+    "framingQuality": {
+      "checked": 375,
+      "corrected": 375,
+      "issues": {},
+      "failures": []
+    },
+    "nativeBase64": true,
+    "browserCpuMs": 141460,
+    "browserRssBytes": 572207104
+  },
+  "cameraPlanning": {
+    "method": "offline-global-path",
+    "frames": 375,
+    "candidates": 53610,
+    "maxStep": 2.8,
+    "maxTurn": 0.25,
+    "observedMaxStep": 2.273804789624151,
+    "observedMaxTurn": 0.19815605138028355,
+    "addedCuts": 1,
+    "corrections": [
+      {
+        "frame": 83,
+        "seconds": 5.533333333333333,
+        "reason": "TURN_IN_RECORDED_SIMULATION"
+      }
+    ]
+  },
+  "renderMs": {
+    "mean": 63.42510607199899,
+    "p95": 78.81893899998977,
+    "max": 514.1032290000003
+  },
+  "wallMs": 166623,
+  "timeline": {
+    "format": "battle",
+    "version": 4,
+    "source": "DETERMINISTIC_GAME",
+    "scenes": [
+      {
+        "id": "scene-0",
+        "phase": "Gancho",
+        "start": 0,
+        "end": 4.533333333333333,
+        "shot": "Front",
+        "player": 3,
+        "emotion": "confused",
+        "sourceStart": 144800,
+        "speed": 0.5,
+        "transition": "cut",
+        "replay": false,
+        "preview": true,
+        "slowMotion": true
+      },
+      {
+        "id": "scene-1",
+        "phase": "Desenvolvimento",
+        "start": 4.533333333333333,
+        "end": 13.733333333333333,
+        "shot": "Follow",
+        "player": 3,
+        "emotion": "determined",
+        "sourceStart": 136783.33333333334,
+        "speed": 0.5,
+        "transition": "cut",
+        "replay": false,
+        "slowMotion": true
+      },
+      {
+        "id": "scene-2",
+        "phase": "Momento principal",
+        "start": 13.733333333333333,
+        "end": 19.533333333333335,
+        "shot": "Action",
+        "player": 3,
+        "emotion": "surprise",
+        "sourceStart": 145200,
+        "speed": 0.35,
+        "transition": "cut",
+        "replay": true,
+        "slowMotion": true
+      },
+      {
+        "id": "scene-3",
+        "phase": "Conclusão",
+        "start": 19.533333333333335,
+        "end": 25,
+        "shot": "Front",
+        "player": 3,
+        "emotion": "teasing",
+        "sourceStart": 146400,
+        "speed": 0.5,
+        "transition": "cut",
+        "replay": false,
+        "slowMotion": true
+      }
+    ],
+    "highlights": [
+      {
+        "id": "elimination:146000:3",
+        "type": "elimination",
+        "at": 146000,
+        "round": 2,
+        "player": 3,
+        "reason": "Ember foi eliminada",
+        "weight": 9,
+        "score": 9.333333333333334,
+        "scoreExplanation": "peso 9 + raridade 1/3; não mede retenção"
+      },
+      {
+        "id": "elimination:175600:0",
+        "type": "elimination",
+        "at": 175600,
+        "round": 3,
+        "player": 0,
+        "reason": "Lume foi eliminada",
+        "weight": 9,
+        "score": 9.333333333333334,
+        "scoreExplanation": "peso 9 + raridade 1/3; não mede retenção"
+      },
+      {
+        "id": "elimination:189800:2",
+        "type": "elimination",
+        "at": 189800,
+        "round": 3,
+        "player": 2,
+        "reason": "Jade foi eliminada",
+        "weight": 9,
+        "score": 9.333333333333334,
+        "scoreExplanation": "peso 9 + raridade 1/3; não mede retenção"
+      },
+      {
+        "id": "result:130000:0",
+        "type": "result",
+        "at": 130000,
+        "round": 1,
+        "player": 0,
+        "reason": "Resultado: Lume",
+        "weight": 8,
+        "score": 8.5,
+        "scoreExplanation": "peso 8 + raridade 1/2; não mede retenção"
+      },
+      {
+        "id": "result:163000:0",
+        "type": "result",
+        "at": 163000,
+        "round": 2,
+        "player": 0,
+        "reason": "Resultado: Lume",
+        "weight": 8,
+        "score": 8.5,
+        "scoreExplanation": "peso 8 + raridade 1/2; não mede retenção"
+      },
+      {
+        "id": "lead-change:100600:2",
+        "type": "lead-change",
+        "at": 100600,
+        "round": 1,
+        "player": 2,
+        "reason": "Jade assume liderança com 1 pontos",
+        "weight": 6,
+        "score": 6.2,
+        "scoreExplanation": "peso 6 + raridade 1/5; não mede retenção"
+      },
+      {
+        "id": "lead-change:133600:2",
+        "type": "lead-change",
+        "at": 133600,
+        "round": 2,
+        "player": 2,
+        "reason": "Jade assume liderança com 1 pontos",
+        "weight": 6,
+        "score": 6.2,
+        "scoreExplanation": "peso 6 + raridade 1/5; não mede retenção"
+      },
+      {
+        "id": "lead-change:144400:2",
+        "type": "lead-change",
+        "at": 144400,
+        "round": 2,
+        "player": 2,
+        "reason": "Jade assume liderança com 9 pontos",
+        "weight": 6,
+        "score": 6.2,
+        "scoreExplanation": "peso 6 + raridade 1/5; não mede retenção"
+      },
+      {
+        "id": "lead-change:166600:2",
+        "type": "lead-change",
+        "at": 166600,
+        "round": 3,
+        "player": 2,
+        "reason": "Jade assume liderança com 1 pontos",
+        "weight": 6,
+        "score": 6.2,
+        "scoreExplanation": "peso 6 + raridade 1/5; não mede retenção"
+      },
+      {
+        "id": "lead-change:171400:1",
+        "type": "lead-change",
+        "at": 171400,
+        "round": 3,
+        "player": 1,
+        "reason": "Faísca assume liderança com 5 pontos",
+        "weight": 6,
+        "score": 6.2,
+        "scoreExplanation": "peso 6 + raridade 1/5; não mede retenção"
+      },
+      {
+        "id": "proximity:101000:1",
+        "type": "proximity",
+        "at": 101000,
+        "round": 1,
+        "player": 1,
+        "reason": "Faísca a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:101000:3",
+        "type": "proximity",
+        "at": 101000,
+        "round": 1,
+        "player": 3,
+        "reason": "Ember a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:104400:1",
+        "type": "proximity",
+        "at": 104400,
+        "round": 1,
+        "player": 1,
+        "reason": "Faísca a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:104400:3",
+        "type": "proximity",
+        "at": 104400,
+        "round": 1,
+        "player": 3,
+        "reason": "Ember a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:104600:0",
+        "type": "proximity",
+        "at": 104600,
+        "round": 1,
+        "player": 0,
+        "reason": "Lume a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:105400:2",
+        "type": "proximity",
+        "at": 105400,
+        "round": 1,
+        "player": 2,
+        "reason": "Jade a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:108400:1",
+        "type": "proximity",
+        "at": 108400,
+        "round": 1,
+        "player": 1,
+        "reason": "Faísca a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:108400:3",
+        "type": "proximity",
+        "at": 108400,
+        "round": 1,
+        "player": 3,
+        "reason": "Ember a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:121200:1",
+        "type": "proximity",
+        "at": 121200,
+        "round": 1,
+        "player": 1,
+        "reason": "Faísca a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:121200:3",
+        "type": "proximity",
+        "at": 121200,
+        "round": 1,
+        "player": 3,
+        "reason": "Ember a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:124200:0",
+        "type": "proximity",
+        "at": 124200,
+        "round": 1,
+        "player": 0,
+        "reason": "Lume a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:124200:2",
+        "type": "proximity",
+        "at": 124200,
+        "round": 1,
+        "player": 2,
+        "reason": "Jade a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:127000:1",
+        "type": "proximity",
+        "at": 127000,
+        "round": 1,
+        "player": 1,
+        "reason": "Faísca a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:127000:3",
+        "type": "proximity",
+        "at": 127000,
+        "round": 1,
+        "player": 3,
+        "reason": "Ember a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:129000:2",
+        "type": "proximity",
+        "at": 129000,
+        "round": 1,
+        "player": 2,
+        "reason": "Jade a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:130000:1",
+        "type": "proximity",
+        "at": 130000,
+        "round": 1,
+        "player": 1,
+        "reason": "Faísca a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:130000:3",
+        "type": "proximity",
+        "at": 130000,
+        "round": 1,
+        "player": 3,
+        "reason": "Ember a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:132000:2",
+        "type": "proximity",
+        "at": 132000,
+        "round": 1,
+        "player": 2,
+        "reason": "Jade a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:134000:1",
+        "type": "proximity",
+        "at": 134000,
+        "round": 2,
+        "player": 1,
+        "reason": "Faísca a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:134000:3",
+        "type": "proximity",
+        "at": 134000,
+        "round": 2,
+        "player": 3,
+        "reason": "Ember a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:139800:1",
+        "type": "proximity",
+        "at": 139800,
+        "round": 2,
+        "player": 1,
+        "reason": "Faísca a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:139800:3",
+        "type": "proximity",
+        "at": 139800,
+        "round": 2,
+        "player": 3,
+        "reason": "Ember a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:162400:0",
+        "type": "proximity",
+        "at": 162400,
+        "round": 2,
+        "player": 0,
+        "reason": "Lume a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:162400:2",
+        "type": "proximity",
+        "at": 162400,
+        "round": 2,
+        "player": 2,
+        "reason": "Jade a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:167000:1",
+        "type": "proximity",
+        "at": 167000,
+        "round": 3,
+        "player": 1,
+        "reason": "Faísca a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:167000:3",
+        "type": "proximity",
+        "at": 167000,
+        "round": 3,
+        "player": 3,
+        "reason": "Ember a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:171000:1",
+        "type": "proximity",
+        "at": 171000,
+        "round": 3,
+        "player": 1,
+        "reason": "Faísca a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:171000:3",
+        "type": "proximity",
+        "at": 171000,
+        "round": 3,
+        "player": 3,
+        "reason": "Ember a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:172800:0",
+        "type": "proximity",
+        "at": 172800,
+        "round": 3,
+        "player": 0,
+        "reason": "Lume a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "proximity:172800:2",
+        "type": "proximity",
+        "at": 172800,
+        "round": 3,
+        "player": 2,
+        "reason": "Jade a até duas células de uma rival",
+        "weight": 5,
+        "score": 5.033333333333333,
+        "scoreExplanation": "peso 5 + raridade 1/30; não mede retenção"
+      },
+      {
+        "id": "escape:102000:1",
+        "type": "escape",
+        "at": 102000,
+        "round": 1,
+        "player": 1,
+        "reason": "Faísca afasta-se de Ember: 2.00 → 4.00 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:102000:3",
+        "type": "escape",
+        "at": 102000,
+        "round": 1,
+        "player": 3,
+        "reason": "Ember afasta-se de Faísca: 2.00 → 4.00 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:104800:0",
+        "type": "escape",
+        "at": 104800,
+        "round": 1,
+        "player": 0,
+        "reason": "Lume afasta-se de Faísca: 2.24 → 4.12 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:105000:3",
+        "type": "escape",
+        "at": 105000,
+        "round": 1,
+        "player": 3,
+        "reason": "Ember afasta-se de Lume: 1.00 → 2.24 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:105600:1",
+        "type": "escape",
+        "at": 105600,
+        "round": 1,
+        "player": 1,
+        "reason": "Faísca afasta-se de Ember: 2.00 → 4.00 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:105600:2",
+        "type": "escape",
+        "at": 105600,
+        "round": 1,
+        "player": 2,
+        "reason": "Jade afasta-se de Lume: 2.00 → 2.83 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:109200:1",
+        "type": "escape",
+        "at": 109200,
+        "round": 1,
+        "player": 1,
+        "reason": "Faísca afasta-se de Ember: 2.00 → 4.00 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:109200:3",
+        "type": "escape",
+        "at": 109200,
+        "round": 1,
+        "player": 3,
+        "reason": "Ember afasta-se de Faísca: 2.00 → 4.00 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:110600:0",
+        "type": "escape",
+        "at": 110600,
+        "round": 1,
+        "player": 0,
+        "reason": "Lume afasta-se de Faísca: 2.24 → 3.61 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:113200:2",
+        "type": "escape",
+        "at": 113200,
+        "round": 1,
+        "player": 2,
+        "reason": "Jade afasta-se de Ember: 2.24 → 3.61 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:113200:3",
+        "type": "escape",
+        "at": 113200,
+        "round": 1,
+        "player": 3,
+        "reason": "Ember afasta-se de Jade: 2.24 → 3.61 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:114800:0",
+        "type": "escape",
+        "at": 114800,
+        "round": 1,
+        "player": 0,
+        "reason": "Lume afasta-se de Ember: 2.24 → 3.61 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:121600:1",
+        "type": "escape",
+        "at": 121600,
+        "round": 1,
+        "player": 1,
+        "reason": "Faísca afasta-se de Ember: 1.41 → 2.83 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:121600:3",
+        "type": "escape",
+        "at": 121600,
+        "round": 1,
+        "player": 3,
+        "reason": "Ember afasta-se de Faísca: 1.41 → 2.83 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:124600:0",
+        "type": "escape",
+        "at": 124600,
+        "round": 1,
+        "player": 0,
+        "reason": "Lume afasta-se de Jade: 1.41 → 2.83 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:124600:2",
+        "type": "escape",
+        "at": 124600,
+        "round": 1,
+        "player": 2,
+        "reason": "Jade afasta-se de Lume: 1.41 → 2.83 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:127400:1",
+        "type": "escape",
+        "at": 127400,
+        "round": 1,
+        "player": 1,
+        "reason": "Faísca afasta-se de Ember: 1.41 → 2.83 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:127400:3",
+        "type": "escape",
+        "at": 127400,
+        "round": 1,
+        "player": 3,
+        "reason": "Ember afasta-se de Faísca: 1.41 → 2.83 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:130000:2",
+        "type": "escape",
+        "at": 130000,
+        "round": 1,
+        "player": 2,
+        "reason": "Jade afasta-se de Ember: 2.24 → 3.00 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:135000:1",
+        "type": "escape",
+        "at": 135000,
+        "round": 2,
+        "player": 1,
+        "reason": "Faísca afasta-se de Ember: 2.00 → 4.00 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:135000:3",
+        "type": "escape",
+        "at": 135000,
+        "round": 2,
+        "player": 3,
+        "reason": "Ember afasta-se de Faísca: 2.00 → 4.00 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:135800:0",
+        "type": "escape",
+        "at": 135800,
+        "round": 2,
+        "player": 0,
+        "reason": "Lume afasta-se de Ember: 2.24 → 4.12 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:140000:1",
+        "type": "escape",
+        "at": 140000,
+        "round": 2,
+        "player": 1,
+        "reason": "Faísca afasta-se de Ember: 2.00 → 2.83 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:140000:3",
+        "type": "escape",
+        "at": 140000,
+        "round": 2,
+        "player": 3,
+        "reason": "Ember afasta-se de Faísca: 2.00 → 2.83 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:142800:0",
+        "type": "escape",
+        "at": 142800,
+        "round": 2,
+        "player": 0,
+        "reason": "Lume afasta-se de Ember: 2.24 → 3.61 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:143200:3",
+        "type": "escape",
+        "at": 143200,
+        "round": 2,
+        "player": 3,
+        "reason": "Ember afasta-se de Lume: 2.24 → 3.61 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:144600:1",
+        "type": "escape",
+        "at": 144600,
+        "round": 2,
+        "player": 1,
+        "reason": "Faísca afasta-se de Jade: 2.24 → 3.61 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:144600:2",
+        "type": "escape",
+        "at": 144600,
+        "round": 2,
+        "player": 2,
+        "reason": "Jade afasta-se de Faísca: 2.24 → 3.61 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:146200:0",
+        "type": "escape",
+        "at": 146200,
+        "round": 2,
+        "player": 0,
+        "reason": "Lume afasta-se de Faísca: 2.24 → 3.00 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:152400:1",
+        "type": "escape",
+        "at": 152400,
+        "round": 2,
+        "player": 1,
+        "reason": "Faísca afasta-se de Jade: 2.24 → 3.61 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:152400:2",
+        "type": "escape",
+        "at": 152400,
+        "round": 2,
+        "player": 2,
+        "reason": "Jade afasta-se de Faísca: 2.24 → 3.61 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:157000:0",
+        "type": "escape",
+        "at": 157000,
+        "round": 2,
+        "player": 0,
+        "reason": "Lume afasta-se de Faísca: 2.24 → 3.00 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:157000:1",
+        "type": "escape",
+        "at": 157000,
+        "round": 2,
+        "player": 1,
+        "reason": "Faísca afasta-se de Lume: 2.24 → 3.00 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:162800:0",
+        "type": "escape",
+        "at": 162800,
+        "round": 2,
+        "player": 0,
+        "reason": "Lume afasta-se de Jade: 2.00 → 4.00 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:162800:2",
+        "type": "escape",
+        "at": 162800,
+        "round": 2,
+        "player": 2,
+        "reason": "Jade afasta-se de Lume: 2.00 → 4.00 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:167800:1",
+        "type": "escape",
+        "at": 167800,
+        "round": 3,
+        "player": 1,
+        "reason": "Faísca afasta-se de Ember: 2.00 → 3.16 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:167800:3",
+        "type": "escape",
+        "at": 167800,
+        "round": 3,
+        "player": 3,
+        "reason": "Ember afasta-se de Faísca: 2.00 → 3.16 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:170400:0",
+        "type": "escape",
+        "at": 170400,
+        "round": 3,
+        "player": 0,
+        "reason": "Lume afasta-se de Ember: 2.24 → 4.12 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:171200:1",
+        "type": "escape",
+        "at": 171200,
+        "round": 3,
+        "player": 1,
+        "reason": "Faísca afasta-se de Ember: 2.00 → 4.00 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      },
+      {
+        "id": "escape:171200:3",
+        "type": "escape",
+        "at": 171200,
+        "round": 3,
+        "player": 3,
+        "reason": "Ember afasta-se de Faísca: 2.00 → 4.00 células",
+        "weight": 4,
+        "score": 4.021739130434782,
+        "scoreExplanation": "peso 4 + raridade 1/46; não mede retenção"
+      }
+    ],
+    "selectedHighlight": {
+      "id": "elimination:146000:3",
+      "type": "elimination",
+      "at": 146000,
+      "round": 2,
+      "player": 3,
+      "reason": "Ember foi eliminada",
+      "weight": 9,
+      "score": 9.333333333333334,
+      "scoreExplanation": "peso 9 + raridade 1/3; não mede retenção"
+    },
+    "fallback": false,
+    "review": {
+      "status": "HUMAN_REVIEW_REQUIRED",
+      "rubric": [
+        "Gancho",
+        "Contexto e desfecho",
+        "Ritmo e silêncio",
+        "Expressividade",
+        "Voz e música",
+        "Originalidade"
+      ],
+      "viralPotential": "NOT_MEASURED"
+    }
+  },
+  "script": [
+    "Tem alguma coisa estranha acontecendo nessa arena... e eu acho que vocês ainda não perceberam.",
+    "Espera... espera... não vira agora.",
+    "Ela tinha um plano perfeito. Infelizmente, esqueceu de avisar a própria cabeça."
+  ],
+  "captions": [
+    {
+      "text": "Tem alguma coisa estranha acontecendo",
+      "start": 0,
+      "end": 2.0533333333333332
+    },
+    {
+      "text": "nessa arena... e eu acho",
+      "start": 2.0533333333333332,
+      "end": 4.1066666666666665
+    },
+    {
+      "text": "que vocês ainda não perceberam.",
+      "start": 4.1066666666666665,
+      "end": 6.16
+    },
+    {
+      "text": "Espera... espera... não vira agora.",
+      "start": 8.333333333333334,
+      "end": 11.613333333333333
+    },
+    {
+      "text": "Ela tinha um plano perfeito.",
+      "start": 16.666666666666668,
+      "end": 19.25
+    },
+    {
+      "text": "Infelizmente, esqueceu de avisar a",
+      "start": 19.25,
+      "end": 21.833333333333336
+    },
+    {
+      "text": "própria cabeça.",
+      "start": 21.833333333333336,
+      "end": 22.866666666666667
+    }
+  ],
+  "simulationHistory": [
+    {
+      "round": 1,
+      "durationMs": 30000,
+      "winner": "Lume",
+      "winnerId": "0",
+      "participantId": null,
+      "aliveCount": 4,
+      "scores": [
+        27,
+        14,
+        22,
+        11
+      ],
+      "survival": [
+        {
+          "id": "0",
+          "participantId": null,
+          "alive": true,
+          "survivalMs": 30000
+        },
+        {
+          "id": "1",
+          "participantId": null,
+          "alive": true,
+          "survivalMs": 30000
+        },
+        {
+          "id": "2",
+          "participantId": null,
+          "alive": true,
+          "survivalMs": 30000
+        },
+        {
+          "id": "3",
+          "participantId": null,
+          "alive": true,
+          "survivalMs": 30000
+        }
+      ],
+      "at": 130000
+    },
+    {
+      "round": 2,
+      "durationMs": 30000,
+      "winner": "Lume",
+      "winnerId": "0",
+      "participantId": null,
+      "aliveCount": 3,
+      "scores": [
+        25,
+        13,
+        19,
+        10
+      ],
+      "survival": [
+        {
+          "id": "0",
+          "participantId": null,
+          "alive": true,
+          "survivalMs": 30000
+        },
+        {
+          "id": "1",
+          "participantId": null,
+          "alive": true,
+          "survivalMs": 30000
+        },
+        {
+          "id": "2",
+          "participantId": null,
+          "alive": true,
+          "survivalMs": 30000
+        },
+        {
+          "id": "3",
+          "participantId": null,
+          "alive": false,
+          "survivalMs": 13000
+        }
+      ],
+      "at": 163000
+    }
+  ],
+  "mixer": {
+    "playback": [
+      {
+        "text": "Tem alguma coisa estranha acontecendo nessa arena... e eu acho que vocês ainda não perceberam.",
+        "role": "host",
+        "createdAt": 100000,
+        "startedAt": 100000,
+        "source": "EDITORIAL_SCRIPT"
+      },
+      {
+        "text": "Espera... espera... não vira agora.",
+        "role": "host",
+        "createdAt": 108333.33333333333,
+        "startedAt": 108333.33333333333,
+        "source": "EDITORIAL_SCRIPT"
+      },
+      {
+        "text": "Ela tinha um plano perfeito. Infelizmente, esqueceu de avisar a própria cabeça.",
+        "role": "host",
+        "createdAt": 116666.66666666667,
+        "startedAt": 116666.66666666667,
+        "source": "EDITORIAL_SCRIPT"
+      }
+    ],
+    "latency": {
+      "reaction": {
+        "count": 3,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "queue": {
+        "count": 3,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "preloaded": {
+        "count": 3,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "segment": {
+        "count": 3,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "firstSpeech": {
+        "count": 3,
+        "meanMs": 0,
+        "p95Ms": 0,
+        "maxMs": 0
+      },
+      "complete": {
+        "count": 3,
+        "meanMs": 5244.444444444448,
+        "p95Ms": 6200,
+        "maxMs": 6200
+      }
+    },
+    "interrupted": 0,
+    "staleDropped": 0,
+    "synthesized": 0,
+    "cacheHits": 3,
+    "ttsFailures": 0,
+    "dropped": 0,
+    "ttsMs": 0,
+    "maxPlaybackLatencyMs": 0,
+    "musicFailures": 0,
+    "ambientFrames": 375,
+    "ambientTransitions": 0,
+    "ambientTrackId": "00000000-0000-4000-8000-000000000012",
+    "trackPlays": {},
+    "played": {
+      "host": 3,
+      "comment": 0,
+      "chant": 0,
+      "music": 0
+    },
+    "peak": 0.31808561640081723,
+    "aiCalls": 0
+  },
+  "technicalStatus": "TECHNICALLY_VALID",
+  "qualityStatus": "REQUIRES_HUMAN_REVIEW",
+  "providerCalls": 0,
+  "infrastructureCost": "UNKNOWN",
+  "offline": true,
+  "artisticEligibility": {
+    "eligible": true,
+    "reasons": [],
+    "humanReviewRequired": true
+  },
+  "voiceApproval": "PROVISIONAL_NOT_APPROVED",
+  "audioPreparation": "Previously synthesized WAVs verified by SHA-256; no inference during rendering",
+  "reviewOnly": true
+}

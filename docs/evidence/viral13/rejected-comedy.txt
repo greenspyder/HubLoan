@@ -1,0 +1,15 @@
+NEW RENDER, provisional Chatterbox Heart, verified archived takes comedy
+file:///workspace/scratch/693518016dd2/HubLoan/server/camera-path.mjs:23
+  if(!next.some(Number.isFinite)){const error=Error(`Sem trajetória contínua no quadro ${i+1}; ${views.length} vistas seguras`);error.frameIndex=i;throw error;}
+                                              ^
+
+Error: Sem trajetória contínua no quadro 131; 127 vistas seguras
+    at planCameraPath (file:///workspace/scratch/693518016dd2/HubLoan/server/camera-path.mjs:23:47)
+    at planEditorialCamera (file:///workspace/scratch/693518016dd2/HubLoan/server/camera-path.mjs:36:18)
+    at file:///workspace/scratch/693518016dd2/HubLoan/server/viral-render.mjs:65:16
+    at async renderShort (file:///workspace/scratch/693518016dd2/HubLoan/server/viral-render.mjs:23:16)
+    at async file:///workspace/scratch/693518016dd2/HubLoan/server/viral-demo20.mjs:17:15 {
+  frameIndex: 130
+}
+
+Node.js v24.22.1
