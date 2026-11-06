@@ -30,7 +30,7 @@ export function planCameraPath(frames,{maxStep=2.8,maxTurn=.25}={}){
  return {path,metrics:{method:'offline-global-path',frames:frames.length,candidates:frames.reduce((n,f)=>n+f.views.length,0),maxStep,maxTurn,observedMaxStep,observedMaxTurn,addedCuts:0}};
 }
 
-export function planEditorialCamera(frames,actions,{fps=15,minShotSeconds=1.2}={}){
+export function planEditorialCamera(frames,actions,{fps=15,minShotSeconds=1}={}){
  const checked=frames.map(f=>({...f})),corrections=[];
  for(let attempt=0;attempt<=12;attempt++){
   try{const plan=planCameraPath(checked);plan.metrics.addedCuts=corrections.length;plan.metrics.corrections=corrections;return plan;}
