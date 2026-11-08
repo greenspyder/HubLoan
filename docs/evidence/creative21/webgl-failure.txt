@@ -1,0 +1,57 @@
+✔ autonomous presentation comments on real results, respects cooldown, never fills audience (83.557797ms)
+✔ neural unavailable falls back locally, rejects unsafe input and cancels (8.971405ms)
+﹣ real neural pt-BR synthesis, bounded PCM and model reuse (0.180543ms) # SKIP
+✖ real WebGL frames, camera, PCM mouth, game immutable, avatars, bounded geometry and cleanup (58.377917ms)
+✖ offline preflight transports safe views and final rendering rechecks the selected pose (52.939097ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 2
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 501.817708
+
+✖ failing tests:
+
+test at server/tests/live-3d.test.mjs:23:1
+✖ real WebGL frames, camera, PCM mouth, game immutable, avatars, bounded geometry and cleanup (58.377917ms)
+  TargetCloseError: Protocol error (Target.setDiscoverTargets): Target closed
+      at CallbackRegistry.clear (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/common/CallbackRegistry.js:78:36)
+      at #onClose (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/Connection.js:175:25)
+      at Socket.<anonymous> (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/node/PipeTransport.js:26:30)
+      at Socket.emit (node:events:526:24)
+      at Pipe.<anonymous> (node:net:362:12) {
+    [cause]: ProtocolError
+        at <instance_members_initializer> (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/common/CallbackRegistry.js:98:14)
+        at new Callback (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/common/CallbackRegistry.js:102:16)
+        at CallbackRegistry.create (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/common/CallbackRegistry.js:21:26)
+        at Connection._rawSend (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/Connection.js:95:26)
+        at Connection.send (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/Connection.js:86:21)
+        at TargetManager.initialize (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/TargetManager.js:94:32)
+        at CdpBrowser._attach (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/Browser.js:69:35)
+        at CdpBrowser._create (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/Browser.js:23:23)
+        at ChromeLauncher.launch (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/node/BrowserLauncher.js:121:48)
+        at async create3DRenderer (file:///workspace/scratch/693518016dd2/HubLoan/server/live-worker/render3d.mjs:16:16)
+  }
+
+test at server/tests/live-3d.test.mjs:34:1
+✖ offline preflight transports safe views and final rendering rechecks the selected pose (52.939097ms)
+  TargetCloseError: Protocol error (Target.setDiscoverTargets): Target closed
+      at CallbackRegistry.clear (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/common/CallbackRegistry.js:78:36)
+      at #onClose (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/Connection.js:175:25)
+      at Socket.<anonymous> (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/node/PipeTransport.js:26:30)
+      at Socket.emit (node:events:526:24)
+      at Pipe.<anonymous> (node:net:362:12) {
+    [cause]: ProtocolError
+        at <instance_members_initializer> (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/common/CallbackRegistry.js:98:14)
+        at new Callback (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/common/CallbackRegistry.js:102:16)
+        at CallbackRegistry.create (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/common/CallbackRegistry.js:21:26)
+        at Connection._rawSend (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/Connection.js:95:26)
+        at Connection.send (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/Connection.js:86:21)
+        at TargetManager.initialize (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/TargetManager.js:94:32)
+        at CdpBrowser._attach (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/Browser.js:69:35)
+        at CdpBrowser._create (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/cdp/Browser.js:23:23)
+        at ChromeLauncher.launch (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/puppeteer-core/lib/esm/puppeteer/node/BrowserLauncher.js:121:48)
+        at async create3DRenderer (file:///workspace/scratch/693518016dd2/HubLoan/server/live-worker/render3d.mjs:16:16)
+  }

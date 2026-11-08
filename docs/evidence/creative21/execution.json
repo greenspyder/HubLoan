@@ -1,0 +1,51 @@
+{
+  "input": "Solicitação genérica, sem roteiro ou plano fornecido",
+  "httpStatus": 200,
+  "campaigns": [
+    {
+      "id": "176c182c-fe69-47db-825b-2b3f60809ee0",
+      "revision": 1,
+      "request": "Pesquise oportunidades criativas e produza três vídeos curtos, em formatos distintos, para avaliação.",
+      "state": "Failed",
+      "createdAt": "2026-11-08T22:31:55.449Z",
+      "deadline": 1794178915449,
+      "missionId": "ea668e6c-049e-401c-8b2b-a2d5a0371c5e",
+      "voiceMode": "neural",
+      "webResearch": true,
+      "attemptLimit": 2,
+      "model": "gpt-4.1-mini",
+      "events": [
+        {
+          "at": "2026-11-08T22:31:55.450Z",
+          "state": "Researching",
+          "detail": "Solicitação recebida; nenhuma proposta ou cena fornecida pelo operador."
+        },
+        {
+          "at": "2026-11-08T22:31:55.576Z",
+          "state": "Failed",
+          "detail": "MODEL_NOT_CONNECTED: conecte o modelo no workspace; não existe fallback de roteiros."
+        }
+      ],
+      "sources": [],
+      "decisions": [],
+      "productionIds": [],
+      "publication": {
+        "enabled": false,
+        "approval": "human",
+        "officialAuthenticationRequired": true,
+        "schedulerImplemented": false,
+        "metrics": []
+      },
+      "costs": {
+        "calls": 0,
+        "exposureMinor": 0,
+        "confirmedMinor": 0,
+        "infrastructureMinor": null
+      },
+      "error": "MODEL_NOT_CONNECTED: conecte o modelo no workspace; não existe fallback de roteiros.",
+      "endedAt": "2026-11-08T22:31:55.576Z"
+    }
+  ],
+  "proposals": [],
+  "artifacts": []
+}

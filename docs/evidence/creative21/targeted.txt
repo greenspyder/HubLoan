@@ -1,0 +1,21 @@
+✔ provider key encryption cannot be read using another workspace token (2.263153ms)
+✔ queue validation, retry accounting and interrupted execution recovery (1.158888ms)
+✔ SQLite persists data across restart and concurrent writes retain both changes (10.143167ms)
+✔ API runs real workflow through injected provider, isolates users and requires human approval (178.443411ms)
+✔ read-only endpoints do not unlock workers and idle workspaces leave the poll loop (0.32528ms)
+✔ image bytes are protected and downloaded separately from public mission history (18.297573ms)
+✔ cancel aborts provider request and never resurrects a cancelled mission (11.059949ms)
+✔ provider failure is visible without exposing raw secrets; disconnected queue cannot run (12.065956ms)
+✔ Responses API payload and parsing handle actual output structure and token truncation (2.028459ms)
+✔ missing real model fails persistently without proposals, videos or fixture fallback (6.845674ms)
+✔ campaign bounds, cancellation and stale revision remain isolated (0.568787ms)
+✔ plan rejects fake events, static scenes and timing gaps; text similarity is only a repetition signal (3.185033ms)
+✔ controlled model contract selects and enqueues three formats automatically; not a real-model acceptance test (512.233343ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 832.790619

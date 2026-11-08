@@ -1,3 +1,4 @@
+import {campaignAction,reconcileCampaigns} from './creative-campaign.mjs';
 import {creativeAction} from './creative-director.mjs';
 import {voiceStudioAction,voiceStudioState} from './lume-voice.mjs';
 import {voiceSample} from './live-worker/voice-sample.mjs';
@@ -129,6 +130,11 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if (shouldUnlockBackgroundWorkers(request.method)) {
         runner.unlock(id, token); commerce.unlock(id, token);
       }
+      if(route==='/creative-campaigns'&&request.method==='POST'){
+        const input=await body(request);const updated=await store.mutate(id,w=>campaignAction(w,input));
+        if(input.action==='cancel')for(const mid of [updated.result.missionId,...updated.result.productionIds])runner.cancel(id,mid);
+        return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey)));
+      }
       if(route==='/creative-director'&&request.method==='POST'){
         const input=await body(request);const updated=await store.mutate(id,w=>creativeAction(w,input));
         if(input.action==='pause')for(const m of updated.workspace.missions)if(m.creativeExperimentId||m.creativeRequest)runner.cancel(id,m.id);
@@ -242,8 +248,8 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       }
       if (route === '/workspace'  && request.method === 'GET') {
         const snapshot = await store.read(id);
-        if (snapshot.workspace.missions.some(item => item.status === 'running' && item.leaseUntil < now) || snapshot.workspace.autonomy.projects.some(project => ['active', 'planning'].includes(project.status) && (project.expiresAt < now || (project.status === 'planning' && project.leaseUntil < now)))) {
-          const updated = await store.mutate(id, workspace => { recoverStale(workspace); reconcileProjects(workspace); });
+        if ((snapshot.workspace.creativeCampaigns||[]).some(c=>!['ReadyForReview','Failed','Cancelled'].includes(c.state)) || snapshot.workspace.missions.some(item => item.status === 'running' && item.leaseUntil < now) || snapshot.workspace.autonomy.projects.some(project => ['active', 'planning'].includes(project.status) && (project.expiresAt < now || (project.status === 'planning' && project.leaseUntil < now)))) {
+          const updated = await store.mutate(id, workspace => { recoverStale(workspace); reconcileProjects(workspace); reconcileCampaigns(workspace); });
           return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
         }
         return send(response, 200, publicWorkspace(snapshot.workspace, store.mode, Boolean(masterKey)));

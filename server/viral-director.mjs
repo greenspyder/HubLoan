@@ -1,3 +1,4 @@
+import {validateScenePlan} from './creative-plan.mjs';
 // Offline editorial planning over real deterministic game snapshots. No LLM or IO.
 import {createGame,advanceGame} from './live-game.mjs';
 export function recordGameplay(config,seconds=90){
@@ -39,6 +40,10 @@ export function createEditorial(config,recording){
  if(config.format==='champion'){
   const stages=['Introdução','Silhueta','Rosto','Personalidade','Identidade'];
   scenes=config.characters.flatMap((name,player)=>stages.map((phase,k)=>({id:`champion-${player}-${k}`,phase,start:(player+k/5)*config.seconds/config.characters.length,end:(player+(k+1)/5)*config.seconds/config.characters.length,shot:k===2?'Front':'Action',player,emotion:['suspicious','proud','confident','teasing','proud'][k],sourceStart:first,speed:0,transition:k===0?'cut':'hold',replay:false,showcase:true,stage:k,name})));
+ }
+ if(config.visualPlan){
+  const plan=validateScenePlan(config.visualPlan,config.format,config.lines,highlights.map(e=>e.id));
+  scenes=plan.scenes.map((s,i)=>{const event=highlights.find(e=>e.id===s.eventId);return {id:'astra-'+i,phase:s.beat,start:s.start,end:s.end,shot:s.camera,player:event?.player||0,emotion:['confused','determined','surprise','teasing'][i],sourceStart:event?Math.max(first,event.at-800):start+s.start*1000,speed:s.action==='performance'?0:s.action==='replay'?.35:1,transition:s.transition,hold:s.action==='performance',replay:s.action==='replay',slowMotion:s.action==='replay'};});
  }
  return {format:config.format,version:4,source:'DETERMINISTIC_GAME',scenes,highlights:highlights.slice(0,80),selectedHighlight:focus,fallback:!focus,review:{status:'HUMAN_REVIEW_REQUIRED',rubric:['Gancho','Contexto e desfecho','Ritmo e silêncio','Expressividade','Voz e música','Originalidade'],viralPotential:'NOT_MEASURED'}};
 }

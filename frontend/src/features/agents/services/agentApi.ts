@@ -39,7 +39,7 @@ export type AiCosts = { day?: CostTotals; month?: CostTotals; taskMinor: number;
 export type Factory = { id: string; name: string; kind: ProductionKind | "video" | "service" | "software"; role: string; audience: string; channel: string; blocker: string | null; missions: number; running: number; queued: number; delivered: number; projects: number; reservedMinor: number; grossMinor: number; costMinor: number; resultMinor: number | null; experimentIds: string[]; mixedExperiments: number };
 export type VoiceProfile = {candidateId:string;speed:number;exaggeration?:number;version:number;engine:string;voice:string;style:string};
 export type VoiceStudioState = {active:VoiceProfile;draft:VoiceProfile|null;revision:number;candidates:{id:string;name:string;speed:number;engine:string;installed:boolean;license:string;referenceOnly?:boolean}[];phrases:string[]};
-export type Workspace = { creativeDirector?:CreativeState; voiceStudio?:VoiceStudioState; liveFactory?:LiveFactory; affiliates?:Affiliates; etsy?:Etsy;
+export type Workspace = { creativeCampaigns?:{id:string;revision:number;request:string;state:string;error?:string;events:{at:string;state:string;detail:string}[];decisions:unknown[];plans?:unknown[];quality?:unknown;productionIds:string[]}[]; creativeDirector?:CreativeState; voiceStudio?:VoiceStudioState; liveFactory?:LiveFactory; affiliates?:Affiliates; etsy?:Etsy;
   salesJourneyVersion?: number; factories?: Factory[]; aiCosts?: AiCosts; version: 2; strategy?: { validationPriorities?: { id: string; title: string; instruction: string }[] }; knowledge?: Knowledge; experiments?: BusinessExperiment[]; engineering?: Engineering; marketing?: Marketing; shop?: Shop; commerce?: Commerce; autonomy: { enabled: boolean; durable: boolean; projects: Project[] }; agents: Agent[]; missions: Mission[]; settings: { workerModel?:string;decisionModel?:string;availableModels?:string[];modelsCheckedAt?:string;modelCatalog?:{id:string;input:number;cached:number;output:number;role:string}[]; model: string; imageModel: string; maxOutputTokens: number; configured: boolean }; storage: 'postgres' | 'sqlite' };
 const accessKey = 'hubloan.workspace.access.v2';
 const configuredBase = import.meta.env.VITE_API_BASE_URL?.trim().replace(/\/+$/, '');
@@ -65,6 +65,7 @@ async function request<T>(path: string, method = 'GET', body?: object): Promise<
   return data as T;
 }
 export const agentApi = {
+  campaign:(input:object)=>request<Workspace>('/creative-campaigns','POST',input),
   creative:(input:object)=>request<Workspace>('/creative-director','POST',input),
   voiceStudio: (input: object) => request<Workspace>('/voice-studio','POST',input),
   async voiceSample(current:boolean,index:number) {

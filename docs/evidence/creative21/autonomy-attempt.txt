@@ -1,0 +1,1 @@
+176c182c-fe69-47db-825b-2b3f60809ee0 Failed MODEL_NOT_CONNECTED: conecte o modelo no workspace; não existe fallback de roteiros.

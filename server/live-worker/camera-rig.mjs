@@ -73,7 +73,7 @@ export function createCameraRig(T,camera,measureVisual){
   const targets=[];for(const x of [-.32,0,.32])for(const y of [-.22,.1,.38])targets.push(head.localToWorld(new T.Vector3(x,y,.7)));
   const eventHeads=d.format==='battle'?actors.filter((a,i)=>i!==framing.player&&a.head.g.visible&&a.head.g.position.distanceTo(center)<3.5).map(a=>a.head.g.getWorldPosition(new T.Vector3())):[];
   const forward=new T.Vector3(0,0,1).transformDirection(head.matrixWorld),ray=new T.Raycaster();
-  const inspect=()=>{
+  const inspect=(full=false)=>{
    camera.updateMatrixWorld();const q=corners.map(v=>v.clone().project(camera));
    const bounds={left:Math.min(...q.map(v=>v.x)),right:Math.max(...q.map(v=>v.x)),bottom:Math.min(...q.map(v=>v.y)),top:Math.max(...q.map(v=>v.y))};
    const issues=[];
@@ -83,9 +83,9 @@ export function createCameraRig(T,camera,measureVisual){
    const facing=camera.position.clone().sub(center).normalize().dot(forward);
    if(facing<.25)issues.push('FACE_NOT_FRONTAL');
    if(eventHeads.some(v=>{const p=v.clone().project(camera);return p.z<=-1||p.z>=1||Math.abs(p.x)>.92||p.y<-.5||p.y>.68;}))issues.push('NEARBY_CONFRONTATION_OUT_OF_FRAME');
-   if(issues.length)return {bounds,issues,blocked:0,faceRays:0,facing,visualAnatomy:null};
+   if(issues.length&&!full)return {bounds,issues,blocked:0,faceRays:0,facing,visualAnatomy:null};
    const visualAnatomy=measureVisual?measureVisual(T,camera,actors,framing.player,d):null;if(visualAnatomy)issues.push(...visualAnatomy.issues);
-   if(issues.length)return {bounds,issues,blocked:0,faceRays:0,facing,visualAnatomy};
+   if(issues.length&&!full)return {bounds,issues,blocked:0,faceRays:0,facing,visualAnatomy};
    let blocked=0;for(const v of targets){const delta=v.clone().sub(camera.position);ray.set(camera.position,delta.clone().normalize());ray.near=0;ray.far=delta.length()-.06;if(ray.intersectObjects(blockers,true).length)blocked++;}
    if(blocked>2)issues.push('MESH_FACE_OCCLUSION');
    return {bounds,issues,blocked,faceRays:9,facing,visualAnatomy};
@@ -155,7 +155,7 @@ export function createCameraRig(T,camera,measureVisual){
    else best={...best,...intermediate};
   }
   for(let fit=0;fit<8&&best.issues.some(x=>['MESH_FACE_CROPPED','CAPTION_SAFE_AREA','NEARBY_CONFRONTATION_OUT_OF_FRAME','BODY_CROPPED'].includes(x));fit++){camera.position.sub(focus).multiplyScalar(1.06).add(focus);camera.lookAt(focus);best={...best,...inspect()};}
-  camera.updateMatrixWorld();
+  camera.updateMatrixWorld();best={...best,...inspect(true)};
   const corrected=initial.distanceTo(camera.position)>.01,jump=lastRefined?lastRefined.distanceTo(camera.position):0;
   lastRefined=camera.position.clone();if(!framing.cut&&refinedAt!==null&&at-refinedAt<250&&jump>3)best.issues.push('ABRUPT_CAMERA_MOVE');refinedAt=at;
   return {...framing,camera:camera.position.toArray(),head:center.clone().project(camera).toArray(),quality:{method:'rendered-mesh-bounds-and-nine-face-rays',bounds:best.bounds,issues:best.issues,blockedFaceRays:best.blocked,sampledFaceRays:best.faceRays,nearbyEventHeads:eventHeads.length,rejectedUnsafeInterpolation,corrected:corrected||framing.quality.corrected,previousProbeIssues:framing.quality.issues,cameraJump:jump}};

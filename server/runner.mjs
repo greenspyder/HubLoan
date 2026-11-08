@@ -1,3 +1,4 @@
+import {executeCampaign,reconcileCampaigns} from './creative-campaign.mjs';
 import {acceptCreativeModelResult,CREATIVE_MODEL_RULES} from './creative-director.mjs';
 import {renderMotionStory} from './motion-story.mjs';
 import {renderShort} from './viral-render.mjs';
@@ -50,6 +51,10 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
     const controllerId = `${id}:${mission.id}`;
     controllers.set(controllerId, controller);
     try {
+      if(mission.campaignId && mission.kind==='text'){
+        await update(id,mission.id,m=>{const fingerprint=executionIntent(m);if(m.execution?.fingerprint!==fingerprint)m.execution={fingerprint,checkpoints:[]};});
+        await executeCampaign({store,id,mission,budgeted,checkpoint,signal:controller.signal,token});return;
+      }
       if (mission.kind === 'video') {
         await update(id, mission.id, current => {
           const fingerprint = executionIntent(current);
@@ -249,8 +254,9 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
     }
     for (const [id, entry] of unlocked) {
       if (entry.expires < Date.now()) { unlocked.delete(id); continue; }
-      const snapshot = (await store.read(id)).workspace;
-      if (!snapshot.secret && !(snapshot.missions || []).some(m => m.kind === 'video' && ['queued','running'].includes(m.status))) { unlocked.delete(id); continue; }
+      let snapshot = (await store.read(id)).workspace;
+      if(snapshot.creativeCampaigns?.some(c=>!['Failed','Cancelled','ReadyForReview'].includes(c.state)))snapshot=(await store.mutate(id,w=>{recoverStale(w,now());reconcileCampaigns(w,now());})).workspace;
+      if (!snapshot.secret && !(snapshot.missions || []).some(m => (m.kind === 'video'||m.campaignId) && ['queued','running'].includes(m.status))) { unlocked.delete(id); continue; }
       const hasQueued = snapshot.missions.some(mission => mission.status === 'queued');
       const stale = snapshot.missions.some(mission => mission.status === 'running' && mission.leaseUntil < now());
       const projectNeedsWork = snapshot.autonomy.projects.some(project => ['active', 'planning'].includes(project.status) && (project.nextRunAt <= now() || project.produced >= project.maxDeliveries || project.expiresAt < now() || snapshot.missions.some(mission => mission.projectId === project.id && ['failed', 'cancelled'].includes(mission.status))));
@@ -262,7 +268,7 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
       const claim = await store.mutate(id, workspace => {
         recoverStale(workspace, now()); reconcileProjects(workspace, now());
         if (workspace.missions.some(mission => mission.status === 'running') || workspace.autonomy.projects.some(project => project.status === 'planning')) return null;
-        const candidate = [...workspace.missions].reverse().find(mission => mission.status === 'queued' && (workspace.secret || mission.kind === 'video') && workspace.agents.some(agent => agent.id === mission.agentId && agent.enabled));
+        const candidate = [...workspace.missions].reverse().find(mission => mission.status === 'queued' && (workspace.secret || mission.kind === 'video'||mission.campaignId) && workspace.agents.some(agent => agent.id === mission.agentId && agent.enabled));
         if (candidate) { candidate.status = 'running'; candidate.phase = 'Iniciando execução'; candidate.leaseUntil = now() + 600000; return { kind: 'mission', id: candidate.id }; }
         if (workspace.missions.filter(mission => ['queued', 'running'].includes(mission.status)).length >= 5) return null;
         const project = workspace.autonomy.projects.find(project => project.status === 'active' && project.produced < project.maxDeliveries && project.nextRunAt <= now() && !workspace.missions.some(mission => mission.projectId === project.id && ['queued', 'running'].includes(mission.status)));
@@ -274,7 +280,7 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
       if (claim.result) {
         // Rotate the tenant to the end so another workspace gets the next turn.
         unlocked.delete(id); unlocked.set(id, entry);
-        if (claim.result.kind === 'mission') { await execute(id, entry.token, claim.workspace, missionById(claim.workspace, claim.result.id)); await store.mutate(id, workspace => reconcileProjects(workspace, now())); }
+        if (claim.result.kind === 'mission') { await execute(id, entry.token, claim.workspace, missionById(claim.workspace, claim.result.id)); await store.mutate(id, workspace => {reconcileProjects(workspace, now());reconcileCampaigns(workspace,now());}); }
         else await plan(id, entry.token, claim.workspace, projectById(claim.workspace, claim.result.id));
         await store.mutate(id, w => collectKnowledge(w, now()));
         await knowledge?.sync(id);

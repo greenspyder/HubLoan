@@ -1,0 +1,18 @@
+file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/@puppeteer/browsers/lib/esm/launch.js:329
+                reject(new Error([
+                       ^
+
+Error: Failed to launch the browser process:  Code: null
+
+stderr:
+/usr/bin/chromium: 9: [: 5225713664: unexpected operator
+[18:18:1108/193020.536685:FATAL:chrome/browser/process_singleton_posix.cc:297] Check failed: . socket() failed: Operation not permitted (1)
+[1108/193020.537214:ERROR:third_party/crashpad/crashpad/util/linux/scoped_ptrace_attach.cc:27] ptrace: Operation not permitted (1)
+
+TROUBLESHOOTING: https://pptr.dev/troubleshooting
+
+    at ChildProcess.onClose (file:///workspace/scratch/693518016dd2/HubLoan/server/node_modules/@puppeteer/browsers/lib/esm/launch.js:329:24)
+    at ChildProcess.emit (node:events:526:24)
+    at ChildProcess._handle.onexit (node:internal/child_process:324:12)
+
+Node.js v24.22.1

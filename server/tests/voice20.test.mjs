@@ -79,5 +79,5 @@ test('offline camera candidates remain world-aligned while a skull turns',()=>{
  const rig=createCameraRig(T,camera),views=[];
  for(const yaw of [0,.7]){head.rotation.y=yaw;head.updateMatrixWorld(true);camera.position.set(0,4,9);camera.lookAt(0,0,0);camera.updateMatrixWorld();
  const result=rig.refine({}, {format:'champion',collectCameraViews:true},[{head:{g:head},body}],{player:0,cut:true,quality:{issues:[],corrected:false}},1000);views.push(result.candidateViews.map(v=>v.position.map(x=>x.toFixed(6)).join(',')));}
- assert.ok(views.every(v=>v.length>0&&v.length<=200));assert.ok(views[0].filter(v=>views[1].includes(v)).length>20,'turning must preserve shared camera positions');
+ assert.ok(views.every(v=>v.length>0&&v.length<=400));assert.ok(views[0].filter(v=>views[1].includes(v)).length>20,'turning must preserve shared camera positions');
 });
