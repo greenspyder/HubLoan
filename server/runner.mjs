@@ -1,3 +1,4 @@
+import {acceptCreativeModelResult,CREATIVE_MODEL_RULES} from './creative-director.mjs';
 import {renderMotionStory} from './motion-story.mjs';
 import {renderShort} from './viral-render.mjs';
 import {decodeMusic} from './live-worker/repertoire.mjs';
@@ -99,6 +100,11 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
         const result = await checkpoint('text', label, [instructions, input, limit], () => budgeted.text(key, workspace.settings.model, `${rules}\n${MEMORY_RULES}\n${instructions}`, input, limit, controller.signal));
         await update(id, mission.id, current => { current.events.push({ at: new Date().toISOString(), message: `${label} concluído${result.truncated ? ' (limite de texto atingido)' : ''}.` }); });
         return result;
+      }
+      if(mission.creativeRequest){
+        const result=await stage('Astra: direção criativa',CREATIVE_MODEL_RULES,JSON.stringify(mission.creativeRequest),5000);
+        if(result.truncated)throw new AppError('Propostas incompletas; nenhuma foi importada.');
+        await store.mutate(id,w=>acceptCreativeModelResult(w,mission.id,result.output,result.model||null));return;
       }
       const plan = await stage('Planejando a entrega', 'Defina um plano curto, os critérios de qualidade e as suposições necessárias para executar a missão. Não faça perguntas: adote suposições razoáveis.', briefing, 650);
       await update(id, mission.id, current => { current.plan = plan.output; });

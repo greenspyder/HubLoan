@@ -1,0 +1,67 @@
+{
+  "format": "mystery",
+  "width": 360,
+  "height": 640,
+  "seconds": 18,
+  "wallMs": 3114,
+  "voiceEngine": "espeak-fallback",
+  "voice": {
+    "fallback": 3,
+    "neural": 0
+  },
+  "voiceProfile": {
+    "version": 1,
+    "candidateId": "dora-current",
+    "engine": "kokoro",
+    "model": "Kokoro-82M-v1.0",
+    "voice": "pf_dora",
+    "language": "pt-BR",
+    "speed": 0.96,
+    "style": "Dora · referência anterior",
+    "normalization": "existing-mixer-limiter",
+    "fallback": "espeak-technical-only",
+    "license": "Apache-2.0",
+    "source": "https://huggingface.co/hexgrad/Kokoro-82M",
+    "emotionControl": "text-and-speed-only"
+  },
+  "technicalStatus": "TECHNICALLY_VALID",
+  "qualityStatus": "REQUIRES_HUMAN_REVIEW",
+  "artisticEligibility": {
+    "eligible": false,
+    "reasons": [
+      "Voz técnica de fallback; escuta e substituição neural necessárias."
+    ]
+  },
+  "resources": [
+    {
+      "asset": "procedural-vector-scenes",
+      "rights": "Original HubLoan geometry, generated from source"
+    },
+    {
+      "asset": "speech",
+      "rights": "Local eSpeak synthesis; no third-party voice recording"
+    }
+  ],
+  "providerCalls": 0,
+  "infrastructureCost": "UNKNOWN",
+  "renderer": {},
+  "timeline": null,
+  "script": null,
+  "captions": [
+    {
+      "text": "Aquela porta só aparecia quando a luz parava.",
+      "start": 0,
+      "end": 3.2857083333333335
+    },
+    {
+      "text": "Alguém respondeu do outro lado.",
+      "start": 6,
+      "end": 8.206104166666666
+    },
+    {
+      "text": "Não era outra pessoa. Era a luz que ele havia perdido.",
+      "start": 12,
+      "end": 15.650645833333334
+    }
+  ]
+}

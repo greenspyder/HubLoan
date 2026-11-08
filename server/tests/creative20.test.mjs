@@ -39,3 +39,23 @@ test('rejected concepts require justification and failed jobs never expose a fin
  e.reviews.push({decision:'reject',reason:'Repetitivo'});const next=act(w,{action:'propose',theme:'Novo'});assert.ok(next.every(p=>p.format!=='comedy'));
  assert.equal(act(w,{action:'propose',theme:'Novo',repeatReason:'Novo roteiro solicitado pelo operador'}).length,5);
 });
+
+import {acceptCreativeModelResult} from '../creative-director.mjs';
+test('connected-model planning requires consent, validates the entire response atomically, and preserves provenance',()=>{
+ const w=initialWorkspace();w.secret={configured:true};
+ assert.throws(()=>act(w,{action:'propose-model',theme:'Tema'}),/Autorize/);
+ const id=act(w,{action:'propose-model',theme:'Tema',authorizeModelCall:true});const m=w.missions.find(m=>m.id===id);m.status='running';
+ assert.throws(()=>acceptCreativeModelResult(w,id,'not json'),/JSON/);assert.equal(w.creativeDirector.proposals.length,0);
+ const raw={proposals:['comedy','battle','mystery','champion','hybrid'].map(format=>({format,title:format,concept:'Um conceito original',audience:'Público brasileiro',hypothesis:'Curiosidade pode aumentar interesse',hook:'Veja o detalhe.',rationale:'Teste pequeno sem dados de audiência',primaryMetric:'Conclusão observada',script:format==='mystery'?['Uma porta.','Uma resposta.','Uma luz.']:['Veja o detalhe.','Algo pode mudar.']}))};
+ const p=acceptCreativeModelResult(w,id,JSON.stringify(raw));assert.equal(p.length,5);assert.equal(p[0].generator,'CONNECTED_MODEL');assert.ok(p.every(x=>x.evidence==='CREATIVE_HYPOTHESIS'));assert.equal(m.status,'review');
+});
+import {createRunner} from '../runner.mjs';
+import {encryptKey} from '../domain.mjs';
+import {configureCosts} from '../ai-costs.mjs';
+test('existing runner sends one budgeted planning call and fails closed on malformed model output',async()=>{
+ const store=await createStore({file:':memory:'});let calls=0;const runner=createRunner(store,{text:async()=>{calls++;return {output:'malformed',tokens:1};}},{intervalMs:86400000}),token='a'.repeat(64);
+ try{
+  await store.mutate('test',w=>{w.secret=encryptKey('test-only',token);configureCosts(w,{enabled:true,dailyMinor:1000,monthlyMinor:1000,callMinor:100,taskMinor:500,ceilings:{text:100,research:100,vision:100,image:100}});act(w,{action:'propose-model',theme:'Teste',authorizeModelCall:true});});
+  runner.unlock('test',token);await runner.tick();const w=(await store.read('test')).workspace;assert.equal(calls,1);assert.equal(w.missions[0].status,'failed');assert.equal(w.creativeDirector.proposals.length,0);assert.equal(w.aiCosts.entries.length,1);
+ }finally{await runner.close();await store.close();}
+});

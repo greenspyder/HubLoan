@@ -1,0 +1,82 @@
+✔ distinct references remain drafts and never overwrite active workspace identity (1.23814ms)
+✔ archived speech binds exact text, hash and identity, and rejects truncation and fallback (7.853961ms)
+✖ mesh visibility detects obstruction missed by logical head-center probes (9.632254ms)
+✔ unavailable Chatterbox sample never silently becomes fallback audio (3.674301ms)
+✔ resident protocol rejects simultaneous speech and aborts without fallback (38.822454ms)
+✔ editorial camera anticipates a turning face without crossing its center (7.222943ms)
+✖ scenery occlusion is measured even with no blocking snake body (2.479886ms)
+✔ a precomputed camera position still undergoes actual mesh validation (0.687323ms)
+✖ offline camera candidates remain world-aligned while a skull turns (4.044327ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 6
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 157.660198
+
+✖ failing tests:
+
+test at ../creative20-baseline/server/tests/voice20.test.mjs:23:1
+✖ mesh visibility detects obstruction missed by logical head-center probes (9.632254ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(framing.quality.issues.includes('MESH_FACE_OCCLUSION'))
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/693518016dd2/creative20-baseline/server/tests/voice20.test.mjs:28:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at ../creative20-baseline/server/tests/voice20.test.mjs:59:1
+✖ scenery occlusion is measured even with no blocking snake body (2.479886ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(out.quality.issues.includes('MESH_FACE_OCCLUSION'))
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/693518016dd2/creative20-baseline/server/tests/voice20.test.mjs:65:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at ../creative20-baseline/server/tests/voice20.test.mjs:76:1
+✖ offline camera candidates remain world-aligned while a skull turns (4.044327ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(views.every(v=>v.length>0&&v.length<=200))
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/693518016dd2/creative20-baseline/server/tests/voice20.test.mjs:82:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

@@ -75,7 +75,7 @@ export function missionById(workspace, id) {
 }
 export function queueMission(workspace, id) {
   const mission = missionById(workspace, id);
-  if(mission.creativeExperimentId && workspace.creativeDirector?.paused)throw new AppError('Produção criativa pausada.',409);
+  if((mission.creativeExperimentId||mission.creativeRequest) && workspace.creativeDirector?.paused)throw new AppError('Produção criativa pausada.',409);
   if (!workspace.secret && mission.kind !== 'video') throw new AppError('Conecte sua chave da OpenAI primeiro.');
   if (!['draft', 'failed', 'cancelled'].includes(mission.status)) throw new AppError('Esta missão já foi executada ou está em andamento.', 409);
   if (!workspace.agents.some(agent => agent.id === mission.agentId && agent.enabled)) throw new AppError('Reative o agente antes de executar.');

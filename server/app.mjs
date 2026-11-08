@@ -131,7 +131,7 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       }
       if(route==='/creative-director'&&request.method==='POST'){
         const input=await body(request);const updated=await store.mutate(id,w=>creativeAction(w,input));
-        if(input.action==='pause')for(const e of updated.workspace.creativeDirector.experiments)runner.cancel(id,e.missionId);
+        if(input.action==='pause')for(const m of updated.workspace.missions)if(m.creativeExperimentId||m.creativeRequest)runner.cancel(id,m.id);
         return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey)));
       }
       if(route==='/voice-studio'&&request.method==='POST'){
