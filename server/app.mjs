@@ -1,3 +1,4 @@
+import {creativeAction} from './creative-director.mjs';
 import {voiceStudioAction,voiceStudioState} from './lume-voice.mjs';
 import {voiceSample} from './live-worker/voice-sample.mjs';
 import {musicTrack} from './live-music.mjs';
@@ -127,6 +128,11 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       // unlock the workspace; persisted grants are restored by the workers.
       if (shouldUnlockBackgroundWorkers(request.method)) {
         runner.unlock(id, token); commerce.unlock(id, token);
+      }
+      if(route==='/creative-director'&&request.method==='POST'){
+        const input=await body(request);const updated=await store.mutate(id,w=>creativeAction(w,input));
+        if(input.action==='pause')for(const e of updated.workspace.creativeDirector.experiments)runner.cancel(id,e.missionId);
+        return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey)));
       }
       if(route==='/voice-studio'&&request.method==='POST'){
         const input=await body(request,2048);const updated=await store.mutate(id,w=>{try{return voiceStudioAction(w,input);}catch(error){throw new AppError(error.message,400);}});return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey)));
