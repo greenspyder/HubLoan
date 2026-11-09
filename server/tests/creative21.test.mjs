@@ -34,3 +34,16 @@ test('controlled model contract selects and enqueues three formats automatically
  const m=w.missions.find(m=>m.liveShort?.format==='battle');assert.equal(createEditorial(m.liveShort,recordGameplay(m.liveShort)).scenes[0].id,'astra-0');
  }finally{await runner.close();await store.close();}
 });
+
+test('quality failure is observable and cannot consume a resume without retryable work',()=>{
+ const w=initialWorkspace(),c=campaignAction(w,request,1000);
+ w.missions[0].status='review';
+ c.productionIds=['video-a','video-b','video-c'];
+ for(const id of c.productionIds)w.missions.push({id,status:'review'});
+ reconcileCampaigns(w,2000);
+ assert.equal(c.state,'Failed');
+ assert.match(c.error,/CREATIVE_QUALITY_FAILED.*INVALID_ARTIFACT/);
+ const before=structuredClone(c);
+ assert.throws(()=>campaignAction(w,{action:'resume',id:c.id,revision:c.revision},3000),/revisão do plano/);
+ assert.deepEqual(c,before);
+});

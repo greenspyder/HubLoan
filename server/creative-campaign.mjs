@@ -24,8 +24,9 @@ export function campaignAction(w,input,now=Date.now()){
  if(input.revision!==c.revision)throw new AppError('Campanha mudou. Recarregue.',409);
  if(input.action==='resume'){
   if(c.state!=='Failed'||(c.resumes||0)>=1||w.creativeDirector?.paused)throw new AppError('Retomada indisponível ou limite atingido.',409);
-  event(c,c.productionIds.length?'Rendering':'Researching','Retomada explícita autorizada.');
   const ids=c.productionIds.length?c.productionIds:[c.missionId];
+  if(!ids.some(id=>['failed','cancelled'].includes(missionById(w,id).status)))throw new AppError('Falha de qualidade exige revisão do plano e nova campanha; não há tarefa interrompida para retomar.',409);
+  event(c,c.productionIds.length?'Rendering':'Researching','Retomada explícita autorizada.');
   for(const id of ids){const m=missionById(w,id);if(['failed','cancelled'].includes(m.status))queueMission(w,id);}
   c.resumes=(c.resumes||0)+1;c.deadline=now+1800000;delete c.error;delete c.endedAt;event(c,c.productionIds.length?'Rendering':'Researching','Retomada explícita; checkpoints preservados.');c.revision++;return c;
  }
@@ -49,6 +50,7 @@ export function reconcileCampaigns(w,now=Date.now()){
    // Existing renderer numeric tests are not sufficient for artistic approval.
    for(const m of jobs){if((m.videoReport?.distinctFrames||0)<(m.videoReport?.seconds||0)*2)issues.push('LOW_FRAME_DIVERSITY:'+m.id);if(Object.keys(m.videoReport?.renderer?.framingQuality?.issues||{}).length)issues.push('FRAMING_FAILURE:'+m.id);}
    c.quality={technical:issues.length?'FAIL':'PASS',artistic:'HUMAN_REVIEW_REQUIRED',issues,artifacts:jobs.map(m=>({missionId:m.id,sha256:m.artifact?createHash('sha256').update(Buffer.from(m.artifact.base64,'base64')).digest('hex'):null,report:m.videoReport}))};
+   if(issues.length)c.error='CREATIVE_QUALITY_FAILED: '+issues.join(';');
    event(c,issues.length?'Failed':'ReadyForReview',issues.length?issues.join(';'):'Artefatos tecnicamente válidos; revisão humana pendente.');c.endedAt=new Date(now).toISOString();c.revision++;
   }
  }

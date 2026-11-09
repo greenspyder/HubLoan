@@ -1,5 +1,13 @@
 # Viral Content Factory 2.1 — entrega parcial, autonomia não comprovada
 
+## Revisão de fechamento
+
+Retomada sem tarefas recuperáveis agora é recusada sem consumir a tentativa. Falhas de qualidade são expostas em error. O painel oferece links para conexão de modelo e orçamento do workspace. Um novo teste cobre a falha de qualidade e preservação do estado.
+
+Chrome Headless Shell 157.0.8103.38 resolveu o bloqueio anterior: frontend real passou (início, falha por modelo ausente, persistência após reload), WebGL passou com 4 testes e 1 skip neural. Backend: 258 passaram, 8 skips, zero falhas. Build e lint do componente alterado passaram. Logs: [backend](completion-backend.txt), [campanhas](completion-campaign-tests.txt), [frontend real](completion-ui.txt), [WebGL](completion-webgl.txt), [build](completion-build.txt), [lint](completion-lint.txt).
+
+Esses testes não comprovam geração criativa autônoma. Nenhum novo MP4 foi produzido nesta revisão. Permanecem pendentes o modelo conectado, perfil neural disponível, cinco propostas reais, três produções e inspeção audiovisual. Os relatos de falha de navegador abaixo são históricos, superados por esta execução.
+
 Base auditada: `89d98ea4b66c5fc41a91be95769147d2867309f4`, mesma branch `codex/viral-audiovisual12`. [Auditoria](audit.md). Nenhuma nova PR, merge, deploy, RTMP ou publicação.
 
 ## O que foi implementado
@@ -58,7 +66,7 @@ Não envie credenciais pelo chat. Uma conexão feita no frontend deve continuar 
 1. Executar a campanha com conexão real de modelo e orçamento no workspace apropriado. Validar respostas, seleção, cinco propostas e três produções sem fixtures.
 2. Validar os planos novos com renderer real, navegador funcional e perfil neural instalado. Não houve novos MP4s nesta etapa.
 3. Ampliar o vocabulário de atuação e mistério, melhorar validação perceptiva e testar correção limitada de problemas visuais. Não está comprovada qualidade artística ou diversidade semântica.
-4. Testar a interface num Chromium funcional. O build não substitui essa inspeção.
+4. Teste funcional da interface concluído com Chrome Headless Shell; revisão dos vídeos reais ainda pendente.
 5. Para TikTok: contratos indicam publicação desabilitada, autenticação oficial e revisão humana. Scheduler, fila de publicação, monitoramento oficial, idempotência de envio, coleta automática de métricas e frequência ainda precisam de implementação/autorização separada. Não existe publicação autônoma nesta versão.
 
 **Não considerar a versão 2.1 concluída.** A separação entre modelo decisor e runner executor foi implementada e testada em contratos; a prova end-to-end criativa real permanece bloqueada pela conexão de modelo e pelas dependências do ambiente.
