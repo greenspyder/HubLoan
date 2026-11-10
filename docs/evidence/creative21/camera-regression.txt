@@ -1,0 +1,17 @@
+✔ distinct references remain drafts and never overwrite active workspace identity (2.358332ms)
+✔ archived speech binds exact text, hash and identity, and rejects truncation and fallback (16.810276ms)
+✔ mesh visibility detects obstruction missed by logical head-center probes (12.193117ms)
+✔ unavailable Chatterbox sample never silently becomes fallback audio (5.336509ms)
+✔ resident protocol rejects simultaneous speech and aborts without fallback (69.024893ms)
+✔ editorial camera anticipates a turning face without crossing its center (10.223229ms)
+✔ scenery occlusion is measured even with no blocking snake body (3.182354ms)
+✔ a precomputed camera position still undergoes actual mesh validation (1.003442ms)
+✔ offline camera candidates remain world-aligned while a skull turns (6.948787ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 274.847468

@@ -1,0 +1,167 @@
+[
+  {
+    "file": "comedy-anatomy30.mp4",
+    "sha256": "43d454b8b9d6b45148cee682655cde6dbc51b8843443b0f6c562e2babbe15b21",
+    "bytes": 3200252,
+    "duration": 18.0,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 360,
+        "height": 640,
+        "r_frame_rate": "15/1",
+        "sample_rate": null
+      },
+      {
+        "codec_name": "aac",
+        "width": null,
+        "height": null,
+        "r_frame_rate": "0/0",
+        "sample_rate": "48000"
+      }
+    ],
+    "decodedFrames": 270,
+    "distinctFrames": 270,
+    "decode": "PASS",
+    "audioSync": [
+      {
+        "text": "Ela tinha um plano perfeito. Infelizmente, esqueceu de avisar a pr\u00f3pria cabe\u00e7a.",
+        "pcmStartSeconds": 0,
+        "measuredStartSeconds": 0.0,
+        "correlation": 0.9694358394840686
+      },
+      {
+        "text": "Tem alguma coisa estranha acontecendo nessa arena... e eu acho que voc\u00eas ainda n\u00e3o perceberam.",
+        "pcmStartSeconds": 9,
+        "measuredStartSeconds": 9.0,
+        "correlation": 0.919854884786507
+      }
+    ],
+    "framing": {
+      "checked": 270,
+      "corrected": 270,
+      "issues": {},
+      "failures": []
+    },
+    "artisticEligibility": {
+      "eligible": true,
+      "reasons": [],
+      "humanReviewRequired": true
+    },
+    "newRender": true,
+    "previousSha256": "63669551d5eacb481ead45f7186e66ed2b75a073cad639eadc6174de4030036b",
+    "voice": "provisional Chatterbox Heart; archived neural takes; no new inference"
+  },
+  {
+    "file": "battle-anatomy30.mp4",
+    "sha256": "7355998adbb7e7bbae10bfa2c276350fe49d26cb198c2c6c48c3aee1323c3914",
+    "bytes": 4606724,
+    "duration": 25.0,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 360,
+        "height": 640,
+        "r_frame_rate": "15/1",
+        "sample_rate": null
+      },
+      {
+        "codec_name": "aac",
+        "width": null,
+        "height": null,
+        "r_frame_rate": "0/0",
+        "sample_rate": "48000"
+      }
+    ],
+    "decodedFrames": 375,
+    "distinctFrames": 375,
+    "decode": "PASS",
+    "audioSync": [
+      {
+        "text": "Tem alguma coisa estranha acontecendo nessa arena... e eu acho que voc\u00eas ainda n\u00e3o perceberam.",
+        "pcmStartSeconds": 0,
+        "measuredStartSeconds": 0.0,
+        "correlation": 0.9701778858067269
+      },
+      {
+        "text": "Espera... espera... n\u00e3o vira agora.",
+        "pcmStartSeconds": 8.333333333333334,
+        "measuredStartSeconds": 8.333333333333334,
+        "correlation": 0.9624707163361912
+      },
+      {
+        "text": "Ela tinha um plano perfeito. Infelizmente, esqueceu de avisar a pr\u00f3pria cabe\u00e7a.",
+        "pcmStartSeconds": 16.666666666666668,
+        "measuredStartSeconds": 16.666666666666668,
+        "correlation": 0.9789318686589789
+      }
+    ],
+    "framing": {
+      "checked": 375,
+      "corrected": 375,
+      "issues": {},
+      "failures": []
+    },
+    "artisticEligibility": {
+      "eligible": true,
+      "reasons": [],
+      "humanReviewRequired": true
+    },
+    "newRender": true,
+    "previousSha256": "e92661ff5c9dcd80fd8e54f14447f726352a02b3f23c5ec2111497b0772e254c",
+    "voice": "provisional Chatterbox Heart; archived neural takes; no new inference"
+  },
+  {
+    "file": "champion-anatomy30.mp4",
+    "sha256": "359af68625b6ca72203f8b6079b4c0ee0c04d48e215e1a5a5760afd0344da73d",
+    "bytes": 2207133,
+    "duration": 20.0,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 360,
+        "height": 640,
+        "r_frame_rate": "15/1",
+        "sample_rate": null
+      },
+      {
+        "codec_name": "aac",
+        "width": null,
+        "height": null,
+        "r_frame_rate": "0/0",
+        "sample_rate": "48000"
+      }
+    ],
+    "decodedFrames": 300,
+    "distinctFrames": 300,
+    "decode": "PASS",
+    "audioSync": [
+      {
+        "text": "Olha quem apareceu... estava esperando voc\u00ea chegar.",
+        "pcmStartSeconds": 0,
+        "measuredStartSeconds": 0.0,
+        "correlation": 0.9877782690114059
+      },
+      {
+        "text": "Tem alguma coisa estranha acontecendo nessa arena... e eu acho que voc\u00eas ainda n\u00e3o perceberam.",
+        "pcmStartSeconds": 10,
+        "measuredStartSeconds": 10.0,
+        "correlation": 0.9881168875616949
+      }
+    ],
+    "framing": {
+      "checked": 300,
+      "corrected": 300,
+      "issues": {},
+      "failures": []
+    },
+    "artisticEligibility": {
+      "eligible": true,
+      "reasons": [],
+      "humanReviewRequired": true
+    },
+    "newRender": true,
+    "previousSha256": "586a52889cd6a184d13ea9c7c8810d6ae451e40fe3309527dc9658bc0196911f",
+    "voice": "provisional Chatterbox Heart; archived neural takes; no new inference"
+  }
+]

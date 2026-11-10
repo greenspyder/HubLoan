@@ -1,0 +1,17 @@
+✔ creative route authenticates, isolates snapshots, prevents stale mutations and unsupported production (127.15823ms)
+✔ five proposals, distinct categories, provenance, unsupported formats cannot produce (88.416096ms)
+✔ sources reject invented provenance and require explicit fixture mode (0.674414ms)
+✔ workspace CAS, pause, immutable revisions, no approval before artifact (4.55543ms)
+✔ persistent creative state uses existing store isolation (1.739365ms)
+✔ motion story has bounded scenes and actual changing geometry (0.342945ms)
+✔ rejected concepts require justification and failed jobs never expose a finished artifact (0.331248ms)
+✔ connected-model planning requires consent, validates the entire response atomically, and preserves provenance (0.529005ms)
+✔ existing runner sends one budgeted planning call and fails closed on malformed model output (9.329208ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 320.08121

@@ -1,0 +1,13 @@
+✔ missing real model fails persistently without proposals, videos or fixture fallback (14.373396ms)
+✔ campaign bounds, cancellation and stale revision remain isolated (0.668654ms)
+✔ plan rejects fake events, static scenes and timing gaps; text similarity is only a repetition signal (0.69851ms)
+✔ controlled model contract selects and enqueues three formats automatically; not a real-model acceptance test (539.144693ms)
+✔ quality failure is observable and cannot consume a resume without retryable work (1.580782ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 902.907811

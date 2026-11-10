@@ -1,3 +1,6 @@
+import {executeCampaign,reconcileCampaigns} from './creative-campaign.mjs';
+import {acceptCreativeModelResult,CREATIVE_MODEL_RULES} from './creative-director.mjs';
+import {renderMotionStory} from './motion-story.mjs';
 import {renderShort} from './viral-render.mjs';
 import {decodeMusic} from './live-worker/repertoire.mjs';
 import { renderVideo } from './video-production.mjs';
@@ -48,6 +51,10 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
     const controllerId = `${id}:${mission.id}`;
     controllers.set(controllerId, controller);
     try {
+      if(mission.campaignId && mission.kind==='text'){
+        await update(id,mission.id,m=>{const fingerprint=executionIntent(m);if(m.execution?.fingerprint!==fingerprint)m.execution={fingerprint,checkpoints:[]};});
+        await executeCampaign({store,id,mission,budgeted,checkpoint,signal:controller.signal,token});return;
+      }
       if (mission.kind === 'video') {
         await update(id, mission.id, current => {
           const fingerprint = executionIntent(current);
@@ -59,11 +66,11 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
         });
         let repertoire={assets:new Map(),failures:0};
         if(mission.liveShort?.music){const selection=mission.liveShort.music,current=(await store.read(id)).workspace;const e=current.liveFactory?.experiences.find(e=>e.id===selection.experienceId),track=e?.musicCatalog?.find(t=>t.id===selection.trackId&&t.approved&&t.category==='ambient');if(!track)throw new AppError('Música ambiente não aprovada neste espaço.');const bytes=await store.readLiveAudio(`${id}:${e.id}:${track.id}`);repertoire.assets.set(track.id,decodeMusic(bytes,track));}
-        const result = mission.liveShort?await renderShort({config:mission.liveShort,repertoire,signal:controller.signal,checkpoint}):await renderVideo({brief:mission.brief, images:mission.videoImages || [], signal:controller.signal, checkpoint});
+        const result = mission.motionStory?await renderMotionStory({config:mission.motionStory,signal:controller.signal,checkpoint}):mission.liveShort?await renderShort({config:mission.liveShort,repertoire,signal:controller.signal,checkpoint}):await renderVideo({brief:mission.brief, images:mission.videoImages || [], signal:controller.signal, checkpoint});
         await update(id, mission.id, current => {
           current.artifact = {base64:result.base64,preview:result.preview,mime:'video/mp4',filename:`hubloan-${mission.id}.mp4`};
           current.videoReport = result.report;
-          current.output = (mission.liveShort?'## Vídeo 3D offline produzido\n\nMP4 H.264/AAC, 360×640, 15 FPS de saída offline (não comprova transmissão em tempo real). Roteiro editorial e simulação determinística. Voz: '+result.report.voiceEngine+'. Música: '+(result.report.music.length?'catálogo aprovado':'sem trilha')+'. Revisão humana obrigatória.\n\n### Legendas SRT\n```srt\n'+result.srt+'\n```':'## Vídeo vertical produzido\n\nMP4 H.264, 720×1280, sem áudio. Legendas sincronizadas. Validação técnica concluída; qualidade, direitos do roteiro e divulgação comercial exigem revisão humana. Sem publicação externa. Nenhuma chamada paga; custo de infraestrutura a apurar.\n\n### Legendas SRT\n```srt\n'+result.srt+'\n```');
+          current.output = mission.motionStory?'Microconto animado original. Voz: '+result.report.voiceEngine+'. Revisão humana obrigatória. Nenhuma publicação.':(mission.liveShort?'## Vídeo 3D offline produzido\n\nMP4 H.264/AAC, 360×640, 15 FPS de saída offline (não comprova transmissão em tempo real). Roteiro editorial e simulação determinística. Voz: '+result.report.voiceEngine+'. Música: '+(result.report.music.length?'catálogo aprovado':'sem trilha')+'. Revisão humana obrigatória.\n\n### Legendas SRT\n```srt\n'+result.srt+'\n```':'## Vídeo vertical produzido\n\nMP4 H.264, 720×1280, sem áudio. Legendas sincronizadas. Validação técnica concluída; qualidade, direitos do roteiro e divulgação comercial exigem revisão humana. Sem publicação externa. Nenhuma chamada paga; custo de infraestrutura a apurar.\n\n### Legendas SRT\n```srt\n'+result.srt+'\n```');
           current.status = 'review'; current.phase = 'Vídeo pronto para revisão humana';
           current.events.push({at:new Date().toISOString(),message:'MP4 validado e preservado no Armazém. Publicação não autorizada.'});
         });
@@ -98,6 +105,11 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
         const result = await checkpoint('text', label, [instructions, input, limit], () => budgeted.text(key, workspace.settings.model, `${rules}\n${MEMORY_RULES}\n${instructions}`, input, limit, controller.signal));
         await update(id, mission.id, current => { current.events.push({ at: new Date().toISOString(), message: `${label} concluído${result.truncated ? ' (limite de texto atingido)' : ''}.` }); });
         return result;
+      }
+      if(mission.creativeRequest){
+        const result=await stage('Astra: direção criativa',CREATIVE_MODEL_RULES,JSON.stringify(mission.creativeRequest),5000);
+        if(result.truncated)throw new AppError('Propostas incompletas; nenhuma foi importada.');
+        await store.mutate(id,w=>acceptCreativeModelResult(w,mission.id,result.output,result.model||null));return;
       }
       const plan = await stage('Planejando a entrega', 'Defina um plano curto, os critérios de qualidade e as suposições necessárias para executar a missão. Não faça perguntas: adote suposições razoáveis.', briefing, 650);
       await update(id, mission.id, current => { current.plan = plan.output; });
@@ -242,8 +254,9 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
     }
     for (const [id, entry] of unlocked) {
       if (entry.expires < Date.now()) { unlocked.delete(id); continue; }
-      const snapshot = (await store.read(id)).workspace;
-      if (!snapshot.secret && !(snapshot.missions || []).some(m => m.kind === 'video' && ['queued','running'].includes(m.status))) { unlocked.delete(id); continue; }
+      let snapshot = (await store.read(id)).workspace;
+      if(snapshot.creativeCampaigns?.some(c=>!['Failed','Cancelled','ReadyForReview'].includes(c.state)))snapshot=(await store.mutate(id,w=>{recoverStale(w,now());reconcileCampaigns(w,now());})).workspace;
+      if (!snapshot.secret && !(snapshot.missions || []).some(m => (m.kind === 'video'||m.campaignId) && ['queued','running'].includes(m.status))) { unlocked.delete(id); continue; }
       const hasQueued = snapshot.missions.some(mission => mission.status === 'queued');
       const stale = snapshot.missions.some(mission => mission.status === 'running' && mission.leaseUntil < now());
       const projectNeedsWork = snapshot.autonomy.projects.some(project => ['active', 'planning'].includes(project.status) && (project.nextRunAt <= now() || project.produced >= project.maxDeliveries || project.expiresAt < now() || snapshot.missions.some(mission => mission.projectId === project.id && ['failed', 'cancelled'].includes(mission.status))));
@@ -255,7 +268,7 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
       const claim = await store.mutate(id, workspace => {
         recoverStale(workspace, now()); reconcileProjects(workspace, now());
         if (workspace.missions.some(mission => mission.status === 'running') || workspace.autonomy.projects.some(project => project.status === 'planning')) return null;
-        const candidate = [...workspace.missions].reverse().find(mission => mission.status === 'queued' && (workspace.secret || mission.kind === 'video') && workspace.agents.some(agent => agent.id === mission.agentId && agent.enabled));
+        const candidate = [...workspace.missions].reverse().find(mission => mission.status === 'queued' && (workspace.secret || mission.kind === 'video'||mission.campaignId) && workspace.agents.some(agent => agent.id === mission.agentId && agent.enabled));
         if (candidate) { candidate.status = 'running'; candidate.phase = 'Iniciando execução'; candidate.leaseUntil = now() + 600000; return { kind: 'mission', id: candidate.id }; }
         if (workspace.missions.filter(mission => ['queued', 'running'].includes(mission.status)).length >= 5) return null;
         const project = workspace.autonomy.projects.find(project => project.status === 'active' && project.produced < project.maxDeliveries && project.nextRunAt <= now() && !workspace.missions.some(mission => mission.projectId === project.id && ['queued', 'running'].includes(mission.status)));
@@ -267,7 +280,7 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
       if (claim.result) {
         // Rotate the tenant to the end so another workspace gets the next turn.
         unlocked.delete(id); unlocked.set(id, entry);
-        if (claim.result.kind === 'mission') { await execute(id, entry.token, claim.workspace, missionById(claim.workspace, claim.result.id)); await store.mutate(id, workspace => reconcileProjects(workspace, now())); }
+        if (claim.result.kind === 'mission') { await execute(id, entry.token, claim.workspace, missionById(claim.workspace, claim.result.id)); await store.mutate(id, workspace => {reconcileProjects(workspace, now());reconcileCampaigns(workspace,now());}); }
         else await plan(id, entry.token, claim.workspace, projectById(claim.workspace, claim.result.id));
         await store.mutate(id, w => collectKnowledge(w, now()));
         await knowledge?.sync(id);

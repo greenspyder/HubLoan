@@ -1,0 +1,92 @@
+[
+  {
+    "format": "comedy",
+    "sha256": "d932074dab25a9d72f148a1dd6873f71821887127f6f7a046cfdd45beb1164bd",
+    "seconds": 18.0,
+    "bytes": 3069083,
+    "streams": [
+      {
+        "codec": "h264",
+        "type": "video",
+        "width": 360,
+        "height": 640
+      },
+      {
+        "codec": "aac",
+        "type": "audio",
+        "width": null,
+        "height": null
+      }
+    ],
+    "audioRmsDbfs": -30.664577424027613,
+    "audioPeak": 0.39910888671875,
+    "framesReviewed": [
+      0.5,
+      3.6,
+      7.2,
+      10.799999999999999,
+      14.4,
+      17.5
+    ]
+  },
+  {
+    "format": "battle",
+    "sha256": "1fd8b353986b789003398d547650e5e54ee05286982b5c410fb31641864ac249",
+    "seconds": 25.0,
+    "bytes": 4381280,
+    "streams": [
+      {
+        "codec": "h264",
+        "type": "video",
+        "width": 360,
+        "height": 640
+      },
+      {
+        "codec": "aac",
+        "type": "audio",
+        "width": null,
+        "height": null
+      }
+    ],
+    "audioRmsDbfs": -31.40770303977956,
+    "audioPeak": 0.400665283203125,
+    "framesReviewed": [
+      0.5,
+      5.0,
+      10.0,
+      15.0,
+      20.0,
+      24.5
+    ]
+  },
+  {
+    "format": "mystery",
+    "sha256": "d80b01f97f30d08ed3215f997f5852e4b5d867741dad063555a163edceccbabf",
+    "seconds": 18.0,
+    "bytes": 183763,
+    "streams": [
+      {
+        "codec": "h264",
+        "type": "video",
+        "width": 360,
+        "height": 640
+      },
+      {
+        "codec": "aac",
+        "type": "audio",
+        "width": null,
+        "height": null
+      }
+    ],
+    "audioRmsDbfs": -26.49168402986763,
+    "audioPeak": 0.589111328125,
+    "framesReviewed": [
+      0.5,
+      3.6,
+      7.2,
+      10.799999999999999,
+      14.4,
+      17.5
+    ]
+  }
+]

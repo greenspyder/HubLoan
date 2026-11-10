@@ -1,0 +1,33 @@
+Rendering comedy
+comedy 59860 {
+  engine: 'kokoro',
+  voice: 'pf_dora (pt-BR feminina)',
+  quality: 'HUMAN_REVIEW_REQUIRED',
+  ready: true,
+  neural: 4,
+  fallback: 0,
+  failures: 0,
+  maxSynthesisMs: 3300
+} { eligible: true, reasons: [], humanReviewRequired: true }
+Rendering battle
+battle 48307 {
+  engine: 'kokoro',
+  voice: 'pf_dora (pt-BR feminina)',
+  quality: 'HUMAN_REVIEW_REQUIRED',
+  ready: true,
+  neural: 4,
+  fallback: 0,
+  failures: 0,
+  maxSynthesisMs: 2092
+} { eligible: true, reasons: [], humanReviewRequired: true }
+Rendering champion
+champion 43137 {
+  engine: 'kokoro',
+  voice: 'pf_dora (pt-BR feminina)',
+  quality: 'HUMAN_REVIEW_REQUIRED',
+  ready: true,
+  neural: 4,
+  fallback: 0,
+  failures: 0,
+  maxSynthesisMs: 1395
+} { eligible: true, reasons: [], humanReviewRequired: true }

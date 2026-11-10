@@ -1,0 +1,177 @@
+[
+  {
+    "id": "38bb2d77-afe4-4b8a-8b09-83caaf2ecb1a",
+    "version": 1,
+    "conceptKey": "comedy",
+    "createdAt": "2026-11-08T14:57:58.623Z",
+    "title": "O plano era não ter plano",
+    "theme": "Curiosidade, escolhas e pequenas surpresas",
+    "concept": "Uma pausa irônica da Lume diante de uma arena que não espera por ninguém.",
+    "audience": "Público brasileiro interessado em narrativas visuais curtas",
+    "hypothesis": "Contraste entre serenidade e caos pode sustentar atenção.",
+    "hook": "Meu plano era simples: parecer que eu tinha um plano.",
+    "format": "comedy",
+    "category": "character",
+    "script": [
+      "Meu plano era simples: parecer que eu tinha um plano.",
+      "A arena, pelo visto, não recebeu o memorando."
+    ],
+    "seconds": 18,
+    "resources": [
+      "Chromium/WebGL",
+      "FFmpeg",
+      "TTS local"
+    ],
+    "difficulty": "bounded",
+    "risks": [
+      "Encenação editorial sobre simulação; não reproduz pedidos arbitrários de atuação.",
+      "Interesse do público ainda não medido."
+    ],
+    "primaryMetric": "Taxa de conclusão observada, quando disponibilizada pelo canal",
+    "rationale": "Hipótese criativa para o tema “Curiosidade, escolhas e pequenas surpresas”. 0 fontes selecionadas como contexto, sem comprovação de tendência.",
+    "sourceIds": [],
+    "evidence": "CREATIVE_HYPOTHESIS",
+    "generator": "LOCAL_RULE_BASED_V1",
+    "repeatReason": null
+  },
+  {
+    "id": "b5c7c9dc-3ac8-4a7e-9298-31c9d4923e8e",
+    "version": 1,
+    "conceptKey": "battle",
+    "createdAt": "2026-11-08T14:57:58.623Z",
+    "title": "Quem encontra a saída?",
+    "theme": "Curiosidade, escolhas e pequenas surpresas",
+    "concept": "Uma pergunta inicial acompanha aproximações reais, sem antecipar o resultado.",
+    "audience": "Público brasileiro interessado em narrativas visuais curtas",
+    "hypothesis": "Uma pergunta espacial pode tornar o confronto mais compreensível.",
+    "hook": "Repare no espaço entre eles. É ali que tudo pode mudar.",
+    "format": "battle",
+    "category": "gameplay",
+    "script": [
+      "Repare no espaço entre eles. É ali que tudo pode mudar.",
+      "A pressa ocupa espaço. A saída costuma ser discreta."
+    ],
+    "seconds": 25,
+    "resources": [
+      "Chromium/WebGL",
+      "FFmpeg",
+      "TTS local"
+    ],
+    "difficulty": "bounded",
+    "risks": [
+      "Eventos selecionados da simulação real; nunca prometer um vencedor no roteiro.",
+      "Interesse do público ainda não medido."
+    ],
+    "primaryMetric": "Taxa de conclusão observada, quando disponibilizada pelo canal",
+    "rationale": "Hipótese criativa para o tema “Curiosidade, escolhas e pequenas surpresas”. 0 fontes selecionadas como contexto, sem comprovação de tendência.",
+    "sourceIds": [],
+    "evidence": "CREATIVE_HYPOTHESIS",
+    "generator": "LOCAL_RULE_BASED_V1",
+    "repeatReason": null
+  },
+  {
+    "id": "2f0b3fa1-018e-4a48-95b9-cefad8d947ef",
+    "version": 1,
+    "conceptKey": "mystery",
+    "createdAt": "2026-11-08T14:57:58.623Z",
+    "title": "A porta que esperava",
+    "theme": "Curiosidade, escolhas e pequenas surpresas",
+    "concept": "Um viajante segue um sinal. A porta não guarda um monstro: devolve sua própria luz.",
+    "audience": "Público brasileiro interessado em narrativas visuais curtas",
+    "hypothesis": "Um enigma visual com resolução pode estimular conclusão do vídeo.",
+    "hook": "Aquela porta só aparecia quando a luz parava.",
+    "format": "mystery",
+    "category": "storytelling",
+    "script": [
+      "Aquela porta só aparecia quando a luz parava.",
+      "Alguém respondeu do outro lado.",
+      "Não era outra pessoa. Era a luz que ele havia perdido."
+    ],
+    "seconds": 18,
+    "resources": [
+      "FFmpeg",
+      "sharp",
+      "TTS local"
+    ],
+    "difficulty": "bounded",
+    "risks": [
+      "Animação vetorial original: porta, viajante e sinal; não gera qualquer cenário solicitado.",
+      "Interesse do público ainda não medido."
+    ],
+    "primaryMetric": "Taxa de conclusão observada, quando disponibilizada pelo canal",
+    "rationale": "Hipótese criativa para o tema “Curiosidade, escolhas e pequenas surpresas”. 0 fontes selecionadas como contexto, sem comprovação de tendência.",
+    "sourceIds": [],
+    "evidence": "CREATIVE_HYPOTHESIS",
+    "generator": "LOCAL_RULE_BASED_V1",
+    "repeatReason": null
+  },
+  {
+    "id": "8c28d365-1f0c-4f1b-9d93-d34262e4d827",
+    "version": 1,
+    "conceptKey": "champion",
+    "createdAt": "2026-11-08T14:57:58.623Z",
+    "title": "Quatro maneiras de entrar",
+    "theme": "Curiosidade, escolhas e pequenas surpresas",
+    "concept": "Cada competidor revela uma silhueta antes de receber o nome.",
+    "audience": "Público brasileiro interessado em narrativas visuais curtas",
+    "hypothesis": "Contrastes de silhueta podem favorecer reconhecimento dos personagens.",
+    "hook": "Antes de escolher, repare em como cada um ocupa o espaço.",
+    "format": "champion",
+    "category": "character",
+    "script": [
+      "Antes de escolher, repare em como cada um ocupa o espaço.",
+      "Às vezes, a primeira impressão esconde a melhor surpresa."
+    ],
+    "seconds": 20,
+    "resources": [
+      "Chromium/WebGL",
+      "FFmpeg",
+      "TTS local"
+    ],
+    "difficulty": "bounded",
+    "risks": [
+      "Modelos existentes e poses procedurais; revisão visual obrigatória.",
+      "Interesse do público ainda não medido."
+    ],
+    "primaryMetric": "Taxa de conclusão observada, quando disponibilizada pelo canal",
+    "rationale": "Hipótese criativa para o tema “Curiosidade, escolhas e pequenas surpresas”. 0 fontes selecionadas como contexto, sem comprovação de tendência.",
+    "sourceIds": [],
+    "evidence": "CREATIVE_HYPOTHESIS",
+    "generator": "LOCAL_RULE_BASED_V1",
+    "repeatReason": null
+  },
+  {
+    "id": "7b463130-5b43-47a0-9c00-56c147bcc6a5",
+    "version": 1,
+    "conceptKey": "hybrid",
+    "createdAt": "2026-11-08T14:57:58.623Z",
+    "title": "A escolha que muda o conto",
+    "theme": "Curiosidade, escolhas e pequenas surpresas",
+    "concept": "Proposta de narrativa ramificada, dependente de novo pipeline.",
+    "audience": "Público brasileiro interessado em narrativas visuais curtas",
+    "hypothesis": "Uma escolha com consequência pode motivar participação futura.",
+    "hook": "Uma luz. Dois caminhos.",
+    "format": "hybrid",
+    "category": "experimental",
+    "script": [
+      "Uma luz. Dois caminhos.",
+      "Qual detalhe mudaria sua escolha?"
+    ],
+    "seconds": 20,
+    "resources": [
+      "Editor de ramificações",
+      "Interação autorizada"
+    ],
+    "difficulty": "requires-implementation",
+    "risks": [
+      "Proposta somente; não renderizável nesta versão.",
+      "Interesse do público ainda não medido."
+    ],
+    "primaryMetric": "Taxa de conclusão observada, quando disponibilizada pelo canal",
+    "rationale": "Hipótese criativa para o tema “Curiosidade, escolhas e pequenas surpresas”. 0 fontes selecionadas como contexto, sem comprovação de tendência.",
+    "sourceIds": [],
+    "evidence": "CREATIVE_HYPOTHESIS",
+    "generator": "LOCAL_RULE_BASED_V1",
+    "repeatReason": null
+  }
+]

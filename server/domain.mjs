@@ -1,3 +1,6 @@
+import {creativeState} from './creative-director.mjs';
+import {activeVoice,voiceStudioState} from './lume-voice.mjs';
+import {audiovisualEligibility} from './viral-quality.mjs';
 import {shortConfig,shortStoryboard} from './viral-content.mjs';
 import { publicLive } from './live-factory.mjs';
 import { publicAffiliates } from './affiliates.mjs';
@@ -45,7 +48,7 @@ export function initialWorkspace() {
   ], missions: [], settings: { model: 'gpt-4.1-mini', imageModel: 'gpt-image-1-mini', maxOutputTokens: 1800 } };
 }
 export function publicWorkspace(workspace, storage, durableAutonomy = false) {
-  return { version: 2, salesJourneyVersion: 2, liveFactory:publicLive(workspace), affiliates:publicAffiliates(workspace), etsy:publicEtsy(workspace), factories: publicFactories(workspace, publicExperiments(workspace)), aiCosts: publicCosts(workspace), knowledge: publicKnowledge(workspace), experiments: publicExperiments(workspace), engineering: publicEngineering(workspace), strategy: businessStrategy, marketing: publicMarketing(workspace), shop: publicShop(workspace), commerce: publicCommerce(workspace), autonomy: { projects: (workspace.autonomy?.projects || []).map(p=>({...p,commercialSummary:firstSaleSummary(workspace,p)})), enabled: Boolean(workspace.autonomy?.enabled), durable: durableAutonomy }, agents: workspace.agents, missions: workspace.missions.map(({ artifact, videoImages, execution, executionHistory, revisions, ...mission }) => ({ ...mission, videoImageCount: videoImages?.length || 0, completedSteps: execution?.checkpoints?.length || 0, reviewVersions: (revisions || []).map(r => ({ id:r.id, at:r.at, feedback:r.feedback, components:r.components })), reviewComponents: mission.kind === 'sprites' && execution?.checkpoints?.filter(c => c.kind === 'image').length === 4 ? [1,2,3,4].map(i => `sprites/object-${i}.png`) : [], releaseVersion: releaseVersion({ ...mission, artifact }), factoryId: missionFactoryId(workspace, mission), hasArtifact: Boolean(artifact), hasPreview: Boolean(artifact?.preview), artifactMime: artifact?.mime, artifactFilename: artifact?.filename })), settings: { model: workspace.settings.model, workerModel: workspace.settings.workerModel || 'gpt-4.1-mini', decisionModel: workspace.settings.decisionModel || 'gpt-4.1-mini', modelCatalog, availableModels: workspace.settings.availableModels || [], modelsCheckedAt: workspace.settings.modelsCheckedAt, imageModel: workspace.settings.imageModel, maxOutputTokens: workspace.settings.maxOutputTokens, configured: Boolean(workspace.secret) }, storage };
+  return { creativeCampaigns:workspace.creativeCampaigns||[], creativeDirector:creativeState(workspace), version: 2, salesJourneyVersion: 2, voiceStudio:voiceStudioState(workspace),liveFactory:publicLive(workspace), affiliates:publicAffiliates(workspace), etsy:publicEtsy(workspace), factories: publicFactories(workspace, publicExperiments(workspace)), aiCosts: publicCosts(workspace), knowledge: publicKnowledge(workspace), experiments: publicExperiments(workspace), engineering: publicEngineering(workspace), strategy: businessStrategy, marketing: publicMarketing(workspace), shop: publicShop(workspace), commerce: publicCommerce(workspace), autonomy: { projects: (workspace.autonomy?.projects || []).map(p=>({...p,commercialSummary:firstSaleSummary(workspace,p)})), enabled: Boolean(workspace.autonomy?.enabled), durable: durableAutonomy }, agents: workspace.agents, missions: workspace.missions.map(({ artifact, videoImages, execution, executionHistory, revisions, ...mission }) => ({ ...mission, videoImageCount: videoImages?.length || 0, completedSteps: execution?.checkpoints?.length || 0, reviewVersions: (revisions || []).map(r => ({ id:r.id, at:r.at, feedback:r.feedback, components:r.components })), reviewComponents: mission.kind === 'sprites' && execution?.checkpoints?.filter(c => c.kind === 'image').length === 4 ? [1,2,3,4].map(i => `sprites/object-${i}.png`) : [], releaseVersion: releaseVersion({ ...mission, artifact }), factoryId: missionFactoryId(workspace, mission), hasArtifact: Boolean(artifact), hasPreview: Boolean(artifact?.preview), artifactMime: artifact?.mime, artifactFilename: artifact?.filename })), settings: { model: workspace.settings.model, workerModel: workspace.settings.workerModel || 'gpt-4.1-mini', decisionModel: workspace.settings.decisionModel || 'gpt-4.1-mini', modelCatalog, availableModels: workspace.settings.availableModels || [], modelsCheckedAt: workspace.settings.modelsCheckedAt, imageModel: workspace.settings.imageModel, maxOutputTokens: workspace.settings.maxOutputTokens, configured: Boolean(workspace.secret) }, storage };
 }
 export function text(value, name, max) {
   if (typeof value !== 'string' || !value.trim() || value.trim().length > max) throw new AppError(`${name}: informe de 1 a ${max} caracteres.`);
@@ -60,7 +63,7 @@ export function addMission(workspace, body) {
   if (!workspace.agents.some(agent => agent.id === body.agentId && agent.enabled)) throw new AppError('Escolha um agente disponível.');
   if (!['text', 'image', 'thumbnail', 'sprites', 'model3d', 'video'].includes(body.kind)) throw new AppError('Tipo de entrega inválido.');
   const mission = { id: randomUUID(), title: text(body.title, 'Título', 100), brief: text(body.brief, 'Briefing', 6000), agentId: body.agentId, kind: body.kind, status: 'draft', output: '', error: '', phase: 'Pronta para executar', createdAt: new Date().toISOString(), events: [], tokens: 0, images: 0, attempt: 0 };
-  if (body.kind === 'video') { try { if(body.liveShort){mission.liveShort=shortConfig(body.liveShort);mission.storyboard=shortStoryboard(mission.liveShort);}else videoScenes(mission.brief); } catch(e) { throw new AppError(e.message); } }
+  if (body.kind === 'video') { try { if(body.liveShort){mission.liveShort=shortConfig({...body.liveShort,voiceProfile:activeVoice(workspace)});mission.storyboard=shortStoryboard(mission.liveShort);}else videoScenes(mission.brief); } catch(e) { throw new AppError(e.message); } }
   if (body.factoryId) { requireFactoryProduction(workspace, body.factoryId, body.kind); mission.factoryId = body.factoryId; }
   workspace.missions.unshift(mission);
   return mission;
@@ -72,7 +75,9 @@ export function missionById(workspace, id) {
 }
 export function queueMission(workspace, id) {
   const mission = missionById(workspace, id);
-  if (!workspace.secret && mission.kind !== 'video') throw new AppError('Conecte sua chave da OpenAI primeiro.');
+  if(mission.campaignId && workspace.creativeCampaigns?.some(c=>c.id===mission.campaignId&&['Failed','Cancelled','ReadyForReview'].includes(c.state)))throw new AppError('Retome pela campanha, respeitando os limites.',409);
+  if((mission.creativeExperimentId||mission.creativeRequest) && workspace.creativeDirector?.paused)throw new AppError('Produção criativa pausada.',409);
+  if (!workspace.secret && mission.kind !== 'video' && !mission.campaignId) throw new AppError('Conecte sua chave da OpenAI primeiro.');
   if (!['draft', 'failed', 'cancelled'].includes(mission.status)) throw new AppError('Esta missão já foi executada ou está em andamento.', 409);
   if (!workspace.agents.some(agent => agent.id === mission.agentId && agent.enabled)) throw new AppError('Reative o agente antes de executar.');
   if (workspace.missions.filter(item => ['queued', 'running'].includes(item.status)).length >= 5) throw new AppError('Aguarde as missões atuais: o limite é cinco na fila.');
@@ -85,6 +90,8 @@ export function queueMission(workspace, id) {
 export function approveMission(workspace, id, body = {}) {
   const mission = missionById(workspace, id);
   if (mission.status !== 'review') throw new AppError('Somente entregas em revisão podem ser aprovadas.', 409);
+  if(mission.motionStory && !mission.videoReport?.artisticEligibility?.eligible)throw new AppError('Microconto exige voz neural válida e revisão audiovisual.',409);
+  if (mission.liveShort) {const gate=audiovisualEligibility(mission.videoReport);if(!gate.eligible)throw new AppError('Aprovação audiovisual bloqueada: '+gate.reasons.join(' '),409);}
   if (mission.qualityReview && mission.qualityReview.decision !== 'APPROVE') {
     if (body.override !== true || body.version !== releaseVersion(mission)) throw new AppError('Sentinel não aprovou a qualidade. Corrija os objetos ou justifique uma revisão humana explícita da versão atual.', 409);
     const reason = text(body.reason, 'Justificativa da revisão humana', 2000);

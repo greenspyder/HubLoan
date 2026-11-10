@@ -1,0 +1,2 @@
+NEW RENDER, provisional Chatterbox Heart, verified archived takes champion
+champion 95947 { checked: 300, corrected: 300, issues: {}, failures: [] } { eligible: true, reasons: [], humanReviewRequired: true }

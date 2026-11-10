@@ -1,0 +1,13 @@
+✔ short formats enforce duration, bounded scripts and original character selection (1.072824ms)
+✔ short production uses existing mission queue, isolates agents and fingerprints configuration (1.326376ms)
+✔ highlights reflect reproducible observed transitions (435.909703ms)
+✔ timeline cuts and slow replay retain source evidence and do not mutate game (226.189388ms)
+✔ caption blocks are bounded, ordered and non-overlapping (0.383928ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 887.74445

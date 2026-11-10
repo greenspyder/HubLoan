@@ -1,0 +1,2 @@
+NEW RENDER, provisional Chatterbox Heart, verified archived takes comedy
+comedy 83609 { checked: 270, corrected: 270, issues: {}, failures: [] } { eligible: true, reasons: [], humanReviewRequired: true }

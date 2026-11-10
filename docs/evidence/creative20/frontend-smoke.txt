@@ -1,0 +1,2 @@
+PASS: newly rendered MP4 fetched through authenticated artifact route and decoded in existing frontend.
+PASS: existing /agentes/viral creates and reloads five persisted proposals, labels evidence and local generator, blocks unsupported production.

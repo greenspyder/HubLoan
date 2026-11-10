@@ -1,0 +1,1506 @@
+TAP version 13
+# Subtest: affiliate campaign renders and prepares third-party publication with NO shop, Stripe or AI key
+ok 1 - affiliate campaign renders and prepares third-party publication with NO shop, Stripe or AI key
+  ---
+  duration_ms: 4795.612913
+  type: 'test'
+  ...
+# Subtest: affiliate evidence, zero paid budget and input bounds fail closed; legacy projections survive
+ok 2 - affiliate evidence, zero paid budget and input bounds fail closed; legacy projections survive
+  ---
+  duration_ms: 7.25669
+  type: 'test'
+  ...
+# Subtest: failed affiliate render resumes same checkpoints without discarding images or history
+ok 3 - failed affiliate render resumes same checkpoints without discarding images or history
+  ---
+  duration_ms: 2494.780409
+  type: 'test'
+  ...
+# Subtest: provider key encryption cannot be read using another workspace token
+ok 4 - provider key encryption cannot be read using another workspace token
+  ---
+  duration_ms: 7.359192
+  type: 'test'
+  ...
+# Subtest: queue validation, retry accounting and interrupted execution recovery
+ok 5 - queue validation, retry accounting and interrupted execution recovery
+  ---
+  duration_ms: 1.712799
+  type: 'test'
+  ...
+# Subtest: SQLite persists data across restart and concurrent writes retain both changes
+ok 6 - SQLite persists data across restart and concurrent writes retain both changes
+  ---
+  duration_ms: 18.449647
+  type: 'test'
+  ...
+# Subtest: API runs real workflow through injected provider, isolates users and requires human approval
+ok 7 - API runs real workflow through injected provider, isolates users and requires human approval
+  ---
+  duration_ms: 73.992909
+  type: 'test'
+  ...
+# Subtest: read-only endpoints do not unlock workers and idle workspaces leave the poll loop
+ok 8 - read-only endpoints do not unlock workers and idle workspaces leave the poll loop
+  ---
+  duration_ms: 0.439154
+  type: 'test'
+  ...
+# Subtest: image bytes are protected and downloaded separately from public mission history
+ok 9 - image bytes are protected and downloaded separately from public mission history
+  ---
+  duration_ms: 25.400342
+  type: 'test'
+  ...
+# Subtest: cancel aborts provider request and never resurrects a cancelled mission
+ok 10 - cancel aborts provider request and never resurrects a cancelled mission
+  ---
+  duration_ms: 17.190754
+  type: 'test'
+  ...
+# Subtest: provider failure is visible without exposing raw secrets; disconnected queue cannot run
+ok 11 - provider failure is visible without exposing raw secrets; disconnected queue cannot run
+  ---
+  duration_ms: 17.013591
+  type: 'test'
+  ...
+# Subtest: Responses API payload and parsing handle actual output structure and token truncation
+ok 12 - Responses API payload and parsing handle actual output structure and token truncation
+  ---
+  duration_ms: 2.765065
+  type: 'test'
+  ...
+# Subtest: blocks before send, retains uncertain reservations and caches successful text
+ok 13 - blocks before send, retains uncertain reservations and caches successful text
+  ---
+  duration_ms: 4.386879
+  type: 'test'
+  ...
+# Subtest: shared WebGL spine stays inside every skull through turns, elimination and replay
+ok 14 - shared WebGL spine stays inside every skull through turns, elimination and replay
+  ---
+  duration_ms: 3537.4305
+  type: 'test'
+  ...
+# Subtest: all archetypes retain their transformed neck socket in tight turns and slow replay
+ok 15 - all archetypes retain their transformed neck socket in tight turns and slow replay
+  ---
+  duration_ms: 3038.393958
+  type: 'test'
+  ...
+# Subtest: grant can resume unattended work after process restart without receiving access token again
+ok 16 - grant can resume unattended work after process restart without receiving access token again
+  ---
+  duration_ms: 34.699911
+  type: 'test'
+  ...
+# Subtest: coordinator produces different tasks, honors interval and stops at delivery cap
+ok 17 - coordinator produces different tasks, honors interval and stops at delivery cap
+  ---
+  duration_ms: 26.560898
+  type: 'test'
+  ...
+# Subtest: pausing stops new coordination; cancellation stops project and requires explicit recovery
+ok 18 - pausing stops new coordination; cancellation stops project and requires explicit recovery
+  ---
+  duration_ms: 3.689741
+  type: 'test'
+  ...
+# Subtest: invalid planner output pauses instead of retrying and records completed call usage
+ok 19 - invalid planner output pauses instead of retrying and records completed call usage
+  ---
+  duration_ms: 2.818224
+  type: 'test'
+  ...
+# Subtest: web research happens once and keeps actual tool sources separate from generated task
+ok 20 - web research happens once and keeps actual tool sources separate from generated task
+  ---
+  duration_ms: 20.263151
+  type: 'test'
+  ...
+# Subtest: expiry pauses future work and creation validates execution volume and durable grant support
+ok 21 - expiry pauses future work and creation validates execution volume and durable grant support
+  ---
+  duration_ms: 1.434204
+  type: 'test'
+  ...
+# Subtest: local key persists and server derivation requires secret credentials
+ok 22 - local key persists and server derivation requires secret credentials
+  ---
+  duration_ms: 8.594601
+  type: 'test'
+  ...
+# Subtest: project API protects grants, validates authorization and isolates different workspaces
+ok 23 - project API protects grants, validates authorization and isolates different workspaces
+  ---
+  duration_ms: 48.08497
+  type: 'test'
+  ...
+# Subtest: hosted web search requests a tool and only exposes actual HTTP citation annotations
+ok 24 - hosted web search requests a tool and only exposes actual HTTP citation annotations
+  ---
+  duration_ms: 1.480473
+  type: 'test'
+  ...
+# Subtest: global camera path avoids a locally attractive dead end
+ok 25 - global camera path avoids a locally attractive dead end
+  ---
+  duration_ms: 1.656235
+  type: 'test'
+  ...
+# Subtest: unreachable or missing safe views fail closed without inventing cuts
+ok 26 - unreachable or missing safe views fail closed without inventing cuts
+  ---
+  duration_ms: 0.506654
+  type: 'test'
+  ...
+# Subtest: only existing scene cuts may disconnect a camera path
+ok 27 - only existing scene cuts may disconnect a camera path
+  ---
+  duration_ms: 0.163143
+  type: 'test'
+  ...
+# Subtest: rotation discontinuity is rejected even when position stays fixed
+ok 28 - rotation discontinuity is rejected even when position stays fixed
+  ---
+  duration_ms: 0.290272
+  type: 'test'
+  ...
+# Subtest: catalog aggregates real page values without buyer data, currency conversion or invented profit
+ok 29 - catalog aggregates real page values without buyer data, currency conversion or invented profit
+  ---
+  duration_ms: 3.064471
+  type: 'test'
+  ...
+# Subtest: store key/grant stay encrypted, destinations must belong to account, download upload is tenant isolated and duplicate-safe
+ok 30 - store key/grant stay encrypted, destinations must belong to account, download upload is tenant isolated and duplicate-safe
+  ---
+  duration_ms: 75.7417
+  type: 'test'
+  ...
+# Subtest: failed or interrupted upload pauses automatic publishing, reserves attempts, hides provider errors and never retries itself
+ok 31 - failed or interrupted upload pauses automatic publishing, reserves attempts, hides provider errors and never retries itself
+  ---
+  duration_ms: 24.865035
+  type: 'test'
+  ...
+# Subtest: background metrics resume after worker restart without browser token; disconnect and expiration stop requests
+ok 32 - background metrics resume after worker restart without browser token; disconnect and expiration stop requests
+  ---
+  duration_ms: 12.509978
+  type: 'test'
+  ...
+# Subtest: butler launch uses fixed binary, argument array, private temporary files, minimal environment and redacted output
+ok 33 - butler launch uses fixed binary, argument array, private temporary files, minimal environment and redacted output
+  ---
+  duration_ms: 4.974884
+  type: 'test'
+  ...
+# Subtest: readiness and specific releases are workspace isolated; review never uploads and reconnect resets declarations
+ok 34 - readiness and specific releases are workspace isolated; review never uploads and reconnect resets declarations
+  ---
+  duration_ms: 21.705062
+  type: 'test'
+  ...
+# Subtest: authorized upload can target an owned draft without claiming public visibility or payment readiness
+ok 35 - authorized upload can target an owned draft without claiming public visibility or payment readiness
+  ---
+  duration_ms: 10.547477
+  type: 'test'
+  ...
+# Subtest: external snapshots never become verified Stripe payments, replacement invalidates review and preserves unknown values
+ok 36 - external snapshots never become verified Stripe payments, replacement invalidates review and preserves unknown values
+  ---
+  duration_ms: 7.648753
+  type: 'test'
+  ...
+# Subtest: cost routing uses configured principal only for economic coordination and keeps reservations and usage distinct
+ok 37 - cost routing uses configured principal only for economic coordination and keeps reservations and usage distinct
+  ---
+  duration_ms: 2.270609
+  type: 'test'
+  ...
+# Subtest: reasoning request preserves policy and bounded output while worker disables unnecessary reasoning
+ok 38 - reasoning request preserves policy and bounded output while worker disables unnecessary reasoning
+  ---
+  duration_ms: 4.14599
+  type: 'test'
+  ...
+# Subtest: factory entry creates one validation plan, rejects incompatible channels and consumes no production
+ok 39 - factory entry creates one validation plan, rejects incompatible channels and consumes no production
+  ---
+  duration_ms: 0.772509
+  type: 'test'
+  ...
+# Subtest: publication report is not revenue and URLs cannot duplicate or migrate observed offers
+ok 40 - publication report is not revenue and URLs cannot duplicate or migrate observed offers
+  ---
+  duration_ms: 3.604344
+  type: 'test'
+  ...
+# Subtest: manual proposal reserves three calls, separates review from tests and isolates credentials/tenants
+ok 41 - manual proposal reserves three calls, separates review from tests and isolates credentials/tenants
+  ---
+  duration_ms: 79.538771
+  type: 'test'
+  ...
+# Subtest: rejected reviewer never publishes; model failures never repeat automatically
+ok 42 - rejected reviewer never publishes; model failures never repeat automatically
+  ---
+  duration_ms: 23.111985
+  type: 'test'
+  ...
+# Subtest: uncertain GitHub operation permanently blocks renewal and automatic retries
+ok 43 - uncertain GitHub operation permanently blocks renewal and automatic retries
+  ---
+  duration_ms: 17.196362
+  type: 'test'
+  ...
+# Subtest: pause revokes queued proposals and requires new authorization
+ok 44 - pause revokes queued proposals and requires new authorization
+  ---
+  duration_ms: 12.615935
+  type: 'test'
+  ...
+# Subtest: crashed running proposal recovers without resend; missing keys and protected tasks rejected
+ok 45 - crashed running proposal recovers without resend; missing keys and protected tasks rejected
+  ---
+  duration_ms: 14.147034
+  type: 'test'
+  ...
+# Subtest: patch validation rejects protected paths, new network/storage/secrets, ambiguous replacements and no-op
+ok 46 - patch validation rejects protected paths, new network/storage/secrets, ambiguous replacements and no-op
+  ---
+  duration_ms: 0.95375
+  type: 'test'
+  ...
+# Subtest: GitHub publication preserves tree and creates only a draft PR branch; changed base blocks writes
+ok 47 - GitHub publication preserves tree and creates only a draft PR branch; changed base blocks writes
+  ---
+  duration_ms: 3.413219
+  type: 'test'
+  ...
+# Subtest: CI requires actual GitHub Actions workflow and exact head, never an unrelated green check
+ok 48 - CI requires actual GitHub Actions workflow and exact head, never an unrelated green check
+  ---
+  duration_ms: 1.593882
+  type: 'test'
+  ...
+# Subtest: uncertain acknowledgement permits other tasks without resending original
+ok 49 - uncertain acknowledgement permits other tasks without resending original
+  ---
+  duration_ms: 24.322257
+  type: 'test'
+  ...
+# Subtest: encrypted GitHub grant and queued proposal survive durable restart
+ok 50 - encrypted GitHub grant and queued proposal survive durable restart
+  ---
+  duration_ms: 7.430638
+  type: 'test'
+  ...
+# Subtest: owner approval is explicit, bound to both SHAs, isolated and single use under concurrency
+ok 51 - owner approval is explicit, bound to both SHAs, isolated and single use under concurrency
+  ---
+  duration_ms: 28.4564
+  type: 'test'
+  ...
+# Subtest: failed CI never records approval; ambiguous merge is reconciled read-only without repeat
+ok 52 - failed CI never records approval; ambiguous merge is reconciled read-only without repeat
+  ---
+  duration_ms: 28.385234
+  type: 'test'
+  ...
+# Subtest: GitHub merge revalidates exact files, commits and CI before ready/merge with SHA guard
+ok 53 - GitHub merge revalidates exact files, commits and CI before ready/merge with SHA guard
+  ---
+  duration_ms: 4.923928
+  type: 'test'
+  ...
+# Subtest: OAuth PKCE state is single-use; secrets encrypted and excluded from workspace response
+ok 54 - OAuth PKCE state is single-use; secrets encrypted and excluded from workspace response
+  ---
+  duration_ms: 13.899486
+  type: 'test'
+  ...
+# Subtest: Etsy requires authorization and exact approvals; publishes one listing with auto renew off
+ok 55 - Etsy requires authorization and exact approvals; publishes one listing with auto renew off
+  ---
+  duration_ms: 6.063604
+  type: 'test'
+  ...
+# Subtest: uncertain upload cannot be repeated; state reconciles via official API and errors redacted
+ok 56 - uncertain upload cannot be repeated; state reconciles via official API and errors redacted
+  ---
+  duration_ms: 5.165066
+  type: 'test'
+  ...
+# Subtest: Etsy period sync deduplicates and replaces totals; mixed/refunded/foreign orders require reconciliation
+ok 57 - Etsy period sync deduplicates and replaces totals; mixed/refunded/foreign orders require reconciliation
+  ---
+  duration_ms: 8.905223
+  type: 'test'
+  ...
+# Subtest: fixed official API origin, credential headers, rate-limit redaction and no retry
+ok 58 - fixed official API origin, credential headers, rate-limit redaction and no retry
+  ---
+  duration_ms: 2.678136
+  type: 'test'
+  ...
+# Subtest: changing reviewed sample/preview or stale evidence blocks before any Etsy creation
+ok 59 - changing reviewed sample/preview or stale evidence blocks before any Etsy creation
+  ---
+  duration_ms: 4.84411
+  type: 'test'
+  ...
+# Subtest: money is calculated in cents from real in-window payments, with refunds and disputes; test and unrelated sales are excluded
+ok 60 - money is calculated in cents from real in-window payments, with refunds and disputes; test and unrelated sales are excluded
+  ---
+  duration_ms: 5.91314
+  type: 'test'
+  ...
+# Subtest: zero-cost review is explicit; fresh production, costs and payments invalidate it, and budget/expiry recommend stopping without claiming enforced spend caps
+ok 61 - zero-cost review is explicit; fresh production, costs and payments invalidate it, and budget/expiry recommend stopping without claiming enforced spend caps
+  ---
+  duration_ms: 3.748068
+  type: 'test'
+  ...
+# Subtest: validation prevents foreign missions, duplicate attribution, private kits, fractional money and invalid costs; linking and closure are explicit
+ok 62 - validation prevents foreign missions, duplicate attribution, private kits, fractional money and invalid costs; linking and closure are explicit
+  ---
+  duration_ms: 0.940319
+  type: 'test'
+  ...
+# Live runtime: shutdown sem persistência; heartbeat expirará.
+# Subtest: API isolates experiment ledgers, requires owner auth and persists them across store restart
+ok 63 - API isolates experiment ledgers, requires owner auth and persists them across store restart
+  ---
+  duration_ms: 80.247842
+  type: 'test'
+  ...
+# Subtest: legacy missions route by format while private preparation is excluded
+ok 64 - legacy missions route by format while private preparation is excluded
+  ---
+  duration_ms: 6.718038
+  type: 'test'
+  ...
+# Subtest: factory ownership follows projects into tasks and unsupported capabilities cannot execute
+ok 65 - factory ownership follows projects into tasks and unsupported capabilities cannot execute
+  ---
+  duration_ms: 4.795848
+  type: 'test'
+  ...
+# Subtest: financial totals exclude mixed tests and shared discovery, with unknown profit before cost review
+ok 66 - financial totals exclude mixed tests and shared discovery, with unknown profit before cost review
+  ---
+  duration_ms: 4.305688
+  type: 'test'
+  ...
+# Subtest: runner sends factory responsibilities to coordinator, producer and reviewer
+ok 67 - runner sends factory responsibilities to coordinator, producer and reviewer
+  ---
+  duration_ms: 19.699898
+  type: 'test'
+  ...
+# Subtest: factory API persists without execution and requires authentication
+ok 68 - factory API persists without execution and requires authentication
+  ---
+  duration_ms: 44.239669
+  type: 'test'
+  ...
+# Subtest: project budget covers planning, linked experiment calls, missions, retries and uncertain charges
+ok 69 - project budget covers planning, linked experiment calls, missions, retries and uncertain charges
+  ---
+  duration_ms: 3.254424
+  type: 'test'
+  ...
+# Subtest: legacy projects remain readable, invalid budgets rejected and discovery cannot blindly rerun
+ok 70 - legacy projects remain readable, invalid budgets rejected and discovery cannot blindly rerun
+  ---
+  duration_ms: 0.650588
+  type: 'test'
+  ...
+# Subtest: itch readiness cannot be inferred from API, Stripe live, tax interview or historical revenue
+ok 71 - itch readiness cannot be inferred from API, Stripe live, tax interview or historical revenue
+  ---
+  duration_ms: 0.380857
+  type: 'test'
+  ...
+# Subtest: itch authorization binds approved bytes, target, license, price and expiry; review is never enough
+ok 72 - itch authorization binds approved bytes, target, license, price and expiry; review is never enough
+  ---
+  duration_ms: 1.707351
+  type: 'test'
+  ...
+# Subtest: project linkage survives first-sale sample creation and keeps evidence provenance without paid production
+ok 73 - project linkage survives first-sale sample creation and keeps evidence provenance without paid production
+  ---
+  duration_ms: 1.244021
+  type: 'test'
+  ...
+# Subtest: concurrent paid calls cannot both consume the remaining project exposure
+ok 74 - concurrent paid calls cannot both consume the remaining project exposure
+  ---
+  duration_ms: 6.031076
+  type: 'test'
+  ...
+# Subtest: memory captures hypotheses with provenance once and excludes raw report, revenue and secret URLs
+ok 75 - memory captures hypotheses with provenance once and excludes raw report, revenue and secret URLs
+  ---
+  duration_ms: 3.401452
+  type: 'test'
+  ...
+# Subtest: retrieval chooses relevant bounded notes and treats malicious references only as data
+ok 76 - retrieval chooses relevant bounded notes and treats malicious references only as data
+  ---
+  duration_ms: 12.764587
+  type: 'test'
+  ...
+# Subtest: seed vault uses Markdown and Obsidian links; existing references are never overwritten
+ok 77 - seed vault uses Markdown and Obsidian links; existing references are never overwritten
+  ---
+  duration_ms: 0.644149
+  type: 'test'
+  ...
+# Subtest: provider restricts import paths and never reads secrets or program files
+ok 78 - provider restricts import paths and never reads secrets or program files
+  ---
+  duration_ms: 0.90682
+  type: 'test'
+  ...
+# Subtest: public writes are idempotent, refuse changed owner files and reject arbitrary paths
+ok 79 - public writes are idempotent, refuse changed owner files and reject arbitrary paths
+  ---
+  duration_ms: 2.144372
+  type: 'test'
+  ...
+# Subtest: explicit separate consent gates writes; credentials hidden, failures pause without retry
+ok 80 - explicit separate consent gates writes; credentials hidden, failures pause without retry
+  ---
+  duration_ms: 6.024085
+  type: 'test'
+  ...
+# Subtest: expired and exhausted grants collect local memory but cannot publish
+ok 81 - expired and exhausted grants collect local memory but cannot publish
+  ---
+  duration_ms: 2.257209
+  type: 'test'
+  ...
+# Subtest: empty Git tree is a valid vault with no references, not a permission error
+ok 82 - empty Git tree is a valid vault with no references, not a permission error
+  ---
+  duration_ms: 1.04166
+  type: 'test'
+  ...
+# Subtest: autonomous presentation comments on real results, respects cooldown, never fills audience
+ok 83 - autonomous presentation comments on real results, respects cooldown, never fills audience
+  ---
+  duration_ms: 119.386484
+  type: 'test'
+  ...
+# Subtest: neural unavailable falls back locally, rejects unsafe input and cancels
+ok 84 - neural unavailable falls back locally, rejects unsafe input and cancels
+  ---
+  duration_ms: 9.183667
+  type: 'test'
+  ...
+# Subtest: real neural pt-BR synthesis, bounded PCM and model reuse
+ok 85 - real neural pt-BR synthesis, bounded PCM and model reuse # SKIP
+  ---
+  duration_ms: 0.176993
+  type: 'test'
+  ...
+# Subtest: real WebGL frames, camera, PCM mouth, game immutable, avatars, bounded geometry and cleanup
+ok 86 - real WebGL frames, camera, PCM mouth, game immutable, avatars, bounded geometry and cleanup
+  ---
+  duration_ms: 5939.110154
+  type: 'test'
+  ...
+# Subtest: offline preflight transports safe views and final rendering rechecks the selected pose
+ok 87 - offline preflight transports safe views and final rendering rechecks the selected pose
+  ---
+  duration_ms: 1231.761246
+  type: 'test'
+  ...
+# Subtest: rig keeps head visible through turns, growth and target loss without changing physics
+ok 88 - rig keeps head visible through turns, growth and target loss without changing physics
+  ---
+  duration_ms: 405.047453
+  type: 'test'
+  ...
+# Subtest: director uses contextual shots, stable holds, leader choice and session reset
+ok 89 - director uses contextual shots, stable holds, leader choice and session reset
+  ---
+  duration_ms: 193.960705
+  type: 'test'
+  ...
+# Subtest: rapid compass turns keep camera travel bounded
+ok 90 - rapid compass turns keep camera travel bounded
+  ---
+  duration_ms: 8.675834
+  type: 'test'
+  ...
+# Subtest: Top6 binds stable identities only at round boundary; rank changes never reset live physics
+ok 91 - Top6 binds stable identities only at round boundary; rank changes never reset live physics
+  ---
+  duration_ms: 448.135254
+  type: 'test'
+  ...
+# Subtest: two/four/six deterministic competitors have safe spawns and sustained complete rounds
+ok 92 - two/four/six deterministic competitors have safe spawns and sustained complete rounds
+  ---
+  duration_ms: 1058.142847
+  type: 'test'
+  ...
+# Subtest: gifts/rank metadata cannot change scores or commands; identity is isolated by game/session
+ok 93 - gifts/rank metadata cannot change scores or commands; identity is isolated by game/session
+  ---
+  duration_ms: 0.879809
+  type: 'test'
+  ...
+# Subtest: runtime associates deduplicated gifts with actors and rejects foreign sessions
+ok 94 - runtime associates deduplicated gifts with actors and rejects foreign sessions
+  ---
+  duration_ms: 72.954203
+  type: 'test'
+  ...
+# Subtest: three distinct original silhouettes, bounded reusable geometry and audio driven jaw
+ok 95 - three distinct original silhouettes, bounded reusable geometry and audio driven jaw
+  ---
+  duration_ms: 16.418855
+  type: 'test'
+  ...
+# Subtest: establishing view yields to immersion without random cuts or invented social events
+ok 96 - establishing view yields to immersion without random cuts or invented social events
+  ---
+  duration_ms: 293.209626
+  type: 'test'
+  ...
+# Subtest: occlusion correction checks body in front of face without hiding it or changing physics
+ok 97 - occlusion correction checks body in front of face without hiding it or changing physics
+  ---
+  duration_ms: 2.801299
+  type: 'test'
+  ...
+# Subtest: expressions blend, keep distinct poses, and preserve audio-envelope disclosure
+ok 98 - expressions blend, keep distinct poses, and preserve audio-envelope disclosure
+  ---
+  duration_ms: 10.570751
+  type: 'test'
+  ...
+# Subtest: expanded contextual repertoire avoids repetition until category exhaustion
+ok 99 - expanded contextual repertoire avoids repetition until category exhaustion
+  ---
+  duration_ms: 0.47688
+  type: 'test'
+  ...
+# Subtest: director uses actual state, bounds cuts, priorities, recovery and resets sessions without changing physics
+ok 100 - director uses actual state, bounds cuts, priorities, recovery and resets sessions without changing physics
+  ---
+  duration_ms: 1.768592
+  type: 'test'
+  ...
+# Subtest: special apples are optional, deterministic, shared and increase score and growth; invalid config rejected
+ok 101 - special apples are optional, deterministic, shared and increase score and growth; invalid config rejected
+  ---
+  duration_ms: 327.187463
+  type: 'test'
+  ...
+# Subtest: two minutes of autonomous direction has multiple modes, bounded cue counts and no long freeze
+ok 102 - two minutes of autonomous direction has multiple modes, bounded cue counts and no long freeze
+  ---
+  duration_ms: 174.084469
+  type: 'test'
+  ...
+# Subtest: director supports non-game experiences and detects only an actual turn beside a rock
+ok 103 - director supports non-game experiences and detects only an actual turn beside a rock
+  ---
+  duration_ms: 0.424772
+  type: 'test'
+  ...
+# Subtest: risk cue reaches existing PCM mixer at media time, with limiter and silence on pause
+ok 104 - risk cue reaches existing PCM mixer at media time, with limiter and silence on pause
+  ---
+  duration_ms: 12.332203
+  type: 'test'
+  ...
+# Subtest: prepared reply bypasses blocked dynamic synthesis; first effect, speech and completion measured separately
+ok 105 - prepared reply bypasses blocked dynamic synthesis; first effect, speech and completion measured separately
+  ---
+  duration_ms: 17.458273
+  type: 'test'
+  ...
+# Subtest: no audience: sparse contextual autonomy never changes physics or creates gifts
+ok 106 - no audience: sparse contextual autonomy never changes physics or creates gifts
+  ---
+  duration_ms: 425.780513
+  type: 'test'
+  ...
+# Subtest: gift reply precedes music, grouping and warmup limits preserved
+ok 107 - gift reply precedes music, grouping and warmup limits preserved
+  ---
+  duration_ms: 1.085616
+  type: 'test'
+  ...
+# Subtest: warmup failure does not stop media; emergency mutes everything
+ok 108 - warmup failure does not stop media; emergency mutes everything
+  ---
+  duration_ms: 3.542472
+  type: 'test'
+  ...
+# Subtest: heartbeat telemetry excludes local speech journal and fits unchanged 2048-byte body limit
+ok 109 - heartbeat telemetry excludes local speech journal and fits unchanged 2048-byte body limit
+  ---
+  duration_ms: 0.62444
+  type: 'test'
+  ...
+# Subtest: CPU profile is optional; light and HD remain unchanged
+ok 110 - CPU profile is optional; light and HD remain unchanged
+  ---
+  duration_ms: 0.197303
+  type: 'test'
+  ...
+# Subtest: live deterministic controls, dedup, expiry, bounds, isolation from paid autonomy and economics
+ok 111 - live deterministic controls, dedup, expiry, bounds, isolation from paid autonomy and economics
+  ---
+  duration_ms: 5.267569
+  type: 'test'
+  ...
+# Subtest: persistent scheduler progresses without HTTP or frontend, survives restart safely, prevents competing executors
+ok 112 - persistent scheduler progresses without HTTP or frontend, survives restart safely, prevents competing executors
+  ---
+  duration_ms: 352.945983
+  type: 'test'
+  ...
+# Subtest: authenticated HTTP journey: create, start, event, reaction, pause, resume, stop; second workspace cannot control it
+ok 113 - authenticated HTTP journey: create, start, event, reaction, pause, resume, stop; second workspace cannot control it
+  ---
+  duration_ms: 74.024737
+  type: 'test'
+  ...
+# Subtest: stale queues expire, heartbeat loss degrades, timeout ends, old sessions cannot replay
+ok 114 - stale queues expire, heartbeat loss degrades, timeout ends, old sessions cannot replay
+  ---
+  duration_ms: 0.74568
+  type: 'test'
+  ...
+# Subtest: flow A: configure -> save -> test event -> configured reaction/log -> reopen persisted workspace
+ok 115 - flow A: configure -> save -> test event -> configured reaction/log -> reopen persisted workspace
+  ---
+  duration_ms: 35.692938
+  type: 'test'
+  ...
+# Subtest: creative proposals are bounded, explicit, version-bound, no automatic mutation; malformed rules rejected
+ok 116 - creative proposals are bounded, explicit, version-bound, no automatic mutation; malformed rules rejected
+  ---
+  duration_ms: 1.161899
+  type: 'test'
+  ...
+# Subtest: Lume: varied contextual repertoire, bounded memory and occasional double meaning
+ok 117 - Lume: varied contextual repertoire, bounded memory and occasional double meaning
+  ---
+  duration_ms: 1.911285
+  type: 'test'
+  ...
+# Subtest: Lume: cache keys preserve delivery, state isolated per session and queue remains bounded
+ok 118 - Lume: cache keys preserve delivery, state isolated per session and queue remains bounded
+  ---
+  duration_ms: 1.780801
+  type: 'test'
+  ...
+# Subtest: approved jingle receives one contextual reply; grouped roses do not add speech
+ok 119 - approved jingle receives one contextual reply; grouped roses do not add speech
+  ---
+  duration_ms: 1.043122
+  type: 'test'
+  ...
+# Subtest: exhausted contextual categories never repeat the immediately preceding line
+ok 120 - exhausted contextual categories never repeat the immediately preceding line
+  ---
+  duration_ms: 1.431912
+  type: 'test'
+  ...
+# Subtest: repertoire validates files, rights, approval hash, versions, limit and rotation/grouping
+ok 121 - repertoire validates files, rights, approval hash, versions, limit and rotation/grouping
+  ---
+  duration_ms: 109.570813
+  type: 'test'
+  ...
+# Subtest: same mixer plays imported ambient and prioritized jingles, ducks, limits, mutes and recovers missing files
+ok 122 - same mixer plays imported ambient and prioritized jingles, ducks, limits, mutes and recovers missing files
+  ---
+  duration_ms: 224.063453
+  type: 'test'
+  ...
+# Subtest: API persists audio, protects preview and worker access, rejects unapproved and revoked grants
+ok 123 - API persists audio, protects preview and worker access, rejects unapproved and revoked grants
+  ---
+  duration_ms: 125.040344
+  type: 'test'
+  ...
+# Subtest: provider preparation cannot authorize cost or replace approved music
+ok 124 - provider preparation cannot authorize cost or replace approved music
+  ---
+  duration_ms: 0.496669
+  type: 'test'
+  ...
+# Subtest: vocal windows exclude instrumental intros, pause cancels performance
+ok 125 - vocal windows exclude instrumental intros, pause cancels performance
+  ---
+  duration_ms: 65.770928
+  type: 'test'
+  ...
+# Subtest: jingle finishes before queued speech; repeated gifts do not regenerate audio
+ok 126 - jingle finishes before queued speech; repeated gifts do not regenerate audio
+  ---
+  duration_ms: 107.35471
+  type: 'test'
+  ...
+# Subtest: preloaded special bypasses blocked synthesis in less than two seconds
+ok 127 - preloaded special bypasses blocked synthesis in less than two seconds
+  ---
+  duration_ms: 38.716759
+  type: 'test'
+  ...
+# Subtest: special fades lower priority and stale speech does not play
+ok 128 - special fades lower priority and stale speech does not play
+  ---
+  duration_ms: 36.083509
+  type: 'test'
+  ...
+# Subtest: Brazilian proposal and approved ambient selection never authorize cost or replace approval
+ok 129 - Brazilian proposal and approved ambient selection never authorize cost or replace approval
+  ---
+  duration_ms: 9.394193
+  type: 'test'
+  ...
+# Subtest: main ambient and brief persist and reach only the authorized worker
+ok 130 - main ambient and brief persist and reach only the authorized worker
+  ---
+  duration_ms: 32.481653
+  type: 'test'
+  ...
+# Subtest: mixer acknowledges completed and interrupted jobs without replay
+ok 131 - mixer acknowledges completed and interrupted jobs without replay
+  ---
+  duration_ms: 12.710319
+  type: 'test'
+  ...
+# Subtest: radio: complete 24kHz tracks, duration and decoded-memory budgets remain bounded
+ok 132 - radio: complete 24kHz tracks, duration and decoded-memory budgets remain bounded
+  ---
+  duration_ms: 1165.888431
+  type: 'test'
+  ...
+# Subtest: Top6: quantities, deterministic ties, overtaking, duplicate gifts, session/workspace isolation, safe inputs
+ok 133 - Top6: quantities, deterministic ties, overtaking, duplicate gifts, session/workspace isolation, safe inputs
+  ---
+  duration_ms: 8.093497
+  type: 'test'
+  ...
+# Subtest: ranking survives SQLite reopen; photos reject URLs, consent omission, SVG and oversized images; animated composition
+ok 134 - ranking survives SQLite reopen; photos reject URLs, consent omission, SVG and oversized images; animated composition
+  ---
+  duration_ms: 37.255574
+  type: 'test'
+  ...
+# Subtest: mixer: continuous original music, ducking/recovery, limiter, voice cache, failure fallback and pause
+ok 135 - mixer: continuous original music, ducking/recovery, limiter, voice cache, failure fallback and pause
+  ---
+  duration_ms: 63.986742
+  type: 'test'
+  ...
+# Subtest: real local pt-BR TTS creates distinct main and secondary voices
+ok 136 - real local pt-BR TTS creates distinct main and secondary voices
+  ---
+  duration_ms: 39.019159
+  type: 'test'
+  ...
+# Subtest: RTMP performance: received music, narrated comment, reply, gift verse, Top6 and photo avatar; game keeps moving
+ok 137 - RTMP performance: received music, narrated comment, reply, gift verse, Top6 and photo avatar; game keeps moving
+  ---
+  duration_ms: 53128.640173
+  type: 'test'
+  ...
+# Subtest: browser RGB transport round-trips every profile without changing pixels
+ok 138 - browser RGB transport round-trips every profile without changing pixels
+  ---
+  duration_ms: 32.076062
+  type: 'test'
+  ...
+# Subtest: game progresses in existing runtime, rounds restart, collision/scoring/ranking persist and pause freezes
+ok 139 - game progresses in existing runtime, rounds restart, collision/scoring/ranking persist and pause freezes
+  ---
+  duration_ms: 91.032782
+  type: 'test'
+  ...
+# Subtest: worker grants are session-scoped, single-instance, hidden, revocable, bounded and fail closed
+ok 140 - worker grants are session-scoped, single-instance, hidden, revocable, bounded and fail closed
+  ---
+  duration_ms: 3.250835
+  type: 'test'
+  ...
+# Subtest: real FFmpeg RTMP receiver receives continuous H264 + AAC, and encoder failure is observable
+ok 141 - real FFmpeg RTMP receiver receives continuous H264 + AAC, and encoder failure is observable
+  ---
+  duration_ms: 24532.710423
+  type: 'test'
+  ...
+# Subtest: survival records individual eliminations independently of round duration and survives persistence
+ok 142 - survival records individual eliminations independently of round duration and survives persistence
+  ---
+  duration_ms: 383.657579
+  type: 'test'
+  ...
+# Subtest: reachable apple pursuit consumes food and grows, obstacles and collisions remain deterministic
+ok 143 - reachable apple pursuit consumes food and grows, obstacles and collisions remain deterministic
+  ---
+  duration_ms: 18.142215
+  type: 'test'
+  ...
+# Subtest: one minute autonomous rhythm: movement, apples, growth, bounded snapshots and round transitions
+ok 144 - one minute autonomous rhythm: movement, apples, growth, bounded snapshots and round transitions
+  ---
+  duration_ms: 96.150366
+  type: 'test'
+  ...
+# Subtest: interpolation is fractional, bounded, read-only and never crosses a round boundary
+ok 145 - interpolation is fractional, bounded, read-only and never crosses a round boundary
+  ---
+  duration_ms: 2.253517
+  type: 'test'
+  ...
+# Subtest: actual PCM playback drives visual envelope, silence and fallback never fake a talking mouth
+ok 146 - actual PCM playback drives visual envelope, silence and fallback never fake a talking mouth
+  ---
+  duration_ms: 15.545637
+  type: 'test'
+  ...
+# Subtest: shared compositor animates faces, safe avatars, entry/exit, and keeps community out of board
+ok 147 - shared compositor animates faces, safe avatars, entry/exit, and keeps community out of board
+  ---
+  duration_ms: 56.281658
+  type: 'test'
+  ...
+# Subtest: global voice remains active until explicit approval of previewed draft
+ok 148 - global voice remains active until explicit approval of previewed draft
+  ---
+  duration_ms: 2.227478
+  type: 'test'
+  ...
+# Subtest: voice revision prevents stale approval and new edit invalidates sample
+ok 149 - voice revision prevents stale approval and new edit invalidates sample
+  ---
+  duration_ms: 0.230453
+  type: 'test'
+  ...
+# Subtest: production profile is a validated immutable snapshot
+ok 150 - production profile is a validated immutable snapshot
+  ---
+  duration_ms: 0.725731
+  type: 'test'
+  ...
+# Subtest: offline jobs and live grants share active identity without client overrides
+ok 151 - offline jobs and live grants share active identity without client overrides
+  ---
+  duration_ms: 4.218704
+  type: 'test'
+  ...
+# Subtest: new identities are distinct references with validated neural controls, not Dora presets
+ok 152 - new identities are distinct references with validated neural controls, not Dora presets
+  ---
+  duration_ms: 0.319215
+  type: 'test'
+  ...
+# Subtest: reference comparison uses distinct sellers and supported signals, rejects fabricated sources/dates
+ok 153 - reference comparison uses distinct sellers and supported signals, rejects fabricated sources/dates
+  ---
+  duration_ms: 3.012287
+  type: 'test'
+  ...
+# Subtest: reference freeze, production briefing, original version approval and distribution gate
+ok 154 - reference freeze, production briefing, original version approval and distribution gate
+  ---
+  duration_ms: 3.284663
+  type: 'test'
+  ...
+# Subtest: experiment budget blocks paid calls before send and completed preparation uses the existing offer
+ok 155 - experiment budget blocks paid calls before send and completed preparation uses the existing offer
+  ---
+  duration_ms: 8.323228
+  type: 'test'
+  ...
+# Subtest: discovery chooses and produces without a user-supplied product; pending undistributed inventory blocks another paid cycle
+ok 156 - discovery chooses and produces without a user-supplied product; pending undistributed inventory blocks another paid cycle
+  ---
+  duration_ms: 227.661796
+  type: 'test'
+  ...
+# Subtest: discovery fails closed on fabricated citations, weak evidence, missing search or unauthorized image
+ok 157 - discovery fails closed on fabricated citations, weak evidence, missing search or unauthorized image
+  ---
+  duration_ms: 17.728559
+  type: 'test'
+  ...
+# Subtest: hard API call allowance blocks incomplete cycles and prevents automatic retries after a charged failure
+ok 158 - hard API call allowance blocks incomplete cycles and prevents automatic retries after a charged failure
+  ---
+  duration_ms: 4.168289
+  type: 'test'
+  ...
+# Subtest: ranking is deterministic and bounds model scores instead of accepting claimed best-return choice
+ok 159 - ranking is deterministic and bounds model scores instead of accepting claimed best-return choice
+  ---
+  duration_ms: 0.915093
+  type: 'test'
+  ...
+# Subtest: reported commercial results reject inconsistent numbers and preserve explicit provenance
+ok 160 - reported commercial results reject inconsistent numbers and preserve explicit provenance
+  ---
+  duration_ms: 0.37596
+  type: 'test'
+  ...
+# Live runtime: shutdown sem persistência; heartbeat expirará.
+# Subtest: experiment API enforces workspace isolation and cannot invent marketplace transactions
+ok 161 - experiment API enforces workspace isolation and cannot invent marketplace transactions
+  ---
+  duration_ms: 65.99371
+  type: 'test'
+  ...
+# Subtest: next market analysis receives actual experiment evidence with explicit provenance, without extra model calls
+ok 162 - next market analysis receives actual experiment evidence with explicit provenance, without extra model calls
+  ---
+  duration_ms: 10.496816
+  type: 'test'
+  ...
+# Subtest: first-sale discovery persists one decision, pauses before production and does not research again
+ok 163 - first-sale discovery persists one decision, pauses before production and does not research again
+  ---
+  duration_ms: 9.344469
+  type: 'test'
+  ...
+# Subtest: automatic real-channel publication reserves once across workers and exposes only metadata
+ok 164 - automatic real-channel publication reserves once across workers and exposes only metadata
+  ---
+  duration_ms: 53.791487
+  type: 'test'
+  ...
+# Subtest: timeouts pause uncertain delivery permanently; owner must inspect before continuing with other products
+ok 165 - timeouts pause uncertain delivery permanently; owner must inspect before continuing with other products
+  ---
+  duration_ms: 22.995074
+  type: 'test'
+  ...
+# Subtest: crashed pending jobs are recovered even after pausing, without re-sending
+ok 166 - crashed pending jobs are recovered even after pausing, without re-sending
+  ---
+  duration_ms: 13.656333
+  type: 'test'
+  ...
+# Subtest: campaign visits deduplicate browser/day, bind product, isolate tenant and attribute confirmed purchases/refunds only
+ok 167 - campaign visits deduplicate browser/day, bind product, isolate tenant and attribute confirmed purchases/refunds only
+  ---
+  duration_ms: 21.521298
+  type: 'test'
+  ...
+# Subtest: authorization, real-shop gate, expiry and caps prevent unintended publication
+ok 168 - authorization, real-shop gate, expiry and caps prevent unintended publication
+  ---
+  duration_ms: 17.547639
+  type: 'test'
+  ...
+# Subtest: daily channel caps apply across renewed permissions and hidden products never get advertised
+ok 169 - daily channel caps apply across renewed permissions and hidden products never get advertised
+  ---
+  duration_ms: 8.188118
+  type: 'test'
+  ...
+# Subtest: encrypted channel and completed job survive SQLite restart without duplicate publication
+ok 170 - encrypted channel and completed job survive SQLite restart without duplicate publication
+  ---
+  duration_ms: 5.03511
+  type: 'test'
+  ...
+# Subtest: provider sends only fixed official HTTPS endpoints, verifies channel permissions and rejects redirects/secret errors
+ok 171 - provider sends only fixed official HTTPS endpoints, verifies channel permissions and rejects redirects/secret errors
+  ---
+  duration_ms: 1.862084
+  type: 'test'
+  ...
+# Subtest: manual campaigns remain unverified, preserve attribution and never send posts or consume automatic grant
+ok 172 - manual campaigns remain unverified, preserve attribution and never send posts or consume automatic grant
+  ---
+  duration_ms: 19.943889
+  type: 'test'
+  ...
+# Subtest: Bluesky provider uses verified account, fixed hosted PDS, UTF8 link facets and deterministic record IDs
+ok 173 - Bluesky provider uses verified account, fixed hosted PDS, UTF8 link facets and deterministic record IDs
+  ---
+  duration_ms: 1.153448
+  type: 'test'
+  ...
+# Subtest: Bluesky errors cannot leak app passwords and unexpected account changes prevent posting
+ok 174 - Bluesky errors cannot leak app passwords and unexpected account changes prevent posting
+  ---
+  duration_ms: 0.305345
+  type: 'test'
+  ...
+# Subtest: broad research options validate permissions and retain existing project defaults
+ok 175 - broad research options validate permissions and retain existing project defaults
+  ---
+  duration_ms: 1.222331
+  type: 'test'
+  ...
+# Subtest: server computes missing video tools even if the model omits them or claims a text strategy is executable
+ok 176 - server computes missing video tools even if the model omits them or claims a text strategy is executable
+  ---
+  duration_ms: 131.774612
+  type: 'test'
+  ...
+# Subtest: executable lower-score strategy outranks blocked or preparation strategies; views or claimed profit never bypass gates
+ok 177 - executable lower-score strategy outranks blocked or preparation strategies; views or claimed profit never bypass gates
+  ---
+  duration_ms: 12.56003
+  type: 'test'
+  ...
+# Subtest: broad cycle records blocked insights without producing, spending on unsupported tools or inventing publication
+ok 178 - broad cycle records blocked insights without producing, spending on unsupported tools or inventing publication
+  ---
+  duration_ms: 21.259598
+  type: 'test'
+  ...
+# Subtest: authorized preparation creates a private text kit, bounded by project calls, never a published video or shop product
+ok 179 - authorized preparation creates a private text kit, bounded by project calls, never a published video or shop product
+  ---
+  duration_ms: 26.021422
+  type: 'test'
+  ...
+# Subtest: expired, test-mode or text-only channel connections cannot claim an executable whole workflow
+ok 180 - expired, test-mode or text-only channel connections cannot claim an executable whole workflow
+  ---
+  duration_ms: 0.287618
+  type: 'test'
+  ...
+# Subtest: preflight identifies the limiting dimension and never pretends reservations are paid costs
+ok 181 - preflight identifies the limiting dimension and never pretends reservations are paid costs
+  ---
+  duration_ms: 3.690247
+  type: 'test'
+  ...
+# Subtest: retry preserves output, artifact, events and attempt IDs for legacy missions
+ok 182 - retry preserves output, artifact, events and attempt IDs for legacy missions
+  ---
+  duration_ms: 0.842915
+  type: 'test'
+  ...
+# Subtest: fourth sprite retry survives SQLite restart and never regenerates the first three
+ok 183 - fourth sprite retry survives SQLite restart and never regenerates the first three
+  ---
+  duration_ms: 363.300531
+  type: 'test'
+  ...
+# Subtest: whole-delivery preflight blocks before spending any tokens
+ok 184 - whole-delivery preflight blocks before spending any tokens
+  ---
+  duration_ms: 2.878676
+  type: 'test'
+  ...
+# Subtest: expired budget reservations do not masquerade as new attempt spend and corrupted checkpoints block reuse
+ok 185 - expired budget reservations do not masquerade as new attempt spend and corrupted checkpoints block reuse
+  ---
+  duration_ms: 1.143353
+  type: 'test'
+  ...
+# Subtest: paid response arriving after cancellation is saved without reviving the mission
+ok 186 - paid response arriving after cancellation is saved without reviving the mission
+  ---
+  duration_ms: 3.370698
+  type: 'test'
+  ...
+# Subtest: daily, monthly and experiment preflight diagnostics identify their own restrictions
+ok 187 - daily, monthly and experiment preflight diagnostics identify their own restrictions
+  ---
+  duration_ms: 0.521146
+  type: 'test'
+  ...
+# Subtest: partial review preserves other sprites, versions and costs and resumes a failed adjustment
+ok 188 - partial review preserves other sprites, versions and costs and resumes a failed adjustment
+  ---
+  duration_ms: 958.856909
+  type: 'test'
+  ...
+# Subtest: invalid review scope and legacy checkpoints cannot silently regenerate paid work
+ok 189 - invalid review scope and legacy checkpoints cannot silently regenerate paid work
+  ---
+  duration_ms: 0.833207
+  type: 'test'
+  ...
+# Subtest: archived downloads require workspace authentication and rejection blocks shop release
+ok 190 - archived downloads require workspace authentication and rejection blocks shop release
+  ---
+  duration_ms: 59.43429
+  type: 'test'
+  ...
+# Subtest: perspective failures override optimistic approval and identify only affected sprites
+ok 191 - perspective failures override optimistic approval and identify only affected sprites
+  ---
+  duration_ms: 2.591029
+  type: 'test'
+  ...
+# Subtest: missing, malformed, uncertain and fabricated evidence never approves
+ok 192 - missing, malformed, uncertain and fabricated evidence never approves
+  ---
+  duration_ms: 0.766738
+  type: 'test'
+  ...
+# Subtest: structured visual approval does not authorize commerce
+ok 193 - structured visual approval does not authorize commerce
+  ---
+  duration_ms: 0.181922
+  type: 'test'
+  ...
+# Subtest: failed Sentinel requires version-bound human override and preserves legacy approval
+ok 194 - failed Sentinel requires version-bound human override and preserves legacy approval
+  ---
+  duration_ms: 2.374425
+  type: 'test'
+  ...
+# Subtest: contradictory object descriptions cannot pass perspective even when every criterion says PASS
+ok 195 - contradictory object descriptions cannot pass perspective even when every criterion says PASS
+  ---
+  duration_ms: 0.372178
+  type: 'test'
+  ...
+# Subtest: production review receives actual inventory and saves a structured rejection without discarding the ZIP
+ok 196 - production review receives actual inventory and saves a structured rejection without discarding the ZIP
+  ---
+  duration_ms: 241.924305
+  type: 'test'
+  ...
+# Subtest: all five formats publish automatically with protected files and immutable prices, without leaking briefs or credentials
+ok 197 - all five formats publish automatically with protected files and immutable prices, without leaking briefs or credentials
+  ---
+  duration_ms: 75.710736
+  type: 'test'
+  ...
+# Subtest: paid delivery requires authoritative payment, webhook signatures, matching amounts, currency, mode and private buyer token
+ok 198 - paid delivery requires authoritative payment, webhook signatures, matching amounts, currency, mode and private buyer token
+  ---
+  duration_ms: 33.282558
+  type: 'test'
+  ...
+# Subtest: refunds revoke access, hidden/paused listings prevent new sales and old buyers retain their purchased version
+ok 199 - refunds revoke access, hidden/paused listings prevent new sales and old buyers retain their purchased version
+  ---
+  duration_ms: 25.628799
+  type: 'test'
+  ...
+# Subtest: concurrent publication and checkout use one product/order; grants and purchased bytes survive restart and expiration
+ok 200 - concurrent publication and checkout use one product/order; grants and purchased bytes survive restart and expiration
+  ---
+  duration_ms: 9.44116
+  type: 'test'
+  ...
+# Subtest: configuration validates webhook consent, prices, persistent encryption and paused drafts are never published
+ok 201 - configuration validates webhook consent, prices, persistent encryption and paused drafts are never published
+  ---
+  duration_ms: 13.056135
+  type: 'test'
+  ...
+# Subtest: public preview is a reduced JPEG; original bytes stay behind payment and withdrawing hides previews
+ok 202 - public preview is a reduced JPEG; original bytes stay behind payment and withdrawing hides previews
+  ---
+  duration_ms: 67.166856
+  type: 'test'
+  ...
+# Subtest: first-sale samples cannot bypass review through manual or automatic publishing, without blocking unrelated products
+ok 203 - first-sale samples cannot bypass review through manual or automatic publishing, without blocking unrelated products
+  ---
+  duration_ms: 26.902741
+  type: 'test'
+  ...
+# Subtest: review and generic automation never authorize release; price is individual and binds version and license
+ok 204 - review and generic automation never authorize release; price is individual and binds version and license
+  ---
+  duration_ms: 30.481456
+  type: 'test'
+  ...
+# Subtest: release endpoint isolates tenants and expired per-offer authorization blocks automation
+ok 205 - release endpoint isolates tenants and expired per-offer authorization blocks automation
+  ---
+  duration_ms: 10.40744
+  type: 'test'
+  ...
+# Subtest: thumbnail delivers exact 16:9 variants, JPEG size cap and editable escaped text
+ok 206 - thumbnail delivers exact 16:9 variants, JPEG size cap and editable escaped text
+  ---
+  duration_ms: 132.072685
+  type: 'test'
+  ...
+# Subtest: 2D rejects fake transparency and produces four assets, atlas and Godot scene
+ok 207 - 2D rejects fake transparency and produces four assets, atlas and Godot scene
+  ---
+  duration_ms: 259.145078
+  type: 'test'
+  ...
+# Subtest: 3D generates valid embedded GLB, actual geometry/UV/materials and bounded specification
+ok 208 - 3D generates valid embedded GLB, actual geometry/UV/materials and bounded specification
+  ---
+  duration_ms: 37.551135
+  type: 'test'
+  ...
+# Subtest: specialized research covers each enabled channel, reserves calls, produces protected ZIP/preview
+ok 209 - specialized research covers each enabled channel, reserves calls, produces protected ZIP/preview
+  ---
+  duration_ms: 267.119995
+  type: 'test'
+  ...
+# Subtest: business directive reaches research, text and vision calls without replacing task instructions
+ok 210 - business directive reaches research, text and vision calls without replacing task instructions
+  ---
+  duration_ms: 4.550878
+  type: 'test'
+  ...
+# Subtest: broader opportunities work without image consent and publish a truthful future capability
+ok 211 - broader opportunities work without image consent and publish a truthful future capability
+  ---
+  duration_ms: 4.134117
+  type: 'test'
+  ...
+# Subtest: flow B HTTP: visible diagnostic, absent app blocked, valid account OAuth never connects LIVE/publication
+ok 212 - flow B HTTP: visible diagnostic, absent app blocked, valid account OAuth never connects LIVE/publication
+  ---
+  duration_ms: 77.151537
+  type: 'test'
+  ...
+# Subtest: missing config, invalid redirect, missing crypto never expose a fake connection
+ok 213 - missing config, invalid redirect, missing crypto never expose a fake connection
+  ---
+  duration_ms: 3.116982
+  type: 'test'
+  ...
+# Subtest: expired state, denied consent, missing scope and provider errors fail closed without leaking secrets
+ok 214 - expired state, denied consent, missing scope and provider errors fail closed without leaking secrets
+  ---
+  duration_ms: 3.992966
+  type: 'test'
+  ...
+# Subtest: callback is single-use under concurrency and disconnect prevents a late callback resurrecting access
+ok 215 - callback is single-use under concurrency and disconnect prevents a late callback resurrecting access
+  ---
+  duration_ms: 1.400275
+  type: 'test'
+  ...
+# Subtest: token expiry and unconfirmed revoke are represented honestly
+ok 216 - token expiry and unconfirmed revoke are represented honestly
+  ---
+  duration_ms: 1.835403
+  type: 'test'
+  ...
+# Subtest: provider uses only documented fixed TikTok endpoints and sanitizes upstream failures
+ok 217 - provider uses only documented fixed TikTok endpoints and sanitizes upstream failures
+  ---
+  duration_ms: 1.487024
+  type: 'test'
+  ...
+# Subtest: validation requires evidence and offer, creates only one draft and cannot adopt an unrelated mission
+ok 218 - validation requires evidence and offer, creates only one draft and cannot adopt an unrelated mission
+  ---
+  duration_ms: 3.1088
+  type: 'test'
+  ...
+# Subtest: quality and release bind the exact sample and proposed price, and do not authorize itch.io
+ok 219 - quality and release bind the exact sample and proposed price, and do not authorize itch.io
+  ---
+  duration_ms: 1.716537
+  type: 'test'
+  ...
+# Subtest: declared interest never becomes sales; silence cannot invent a rejection reason
+ok 220 - declared interest never becomes sales; silence cannot invent a rejection reason
+  ---
+  duration_ms: 2.728644
+  type: 'test'
+  ...
+# Subtest: recommendation requires current quality, real retained sale and reviewed costs; refunds invalidate it
+ok 221 - recommendation requires current quality, real retained sale and reviewed costs; refunds invalidate it
+  ---
+  duration_ms: 0.868123
+  type: 'test'
+  ...
+# Subtest: closed or expired experiments cannot release or publish another sample
+ok 222 - closed or expired experiments cannot release or publish another sample
+  ---
+  duration_ms: 0.338124
+  type: 'test'
+  ...
+# Subtest: itch sample release binds reviewed bytes, destination, license and expiry without authorizing shop
+ok 223 - itch sample release binds reviewed bytes, destination, license and expiry without authorizing shop
+  ---
+  duration_ms: 1.066288
+  type: 'test'
+  ...
+# Subtest: storyboards are bounded and no shell is involved
+ok 224 - storyboards are bounded and no shell is involved
+  ---
+  duration_ms: 7.087415
+  type: 'test'
+  ...
+# Subtest: real video uses existing queue, checkpoint, artifact and human review without provider calls
+ok 225 - real video uses existing queue, checkpoint, artifact and human review without provider calls
+  ---
+  duration_ms: 2470.68606
+  type: 'test'
+  ...
+# Subtest: short formats enforce duration, bounded scripts and original character selection
+ok 226 - short formats enforce duration, bounded scripts and original character selection
+  ---
+  duration_ms: 1.669035
+  type: 'test'
+  ...
+# Subtest: short production uses existing mission queue, isolates agents and fingerprints configuration
+ok 227 - short production uses existing mission queue, isolates agents and fingerprints configuration
+  ---
+  duration_ms: 1.978046
+  type: 'test'
+  ...
+# Subtest: highlights reflect reproducible observed transitions
+ok 228 - highlights reflect reproducible observed transitions
+  ---
+  duration_ms: 475.282312
+  type: 'test'
+  ...
+# Subtest: timeline cuts and slow replay retain source evidence and do not mutate game
+ok 229 - timeline cuts and slow replay retain source evidence and do not mutate game
+  ---
+  duration_ms: 239.767315
+  type: 'test'
+  ...
+# Subtest: caption blocks are bounded, ordered and non-overlapping
+ok 230 - caption blocks are bounded, ordered and non-overlapping
+  ---
+  duration_ms: 0.468247
+  type: 'test'
+  ...
+# Subtest: assisted distribution requires approval/version, snapshots do not sum or invent revenue
+ok 231 - assisted distribution requires approval/version, snapshots do not sum or invent revenue
+  ---
+  duration_ms: 6.147482
+  type: 'test'
+  ...
+# Subtest: artistic eligibility never mistakes technical success, fallback or absent music for complete AV
+ok 232 - artistic eligibility never mistakes technical success, fallback or absent music for complete AV
+  ---
+  duration_ms: 0.775404
+  type: 'test'
+  ...
+# Subtest: fallback approval is blocked on backend even with human override
+ok 233 - fallback approval is blocked on backend even with human override
+  ---
+  duration_ms: 1.664608
+  type: 'test'
+  ...
+# Subtest: AV controls are bounded and neural is the default
+ok 234 - AV controls are bounded and neural is the default
+  ---
+  duration_ms: 0.237143
+  type: 'test'
+  ...
+# Subtest: framing failures block even technically valid neural exports
+ok 235 - framing failures block even technically valid neural exports
+  ---
+  duration_ms: 0.139287
+  type: 'test'
+  ...
+# Subtest: visual gate distinguishes an intact spine from an offscreen or obstructed silhouette
+ok 236 - visual gate distinguishes an intact spine from an offscreen or obstructed silhouette
+  ---
+  duration_ms: 13.855046
+  type: 'test'
+  ...
+# Subtest: every champion has five explicit presentation beats without mutating gameplay
+ok 237 - every champion has five explicit presentation beats without mutating gameplay
+  ---
+  duration_ms: 240.626505
+  type: 'test'
+  ...
+# Subtest: event direction has measured simulation evidence, not invented crowd interactions
+ok 238 - event direction has measured simulation evidence, not invented crowd interactions
+  ---
+  duration_ms: 186.587189
+  type: 'test'
+  ...
+# Subtest: version 4 cannot be eligible with geometric checks alone
+ok 239 - version 4 cannot be eligible with geometric checks alone
+  ---
+  duration_ms: 0.311254
+  type: 'test'
+  ...
+# Subtest: voice routes authenticate, persist drafts, reject premature approval and isolate workspaces
+ok 240 - voice routes authenticate, persist drafts, reject premature approval and isolate workspaces
+  ---
+  duration_ms: 66.348516
+  type: 'test'
+  ...
+# Subtest: distinct references remain drafts and never overwrite active workspace identity
+ok 241 - distinct references remain drafts and never overwrite active workspace identity
+  ---
+  duration_ms: 2.427224
+  type: 'test'
+  ...
+# Subtest: archived speech binds exact text, hash and identity, and rejects truncation and fallback
+ok 242 - archived speech binds exact text, hash and identity, and rejects truncation and fallback
+  ---
+  duration_ms: 13.881165
+  type: 'test'
+  ...
+# Subtest: mesh visibility detects obstruction missed by logical head-center probes
+ok 243 - mesh visibility detects obstruction missed by logical head-center probes
+  ---
+  duration_ms: 16.382029
+  type: 'test'
+  ...
+# Subtest: unavailable Chatterbox sample never silently becomes fallback audio
+ok 244 - unavailable Chatterbox sample never silently becomes fallback audio
+  ---
+  duration_ms: 5.688769
+  type: 'test'
+  ...
+# Subtest: resident protocol rejects simultaneous speech and aborts without fallback
+ok 245 - resident protocol rejects simultaneous speech and aborts without fallback
+  ---
+  duration_ms: 76.266812
+  type: 'test'
+  ...
+# Subtest: editorial camera anticipates a turning face without crossing its center
+ok 246 - editorial camera anticipates a turning face without crossing its center
+  ---
+  duration_ms: 13.902227
+  type: 'test'
+  ...
+# Subtest: scenery occlusion is measured even with no blocking snake body
+ok 247 - scenery occlusion is measured even with no blocking snake body
+  ---
+  duration_ms: 5.791963
+  type: 'test'
+  ...
+# Subtest: a precomputed camera position still undergoes actual mesh validation
+ok 248 - a precomputed camera position still undergoes actual mesh validation
+  ---
+  duration_ms: 1.504705
+  type: 'test'
+  ...
+# Subtest: offline camera candidates remain world-aligned while a skull turns
+ok 249 - offline camera candidates remain world-aligned while a skull turns
+  ---
+  duration_ms: 3.314805
+  type: 'test'
+  ...
+1..249
+# tests 249
+# suites 0
+# pass 248
+# fail 0
+# cancelled 0
+# skipped 1
+# todo 0
+# duration_ms 130049.669794

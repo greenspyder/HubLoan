@@ -1,0 +1,1 @@
+PASS: campaign started in actual frontend, failed with real missing-model dependency, history persisted across reload, no fake outputs.
