@@ -1,3 +1,4 @@
+import {warmupSegments} from './live-lume-lines.mjs';
 import {activeVoice} from './lume-voice.mjs';
 import { publicPerformance } from './live-performance.mjs';
 import { createHash, randomBytes } from 'node:crypto';
@@ -10,7 +11,7 @@ export function authorizeWorker(w,id,mode,now=Date.now()){
  if(!['preview','stream'].includes(mode))throw new AppError('Modo inválido.');
  if(e.workerGrant?.revokedAt&&e.workerGrant.instance&&now-e.workerGrant.revokedAt<10000&&e.transmission?.status!=='STOPPED'&&e.transmission?.status!=='ERROR')throw new AppError('Aguarde a parada do worker anterior (até 10 segundos).',409);
  if(e.workerGrant&&!e.workerGrant.revoked&&e.workerGrant.expiresAt>now)throw new AppError('Encerre o worker anterior antes de gerar outra autorização.',409);
- const token=randomBytes(32).toString('hex');e.workerGrant={hash:hash(token),sessionId:e.sessionId,expiresAt:e.deadline,mode};
+ const token=randomBytes(32).toString('hex');e.workerGrant={hash:hash(token),sessionId:e.sessionId,expiresAt:e.deadline,mode,voiceProfile:activeVoice(w)};
  e.transmission={status:'READY',mode,publicStatus:'UNCONFIRMED',heartbeat:null,frames:0,bytes:0,error:null};
  return {token,expiresAt:e.deadline,voiceProfile:activeVoice(w),voice:activeVoice(w).engine};
 }
@@ -24,7 +25,7 @@ export function workerHeartbeat(w,id,token,input,now=Date.now()){
  if(g.instance&&g.instance!==input.instance)throw new AppError('Outro worker já utiliza esta autorização.',409);
  if(!['STARTING','PREVIEW','SENDING_MEDIA','ERROR','STOPPED'].includes(input.status)||!Number.isSafeInteger(input.frames)||input.frames<0||!Number.isSafeInteger(input.bytes)||input.bytes<0)throw new AppError('Telemetria inválida.');
  if(g.mode==='preview'&&input.status==='SENDING_MEDIA')throw new AppError('Transmissão não autorizada.',403);
- if(input.audio){const audio={};for(const key of ['synthesized','cacheHits','ttsFailures','dropped','ttsMs','maxPlaybackLatencyMs']){const value=input.audio[key];if(!Number.isFinite(value)||value<0||value>100000000)throw new AppError('Telemetria de áudio inválida.');audio[key]=Math.round(value);}if(input.audio.latency){audio.latency={};for(const key of ['reaction','queue','synthesis','pending','segment','preloaded','firstSpeech','firstMusic','firstEffect','complete']){const v=input.audio.latency[key];if(!v)continue;if(!['count','meanMs','p95Ms','maxMs'].every(k=>Number.isFinite(v[k])&&v[k]>=0&&v[k]<=100000000))throw new AppError('Latência inválida.');audio.latency[key]=Object.fromEntries(['count','meanMs','p95Ms','maxMs'].map(k=>[k,Math.round(v[k])]));}}e.transmission.audio=audio;}
+ if(input.audio){const audio={};for(const key of ['synthesized','cacheHits','ttsFailures','dropped','ttsMs','maxPlaybackLatencyMs']){const value=input.audio[key];if(!Number.isFinite(value)||value<0||value>100000000)throw new AppError('Telemetria de áudio inválida.');audio[key]=Math.round(value);}if(input.audio.latency){audio.latency={};for(const key of ['reaction','queue','synthesis','pending','segment','preloaded','firstSpeech','firstMusic','firstEffect','complete']){const v=input.audio.latency[key];if(!v)continue;if(!['count','meanMs','p95Ms','maxMs'].every(k=>Number.isFinite(v[k])&&v[k]>=0&&v[k]<=100000000))throw new AppError('Latência inválida.');audio.latency[key]=Object.fromEntries(['count','meanMs','p95Ms','maxMs'].map(k=>[k,Math.round(v[k])]));}}if(input.audio.voice){const v=input.audio.voice;if(!['elevenlabs','kokoro','chatterbox','piper'].includes(v.provider)||!['fallback','neural'].every(k=>Number.isSafeInteger(v[k])&&v[k]>=0&&v[k]<=100000))throw new AppError('Telemetria vocal inválida.');audio.voice={provider:v.provider,fallback:v.fallback,neural:v.neural,lastError:typeof v.lastError==='string'&&/^VOICE_[A-Z_]{1,50}$/.test(v.lastError)?v.lastError:null};}e.transmission.audio=audio;}
  // Authenticated, session-scoped acknowledgement; history and ranking are retained.
  if(input.settledJobs!==undefined){if(!Array.isArray(input.settledJobs)||input.settledJobs.length>64||input.settledJobs.some(id=>typeof id!=='string'||!/^[-a-f0-9]{36}$/.test(id)))throw new AppError('Confirmação de atuação inválida.');if(e.performance)e.performance.jobs=e.performance.jobs.filter(j=>!input.settledJobs.includes(j.id));}
  g.instance=input.instance;
@@ -41,4 +42,13 @@ export function workerMusic(w,id,token,trackId,now=Date.now()){
  const e=w.liveFactory?.experiences.find(x=>x.id===id),g=e?.workerGrant;
  if(!g||typeof token!=='string'||g.hash!==hash(token)||g.revoked||g.expiresAt<=now||g.sessionId!==e.sessionId||!valid(e))throw new AppError('Autorização indisponível.',403);
  if(!e.musicCatalog?.some(t=>t.id===trackId&&t.approved))throw new AppError('Faixa indisponível.',404);
+}
+
+export function workerVoice(w,id,token,input,now=Date.now()){
+ const e=w.liveFactory?.experiences.find(x=>x.id===id),g=e?.workerGrant;
+ if(!g||typeof token!=='string'||g.hash!==hash(token)||g.revoked||g.expiresAt<=now||g.sessionId!==e.sessionId||e.status!=='TESTING')throw new AppError('Autorização vocal encerrada.',403);
+ if(!g.voiceProfile||g.voiceProfile.engine!=='elevenlabs')throw new AppError('Voz neural não autorizada nesta sessão.',409);
+ const current=e.performance?.jobs?.some(j=>j.sessionId===e.sessionId&&j.expiresAt>now&&now-j.createdAt<6000&&j.segments.some(s=>s.text===input.text));
+ if(!current&&!warmupSegments().some(s=>s.text===input.text))throw new AppError('Comentário obsoleto ou não pertence à sessão.',409);
+ return {profile:g.voiceProfile,sessionId:e.sessionId};
 }

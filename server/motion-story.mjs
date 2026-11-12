@@ -7,7 +7,7 @@ import {tmpdir} from 'node:os';
 import {createHash} from 'node:crypto';
 import {mediaCommand} from './video-production.mjs';
 import {localSpeech} from './live-worker/speech.mjs';
-import {createNeuralSpeech} from './live-worker/neural-speech.mjs';
+import {createUniversalVoice} from './universal-voice.mjs';
 import {voiceProfile} from './lume-voice.mjs';
 export function storyConfig(input){
  if(input?.version!==1||input.seconds!==18||!['neural','technical'].includes(input.voiceMode)||!Array.isArray(input.lines)||input.lines.length!==3||input.lines.some(s=>typeof s!=='string'||!s.trim()||s.length>120||/[<>\x00-\x1f]/.test(s)))throw Error('Microconto: três falas de até 120 caracteres e duração de 18 segundos.');
@@ -22,12 +22,12 @@ export function storyFrame(t,plan=null){
  const x=65+approach*80,y=406-Math.sin(t*2)*3,door=230,light=1+.06*Math.sin(t*3);
  return `<svg xmlns="http://www.w3.org/2000/svg" width="360" height="640" viewBox="${view}"><defs><radialGradient id="bg"><stop stop-color="#183f49"/><stop offset="1" stop-color="#080f20"/></radialGradient><linearGradient id="floor" x2="0" y2="1"><stop stop-color="#24424d"/><stop offset="1" stop-color="#080f20"/></linearGradient></defs><rect width="360" height="640" fill="url(#bg)"/><path d="M0 430L360 410V640H0Z" fill="url(#floor)"/><path d="M0 490L230 410M360 540L230 410M0 580L230 410" stroke="#527983" opacity=".2"/><ellipse cx="${x}" cy="440" rx="28" ry="6" fill="#000" opacity=".4"/><rect x="${door-35}" y="230" width="86" height="200" rx="44" fill="#345d66"/><rect x="${door-29}" y="236" width="74" height="190" rx="37" fill="#080e21"/><path d="M${door+42} 270V417" stroke="#eabf70" stroke-width="${2+reveal*15}" opacity="${.4+reveal*.6}"/><circle cx="${door+29}" cy="350" r="4" fill="#eabf70"/><path d="M${x-17} 430Q${x-13} 365 ${x} 371Q${x+21} 377 ${x+19} 430Z" fill="#83c7c6"/><circle cx="${x}" cy="${y-49}" r="17" fill="#adddda"/><path d="M${x+10} 388L${x+30} 375" stroke="#adddda" stroke-width="8" stroke-linecap="round"/><circle cx="${x+34+reveal*40}" cy="${373-reveal*40}" r="${(5+reveal*10)*light}" fill="#ffe2a1"/><circle cx="${x+34+reveal*40}" cy="${373-reveal*40}" r="${(14+reveal*30)*light}" fill="#ffe2a1" opacity=".08"/>${t>6&&t<12?`<circle cx="${door}" cy="330" r="${10+(t%2)*12}" fill="none" stroke="#eabf70" opacity="${1-(t%2)/2}"/>`:''}<path d="M${door+35} 360Q190 300 ${x+34+reveal*40} ${373-reveal*40}" fill="none" stroke="#ffdc8d" stroke-width="2" opacity="${reveal*.6}"/><text x="24" y="70" fill="#b3cfce" font-size="11" font-family="DejaVu Sans" letter-spacing="3">LUME • MICROCONTOS</text><text x="24" y="102" fill="#fff1d4" font-size="20" font-family="DejaVu Sans">A porta que esperava</text></svg>`;
 }
-export async function renderMotionStory({config,signal,checkpoint=async(_k,_l,_i,run)=>run()}){
+export async function renderMotionStory({config,signal,offlineVoice,checkpoint=async(_k,_l,_i,run)=>run()}){
  config=storyConfig(config);return checkpoint('motion-story','Animar microconto',[1,config],async()=>{
  const dir=await mkdtemp(join(tmpdir(),'hubloan-story-')),start=Date.now();let neural,frames;
  try{
   let synth=localSpeech,engine='espeak-fallback';
-  if(process.env[`HUBLOAN_${config.voiceProfile.engine.toUpperCase()}_MODEL`]){neural=await createNeuralSpeech({engine:config.voiceProfile.engine,profile:config.voiceProfile,timeout:180000,initializationTimeout:60000});synth=neural.synthesize;engine=config.voiceProfile.engine;}
+  if(offlineVoice){neural=offlineVoice;synth=neural.synthesize;engine=config.voiceProfile.engine;}else if(process.env[`HUBLOAN_${config.voiceProfile.engine.toUpperCase()}_MODEL`]){neural=await createUniversalVoice({allowFallback:config.voiceMode==='technical',profile:config.voiceProfile,timeout:180000,initializationTimeout:60000});synth=neural.synthesize;engine=config.voiceProfile.engine;}
   else if(config.voiceMode==='neural')throw Error('Modelo neural global indisponível. Nenhum fallback artístico autorizado.');
   const audio=Buffer.alloc(18*48000*2),captions=[];
   for(let i=0;i<3;i++){
@@ -46,7 +46,7 @@ export async function renderMotionStory({config,signal,checkpoint=async(_k,_l,_i
   const probe=JSON.parse(await mediaCommand('ffprobe',['-v','error','-show_streams','-show_format','-of','json',path],{signal}));
   if(!probe.streams.some(s=>s.codec_name==='h264'&&s.width===360&&s.height===640)||!probe.streams.some(s=>s.codec_name==='aac')||Math.abs(Number(probe.format.duration)-18)>.2||hashes.size<200)throw Error('Integridade audiovisual inválida.');
   await mediaCommand('ffmpeg',['-v','error','-i',path,'-f','null','-'],{signal});const bytes=await readFile(path);
-  return {base64:bytes.toString('base64'),preview,srt,report:{version:1,format:'mystery',width:360,height:640,seconds:18,distinctFrames:hashes.size,wallMs:Date.now()-start,sha256:createHash('sha256').update(bytes).digest('hex'),voiceEngine:engine,voiceProfile:config.voiceProfile,voice:neural?.metrics||{fallback:3,neural:0},technicalStatus:'TECHNICALLY_VALID',qualityStatus:'REQUIRES_HUMAN_REVIEW',captions,resources:[{asset:'procedural-vector-scenes',rights:'Original HubLoan geometry, generated from source'},{asset:'speech',rights:neural?config.voiceProfile.license:'Local eSpeak synthesis; no third-party voice recording'}],artisticEligibility:{eligible:!engine.includes('fallback'),reasons:engine.includes('fallback')?['Voz técnica de fallback; escuta e substituição neural necessárias.']:[]},providerCalls:0,infrastructureCost:'UNKNOWN'}};
+  return {base64:bytes.toString('base64'),preview,srt,report:{version:1,format:'mystery',width:360,height:640,seconds:18,distinctFrames:hashes.size,wallMs:Date.now()-start,sha256:createHash('sha256').update(bytes).digest('hex'),voiceEngine:engine,voiceProfile:config.voiceProfile,voice:neural?.metrics||{fallback:3,neural:0},technicalStatus:'TECHNICALLY_VALID',qualityStatus:'REQUIRES_HUMAN_REVIEW',captions,resources:[{asset:'procedural-vector-scenes',rights:'Original HubLoan geometry, generated from source'},{asset:'speech',rights:neural?config.voiceProfile.license:'Local eSpeak synthesis; no third-party voice recording'}],artisticEligibility:{eligible:!engine.includes('fallback'),reasons:engine.includes('fallback')?['Voz técnica de fallback; escuta e substituição neural necessárias.']:[]},providerCalls:neural?.metrics.providerCalls||0,infrastructureCost:'UNKNOWN'}};
  }finally{await frames?.close();await neural?.close();await rm(dir,{recursive:true,force:true});}
  });
 }

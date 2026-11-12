@@ -1,10 +1,12 @@
+import {synthesizeVoiceAsset} from './universal-voice.mjs';
+import {activeVoice} from './lume-voice.mjs';
 import {AppError,decryptKey,addMission,queueMission} from './domain.mjs';
 import {COMMENTARY_RULES,commentaryCapabilities,validateCommentaryPlan,renderCommentary} from './visual-commentary.mjs';
 import {preflightCosts} from './ai-costs.mjs';
 import {executeMediaOperation} from './multimodal-studio.mjs';
 export async function planCommentary({store,id,mission,budgeted,checkpoint,signal,token}){
  const w=(await store.read(id)).workspace,c=w.creativeCampaigns.find(c=>c.id===mission.campaignId);if(!w.secret)throw new AppError('MODEL_NOT_CONNECTED: conecte o modelo para a Astra criar o roteiro.');
- await store.mutate(id,w=>preflightCosts(w,mission.id,['text']));const key=decryptKey(w.secret,token),narration=w.multimodal?.narration||null;
+ await store.mutate(id,w=>preflightCosts(w,mission.id,['text']));const key=decryptKey(w.secret,token),narration=activeVoice(w).engine==='elevenlabs'?activeVoice(w):w.multimodal?.narration||null;
  const result=await checkpoint('text','Astra: plano multimodal',[1,c.request,c.requestedSeconds,narration],()=>budgeted.text(key,c.model,COMMENTARY_RULES,JSON.stringify({request:c.request,seconds:c.requestedSeconds,capabilities:commentaryCapabilities,narrationAvailable:!!narration,qualityPreference:c.qualityPreference,context:mission.creativeRequest}),5500,signal));
  if(result.truncated)throw new AppError('Plano multimodal truncado.');const raw=JSON.parse(result.output),plan=validateCommentaryPlan(raw.plan);
  if(plan.seconds!==c.requestedSeconds||!Array.isArray(raw.proposals)||raw.proposals.length!==5||!Number.isInteger(raw.selectedIndex)||raw.selectedIndex<0||raw.selectedIndex>4)throw new AppError('Cinco propostas e seleção rastreável obrigatórias.');
@@ -26,7 +28,7 @@ export async function produceCommentary({store,id,token,mission,signal,checkpoin
  const w=(await store.read(id)).workspace,c=w.creativeCampaigns.find(c=>c.id===mission.campaignId),config=mission.visualCommentary,assets={};signal=AbortSignal.any([signal,AbortSignal.timeout(Math.max(1,Math.min(480000,c.deadline-Date.now())))]);
  for(const scene of config.plan.scenes){assets[scene.id]={};const common={store,id,token,campaignId:c.id,maxMicros:c.mediaAuthorization.operationCapMicros,signal};
   if(scene.visual==='higgsfield-image')assets[scene.id].image=await executeMediaOperation({...common,operation:'image',input:{model:scene.model,prompt:scene.prompt}});
-  if(scene.narration){if(!config.narration)throw new AppError('Perfil de narração ausente.');assets[scene.id].speech=await executeMediaOperation({...common,operation:'speech',input:{...config.narration,text:scene.narration}});}
+  if(scene.narration){if(!config.narration)throw new AppError('Perfil de narração ausente.');assets[scene.id].speech=await synthesizeVoiceAsset({...common,scope:'viral',sessionId:mission.id,profile:{...config.narration,engine:'elevenlabs',voice:config.narration.voice||config.narration.voiceId},text:scene.narration});}
  }
  return renderCommentary({plan:config.plan,assets,signal,checkpoint});
 }

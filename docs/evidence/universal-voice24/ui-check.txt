@@ -1,0 +1,2 @@
+{"event":"voice-sample-failed","code":"VOICE_MODEL_UNAVAILABLE","engine":"kokoro"}
+PASS: real frontend/API diagnostic, no fallback, approval disabled, disconnected provider and budget controls, no horizontal overflow at 390/1440px; no paid generation.

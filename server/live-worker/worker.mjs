@@ -18,11 +18,11 @@ export function validateConfig(c,transmit){
  if(!/^\/api\/agents\/live-worker\/[a-f0-9]{64}\/[a-f0-9-]{36}$/.test(c.workerPath)||! /^[a-f0-9]{64}$/.test(c.token))throw new Error('Autorização inválida.');
  if(transmit){const u=new URL(c.destination);if(!['rtmp:','rtmps:'].includes(u.protocol)||!u.hostname||u.username||u.password||u.hash||c.authorizedDestination!==true)throw new Error('Informe destino RTMP/RTMPS autorizado no arquivo local.');}
 }
-async function encodeWorker(c,{transmit=false,output='live-preview.mp4',seconds=1800,signal,onEncoder=()=>{},onAudio=()=>{},profile='light',renderFrame=render,synthesize}={}){
+async function encodeWorker(c,{transmit=false,output='live-preview.mp4',seconds=1800,signal,onEncoder=()=>{},onAudio=()=>{},profile='light',renderFrame=render,synthesize,voiceMetrics}={}){
  const director=createDirector(); const video=videoProfiles[profile];if(!video)throw new Error('Perfil: economy, cpu, light, smooth ou hd (3D experimental).');const fps=video.fps;
  validateConfig(c,transmit);if(!transmit){if(typeof output!=='string'||output.includes('://')||!output.endsWith('.mp4'))throw new Error('Prévia exige arquivo MP4 local.');output=resolve(output);}if(!Number.isInteger(seconds)||seconds<1||seconds>1800)throw new Error('Duração: 1 a 1800 segundos.');
  const mixer=createMixer({synthesize});const instance=randomUUID();let assetsReady=false,state,offset=0,frames=0,bytes=0,status='STARTING',closed=false,encoder,failed=false,lastProgress=Date.now(),lastContact=Date.now(),frame=0;let failureReason=null;
- async function heartbeat(){const before=Date.now();const r=await fetch(new URL(c.workerPath,c.backend),{method:'POST',redirect:'error',headers:{Authorization:`Bearer ${c.token}`,'Content-Type':'application/json'},body:JSON.stringify({instance,status,frames,bytes,audio:workerAudioTelemetry(mixer.metrics),settledJobs:mixer.settledJobs.slice(-8)}),signal:AbortSignal.timeout(3000)});if(!r.ok)throw new Error('Worker sem autorização ou backend indisponível.');const data=await r.json();if(transmit&&data.mode!=='stream')throw new Error('Autorize transmissão no painel.');state=data.experience;offset=data.serverTime-(before+Date.now())/2;lastContact=Date.now();if(assetsReady)mixer.observe(state,Date.now()+offset);if(!['TESTING','PAUSED','INITIALIZING'].includes(state.status)||Date.now()+offset>=data.expiresAt)throw new Error('Sessão encerrada.');}
+ async function heartbeat(){const before=Date.now();const r=await fetch(new URL(c.workerPath,c.backend),{method:'POST',redirect:'error',headers:{Authorization:`Bearer ${c.token}`,'Content-Type':'application/json'},body:JSON.stringify({instance,status,frames,bytes,audio:{...workerAudioTelemetry(mixer.metrics),...(voiceMetrics?{voice:{provider:voiceMetrics.engine,fallback:voiceMetrics.fallback||0,neural:voiceMetrics.neural||0,lastError:voiceMetrics.lastError||null}}:{})},settledJobs:mixer.settledJobs.slice(-8)}),signal:AbortSignal.timeout(3000)});if(!r.ok)throw new Error('Worker sem autorização ou backend indisponível.');const data=await r.json();if(transmit&&data.mode!=='stream')throw new Error('Autorize transmissão no painel.');state=data.experience;offset=data.serverTime-(before+Date.now())/2;lastContact=Date.now();if(assetsReady)mixer.observe(state,Date.now()+offset);if(!['TESTING','PAUSED','INITIALIZING'].includes(state.status)||Date.now()+offset>=data.expiresAt)throw new Error('Sessão encerrada.');}
  try{await heartbeat();mixer.setRepertoire(await loadRepertoire(c,state.musicCatalog||[]),state.musicAmbientTrackId);if(synthesize&&state.performanceConfig?.enabled){const warmupStart=performance.now();await mixer.prime(warmupSegments(),heartbeat);mixer.metrics.warmupMs=performance.now()-warmupStart;}assetsReady=true;await heartbeat();}catch(error){mixer.close();throw error;}
  // Compile shaders and rasterizer caches before media time, with a bounded preparation.
  const preparationStart=performance.now();let preparationTimer;
@@ -61,15 +61,19 @@ async function encodeWorker(c,{transmit=false,output='live-preview.mp4',seconds=
 export async function runWorker(c,options={}){
  if(!videoProfiles[options.profile||'light'])throw Error('Perfil inválido');
  validateConfig(c,options.transmit);const kind=options.renderer||'svg',voice=options.voice||c.voice||'local';
- if(!['svg','three'].includes(kind)||!['neural','kokoro','chatterbox','local'].includes(voice))throw Error('Renderer/voz inválidos');
+ if(!['svg','three'].includes(kind)||!['neural','kokoro','chatterbox','elevenlabs','local'].includes(voice))throw Error('Renderer/voz inválidos');
  if(['economy','hd'].includes(options.profile)&&kind!=='three')throw Error('Economy/HD requer renderer 3D');
  let stage,speech,voiceUnavailable=false;
  try{
   if(kind==='three'){const video=videoProfiles[options.profile||'light'];if(!video)throw Error('Perfil inválido');const {create3DRenderer}=await import('./render3d.mjs');stage=await create3DRenderer(video);}
-  if(voice==='chatterbox'&&!options.voice){voiceUnavailable='GLOBAL_VOICE_LIVE_NOT_VALIDATED';}
+  if(voice==='elevenlabs'){
+   const {createUniversalVoice}=await import('../universal-voice.mjs');speech=await createUniversalVoice({profile:c.voiceProfile,mode:'live',allowFallback:true,remote:async(text,signal)=>{const r=await fetch(new URL(c.workerPath+'/voice',c.backend),{method:'POST',redirect:'error',headers:{Authorization:'Bearer '+c.token,'Content-Type':'application/json'},body:JSON.stringify({text}),signal:AbortSignal.any([...(signal?[signal]:[]),AbortSignal.timeout(4500)])});if(!r.ok){const e=await r.json().catch(()=>({}));throw Object.assign(Error(e.code||'VOICE_SYNTHESIS_FAILED'),{code:e.code});}return r.json();}});
+  }
+  else if(voice==='chatterbox'&&!options.voice){voiceUnavailable='GLOBAL_VOICE_LIVE_NOT_VALIDATED';}
   else if(voice==='kokoro'&&!process.env.HUBLOAN_KOKORO_MODEL&&!options.voice){voiceUnavailable=true;}
-  else if(voice==='neural'||voice==='kokoro'||voice==='chatterbox'){const {createNeuralSpeech}=await import('./neural-speech.mjs');speech=await createNeuralSpeech({engine:voice==='neural'?'piper':voice,profile:c.voiceProfile});}
-  const report=await encodeWorker(c,{...options,renderFrame:options.renderFrame||stage?.render||render,synthesize:options.synthesize||speech?.synthesize});
+  else if(voice==='kokoro'||voice==='chatterbox'){const {createUniversalVoice}=await import('../universal-voice.mjs');speech=await createUniversalVoice({profile:c.voiceProfile,mode:'live',allowFallback:true});}
+  else if(voice==='neural'){const {createNeuralSpeech}=await import('./neural-speech.mjs');speech=await createNeuralSpeech({engine:voice==='neural'?'piper':voice,profile:c.voiceProfile});}
+  const report=await encodeWorker(c,{...options,renderFrame:options.renderFrame||stage?.render||render,synthesize:options.synthesize||speech?.synthesize,voiceMetrics:speech?.metrics});
   if(stage)await stage.inspect();if(speech)await speech.inspect();return {...report,renderer:stage?{...stage.metrics}:{engine:'svg-sharp'},speech:speech?{...speech.metrics}:{engine:'espeak-ng',fallbackReason:voiceUnavailable===true?'GLOBAL_NEURAL_MODEL_UNAVAILABLE':voiceUnavailable||null}};
  }catch(error){if(error.report){error.report.renderer=stage?{...stage.metrics}:{engine:'svg-sharp'};error.report.speech=speech?{...speech.metrics}:{engine:'espeak-ng',fallbackReason:voiceUnavailable===true?'GLOBAL_NEURAL_MODEL_UNAVAILABLE':voiceUnavailable||null};}throw error;}finally{speech?.close();await stage?.close();}
 }
