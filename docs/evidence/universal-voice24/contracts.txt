@@ -1,0 +1,36 @@
+✔ provider keys encrypted and omitted from all public workspace snapshots (152.181695ms)
+✔ provider discovery isolated; connection replacement cannot accept stale refresh (2.060326ms)
+✔ budget reservation needs authorized campaign, is idempotent and respects day/campaign caps (0.490838ms)
+✔ transport sends documented APIs; hides provider errors; rejects unsupported models (3.627991ms)
+✔ scene contract rejects arbitrary markup, unsupported capabilities and incoherent timing (0.384978ms)
+✔ controlled model reaches budget gate and only explicit approval queues one production (5.224731ms)
+✔ real local composition decodes 9:16 with moving geometry, no fake speech or artistic approval (2088.03695ms)
+✔ Lume: varied contextual repertoire, bounded memory and occasional double meaning (1.94939ms)
+✔ Lume: cache keys preserve delivery, state isolated per session and queue remains bounded (1.355106ms)
+✔ approved jingle receives one contextual reply; grouped roses do not add speech (0.73861ms)
+✔ exhausted contextual categories never repeat the immediately preceding line (0.714023ms)
+✔ Top6: quantities, deterministic ties, overtaking, duplicate gifts, session/workspace isolation, safe inputs (12.27864ms)
+✔ ranking survives SQLite reopen; photos reject URLs, consent omission, SVG and oversized images; animated composition (40.359326ms)
+✔ mixer: continuous original music, ducking/recovery, limiter, voice cache, failure fallback and pause (48.520118ms)
+﹣ real local pt-BR TTS creates distinct main and secondary voices (0.241012ms) # SKIP
+﹣ RTMP performance: received music, narrated comment, reply, gift verse, Top6 and photo avatar; game keeps moving (0.138148ms) # SKIP
+✔ own credentials, quota and explicit sample authorization; cache avoids repeated controlled inference (122.428766ms)
+✔ session and daily limits, uncertain sends and in-flight concurrency fail closed (2.598795ms)
+✔ quota, auth, rate limit and timeout remain distinguishable; raw errors never leak (5.005001ms)
+✔ approved sampled identity persists and snapshots keep provider/model/settings/sample ID (7.488232ms)
+✔ shared engine decodes controlled PCM for mixer; sample never substitutes technical fallback (54.151081ms)
+✔ live grants freeze approved identity and reject stale, foreign and revoked speech (0.65882ms)
+{"event":"voice-sample-failed","code":"VOICE_MODEL_UNAVAILABLE","engine":"kokoro"}
+✔ missing local sample yields structured unavailable response instead of generic 503 (21.756913ms)
+✔ concurrent external speech requests reserve only one send (1.365061ms)
+﹣ real live fallback is audible technical synthesis and explicitly counted (0.114032ms) # SKIP
+✔ speech cache cancellation interrupts pending synthesis without poisoning the cache (0.681684ms)
+✔ controlled fallback is identified and a failed fallback is not counted as completed speech (0.243676ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 24
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 3
+ℹ todo 0
+ℹ duration_ms 2627.620294

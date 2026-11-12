@@ -1,3 +1,4 @@
+import {createUniversalVoice,synthesizeVoiceAsset} from './universal-voice.mjs';
 import {produceCommentary} from './commentary-campaign.mjs';
 import {executeCampaign,reconcileCampaigns} from './creative-campaign.mjs';
 import {acceptCreativeModelResult,CREATIVE_MODEL_RULES} from './creative-director.mjs';
@@ -67,7 +68,8 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
         });
         let repertoire={assets:new Map(),failures:0};
         if(mission.liveShort?.music){const selection=mission.liveShort.music,current=(await store.read(id)).workspace;const e=current.liveFactory?.experiences.find(e=>e.id===selection.experienceId),track=e?.musicCatalog?.find(t=>t.id===selection.trackId&&t.approved&&t.category==='ambient');if(!track)throw new AppError('Música ambiente não aprovada neste espaço.');const bytes=await store.readLiveAudio(`${id}:${e.id}:${track.id}`);repertoire.assets.set(track.id,decodeMusic(bytes,track));}
-        const result = mission.visualCommentary?await produceCommentary({store,id,token,mission,signal:controller.signal,checkpoint}):mission.motionStory?await renderMotionStory({config:mission.motionStory,signal:controller.signal,checkpoint}):mission.liveShort?await renderShort({config:mission.liveShort,repertoire,signal:controller.signal,checkpoint}):await renderVideo({brief:mission.brief, images:mission.videoImages || [], signal:controller.signal, checkpoint});
+        const profile=(mission.liveShort||mission.motionStory)?.voiceProfile;const universal=profile?.engine==='elevenlabs'?await createUniversalVoice({profile,remote:(text,signal)=>synthesizeVoiceAsset({store,id,token,profile,text,scope:'viral',sessionId:mission.id,signal})}):null;
+        const result = mission.visualCommentary?await produceCommentary({store,id,token,mission,signal:controller.signal,checkpoint}):mission.motionStory?await renderMotionStory({config:mission.motionStory,offlineVoice:universal,signal:controller.signal,checkpoint}):mission.liveShort?await renderShort({config:mission.liveShort,repertoire,offlineVoice:universal,signal:controller.signal,checkpoint}):await renderVideo({brief:mission.brief, images:mission.videoImages || [], signal:controller.signal, checkpoint});
         await update(id, mission.id, current => {
           current.artifact = {base64:result.base64,preview:result.preview,mime:'video/mp4',filename:`hubloan-${mission.id}.mp4`};
           current.videoReport = result.report;

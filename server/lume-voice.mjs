@@ -18,6 +18,12 @@ export const voicePhrases=[
 ];
 export const voiceStates=['mysterious','playful','suspense','surprised','warm','celebration','calm'];
 export function voiceProfile(input={}){
+ if(input.engine==='elevenlabs'){
+ if(!/^[a-zA-Z0-9_-]{1,128}$/.test(input.voice||'')||!/^[a-zA-Z0-9_-]{1,128}$/.test(input.model||''))throw Error('Modelo/voz ElevenLabs inválidos');
+ const settings={stability:input.settings?.stability??.6,similarity_boost:input.settings?.similarity_boost??.75};if(input.settings?.style!==undefined)settings.style=input.settings.style;
+ if(Object.values(settings).some(n=>!Number.isFinite(n)||n<0||n>1))throw Error('Parâmetros vocais: 0 a 1');
+ return {candidateId:'elevenlabs',engine:'elevenlabs',model:input.model,voice:input.voice,settings,version:input.version||1,speed:1,language:'pt-BR',style:'ElevenLabs · identidade supervisionada',fallback:'espeak-technical-only',liveValidated:false,license:'Account and voice terms require review',...(input.approvedSampleId?{approvedSampleId:input.approvedSampleId}:{})};
+ }
  const c=voiceCandidates.find(c=>c.id===(input.candidateId||'dora-current'));if(!c)throw Error('Candidata vocal inválida');
  if(c.engine==='chatterbox'){
  const exaggeration=input.exaggeration??.35;if(!Number.isFinite(exaggeration)||exaggeration<.2||exaggeration>.6)throw Error('Expressividade: 0,20–0,60');
@@ -27,14 +33,14 @@ export function voiceProfile(input={}){
  return {version:Number.isSafeInteger(input.version)&&input.version>0?input.version:1,candidateId:c.id,engine:'kokoro',model:'Kokoro-82M-v1.0',voice:'pf_dora',language:'pt-BR',speed,style:c.name,normalization:'existing-mixer-limiter',fallback:'espeak-technical-only',license:'Apache-2.0',source:'https://huggingface.co/hexgrad/Kokoro-82M',emotionControl:'text-and-speed-only'};
 }
 export function activeVoice(w){return voiceProfile(w.voiceStudio?.active);}
-export function voiceStudioState(w){return {active:activeVoice(w),draft:w.voiceStudio?.draft||null,revision:w.voiceStudio?.revision||0,candidates:voiceCandidates.filter(c=>!c.legacy).map(c=>({...c,engine:c.engine||'kokoro',installed:voiceInstalled(c.id),license:voiceProfile({candidateId:c.id}).license})),phrases:voicePhrases};}
+export function voiceStudioState(w){return {active:activeVoice(w),draft:w.voiceStudio?.draft||null,revision:w.voiceStudio?.revision||0,budgets:w.voiceStudio?.budgets||{},usage:(w.voiceStudio?.usage||[]).map(({key,...e})=>e),connection:w.multimodal?.connections.elevenlabs?.status||'DISCONNECTED',models:w.multimodal?.connections.elevenlabs?.models||[],voices:w.multimodal?.connections.elevenlabs?.voices||[],candidates:voiceCandidates.filter(c=>!c.legacy).map(c=>({...c,engine:c.engine||'kokoro',installed:voiceInstalled(c.id),license:voiceProfile({candidateId:c.id}).license})),phrases:voicePhrases};}
 export function voiceStudioAction(w,input){
  const state=w.voiceStudio||={active:voiceProfile(),revision:0};
  if(input.revision!==state.revision)throw Error('Perfil alterado; atualize a página');
- if(input.action==='save'){state.draft=voiceProfile({...input.profile,version:state.active.version+1});state.previewed=null;}
+ if(input.action==='save'){state.draft=voiceProfile({...input.profile,version:state.active.version+1});if(state.draft.engine==='elevenlabs'){const c=w.multimodal?.connections.elevenlabs,m=c?.models?.find(m=>m.id===state.draft.model);if(!c?.voices?.some(v=>v.id===state.draft.voice)||!m?.languages.some(l=>l.language_id==='pt')||(state.draft.settings.style!==undefined&&!m.style))throw Error('Consulte uma voz/modelo PT disponível antes de salvar');}state.previewed=null;state.previewedSampleId=null;}
  else if(input.action==='approve'){
   if(!state.draft||input.listened!==true||state.previewed!==JSON.stringify(state.draft))throw Error('Ouça a candidata salva antes de aprovar');
-  state.active=structuredClone(state.draft);state.draft=null;state.previewed=null;
+  if(state.draft.engine==='elevenlabs'&&!state.previewedSampleId)throw Error('Amostra real obrigatória');state.active=structuredClone(state.draft);if(state.previewedSampleId)state.active.approvedSampleId=state.previewedSampleId;state.draft=null;state.previewed=null;
  }else throw Error('Ação vocal inválida');
  state.revision++;return voiceStudioState(w);
 }

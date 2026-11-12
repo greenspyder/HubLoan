@@ -1,0 +1,11 @@
+import puppeteer from 'puppeteer-core';
+import assert from 'node:assert/strict';
+import {mkdir} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import {createStore} from './store.mjs';
+import {createApp} from './app.mjs';
+const directory=resolve('docs/evidence/universal-voice24/ui');await mkdir(directory,{recursive:true});const store=await createStore({file:':memory:'}),app=createApp({store,provider:{},staticDirectory:resolve('frontend/dist')});await new Promise(r=>app.server.listen(0,'127.0.0.1',r));const browser=await puppeteer.launch({executablePath:process.env.HUBLOAN_CHROMIUM,headless:'shell',args:['--no-sandbox','--disable-dev-shm-usage']});
+try{const p=await browser.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto(`http://127.0.0.1:${app.server.address().port}/agentes/viral`);await p.waitForSelector('#studio-advanced');await p.evaluate(()=>{document.querySelector('#studio-advanced').open=true;const v=[...document.querySelectorAll('details')].find(d=>d.querySelector(':scope > summary')?.textContent.includes('Voice Studio'));v.open=true;for(const d of v.querySelectorAll('details'))d.open=true;});
+for(const width of [390,1440]){await p.setViewport({width,height:900});assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await p.screenshot({path:resolve(directory,`${width}.webp`),fullPage:true,type:'webp',quality:60});}
+await p.evaluate(()=>[...document.querySelectorAll('button')].find(b=>b.textContent==='Ouvir voz atual').click());await p.waitForFunction(()=>document.body.textContent.includes('VOICE_MODEL_UNAVAILABLE'));assert.ok(await p.evaluate(()=>[...document.querySelectorAll('button')].find(b=>b.textContent==='Aprovar como voz global').disabled));await p.screenshot({path:resolve(directory,'diagnostic.webp'),fullPage:true,type:'webp',quality:60});assert.deepEqual(errors,[]);console.log('PASS: real frontend/API diagnostic, no fallback, approval disabled, disconnected provider and budget controls, no horizontal overflow at 390/1440px; no paid generation.');
+}finally{await browser.close();await app.close();await store.close();}

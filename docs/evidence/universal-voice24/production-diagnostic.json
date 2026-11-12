@@ -1,0 +1,23 @@
+{
+  "at": "2026-11-12T13:34:04.117Z",
+  "status": 200,
+  "hasMultimodal": true,
+  "localCandidates": [
+    {
+      "id": "dora-current",
+      "engine": "kokoro",
+      "installed": false
+    },
+    {
+      "id": "chatterbox-heart",
+      "engine": "chatterbox",
+      "installed": false
+    },
+    {
+      "id": "chatterbox-emma",
+      "engine": "chatterbox",
+      "installed": false
+    }
+  ],
+  "note": "Read-only fresh diagnostic workspace, not the user workspace; no credentials or synthesis. Cannot establish cause for a historical request."
+}

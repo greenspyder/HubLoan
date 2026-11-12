@@ -1,0 +1,20 @@
+✔ own credentials, quota and explicit sample authorization; cache avoids repeated controlled inference (183.490232ms)
+✔ session and daily limits, uncertain sends and in-flight concurrency fail closed (6.021967ms)
+✔ quota, auth, rate limit and timeout remain distinguishable; raw errors never leak (11.23611ms)
+✔ approved sampled identity persists and snapshots keep provider/model/settings/sample ID (7.311893ms)
+✔ shared engine decodes controlled PCM for mixer; sample never substitutes technical fallback (72.532203ms)
+✔ live grants freeze approved identity and reject stale, foreign and revoked speech (0.695013ms)
+{"event":"voice-sample-failed","code":"VOICE_MODEL_UNAVAILABLE","engine":"kokoro"}
+✔ missing local sample yields structured unavailable response instead of generic 503 (25.332313ms)
+✔ concurrent external speech requests reserve only one send (1.422634ms)
+﹣ real live fallback is audible technical synthesis and explicitly counted (0.129444ms) # SKIP
+✔ speech cache cancellation interrupts pending synthesis without poisoning the cache (0.607521ms)
+✔ controlled fallback is identified and a failed fallback is not counted as completed speech (0.235814ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 578.491085

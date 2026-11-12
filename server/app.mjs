@@ -1,3 +1,5 @@
+import {synthesizeVoiceAsset,voiceBudgetAction} from './universal-voice.mjs';
+import {voiceError,VoiceError} from './voice-errors.mjs';
 import {estimateCommentary} from './commentary-campaign.mjs';
 import {createMediaProviders} from './media-providers/index.mjs';
 import {configureMultimodal,refreshMediaProvider} from './multimodal-studio.mjs';
@@ -7,7 +9,7 @@ import {voiceStudioAction,voiceStudioState} from './lume-voice.mjs';
 import {voiceSample} from './live-worker/voice-sample.mjs';
 import {musicTrack} from './live-music.mjs';
 import { normalizeAvatar } from './live-avatar.mjs';
-import { authorizeWorker, workerHeartbeat, workerMusic } from './live-broadcast.mjs';
+import { authorizeWorker, workerHeartbeat, workerMusic, workerVoice } from './live-broadcast.mjs';
 import { createTikTok } from './tiktok.mjs';
 import { createLiveRuntime, liveAction, publicLive } from './live-factory.mjs';
 import { normalizeVideoImages } from './video-production.mjs';
@@ -48,7 +50,7 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
   const engineering = createEngineering(store, provider, { masterKey, provider: engineeringProvider });
   const marketing = createMarketing(store, { masterKey, provider: marketingProvider, publicOrigin });
   const liveRuntime = createLiveRuntime(store);
-  const rates = new Map();
+  const rates = new Map(),voiceAccess=new Map();
   const root = resolve(staticDirectory);
   function send(response, status, body, headers = {}) {
     response.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', ...headers });
@@ -109,6 +111,13 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
         throw new AppError('Método inválido.', 405);
       }
       if (url.pathname.startsWith('/api/agents/storefront/')) throw new AppError('Loja não encontrada.', 404);
+      const voiceWorker=url.pathname.match(/^\/api\/agents\/live-worker\/([a-f0-9]{64})\/([a-f0-9-]{36})\/voice$/);
+      if(voiceWorker&&request.method==='POST'){
+       const [,wid,eid]=voiceWorker,input=await body(request,1024),grant=request.headers.authorization?.replace(/^Bearer /,'')||'';
+       const config=workerVoice((await store.read(wid)).workspace,eid,grant,input),token=voiceAccess.get(wid)?.expires>Date.now()?voiceAccess.get(wid).token:null;if(!token)throw new VoiceError('VOICE_PROVIDER_NOT_CONFIGURED');
+       const signal=AbortSignal.timeout(4000);const asset=await synthesizeVoiceAsset({store,id:wid,token,profile:config.profile,text:input.text,scope:'live',sessionId:config.sessionId,signal});
+       workerVoice((await store.read(wid)).workspace,eid,grant,input);return send(response,200,asset);
+      }
       const musicWorker=url.pathname.match(/^\/api\/agents\/live-worker\/([a-f0-9]{64})\/([a-f0-9-]{36})\/music\/([a-f0-9-]{36})$/);
       if(musicWorker&&request.method==='GET'){const [,wid,eid,tid]=musicWorker;workerMusic((await store.read(wid)).workspace,eid,request.headers.authorization?.replace(/^Bearer /,'')||'',tid);return send(response,200,await store.readLiveAudio(`${wid}:${eid}:${tid}`),{'Content-Type':'audio/wav'});}
       const workerRoute=url.pathname.match(/^\/api\/agents\/live-worker\/([a-f0-9]{64})\/([a-f0-9-]{36})$/);
@@ -131,6 +140,7 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       // Read-only polling must not keep background workers awake. Mutations can
       // unlock the workspace; persisted grants are restored by the workers.
       if (shouldUnlockBackgroundWorkers(request.method)) {
+        for(const [key,value] of voiceAccess)if(value.expires<=Date.now())voiceAccess.delete(key);if(voiceAccess.size>=1000)voiceAccess.delete(voiceAccess.keys().next().value);voiceAccess.set(id,{token,expires:Date.now()+3600000});
         runner.unlock(id, token); commerce.unlock(id, token);
       }
       if(route==='/media-providers'&&request.method==='POST'){const input=await body(request,2048);if(input.action==='refresh')await refreshMediaProvider(store,id,token,input.provider);else await store.mutate(id,w=>configureMultimodal(w,input,token));return send(response,200,publicWorkspace((await store.read(id)).workspace,store.mode,Boolean(masterKey)));}
@@ -145,13 +155,13 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
         return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey)));
       }
       if(route==='/voice-studio'&&request.method==='POST'){
-        const input=await body(request,2048);const updated=await store.mutate(id,w=>{try{return voiceStudioAction(w,input);}catch(error){throw new AppError(error.message,400);}});return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey)));
+        const input=await body(request,2048);const updated=await store.mutate(id,w=>{try{if(input.action==='budget')return voiceBudgetAction(w,input);return voiceStudioAction(w,input);}catch(error){throw new AppError(error.message,400);}});return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey)));
       }
       if(route==='/voice-studio/sample'&&request.method==='POST'){
         const input=await body(request,1024),w=(await store.read(id)).workspace,state=voiceStudioState(w),profile=input.current?state.active:state.draft;
         if(!profile)throw new AppError('Salve uma candidata de teste primeiro');
-        let result;try{result=await voiceSample(profile,input.index??0);}catch{throw new AppError('Não foi possível gerar a amostra neural. Verifique os modelos locais ou aguarde a síntese atual.',503);}
-        if(!input.current)await store.mutate(id,w=>{if(JSON.stringify(w.voiceStudio?.draft)===JSON.stringify(profile))w.voiceStudio.previewed=JSON.stringify(profile);});
+        let result,sampleId;try{result=await voiceSample(profile,input.index??0,async(text,signal)=>{const asset=await synthesizeVoiceAsset({store,id,token,profile,text,scope:'samples',sessionId:'samples:'+state.revision,signal,authorize:input.authorizePaid===true});sampleId=asset.sampleId;return asset;});}catch(e){const error=voiceError(e);console.error(JSON.stringify({event:'voice-sample-failed',code:error.code,engine:profile.engine}));throw error;}
+        if(!input.current)await store.mutate(id,w=>{if(JSON.stringify(w.voiceStudio?.draft)===JSON.stringify(profile)){w.voiceStudio.previewed=JSON.stringify(profile);w.voiceStudio.previewedSampleId=sampleId||null;}});
         return send(response,200,result.wav,{'Content-Type':'audio/wav'});
       }
       if (route === '/factories' && request.method === 'POST') { const input = await body(request); const updated = await store.mutate(id, w => createFactory(w, input)); return send(response, 201, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey))); }
@@ -355,8 +365,8 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
     } catch (error) {
       if (response.headersSent) { response.end(); return; }
       if (!(error instanceof AppError)) console.error('Falha interna ao atender a central de agentes.');
-      send(response, error instanceof AppError ? error.status : 500, { error: error instanceof AppError ? error.message : 'O servidor não conseguiu concluir a ação. Tente novamente.', budgetBlock: error instanceof AppError ? error.budgetBlock : undefined });
+      send(response, error instanceof AppError ? error.status : 500, { code:error instanceof VoiceError?error.code:undefined, error: error instanceof AppError ? error.message : 'O servidor não conseguiu concluir a ação. Tente novamente.', budgetBlock: error instanceof AppError ? error.budgetBlock : undefined });
     }
   });
-  return { server, liveRuntime, runner, commerce, shop, marketing, engineering, close: async () => { await liveRuntime.close(); await engineering.close(); await marketing.close(); await shop.close(); await commerce.close(); await runner.close(); await new Promise(resolveClose => server.close(resolveClose)); } };
+  return { server, liveRuntime, runner, commerce, shop, marketing, engineering, close: async () => { voiceAccess.clear();await liveRuntime.close(); await engineering.close(); await marketing.close(); await shop.close(); await commerce.close(); await runner.close(); await new Promise(resolveClose => server.close(resolveClose)); } };
 }

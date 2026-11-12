@@ -1,0 +1,11 @@
+{
+  "scope": "development environment only",
+  "totalMemoryBytes": 10451427328,
+  "freeMemoryBytes": 9677447168,
+  "kokoroConfigured": false,
+  "chatterboxConfigured": false,
+  "kokoroFiles": false,
+  "chatterboxHeartFiles": false,
+  "chatterboxEmmaFiles": false,
+  "note": "Host memory is not a production container memory limit. No inference model installed or downloaded."
+}
