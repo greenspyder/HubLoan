@@ -1,0 +1,252 @@
+{
+  "report": {
+    "preparationMs": 28.87806999999998,
+    "failureReason": null,
+    "heartbeatIntervalMs": 750,
+    "stages": {
+      "pcmMixMs": {
+        "totalMs": 100.35008299999839,
+        "maxMs": 5.696374999999534,
+        "count": 64
+      },
+      "audioPipeMs": {
+        "totalMs": 21.092331000001025,
+        "maxMs": 6.71632099999988,
+        "count": 64
+      },
+      "renderRoundtripMs": {
+        "totalMs": 702.3452209999991,
+        "maxMs": 36.9065499999997,
+        "count": 64
+      },
+      "videoPipeMs": {
+        "totalMs": 87.1372950000054,
+        "maxMs": 30.09661600000004,
+        "count": 64
+      }
+    },
+    "codecTimingNote": "Pipe timing includes backpressure, not isolated H264/AAC codec time. GPU submit is not GPU completion.",
+    "direction": {
+      "harvest": 1,
+      "contest": 1
+    },
+    "cameraCuts": {
+      "Follow": 1,
+      "Action": 1
+    },
+    "status": "STOPPED",
+    "profile": "cpu",
+    "fps": 8,
+    "maxRenderMs": 54,
+    "lateFrames": 0,
+    "maxPipelineLagMs": 10,
+    "frames": 64,
+    "bytes": 720341,
+    "durationMs": 8009,
+    "renderedFrames": 64,
+    "rssBytes": 158474240,
+    "rendererCpuMs": 1147.913,
+    "encoderCpuMs": null,
+    "networkBytes": null,
+    "publicTransmission": "UNCONFIRMED",
+    "audio": {
+      "playback": [],
+      "latency": {
+        "pending": {
+          "count": 1,
+          "meanMs": 0,
+          "p95Ms": 0,
+          "maxMs": 0
+        },
+        "synthesis": {
+          "count": 1,
+          "meanMs": 4,
+          "p95Ms": 4,
+          "maxMs": 4
+        },
+        "queue": {
+          "count": 1,
+          "meanMs": 115,
+          "p95Ms": 115,
+          "maxMs": 115
+        },
+        "complete": {
+          "count": 1,
+          "meanMs": 2530,
+          "p95Ms": 2530,
+          "maxMs": 2530
+        }
+      },
+      "interrupted": 0,
+      "staleDropped": 0,
+      "synthesized": 0,
+      "cacheHits": 0,
+      "ttsFailures": 1,
+      "dropped": 0,
+      "ttsMs": 4,
+      "maxPlaybackLatencyMs": 0,
+      "musicFailures": 0,
+      "ambientFrames": 0,
+      "ambientTransitions": 0,
+      "ambientTrackId": null,
+      "trackPlays": {},
+      "played": {
+        "host": 0,
+        "comment": 0,
+        "chant": 0,
+        "music": 0
+      },
+      "peak": 0.02289781510280374,
+      "aiCalls": 0
+    },
+    "aiCalls": 0,
+    "renderer": {
+      "engine": "svg-sharp"
+    },
+    "speech": {
+      "engine": "espeak-ng",
+      "fallbackReason": "GLOBAL_NEURAL_MODEL_UNAVAILABLE"
+    }
+  },
+  "probe": {
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "h264",
+        "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+        "profile": "Constrained Baseline",
+        "codec_type": "video",
+        "codec_tag_string": "avc1",
+        "codec_tag": "0x31637661",
+        "width": 360,
+        "height": 640,
+        "coded_width": 360,
+        "coded_height": 640,
+        "closed_captions": 0,
+        "film_grain": 0,
+        "has_b_frames": 0,
+        "pix_fmt": "yuv420p",
+        "level": 22,
+        "chroma_location": "left",
+        "field_order": "progressive",
+        "refs": 1,
+        "is_avc": "true",
+        "nal_length_size": "4",
+        "id": "0x1",
+        "r_frame_rate": "8/1",
+        "avg_frame_rate": "8/1",
+        "time_base": "1/16384",
+        "start_pts": 0,
+        "start_time": "0.000000",
+        "duration_ts": 131072,
+        "duration": "8.000000",
+        "bit_rate": "651840",
+        "bits_per_raw_sample": "8",
+        "nb_frames": "64",
+        "extradata_size": 39,
+        "disposition": {
+          "default": 1,
+          "dub": 0,
+          "original": 0,
+          "comment": 0,
+          "lyrics": 0,
+          "karaoke": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "visual_impaired": 0,
+          "clean_effects": 0,
+          "attached_pic": 0,
+          "timed_thumbnails": 0,
+          "non_diegetic": 0,
+          "captions": 0,
+          "descriptions": 0,
+          "metadata": 0,
+          "dependent": 0,
+          "still_image": 0,
+          "multilayer": 0
+        },
+        "tags": {
+          "language": "und",
+          "handler_name": "VideoHandler",
+          "vendor_id": "[0][0][0][0]",
+          "encoder": "Lavc61.19.101 libx264"
+        }
+      },
+      {
+        "index": 1,
+        "codec_name": "aac",
+        "codec_long_name": "AAC (Advanced Audio Coding)",
+        "profile": "LC",
+        "codec_type": "audio",
+        "codec_tag_string": "mp4a",
+        "codec_tag": "0x6134706d",
+        "sample_fmt": "fltp",
+        "sample_rate": "48000",
+        "channels": 1,
+        "channel_layout": "mono",
+        "bits_per_sample": 0,
+        "initial_padding": 0,
+        "id": "0x2",
+        "r_frame_rate": "0/0",
+        "avg_frame_rate": "0/0",
+        "time_base": "1/48000",
+        "start_pts": 0,
+        "start_time": "0.000000",
+        "duration_ts": 384000,
+        "duration": "8.000000",
+        "bit_rate": "64437",
+        "nb_frames": "376",
+        "extradata_size": 5,
+        "disposition": {
+          "default": 1,
+          "dub": 0,
+          "original": 0,
+          "comment": 0,
+          "lyrics": 0,
+          "karaoke": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "visual_impaired": 0,
+          "clean_effects": 0,
+          "attached_pic": 0,
+          "timed_thumbnails": 0,
+          "non_diegetic": 0,
+          "captions": 0,
+          "descriptions": 0,
+          "metadata": 0,
+          "dependent": 0,
+          "still_image": 0,
+          "multilayer": 0
+        },
+        "tags": {
+          "language": "und",
+          "handler_name": "SoundHandler",
+          "vendor_id": "[0][0][0][0]"
+        }
+      }
+    ],
+    "format": {
+      "filename": "/workspace/scratch/693518016dd2/HubLoan/docs/evidence/readiness25/live-continuity.mp4",
+      "nb_streams": 2,
+      "nb_programs": 0,
+      "nb_stream_groups": 0,
+      "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+      "format_long_name": "QuickTime / MOV",
+      "start_time": "0.000000",
+      "duration": "8.000000",
+      "size": "720341",
+      "bit_rate": "720341",
+      "probe_score": 100,
+      "tags": {
+        "major_brand": "isom",
+        "minor_version": "512",
+        "compatible_brands": "isomiso2avc1mp41",
+        "encoder": "Lavf61.7.103"
+      }
+    }
+  },
+  "sha256": "216d1835c5fe5500aa556d6b3535b73e1a8b30fe39ea337435c4be0098c42c83",
+  "claim": "Real local preview: gameplay/encoder continuity without installed neural models or technical TTS. Not proof of ElevenLabs, neural latency, artistic approval or autonomous Astra creation.",
+  "paidCalls": 0,
+  "publicStream": false
+}

@@ -1,0 +1,1 @@
+PASS: real frontend preflight blocks missing local voice before API call, no fallback, approval disabled, disconnected provider and budget controls, no horizontal overflow at 390/1440px; no paid generation.

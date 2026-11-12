@@ -48,11 +48,12 @@ export async function executeMediaOperation({store,id,token,campaignId,operation
    const deadline=Date.now()+240000;let job;
    try{while(Date.now()<deadline){signal?.throwIfAborted();job=await adapters.statusImage(key,requestId,signal);if(['completed','failed','nsfw','canceled'].includes(job.status))break;await new Promise((resolve,reject)=>{const onAbort=()=>{clearTimeout(timer);reject(Error('Cancelled'));};const timer=setTimeout(()=>{signal?.removeEventListener('abort',onAbort);resolve();},1500);signal?.addEventListener('abort',onAbort,{once:true});});}}
    catch(e){if(signal?.aborted){try{await adapters.cancelImage(key,requestId);}catch{/* Cancellation is not guaranteed after processing starts. */}}throw e;}
+   if(['failed','nsfw','canceled'].includes(job?.status)){await change(e=>{e.status=job.status==='canceled'?'CANCELLED':'FAILED';e.error='PROVIDER_JOB_'+job.status.toUpperCase();});throw new AppError('Job visual encerrado sem asset. Nenhum reenvio automático.',409);}
    if(job?.status!=='completed')throw new AppError('Imagem não concluída; job preservado para consulta.',409);
    const url=new URL(job.images?.[0]?.url);if(url.protocol!=='https:'||url.username||url.password||!(['images.higgs.ai','cdn.higgsfield.ai'].includes(url.hostname)||url.hostname.endsWith('.cloudfront.net')))throw new AppError('MEDIA_DOWNLOAD_HOST_NOT_VERIFIED',409);
    const response=await fetch(url,{redirect:'error',signal:AbortSignal.any([signal,AbortSignal.timeout(30000)].filter(Boolean))});if(!response.ok)throw new AppError('Asset indisponível.');const chunks=[];let size=0;for await(const chunk of response.body){size+=chunk.length;if(size>12e6)throw new AppError('Asset excede limite.');chunks.push(chunk);}const bytes=Buffer.concat(chunks);
    result={base64:bytes.toString('base64'),mime:'image/png',provenance:{provider:'higgsfield',requestId,model:input.model,source:url.origin+url.pathname,sha256:createHash('sha256').update(bytes).digest('hex'),rights:'Generated via authenticated API; human rights review required'}};
   }
   await change(e=>{e.status='COMPLETE';e.result=result;e.completedAt=new Date().toISOString();});return result;
- }catch(e){if(claimed)await change(x=>{x.status=x.requestId?'POLLING':'UNCERTAIN';x.error=e.code||'MEDIA_OPERATION_NOT_COMPLETED';});throw e;}
+ }catch(e){if(claimed)await change(x=>{if(['FAILED','CANCELLED'].includes(x.status))return;x.status=x.requestId?'POLLING':'UNCERTAIN';x.error=e.code||'MEDIA_OPERATION_NOT_COMPLETED';});throw e;}
 }
