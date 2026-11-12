@@ -18,6 +18,7 @@ try{
  for(const width of [320,390,768]){await page.setViewport({width,height:844});await overflow();}
  await page.setViewport({width:390,height:844});await page.screenshot({path:resolve(directory,'mobile-empty.webp'),fullPage:true,type:"webp",quality:65});
  await page.click('a[href="#studio-advanced"]');assert.equal(await page.$eval('#studio-advanced',e=>e.open),true);
+ await page.$eval('#studio-providers',e=>e.open=true);assert.ok(await page.$eval('#studio-providers',e=>e.textContent.includes('DISCONNECTED')));await overflow();await page.screenshot({path:resolve(directory,'mobile-providers.webp'),fullPage:true,type:'webp',quality:65});
  await page.$eval('#studio-manual',e=>e.open=true);await overflow();
  await page.screenshot({path:resolve(directory,'mobile-advanced.webp'),fullPage:true,type:"webp",quality:65});await page.$eval('#studio-advanced',e=>e.open=false);
  await page.type('[aria-label="Solicitação da campanha"]','Pesquise oportunidades criativas e produza três vídeos distintos para avaliação.');
