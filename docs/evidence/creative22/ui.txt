@@ -1,0 +1,2 @@
+PASS: real frontend/API start, cancel, resume, missing-model error, history reload; no seeded campaigns or fake video results.
+PASS: collapsed tools, advanced navigation, 320/390/768/1440px no overflow, zero page errors. Screenshots: /workspace/scratch/693518016dd2/HubLoan/docs/evidence/creative22
