@@ -1,3 +1,6 @@
+import {estimateCommentary} from './commentary-campaign.mjs';
+import {createMediaProviders} from './media-providers/index.mjs';
+import {configureMultimodal,refreshMediaProvider} from './multimodal-studio.mjs';
 import {campaignAction,reconcileCampaigns} from './creative-campaign.mjs';
 import {creativeAction} from './creative-director.mjs';
 import {voiceStudioAction,voiceStudioState} from './lume-voice.mjs';
@@ -130,8 +133,9 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       if (shouldUnlockBackgroundWorkers(request.method)) {
         runner.unlock(id, token); commerce.unlock(id, token);
       }
+      if(route==='/media-providers'&&request.method==='POST'){const input=await body(request,2048);if(input.action==='refresh')await refreshMediaProvider(store,id,token,input.provider);else await store.mutate(id,w=>configureMultimodal(w,input,token));return send(response,200,publicWorkspace((await store.read(id)).workspace,store.mode,Boolean(masterKey)));}
       if(route==='/creative-campaigns'&&request.method==='POST'){
-        const input=await body(request);const updated=await store.mutate(id,w=>campaignAction(w,input));
+        const input=await body(request);if(input.action==='estimate-media'){await estimateCommentary({store,id,token,campaignId:input.id,revision:input.revision,adapters:createMediaProviders()});return send(response,200,publicWorkspace((await store.read(id)).workspace,store.mode,Boolean(masterKey)));}const updated=await store.mutate(id,w=>campaignAction(w,input));
         if(input.action==='cancel')for(const mid of [updated.result.missionId,...updated.result.productionIds])runner.cancel(id,mid);
         return send(response,200,publicWorkspace(updated.workspace,store.mode,Boolean(masterKey)));
       }

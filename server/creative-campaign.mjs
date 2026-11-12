@@ -1,3 +1,4 @@
+import {planCommentary,authorizeCommentary} from './commentary-campaign.mjs';
 import {audienceLearning} from './viral-distribution.mjs';
 import {randomUUID,createHash} from 'node:crypto';
 import {AppError,text,addMission,queueMission,missionById,cancelMission,decryptKey} from './domain.mjs';
@@ -17,11 +18,13 @@ export function campaignAction(w,input,now=Date.now()){
   const request=text(input.request,'Solicitação',1000),agent=w.agents.find(a=>a.enabled);if(!agent)throw new AppError('Nenhum agente ativo.');
   const m=addMission(w,{title:'Astra: campanha autônoma',brief:request,kind:'text',agentId:agent.id});
   const c={id:randomUUID(),revision:0,request,state:'Researching',createdAt:new Date(now).toISOString(),deadline:now+1800000,missionId:m.id,voiceMode:input.voiceMode,webResearch:input.webResearch===true,attemptLimit:2,model:w.settings.model,events:[],sources:[],decisions:[],productionIds:[],publication:{enabled:false,approval:'human',officialAuthenticationRequired:true,schedulerImplemented:false,metrics:[]}};
-  m.campaignId=c.id;m.creativeRequest={version:1,theme:request,sources:structuredClone((w.creativeDirector?.sources||[]).filter(s=>s.kind!=='fixture')),rejected:(w.creativeDirector?.experiments||[]).filter(e=>e.reviews.some(r=>r.decision==='reject')).map(e=>({title:e.proposal.title,concept:e.proposal.concept,reasons:e.reviews})),audienceEvidence:(w.experiments||[]).filter(e=>e.kind==='audience').map(audienceLearning)};
+  if(input.mode==='visual-commentary'){if(![15,18,20,24,30].includes(input.seconds))throw new AppError('Duração multimodal inválida.');c.mode='visual-commentary';c.requestedSeconds=input.seconds;c.qualityPreference=input.qualityPreference==='quality'?'quality':'economy';}
+  m.campaignId=c.id;m.creativeRequest={version:1,mode:c.mode,theme:request,sources:structuredClone((w.creativeDirector?.sources||[]).filter(s=>s.kind!=='fixture')),rejected:(w.creativeDirector?.experiments||[]).filter(e=>e.reviews.some(r=>r.decision==='reject')).map(e=>({title:e.proposal.title,concept:e.proposal.concept,reasons:e.reviews})),audienceEvidence:(w.experiments||[]).filter(e=>e.kind==='audience').map(audienceLearning)};
   event(c,'Researching','Solicitação recebida; nenhuma proposta ou cena fornecida pelo operador.');list(w).push(c);queueMission(w,m.id);return c;
  }
  const c=list(w).find(c=>c.id===input.id);if(!c)throw new AppError('Campanha não encontrada.',404);
  if(input.revision!==c.revision)throw new AppError('Campanha mudou. Recarregue.',409);
+ if(input.action==='authorize-media')return authorizeCommentary(w,c,input,now);
  if(input.action==='resume'){
   if(c.state!=='Failed'||(c.resumes||0)>=1||w.creativeDirector?.paused)throw new AppError('Retomada indisponível ou limite atingido.',409);
   const ids=c.productionIds.length?c.productionIds:[c.missionId];
@@ -36,7 +39,7 @@ export function campaignAction(w,input,now=Date.now()){
 }
 export function reconcileCampaigns(w,now=Date.now()){
  for(const c of list(w)){
-  if(terminal.has(c.state))continue;
+  if(terminal.has(c.state)||c.state==='AwaitingBudget')continue;
   const charges=(w.aiCosts?.entries||[]).filter(e=>[c.missionId,...c.productionIds].includes(e.taskId));c.costs={calls:charges.filter(e=>e.status!=='not_sent').length,exposureMinor:charges.reduce((n,e)=>n+costExposure(e),0),confirmedMinor:charges.every(e=>e.confirmedMinor!=null)?charges.reduce((n,e)=>n+e.confirmedMinor,0):null,infrastructureMinor:null};
   const m=w.missions.find(m=>m.id===c.missionId),jobs=c.productionIds.map(id=>w.missions.find(m=>m.id===id));
   const failure=!m||['failed','cancelled'].includes(m.status)||jobs.some(m=>!m||['failed','cancelled'].includes(m.status));
@@ -44,8 +47,8 @@ export function reconcileCampaigns(w,now=Date.now()){
    for(const job of [m,...jobs])if(job&&['queued','running'].includes(job.status))cancelMission(w,job.id);
    c.error=now>c.deadline?'CAMPAIGN_DEADLINE_EXCEEDED':m?.error||jobs.find(m=>m?.error)?.error||'PRODUCTION_INTERRUPTED';event(c,'Failed',c.error);c.endedAt=new Date(now).toISOString();c.revision++;continue;
   }
-  if(jobs.length===3&&jobs.every(m=>['review','approved','rejected'].includes(m.status))){
-   event(c,'Validating','Verificar três artefatos, planos e integridade técnica.');
+  if(jobs.length===(c.mode==='visual-commentary'?1:3)&&jobs.every(m=>['review','approved','rejected'].includes(m.status))){
+   event(c,'Validating','Verificar artefatos, planos e integridade técnica.');
    const issues=jobs.flatMap(m=>!m.artifact||m.videoReport?.technicalStatus!=='TECHNICALLY_VALID'?['INVALID_ARTIFACT:'+m.id]:[]);
    // Existing renderer numeric tests are not sufficient for artistic approval.
    for(const m of jobs){if((m.videoReport?.distinctFrames||0)<(m.videoReport?.seconds||0)*2)issues.push('LOW_FRAME_DIVERSITY:'+m.id);if(Object.keys(m.videoReport?.renderer?.framingQuality?.issues||{}).length)issues.push('FRAMING_FAILURE:'+m.id);}
@@ -57,6 +60,7 @@ export function reconcileCampaigns(w,now=Date.now()){
 }
 export const CAMPAIGN_RULES=CREATIVE_MODEL_RULES+' Acrescente selection: [{index:0,reason:"comparação e justificativa"}] com exatamente três índices únicos: comedy, battle e mystery. Acrescente rejected:[{index:1,reason:"motivo"}] para os outros dois. Cada proposta selecionada deve incluir visualPlan:{version:1,scenes:[{start:0,end:6,action:"enum",camera:"enum",transition:"cut",beat:"hook",narration:0,eventId:"somente battle"}]}. Consulte capabilities e events. Para comedy use quatro cenas contínuas em 18 segundos, battle quatro em 25, mystery três de seis segundos em 18. Use apenas ações executáveis, sem inventar ações físicas ou resultados. As avaliações são julgamentos criativos, não previsões de viralidade.';
 export async function executeCampaign({store,id,mission,budgeted,checkpoint,signal,token}){
+ if(mission.creativeRequest?.mode==='visual-commentary')return planCommentary({store,id,mission,budgeted,checkpoint,signal,token});
  const update=fn=>store.mutate(id,w=>{const c=list(w).find(c=>c.id===mission.campaignId);if(!c||terminal.has(c.state)||missionById(w,mission.id).status!=='running')throw new AppError('Campanha encerrada.',409);fn(c,w);c.revision++;});
  let w=(await store.read(id)).workspace,c=list(w).find(c=>c.id===mission.campaignId);
  if(!w.secret)throw new AppError('MODEL_NOT_CONNECTED: conecte o modelo no workspace; não existe fallback de roteiros.');
