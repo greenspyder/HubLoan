@@ -1,0 +1,13 @@
+✔ unknown Higgsfield estimate cannot become free generation (4.887202ms)
+✔ remote voice and incompatible model have different diagnoses, without sending synthesis (3.500895ms)
+✔ Higgsfield terminal failures persist, do not remain polling and cannot resubmit (2.264483ms)
+✔ local bridge initialization failure preserves live fallback path (14.248496ms)
+✔ silent recovery does not claim voice playback or neural first-speech latency (24.811791ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 254.570483

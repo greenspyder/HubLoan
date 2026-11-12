@@ -1,0 +1,54 @@
+{
+  "input": "Solicitação genérica, sem roteiro ou plano fornecido",
+  "httpStatus": 200,
+  "campaigns": [
+    {
+      "id": "c487419c-a0e6-44cd-8212-b1039d1049fe",
+      "revision": 1,
+      "request": "Crie um falso documentário absurdamente sério sobre um acontecimento cotidiano insignificante. Invente uma nomenclatura pseudocientífica original, produza uma narração documental convincente e escolha imagens ou movimentos que tornem a situação progressivamente mais absurda.",
+      "state": "Failed",
+      "createdAt": "2026-11-12T19:23:40.169Z",
+      "deadline": 1794513220169,
+      "missionId": "fd74874e-6e1b-4b54-adb5-3ad96d9e8822",
+      "voiceMode": "neural",
+      "webResearch": true,
+      "attemptLimit": 2,
+      "model": "gpt-4.1-mini",
+      "events": [
+        {
+          "at": "2026-11-12T19:23:40.169Z",
+          "state": "Researching",
+          "detail": "Solicitação recebida; nenhuma proposta ou cena fornecida pelo operador."
+        },
+        {
+          "at": "2026-11-12T19:23:40.274Z",
+          "state": "Failed",
+          "detail": "MODEL_NOT_CONNECTED: conecte o modelo para a Astra criar o roteiro."
+        }
+      ],
+      "sources": [],
+      "decisions": [],
+      "productionIds": [],
+      "publication": {
+        "enabled": false,
+        "approval": "human",
+        "officialAuthenticationRequired": true,
+        "schedulerImplemented": false,
+        "metrics": []
+      },
+      "mode": "visual-commentary",
+      "requestedSeconds": 18,
+      "qualityPreference": "economy",
+      "costs": {
+        "calls": 0,
+        "exposureMinor": 0,
+        "confirmedMinor": 0,
+        "infrastructureMinor": null
+      },
+      "error": "MODEL_NOT_CONNECTED: conecte o modelo para a Astra criar o roteiro.",
+      "endedAt": "2026-11-12T19:23:40.274Z"
+    }
+  ],
+  "proposals": [],
+  "artifacts": []
+}

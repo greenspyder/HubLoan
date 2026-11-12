@@ -1,6 +1,8 @@
 import {AppError} from './domain.mjs';
 const definitions={
  VOICE_PROVIDER_NOT_CONFIGURED:[409,'Configure e consulte a conexão do provedor em Studio avançado.'],
+ VOICE_REMOTE_MODEL_INCOMPATIBLE:[409,'O modelo remoto não está disponível para português ou não suporta os parâmetros escolhidos. Consulte novamente o catálogo.'],
+ VOICE_NOT_FOUND:[404,'Esta voz não está no catálogo acessível da conta. Consulte as vozes e salve uma candidata disponível.'],
  VOICE_MODEL_UNAVAILABLE:[409,'O modelo ou seus arquivos não estão disponíveis neste servidor. Escolha um provedor configurado.'],
  VOICE_SYNTHESIS_TIMEOUT:[504,'A síntese excedeu o prazo. Confira o provedor antes de repetir uma operação paga.'],
  VOICE_PROVIDER_RATE_LIMIT:[429,'O provedor limitou as solicitações. Aguarde antes de tentar novamente.'],
