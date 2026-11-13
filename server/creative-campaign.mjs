@@ -1,3 +1,4 @@
+import {campaignRecovery} from './campaign-recovery.mjs';
 import {manualFormat} from './creative-formats.mjs';
 import {planCommentary,authorizeCommentary,editManualPlan} from './commentary-campaign.mjs';
 import {audienceLearning} from './viral-distribution.mjs';
@@ -6,7 +7,7 @@ import {AppError,text,addMission,queueMission,missionById,cancelMission,decryptK
 import {creativeAction,acceptCreativeModelResult,CREATIVE_MODEL_RULES} from './creative-director.mjs';
 import {sceneCapabilities,validateScenePlan,scriptSimilarity} from './creative-plan.mjs';
 import {recordGameplay,detectHighlights} from './viral-director.mjs';
-import {preflightCosts,costExposure} from './ai-costs.mjs';
+import {costExposure,preflightCosts} from './ai-costs.mjs';
 const terminal=new Set(['ReadyForReview','Failed','Cancelled']);
 const list=w=>w.creativeCampaigns ||= [];
 const event=(c,state,detail)=>{c.state=state;c.events.push({at:new Date().toISOString(),state,detail});};
@@ -33,13 +34,25 @@ export function campaignAction(w,input,now=Date.now()){
  if(input.revision!==c.revision)throw new AppError('Campanha mudou. Recarregue.',409);
  if(input.action==='edit-plan')return editManualPlan(w,c,input);
  if(input.action==='authorize-media')return authorizeCommentary(w,c,input,now);
+ if(input.action==='recovery-policy'){
+  if(!Number.isSafeInteger(input.campaignLimit)||input.campaignLimit<1||input.campaignLimit>10||!Number.isSafeInteger(input.stageLimit)||input.stageLimit<1||input.stageLimit>5)throw new AppError('Limites: campanha 1–10, etapa 1–5.');
+  c.recoveryPolicy={campaignLimit:input.campaignLimit,stageLimit:input.stageLimit};event(c,c.state,'Política de recuperação alterada pelo supervisor; histórico preservado.');c.revision++;return c;
+ }
  if(input.action==='resume'){
-  if(c.state!=='Failed'||(c.resumes||0)>=1||w.creativeDirector?.paused)throw new AppError('Retomada indisponível ou limite atingido.',409);
-  const ids=c.productionIds.length?c.productionIds:[c.missionId];
-  if(!ids.some(id=>['failed','cancelled'].includes(missionById(w,id).status)))throw new AppError('Falha de qualidade exige revisão do plano e nova campanha; não há tarefa interrompida para retomar.',409);
-  event(c,c.productionIds.length?'Rendering':'Researching','Retomada explícita autorizada.');
-  for(const id of ids){const m=missionById(w,id);if(['failed','cancelled'].includes(m.status))queueMission(w,id);}
-  c.resumes=(c.resumes||0)+1;c.deadline=now+1800000;delete c.error;delete c.endedAt;event(c,c.productionIds.length?'Rendering':'Researching','Retomada explícita; checkpoints preservados.');c.revision++;return c;
+  const recovery=campaignRecovery(w,c,now);if(!recovery.allowed)throw new AppError(recovery.blocked,409);
+  if(input.replaceUnknown===true&&!recovery.canReplaceExternal)throw new AppError('Consulte o resultado existente primeiro. Novo envio só é permitido após o provedor confirmar que o identificador não está mais disponível.',409);
+  if((recovery.needsAuthorization||input.replaceUnknown===true)&&input.authorizeUnknown!==true)throw new AppError('PROVIDER_OUTCOME_UNKNOWN: autorize explicitamente uma nova chamada potencialmente paga; a cobrança anterior não pôde ser reconciliada.',409);
+  if(['INSUFFICIENT_QUOTA','BUDGET_REQUIRED'].includes(recovery.code)&&input.confirmCorrected!==true)throw new AppError('Confirme a correção de saldo e orçamento antes de retomar.',409);
+  const ids=c.productionIds.length?c.productionIds:[c.missionId],jobs=ids.map(id=>missionById(w,id)).filter(m=>['failed','cancelled'].includes(m.status));
+  if(w.missions.filter(m=>['queued','running'].includes(m.status)).length+jobs.length>5)throw new AppError('Aguarde espaço na fila.',409);
+  if(input.replaceUnknown)for(const m of jobs)preflightCosts(w,m.id,(m.externalOperations||[]).filter(o=>o.state==='UNKNOWN'&&o.externalId).map(o=>o.kind));
+  for(const m of jobs){
+   if(input.authorizeUnknown===true){for(const o of m.externalOperations||[])if(o.state==='UNKNOWN'&&(!o.externalId||input.replaceUnknown===true))o.repeatAuthorizedAt=new Date(now).toISOString();m.legacyRecoveryAuthorized=[...new Set([...(m.legacyRecoveryAuthorized||[]),...recovery.legacyEntries])];}
+  }
+  event(c,c.productionIds.length?'Rendering':'Researching',recovery.canReconcile&&!input.replaceUnknown?'Consultar resultado externo existente; não reenviar geração.':'Retomada explícita das etapas pendentes; checkpoints preservados.');
+  for(const m of jobs)queueMission(w,m.id);
+  (c.recoveryAttempts ||= []).push({id:randomUUID(),at:new Date(now).toISOString(),missionIds:jobs.map(m=>m.id),authorization:(recovery.needsAuthorization||input.replaceUnknown)?'UNKNOWN_OUTCOME_ACCEPTED':'EXISTING_BUDGET',completedCheckpoints:recovery.completed});
+  c.deadline=now+1800000;delete c.error;delete c.endedAt;c.revision++;return c;
  }
  if(input.action!=='cancel'||terminal.has(c.state))throw new AppError('Ação indisponível.',409);
  for(const id of [c.missionId,...c.productionIds]){const m=w.missions.find(m=>m.id===id);if(m&&['queued','running'].includes(m.status))cancelMission(w,id);}
@@ -73,7 +86,7 @@ export async function executeCampaign({store,id,mission,budgeted,checkpoint,sign
  let w=(await store.read(id)).workspace,c=list(w).find(c=>c.id===mission.campaignId);
  if(!w.secret)throw new AppError('MODEL_NOT_CONNECTED: conecte o modelo no workspace; não existe fallback de roteiros.');
  const key=decryptKey(w.secret,token),bounded=AbortSignal.any([signal,AbortSignal.timeout(Math.max(1,Math.min(480000,c.deadline-Date.now())))]);
- await store.mutate(id,w=>preflightCosts(w,mission.id,[...(c.webResearch?['research']:[]),'text','text']));
+ // Each actual new call is checked by costProvider; cached checkpoints and polling do not reserve again.
  let research={output:'Sem pesquisa externa autorizada. Usar somente contexto interno; não afirmar tendência.',sources:[],origin:'INTERNAL_CONTEXT_ONLY'};
  if(c.webResearch){research=await checkpoint('research','Pesquisar campanha',[c.request],()=>budgeted.research(key,c.model,c.request,bounded,{maxToolCalls:1}));if(research.truncated)throw new AppError('Pesquisa incompleta.');}
  await update(c=>{c.sources=research.sources||[];c.research=research;event(c,'Ideating','Fontes disponíveis registradas; solicitar propostas e comparação ao modelo.');});

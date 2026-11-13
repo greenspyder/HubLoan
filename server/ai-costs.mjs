@@ -1,3 +1,4 @@
+import {providerOperationContext} from './provider-operation-context.mjs';
 import { selectedModel, estimatedTextUsd } from './models.mjs';
 import { randomUUID, createHash } from 'node:crypto';
 import { AppError } from './domain.mjs';
@@ -5,7 +6,7 @@ const kinds = ['text', 'research', 'vision', 'image'];
 const init = w => w.aiCosts ||= { enabled:false, dailyMinor:500, monthlyMinor:5000, callMinor:500, taskMinor:500, ceilings:{text:100,research:200,vision:200,image:500}, entries:[], cache:[] };
 // Unknown charges retain conservative budget exposure; they are never labelled actual spend.
 export function costExposure(entry) {
- if (entry.status === 'not_sent') return 0;
+ if (entry.status === 'not_sent'||(entry.status==='rejected'&&['AUTHENTICATION_FAILED','INSUFFICIENT_QUOTA','RATE_LIMITED','MODEL_UNAVAILABLE'].includes(entry.errorCode))) return 0;
  return Number.isSafeInteger(entry.confirmedMinor) && entry.confirmedMinor >= 0 ? entry.confirmedMinor : entry.reservedMinor;
 }
 export function configureCosts(w,input) {
@@ -19,7 +20,7 @@ export function configureCosts(w,input) {
  Object.assign(init(w),{taskMinor,enabled:input.enabled===true,dailyMinor:input.dailyMinor,monthlyMinor:input.monthlyMinor,callMinor:input.callMinor,ceilings:{...input.ceilings}});
 }
 export function costTotals(entries) {
- return { hasConfirmedCosts:entries.some(e=>e.confirmedMinor!=null), confirmedMinor:entries.reduce((n,e)=>n+(e.confirmedMinor ?? 0),0), reservedMinor:entries.filter(e=>e.status==='pending').reduce((n,e)=>n+e.reservedMinor,0), unknownMinor:entries.filter(e=>e.status!=='pending' && e.status!=='not_sent' && e.confirmedMinor==null).reduce((n,e)=>n+e.reservedMinor,0), exposureMinor:entries.reduce((n,e)=>n+costExposure(e),0) };
+ return { hasConfirmedCosts:entries.some(e=>e.confirmedMinor!=null), confirmedMinor:entries.reduce((n,e)=>n+(e.confirmedMinor ?? 0),0), reservedMinor:entries.filter(e=>e.status==='pending').reduce((n,e)=>n+e.reservedMinor,0), unknownMinor:entries.filter(e=>e.status!=='pending' && e.status!=='not_sent' && costExposure(e)>0 && e.confirmedMinor==null).reduce((n,e)=>n+e.reservedMinor,0), exposureMinor:entries.reduce((n,e)=>n+costExposure(e),0) };
 }
 export function publicCosts(w,now=Date.now()) {
  const c=init(w),date=new Date(now).toISOString();
@@ -63,6 +64,11 @@ export function preflightCosts(w,taskId,operations,now=Date.now()) {
 }
 export function costProvider(store,provider,id,taskId,agentId,{beforeSend=async()=>{}}={}) {
  return Object.fromEntries(kinds.map(kind=>[kind,async(...args)=>{
+ const operation=providerOperationContext.getStore();
+ if(operation?.resumeExternalId){
+  const result=await provider[kind](...args);
+  await store.mutate(id,w=>{const e=init(w).entries.find(e=>e.id===operation.costEntryId);if(e)Object.assign(e,{status:'completed',tokens:result.tokens||0,usage:result.usage,reconciledAt:new Date().toISOString()});});return result;
+ }
  if(kind!=='image') { const {result:model}=await store.mutate(id,w=>selectedModel(w,agentId,kind)); args[1]=model; }
  const hash=createHash('sha256').update(JSON.stringify([kind,args[1],args.slice(2).map(v=>v instanceof AbortSignal?null:v)])).digest('hex'),entryId=randomUUID();
  const {result:cached}=await store.mutate(id,w=>{
@@ -72,6 +78,7 @@ export function costProvider(store,provider,id,taskId,agentId,{beforeSend=async(
  c.entries.push({id:entryId,at:new Date().toISOString(),taskId,executionId:w.missions?.find(m=>m.id===taskId)?.executionId,agentId,model:args[1],kind,reservedMinor:c.ceilings[kind],confirmedMinor:null,status:'pending',tokens:0,sentAt:null});
  });
  if(cached) return {...cached,tokens:0,cached:true};
+ await operation?.onCostEntry(entryId);
  let sent=false;
  try {
   // Cancellation or project call limits must not consume a reservation or a call.
@@ -81,6 +88,6 @@ export function costProvider(store,provider,id,taskId,agentId,{beforeSend=async(
   sent=true;
   const result=await provider[kind](...args);
   await store.mutate(id,w=>{const c=init(w);Object.assign(c.entries.find(e=>e.id===entryId),{status:'completed',tokens:result.tokens||0,actualModel:result.model || args[1],usage:result.usage,estimatedTextUsd:kind==='image'?null:estimatedTextUsd(args[1],result.usage),searches:result.searches||0});if(kind==='text'&&!result.truncated){c.cache=c.cache.filter(e=>Date.now()-e.time<86400000).slice(-49);c.cache.push({hash,time:Date.now(),result});}});return result;
- } catch(error){await store.mutate(id,w=>{init(w).entries.find(e=>e.id===entryId).status=sent?'uncertain':'not_sent';});throw error;}
+ } catch(error){await store.mutate(id,w=>{const e=init(w).entries.find(e=>e.id===entryId);e.status=sent&&error.outcomeUnknown?'uncertain':!sent||error.submitted===false?'not_sent':error.code?'rejected':'uncertain';e.errorCode=error.code||null;e.usage=error.usage||e.usage;e.outcomeUnknown=e.status==='uncertain';});throw error;}
  }]));
 }

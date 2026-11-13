@@ -1,0 +1,1 @@
+PASS: two interrupted campaigns recovered after SQLite reopen; one GET-only reconciliation, one checkpoint reuse with zero extra calls; two real local MP4s ready for review; planning leases released; no paid API.

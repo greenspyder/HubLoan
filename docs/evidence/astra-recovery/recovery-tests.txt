@@ -1,0 +1,25 @@
+✔ permanent AUTHENTICATION_FAILED never automatically retries (6.563332ms)
+✔ permanent INSUFFICIENT_QUOTA never automatically retries (0.824647ms)
+✔ permanent MODEL_UNAVAILABLE never automatically retries (1.097496ms)
+✔ permanent CONTENT_REJECTED never automatically retries (0.910523ms)
+✔ pre-send cancellation and timeout do not invoke transport (1.289452ms)
+✔ post-send network and timeout preserve unknown outcome without retry (8.480402ms)
+✔ 429 honors Retry-After with bounded backoff, while 500/503 POST is uncertain and never repeated (5.708805ms)
+✔ invalid JSON, incomplete response and content refusal are classified (2.3198ms)
+✔ background response ID survives disconnected polling; resumption only GETs existing result (1.37852ms)
+✔ legacy exhausted resume counter stays intact; unknown legacy charge needs explicit authorization (6.108537ms)
+✔ auth reconnect, budget, active lease, limits and correction gates do not consume attempts (1.942678ms)
+✔ expired leases mark dispatched operations unknown and retain completed checkpoints (1.3294ms)
+✔ checkpoint atomic claim excludes duplicate invocation and reuses result even after cancellation (13.418221ms)
+✔ unknown operation cannot be silently repeated and budget block never reaches provider (10.281283ms)
+✔ two simultaneous resumes have one winner; budget refusal leaves history unchanged (2.927125ms)
+✔ cancelled operation left SENDING by a crash becomes unknown only after lease expiry (0.708008ms)
+✔ a disconnected known response cannot be replaced until retrieval confirms it is unavailable (0.87049ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 485.01167

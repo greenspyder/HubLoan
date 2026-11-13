@@ -17,7 +17,7 @@ test('missing real model fails persistently without proposals, videos or fixture
 test('campaign bounds, cancellation and stale revision remain isolated',()=>{
  const w=initialWorkspace(),c=campaignAction(w,request,1000);assert.throws(()=>campaignAction(w,request,1000),/vez/);assert.throws(()=>campaignAction(initialWorkspace(),{action:'cancel',id:c.id,revision:0}),/encontrada/);
  reconcileCampaigns(w,c.deadline+1);assert.equal(c.state,'Failed');assert.equal(w.missions[0].status,'cancelled');assert.throws(()=>campaignAction(w,{action:'resume',id:c.id,revision:0}),/mudou/);
- campaignAction(w,{action:'resume',id:c.id,revision:c.revision},c.deadline+2);assert.equal(c.resumes,1);
+ assert.throws(()=>campaignAction(w,{action:'resume',id:c.id,revision:c.revision},c.deadline+2),/Conecte/);assert.equal(c.recoveryAttempts,undefined);w.secret=encryptKey('test-key','a'.repeat(64));configureCosts(w,{enabled:true,dailyMinor:1000,monthlyMinor:1000,callMinor:100,taskMinor:500,ceilings:{text:100,research:100,vision:100,image:100}});campaignAction(w,{action:'resume',id:c.id,revision:c.revision},c.deadline+2);assert.equal(c.recoveryAttempts.length,1);
 });
 test('plan rejects fake events, static scenes and timing gaps; text similarity is only a repetition signal',()=>{
  assert.throws(()=>validateScenePlan({version:1,scenes:[]},'battle',['a','b']),/incompatível/);assert.equal(scriptSimilarity('Mesma ideia','mesma ideia'),1);

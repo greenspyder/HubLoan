@@ -1,0 +1,880 @@
+{
+  "controlledTransport": true,
+  "realOpenAI": false,
+  "paidCalls": 0,
+  "calls": [
+    {
+      "method": "POST",
+      "path": "/v1/responses"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/responses/resp_controlled1"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/responses/resp_controlled1"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/responses"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/responses/resp_controlled2"
+    }
+  ],
+  "results": [
+    {
+      "scenario": "network-after-submission",
+      "failed": {
+        "id": "bd00c0dd-7f41-4127-92d6-0fac67ff31ad",
+        "revision": 1,
+        "request": "Produza um vídeo curto para verificar recuperação.",
+        "state": "Failed",
+        "createdAt": "2026-11-13T14:16:24.763Z",
+        "deadline": 1794581184763,
+        "missionId": "59ca5bbd-ebb8-442a-b984-9b24de709fdc",
+        "voiceMode": "neural",
+        "webResearch": false,
+        "attemptLimit": 2,
+        "model": "gpt-4.1-mini",
+        "events": [
+          {
+            "at": "2026-11-13T14:16:24.764Z",
+            "state": "Researching",
+            "detail": "Solicitação recebida; nenhuma proposta ou cena fornecida pelo operador."
+          },
+          {
+            "at": "2026-11-13T14:16:25.012Z",
+            "state": "Failed",
+            "detail": "A comunicação com o provedor foi interrompida."
+          }
+        ],
+        "sources": [],
+        "decisions": [],
+        "productionIds": [],
+        "publication": {
+          "enabled": false,
+          "approval": "human",
+          "officialAuthenticationRequired": true,
+          "schedulerImplemented": false,
+          "metrics": []
+        },
+        "mode": "visual-commentary",
+        "manualFormat": "absurd-documentary",
+        "requestedSeconds": 15,
+        "qualityPreference": "economy",
+        "costs": {
+          "calls": 1,
+          "exposureMinor": 100,
+          "confirmedMinor": null,
+          "infrastructureMinor": null
+        },
+        "error": "A comunicação com o provedor foi interrompida.",
+        "endedAt": "2026-11-13T14:16:25.012Z",
+        "recovery": {
+          "allowed": true,
+          "blocked": "",
+          "needsAuthorization": false,
+          "canReconcile": true,
+          "code": "PROVIDER_NETWORK_ERROR",
+          "stage": "Astra: plano multimodal",
+          "completed": 0,
+          "attempts": 0,
+          "legacyResumes": 0,
+          "policy": {
+            "campaignLimit": 3,
+            "stageLimit": 3
+          },
+          "unknownOperations": [
+            {
+              "id": "45e472bd-3f07-4321-b52d-9e05a1814bf8",
+              "stage": "Astra: plano multimodal",
+              "externalId": "resp_controlled1"
+            }
+          ],
+          "legacyEntries": [],
+          "status": "RECONCILE"
+        }
+      },
+      "recovered": {
+        "id": "bd00c0dd-7f41-4127-92d6-0fac67ff31ad",
+        "revision": 5,
+        "request": "Produza um vídeo curto para verificar recuperação.",
+        "state": "ReadyForReview",
+        "createdAt": "2026-11-13T14:16:24.763Z",
+        "deadline": 1794581185049,
+        "missionId": "59ca5bbd-ebb8-442a-b984-9b24de709fdc",
+        "voiceMode": "neural",
+        "webResearch": false,
+        "attemptLimit": 2,
+        "model": "gpt-4.1-mini",
+        "events": [
+          {
+            "at": "2026-11-13T14:16:24.764Z",
+            "state": "Researching",
+            "detail": "Solicitação recebida; nenhuma proposta ou cena fornecida pelo operador."
+          },
+          {
+            "at": "2026-11-13T14:16:25.012Z",
+            "state": "Failed",
+            "detail": "A comunicação com o provedor foi interrompida."
+          },
+          {
+            "at": "2026-11-13T14:16:25.035Z",
+            "state": "Researching",
+            "detail": "Consultar resultado externo existente; não reenviar geração."
+          },
+          {
+            "at": "2026-11-13T14:16:25.041Z",
+            "state": "Ideating",
+            "detail": "Decisão estruturada do modelo registrada."
+          },
+          {
+            "at": "2026-11-13T14:16:25.041Z",
+            "state": "Selecting",
+            "detail": "Decisão estruturada do modelo registrada."
+          },
+          {
+            "at": "2026-11-13T14:16:25.041Z",
+            "state": "Scripting",
+            "detail": "Decisão estruturada do modelo registrada."
+          },
+          {
+            "at": "2026-11-13T14:16:25.041Z",
+            "state": "Planning",
+            "detail": "Decisão estruturada do modelo registrada."
+          },
+          {
+            "at": "2026-11-13T14:16:25.041Z",
+            "state": "AwaitingBudget",
+            "detail": "Plano do modelo pronto. Nenhuma geração de mídia autorizada."
+          },
+          {
+            "at": "2026-11-13T14:16:25.049Z",
+            "state": "Rendering",
+            "detail": "Orçamento autorizado pelo supervisor; produção na fila existente."
+          },
+          {
+            "at": "2026-11-13T14:16:29.593Z",
+            "state": "Validating",
+            "detail": "Verificar artefatos, planos e integridade técnica."
+          },
+          {
+            "at": "2026-11-13T14:16:29.594Z",
+            "state": "ReadyForReview",
+            "detail": "Artefatos tecnicamente válidos; revisão humana pendente."
+          }
+        ],
+        "sources": [],
+        "decisions": [
+          {
+            "index": 0,
+            "source": "model",
+            "model": "controlled-transport"
+          }
+        ],
+        "productionIds": [
+          "da550bae-0b01-4e38-86a6-606a3bb59c40"
+        ],
+        "publication": {
+          "enabled": false,
+          "approval": "human",
+          "officialAuthenticationRequired": true,
+          "schedulerImplemented": false,
+          "metrics": []
+        },
+        "mode": "visual-commentary",
+        "manualFormat": "absurd-documentary",
+        "requestedSeconds": 15,
+        "qualityPreference": "economy",
+        "costs": {
+          "calls": 1,
+          "exposureMinor": 100,
+          "confirmedMinor": null,
+          "infrastructureMinor": null
+        },
+        "recoveryAttempts": [
+          {
+            "id": "dffe9c7a-b902-41e1-a4a8-9ef1730929ad",
+            "at": "2026-11-13T14:16:25.035Z",
+            "missionIds": [
+              "59ca5bbd-ebb8-442a-b984-9b24de709fdc"
+            ],
+            "authorization": "EXISTING_BUDGET",
+            "completedCheckpoints": 0
+          }
+        ],
+        "proposals": [
+          {
+            "title": "Proposta controlada 0",
+            "premise": "Teste sem inferência real",
+            "reason": "Contrato de recuperação"
+          },
+          {
+            "title": "Proposta controlada 1",
+            "premise": "Teste sem inferência real",
+            "reason": "Contrato de recuperação"
+          },
+          {
+            "title": "Proposta controlada 2",
+            "premise": "Teste sem inferência real",
+            "reason": "Contrato de recuperação"
+          },
+          {
+            "title": "Proposta controlada 3",
+            "premise": "Teste sem inferência real",
+            "reason": "Contrato de recuperação"
+          },
+          {
+            "title": "Proposta controlada 4",
+            "premise": "Teste sem inferência real",
+            "reason": "Contrato de recuperação"
+          }
+        ],
+        "plans": [
+          {
+            "version": 1,
+            "format": "visual-commentary",
+            "seconds": 15,
+            "title": "Recuperação controlada",
+            "premise": "Verificar continuidade sem cobrança real.",
+            "creativeReview": "Teste técnico, não avaliação artística.",
+            "scenes": [
+              {
+                "id": "scene-0",
+                "seconds": 5,
+                "goal": "Validar recuperação",
+                "mechanism": "Teste de contrato",
+                "narration": "",
+                "title": "Sinal enviado",
+                "prompt": "Diagrama abstrato local",
+                "visual": "local-diagram",
+                "motion": "push-in",
+                "annotation": "none",
+                "tone": "documentary",
+                "beat": "setup",
+                "transition": "cut",
+                "model": null
+              },
+              {
+                "id": "scene-1",
+                "seconds": 5,
+                "goal": "Validar recuperação",
+                "mechanism": "Teste de contrato",
+                "narration": "",
+                "title": "Resposta recuperada",
+                "prompt": "Diagrama abstrato local",
+                "visual": "local-diagram",
+                "motion": "pan-left",
+                "annotation": "none",
+                "tone": "documentary",
+                "beat": "escalation",
+                "transition": "cut",
+                "model": null
+              },
+              {
+                "id": "scene-2",
+                "seconds": 5,
+                "goal": "Validar recuperação",
+                "mechanism": "Teste de contrato",
+                "narration": "",
+                "title": "Resultado preservado",
+                "prompt": "Diagrama abstrato local",
+                "visual": "local-diagram",
+                "motion": "reveal",
+                "annotation": "none",
+                "tone": "documentary",
+                "beat": "payoff",
+                "transition": "cut",
+                "model": null
+              }
+            ]
+          }
+        ],
+        "narrationSnapshot": null,
+        "resourceEstimate": [],
+        "actualModel": "controlled-transport",
+        "planVersion": 1,
+        "mediaAuthorization": {
+          "maxMicros": 0,
+          "operationCapMicros": 0,
+          "planVersion": 1,
+          "at": "2026-11-13T14:16:25.049Z",
+          "unknownCostAccepted": false,
+          "unknownBalanceAccepted": false
+        },
+        "quality": {
+          "technical": "PASS",
+          "artistic": "HUMAN_REVIEW_REQUIRED",
+          "issues": [],
+          "artifacts": [
+            {
+              "missionId": "da550bae-0b01-4e38-86a6-606a3bb59c40",
+              "sha256": "30defbbd147b64b13e71a685e4f5645f17d395445404a76df84f245e7ab30c53",
+              "report": {
+                "format": "visual-commentary",
+                "seconds": 15,
+                "width": 360,
+                "height": 640,
+                "audio": false,
+                "distinctFrames": 225,
+                "technicalStatus": "TECHNICALLY_VALID",
+                "qualityStatus": "REQUIRES_HUMAN_REVIEW",
+                "artisticEligibility": {
+                  "eligible": true,
+                  "reasons": []
+                },
+                "resources": [
+                  {
+                    "sceneId": "scene-0",
+                    "visual": "local-diagram",
+                    "image": null,
+                    "speech": null
+                  },
+                  {
+                    "sceneId": "scene-1",
+                    "visual": "local-diagram",
+                    "image": null,
+                    "speech": null
+                  },
+                  {
+                    "sceneId": "scene-2",
+                    "visual": "local-diagram",
+                    "image": null,
+                    "speech": null
+                  }
+                ],
+                "captions": [],
+                "wallMs": 4516,
+                "sha256": "30defbbd147b64b13e71a685e4f5645f17d395445404a76df84f245e7ab30c53",
+                "creativeReview": {
+                  "source": "Astra-plan",
+                  "text": "Teste técnico, não avaliação artística.",
+                  "artifactReviewed": false
+                },
+                "infrastructureCost": "UNKNOWN",
+                "manualFormat": "absurd-documentary"
+              }
+            }
+          ]
+        },
+        "endedAt": "2026-11-13T14:16:29.592Z",
+        "recovery": {
+          "allowed": false,
+          "blocked": "A campanha não está interrompida.",
+          "needsAuthorization": false,
+          "canReconcile": false,
+          "code": "EXECUTION_INTERRUPTED",
+          "stage": "Etapa pendente",
+          "completed": 0,
+          "attempts": 1,
+          "legacyResumes": 0,
+          "policy": {
+            "campaignLimit": 3,
+            "stageLimit": 3
+          },
+          "unknownOperations": [],
+          "legacyEntries": [],
+          "status": "BLOCKED"
+        }
+      },
+      "report": {
+        "format": "visual-commentary",
+        "seconds": 15,
+        "width": 360,
+        "height": 640,
+        "audio": false,
+        "distinctFrames": 225,
+        "technicalStatus": "TECHNICALLY_VALID",
+        "qualityStatus": "REQUIRES_HUMAN_REVIEW",
+        "artisticEligibility": {
+          "eligible": true,
+          "reasons": []
+        },
+        "resources": [
+          {
+            "sceneId": "scene-0",
+            "visual": "local-diagram",
+            "image": null,
+            "speech": null
+          },
+          {
+            "sceneId": "scene-1",
+            "visual": "local-diagram",
+            "image": null,
+            "speech": null
+          },
+          {
+            "sceneId": "scene-2",
+            "visual": "local-diagram",
+            "image": null,
+            "speech": null
+          }
+        ],
+        "captions": [],
+        "wallMs": 4516,
+        "sha256": "30defbbd147b64b13e71a685e4f5645f17d395445404a76df84f245e7ab30c53",
+        "creativeReview": {
+          "source": "Astra-plan",
+          "text": "Teste técnico, não avaliação artística.",
+          "artifactReviewed": false
+        },
+        "infrastructureCost": "UNKNOWN",
+        "manualFormat": "absurd-documentary"
+      },
+      "checkpointCount": 0,
+      "externalOperations": [
+        {
+          "id": "45e472bd-3f07-4321-b52d-9e05a1814bf8",
+          "key": "08ae233115e488f1db55d88cc7857ef83a3db4f788182f8671f067264152e27b",
+          "campaignId": "bd00c0dd-7f41-4127-92d6-0fac67ff31ad",
+          "stage": "Astra: plano multimodal",
+          "provider": "openai",
+          "kind": "text",
+          "state": "COMPLETE",
+          "startedAt": "2026-11-13T14:16:25.007Z",
+          "executionId": "4c471153-e87a-4020-8001-8129c71b0d0d",
+          "reconciliation": "CONFIRMED",
+          "costEntryId": "27b5b50b-0253-4a04-af44-a0cfc934197d",
+          "externalId": "resp_controlled1",
+          "endedAt": "2026-11-13T14:16:25.040Z",
+          "failure": {
+            "code": "PROVIDER_NETWORK_ERROR",
+            "message": "A comunicação com o provedor foi interrompida.",
+            "submitted": false,
+            "outcomeUnknown": true,
+            "retryable": true,
+            "requiresNewPlan": false,
+            "retryAt": null,
+            "externalId": "resp_controlled1"
+          },
+          "usage": {
+            "total_tokens": 10
+          },
+          "reconciliations": 1,
+          "resultHash": "54301d3454cbcd5b56099cae87e1122749797c8dbbca73dbf151d3b014cc360a",
+          "resultCheckpoint": "08ae233115e488f1db55d88cc7857ef83a3db4f788182f8671f067264152e27b"
+        }
+      ]
+    },
+    {
+      "scenario": "interruption-after-checkpoint",
+      "failed": {
+        "id": "8eb8666a-1d27-416d-993a-e4b72cb95f30",
+        "revision": 1,
+        "request": "Produza um vídeo curto para verificar recuperação.",
+        "state": "Failed",
+        "createdAt": "2026-11-13T14:16:29.635Z",
+        "deadline": 1794581189635,
+        "missionId": "74d2da65-7f88-40dd-b492-7323ae0a5f69",
+        "voiceMode": "neural",
+        "webResearch": false,
+        "attemptLimit": 2,
+        "model": "gpt-4.1-mini",
+        "events": [
+          {
+            "at": "2026-11-13T14:16:29.636Z",
+            "state": "Researching",
+            "detail": "Solicitação recebida; nenhuma proposta ou cena fornecida pelo operador."
+          },
+          {
+            "at": "2026-11-13T14:16:29.676Z",
+            "state": "Failed",
+            "detail": "A conexão com o provedor foi interrompida. Tente novamente; chamadas anteriores podem ter sido cobradas."
+          }
+        ],
+        "sources": [],
+        "decisions": [],
+        "productionIds": [],
+        "publication": {
+          "enabled": false,
+          "approval": "human",
+          "officialAuthenticationRequired": true,
+          "schedulerImplemented": false,
+          "metrics": []
+        },
+        "mode": "visual-commentary",
+        "manualFormat": "absurd-documentary",
+        "requestedSeconds": 15,
+        "qualityPreference": "economy",
+        "costs": {
+          "calls": 1,
+          "exposureMinor": 100,
+          "confirmedMinor": null,
+          "infrastructureMinor": null
+        },
+        "error": "A conexão com o provedor foi interrompida. Tente novamente; chamadas anteriores podem ter sido cobradas.",
+        "endedAt": "2026-11-13T14:16:29.676Z",
+        "recovery": {
+          "allowed": true,
+          "blocked": "",
+          "needsAuthorization": false,
+          "canReconcile": false,
+          "code": "EXECUTION_FAILED",
+          "stage": "Astra: plano multimodal",
+          "completed": 1,
+          "attempts": 0,
+          "legacyResumes": 0,
+          "policy": {
+            "campaignLimit": 3,
+            "stageLimit": 3
+          },
+          "unknownOperations": [],
+          "legacyEntries": [],
+          "status": "RECOVERABLE"
+        }
+      },
+      "recovered": {
+        "id": "8eb8666a-1d27-416d-993a-e4b72cb95f30",
+        "revision": 5,
+        "request": "Produza um vídeo curto para verificar recuperação.",
+        "state": "ReadyForReview",
+        "createdAt": "2026-11-13T14:16:29.635Z",
+        "deadline": 1794581189734,
+        "missionId": "74d2da65-7f88-40dd-b492-7323ae0a5f69",
+        "voiceMode": "neural",
+        "webResearch": false,
+        "attemptLimit": 2,
+        "model": "gpt-4.1-mini",
+        "events": [
+          {
+            "at": "2026-11-13T14:16:29.636Z",
+            "state": "Researching",
+            "detail": "Solicitação recebida; nenhuma proposta ou cena fornecida pelo operador."
+          },
+          {
+            "at": "2026-11-13T14:16:29.676Z",
+            "state": "Failed",
+            "detail": "A conexão com o provedor foi interrompida. Tente novamente; chamadas anteriores podem ter sido cobradas."
+          },
+          {
+            "at": "2026-11-13T14:16:29.704Z",
+            "state": "Researching",
+            "detail": "Retomada explícita das etapas pendentes; checkpoints preservados."
+          },
+          {
+            "at": "2026-11-13T14:16:29.719Z",
+            "state": "Ideating",
+            "detail": "Decisão estruturada do modelo registrada."
+          },
+          {
+            "at": "2026-11-13T14:16:29.719Z",
+            "state": "Selecting",
+            "detail": "Decisão estruturada do modelo registrada."
+          },
+          {
+            "at": "2026-11-13T14:16:29.719Z",
+            "state": "Scripting",
+            "detail": "Decisão estruturada do modelo registrada."
+          },
+          {
+            "at": "2026-11-13T14:16:29.719Z",
+            "state": "Planning",
+            "detail": "Decisão estruturada do modelo registrada."
+          },
+          {
+            "at": "2026-11-13T14:16:29.719Z",
+            "state": "AwaitingBudget",
+            "detail": "Plano do modelo pronto. Nenhuma geração de mídia autorizada."
+          },
+          {
+            "at": "2026-11-13T14:16:29.734Z",
+            "state": "Rendering",
+            "detail": "Orçamento autorizado pelo supervisor; produção na fila existente."
+          },
+          {
+            "at": "2026-11-13T14:16:33.639Z",
+            "state": "Validating",
+            "detail": "Verificar artefatos, planos e integridade técnica."
+          },
+          {
+            "at": "2026-11-13T14:16:33.639Z",
+            "state": "ReadyForReview",
+            "detail": "Artefatos tecnicamente válidos; revisão humana pendente."
+          }
+        ],
+        "sources": [],
+        "decisions": [
+          {
+            "index": 0,
+            "source": "model",
+            "model": "controlled-transport"
+          }
+        ],
+        "productionIds": [
+          "320c6cfd-daad-4707-b104-db9ea145c161"
+        ],
+        "publication": {
+          "enabled": false,
+          "approval": "human",
+          "officialAuthenticationRequired": true,
+          "schedulerImplemented": false,
+          "metrics": []
+        },
+        "mode": "visual-commentary",
+        "manualFormat": "absurd-documentary",
+        "requestedSeconds": 15,
+        "qualityPreference": "economy",
+        "costs": {
+          "calls": 1,
+          "exposureMinor": 100,
+          "confirmedMinor": null,
+          "infrastructureMinor": null
+        },
+        "recoveryAttempts": [
+          {
+            "id": "9602b059-2ae2-4901-b1a3-8989d6288a84",
+            "at": "2026-11-13T14:16:29.704Z",
+            "missionIds": [
+              "74d2da65-7f88-40dd-b492-7323ae0a5f69"
+            ],
+            "authorization": "EXISTING_BUDGET",
+            "completedCheckpoints": 1
+          }
+        ],
+        "proposals": [
+          {
+            "title": "Proposta controlada 0",
+            "premise": "Teste sem inferência real",
+            "reason": "Contrato de recuperação"
+          },
+          {
+            "title": "Proposta controlada 1",
+            "premise": "Teste sem inferência real",
+            "reason": "Contrato de recuperação"
+          },
+          {
+            "title": "Proposta controlada 2",
+            "premise": "Teste sem inferência real",
+            "reason": "Contrato de recuperação"
+          },
+          {
+            "title": "Proposta controlada 3",
+            "premise": "Teste sem inferência real",
+            "reason": "Contrato de recuperação"
+          },
+          {
+            "title": "Proposta controlada 4",
+            "premise": "Teste sem inferência real",
+            "reason": "Contrato de recuperação"
+          }
+        ],
+        "plans": [
+          {
+            "version": 1,
+            "format": "visual-commentary",
+            "seconds": 15,
+            "title": "Recuperação controlada",
+            "premise": "Verificar continuidade sem cobrança real.",
+            "creativeReview": "Teste técnico, não avaliação artística.",
+            "scenes": [
+              {
+                "id": "scene-0",
+                "seconds": 5,
+                "goal": "Validar recuperação",
+                "mechanism": "Teste de contrato",
+                "narration": "",
+                "title": "Sinal enviado",
+                "prompt": "Diagrama abstrato local",
+                "visual": "local-diagram",
+                "motion": "push-in",
+                "annotation": "none",
+                "tone": "documentary",
+                "beat": "setup",
+                "transition": "cut",
+                "model": null
+              },
+              {
+                "id": "scene-1",
+                "seconds": 5,
+                "goal": "Validar recuperação",
+                "mechanism": "Teste de contrato",
+                "narration": "",
+                "title": "Resposta recuperada",
+                "prompt": "Diagrama abstrato local",
+                "visual": "local-diagram",
+                "motion": "pan-left",
+                "annotation": "none",
+                "tone": "documentary",
+                "beat": "escalation",
+                "transition": "cut",
+                "model": null
+              },
+              {
+                "id": "scene-2",
+                "seconds": 5,
+                "goal": "Validar recuperação",
+                "mechanism": "Teste de contrato",
+                "narration": "",
+                "title": "Resultado preservado",
+                "prompt": "Diagrama abstrato local",
+                "visual": "local-diagram",
+                "motion": "reveal",
+                "annotation": "none",
+                "tone": "documentary",
+                "beat": "payoff",
+                "transition": "cut",
+                "model": null
+              }
+            ]
+          }
+        ],
+        "narrationSnapshot": null,
+        "resourceEstimate": [],
+        "actualModel": "controlled-transport",
+        "planVersion": 1,
+        "mediaAuthorization": {
+          "maxMicros": 0,
+          "operationCapMicros": 0,
+          "planVersion": 1,
+          "at": "2026-11-13T14:16:29.734Z",
+          "unknownCostAccepted": false,
+          "unknownBalanceAccepted": false
+        },
+        "quality": {
+          "technical": "PASS",
+          "artistic": "HUMAN_REVIEW_REQUIRED",
+          "issues": [],
+          "artifacts": [
+            {
+              "missionId": "320c6cfd-daad-4707-b104-db9ea145c161",
+              "sha256": "30defbbd147b64b13e71a685e4f5645f17d395445404a76df84f245e7ab30c53",
+              "report": {
+                "format": "visual-commentary",
+                "seconds": 15,
+                "width": 360,
+                "height": 640,
+                "audio": false,
+                "distinctFrames": 225,
+                "technicalStatus": "TECHNICALLY_VALID",
+                "qualityStatus": "REQUIRES_HUMAN_REVIEW",
+                "artisticEligibility": {
+                  "eligible": true,
+                  "reasons": []
+                },
+                "resources": [
+                  {
+                    "sceneId": "scene-0",
+                    "visual": "local-diagram",
+                    "image": null,
+                    "speech": null
+                  },
+                  {
+                    "sceneId": "scene-1",
+                    "visual": "local-diagram",
+                    "image": null,
+                    "speech": null
+                  },
+                  {
+                    "sceneId": "scene-2",
+                    "visual": "local-diagram",
+                    "image": null,
+                    "speech": null
+                  }
+                ],
+                "captions": [],
+                "wallMs": 3877,
+                "sha256": "30defbbd147b64b13e71a685e4f5645f17d395445404a76df84f245e7ab30c53",
+                "creativeReview": {
+                  "source": "Astra-plan",
+                  "text": "Teste técnico, não avaliação artística.",
+                  "artifactReviewed": false
+                },
+                "infrastructureCost": "UNKNOWN",
+                "manualFormat": "absurd-documentary"
+              }
+            }
+          ]
+        },
+        "endedAt": "2026-11-13T14:16:33.639Z",
+        "recovery": {
+          "allowed": false,
+          "blocked": "A campanha não está interrompida.",
+          "needsAuthorization": false,
+          "canReconcile": false,
+          "code": "EXECUTION_INTERRUPTED",
+          "stage": "Etapa pendente",
+          "completed": 0,
+          "attempts": 1,
+          "legacyResumes": 0,
+          "policy": {
+            "campaignLimit": 3,
+            "stageLimit": 3
+          },
+          "unknownOperations": [],
+          "legacyEntries": [],
+          "status": "BLOCKED"
+        }
+      },
+      "report": {
+        "format": "visual-commentary",
+        "seconds": 15,
+        "width": 360,
+        "height": 640,
+        "audio": false,
+        "distinctFrames": 225,
+        "technicalStatus": "TECHNICALLY_VALID",
+        "qualityStatus": "REQUIRES_HUMAN_REVIEW",
+        "artisticEligibility": {
+          "eligible": true,
+          "reasons": []
+        },
+        "resources": [
+          {
+            "sceneId": "scene-0",
+            "visual": "local-diagram",
+            "image": null,
+            "speech": null
+          },
+          {
+            "sceneId": "scene-1",
+            "visual": "local-diagram",
+            "image": null,
+            "speech": null
+          },
+          {
+            "sceneId": "scene-2",
+            "visual": "local-diagram",
+            "image": null,
+            "speech": null
+          }
+        ],
+        "captions": [],
+        "wallMs": 3877,
+        "sha256": "30defbbd147b64b13e71a685e4f5645f17d395445404a76df84f245e7ab30c53",
+        "creativeReview": {
+          "source": "Astra-plan",
+          "text": "Teste técnico, não avaliação artística.",
+          "artifactReviewed": false
+        },
+        "infrastructureCost": "UNKNOWN",
+        "manualFormat": "absurd-documentary"
+      },
+      "checkpointCount": 1,
+      "externalOperations": [
+        {
+          "id": "6eacfc22-3223-4939-b0a1-ae779eef5722",
+          "key": "08ae233115e488f1db55d88cc7857ef83a3db4f788182f8671f067264152e27b",
+          "campaignId": "8eb8666a-1d27-416d-993a-e4b72cb95f30",
+          "stage": "Astra: plano multimodal",
+          "provider": "openai",
+          "kind": "text",
+          "state": "COMPLETE",
+          "startedAt": "2026-11-13T14:16:29.652Z",
+          "executionId": "b8b239b1-1b3a-42a8-9c05-c12bf3af3239",
+          "reconciliation": "CONFIRMED",
+          "costEntryId": "55d665d7-f1c5-4f6b-9e51-d471cf7915bf",
+          "externalId": "resp_controlled2",
+          "endedAt": "2026-11-13T14:16:29.669Z",
+          "resultHash": "36fc544cc6fa86fe37d7c088e85152352cdc494130441a3b4ceef5bdd16ff53d",
+          "resultCheckpoint": "08ae233115e488f1db55d88cc7857ef83a3db4f788182f8671f067264152e27b",
+          "usage": {
+            "total_tokens": 10
+          }
+        }
+      ]
+    }
+  ]
+}

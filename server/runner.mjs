@@ -1,3 +1,5 @@
+import {failureInfo} from './provider-failures.mjs';
+import {credentialFingerprint} from './campaign-recovery.mjs';
 import {createUniversalVoice,synthesizeVoiceAsset} from './universal-voice.mjs';
 import {produceCommentary} from './commentary-campaign.mjs';
 import {executeCampaign,reconcileCampaigns} from './creative-campaign.mjs';
@@ -55,7 +57,7 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
     try {
       if(mission.campaignId && mission.kind==='text'){
         await update(id,mission.id,m=>{const fingerprint=executionIntent(m);if(m.execution?.fingerprint!==fingerprint)m.execution={fingerprint,checkpoints:[]};});
-        await executeCampaign({store,id,mission,budgeted,checkpoint,signal:controller.signal,token});return;
+        await executeCampaign({store,id,mission,budgeted,checkpoint,signal:controller.signal,token});await update(id,mission.id,m=>{m.status='review';m.phase='Planejamento concluído; resultados preservados';});return;
       }
       if (mission.kind === 'video') {
         await update(id, mission.id, current => {
@@ -154,6 +156,7 @@ export function createRunner(store, provider, { masterKey = null, now = Date.now
       await store.mutate(id, current => {
         const item = missionById(current, mission.id);
         if (item.status !== 'running') return;
+        item.failure={...failureInfo(error),stage:item.externalOperations?.at(-1)?.stage||item.phase};item.credentialFingerprint=credentialFingerprint(workspace);
         item.status = 'failed'; item.phase = 'Falha na execução'; item.budgetBlock = error.budgetBlock;
         item.error = error instanceof AppError || mission.kind === 'video' ? error.message : 'A conexão com o provedor foi interrompida. Tente novamente; chamadas anteriores podem ter sido cobradas.';
         item.events.push({ at: new Date().toISOString(), message: item.error });
