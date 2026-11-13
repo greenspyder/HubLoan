@@ -1,0 +1,15 @@
+✔ provider keys encrypted and omitted from all public workspace snapshots (499.155357ms)
+✔ provider discovery isolated; connection replacement cannot accept stale refresh (11.355282ms)
+✔ budget reservation needs authorized campaign, is idempotent and respects day/campaign caps (3.473567ms)
+✔ transport sends documented APIs; hides provider errors; rejects unsupported models (21.731422ms)
+✔ scene contract rejects arbitrary markup, unsupported capabilities and incoherent timing (0.806066ms)
+✔ controlled model reaches budget gate and only explicit approval queues one production (31.714829ms)
+✔ real local composition decodes 9:16 with moving geometry, no fake speech or artistic approval (9585.963499ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10892.685411

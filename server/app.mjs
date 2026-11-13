@@ -1,3 +1,4 @@
+import {ProviderFailure} from './provider-failures.mjs';
 import {synthesizeVoiceAsset,voiceBudgetAction} from './universal-voice.mjs';
 import {voiceError,VoiceError} from './voice-errors.mjs';
 import {estimateCommentary} from './commentary-campaign.mjs';
@@ -69,7 +70,7 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
   const server = createServer(async (request, response) => {
     try {
       const url = new URL(request.url, 'http://localhost');
-      if (url.pathname === '/health' && request.method === 'GET') return send(response, 200, { status: 'ok', service: 'hubloan-agents', storage: store.mode, release:'universal-video-2.5.1', commit:/^[a-f0-9]{40}$/.test(process.env.RENDER_GIT_COMMIT||'')?process.env.RENDER_GIT_COMMIT:null });
+      if (url.pathname === '/health' && request.method === 'GET') return send(response, 200, { status: 'ok', service: 'hubloan-agents', storage: store.mode, release:'astra-recovery-2.5.1', commit:/^[a-f0-9]{40}$/.test(process.env.RENDER_GIT_COMMIT||'')?process.env.RENDER_GIT_COMMIT:null });
       if (!url.pathname.startsWith('/api/')) {
         if (request.method !== 'GET' && request.method !== 'HEAD') throw new AppError('Rota não encontrada.', 404);
         const path = resolve(root, '.' + decodeURIComponent(url.pathname));
@@ -262,7 +263,7 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
       }
       if (route === '/workspace'  && request.method === 'GET') {
         const snapshot = await store.read(id);
-        if ((snapshot.workspace.creativeCampaigns||[]).some(c=>!['ReadyForReview','Failed','Cancelled'].includes(c.state)) || snapshot.workspace.missions.some(item => item.status === 'running' && item.leaseUntil < now) || snapshot.workspace.autonomy.projects.some(project => ['active', 'planning'].includes(project.status) && (project.expiresAt < now || (project.status === 'planning' && project.leaseUntil < now)))) {
+        if ((snapshot.workspace.creativeCampaigns||[]).some(c=>!['ReadyForReview','Failed','Cancelled'].includes(c.state)) || snapshot.workspace.missions.some(item => (item.status === 'running'||item.externalOperations?.some(o=>o.state==='SENDING')) && item.leaseUntil < now) || snapshot.workspace.autonomy.projects.some(project => ['active', 'planning'].includes(project.status) && (project.expiresAt < now || (project.status === 'planning' && project.leaseUntil < now)))) {
           const updated = await store.mutate(id, workspace => { recoverStale(workspace); reconcileProjects(workspace); reconcileCampaigns(workspace); });
           return send(response, 200, publicWorkspace(updated.workspace, store.mode, Boolean(masterKey)));
         }
@@ -365,7 +366,7 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
     } catch (error) {
       if (response.headersSent) { response.end(); return; }
       if (!(error instanceof AppError)) console.error('Falha interna ao atender a central de agentes.');
-      send(response, error instanceof AppError ? error.status : 500, { code:error instanceof VoiceError?error.code:undefined, error: error instanceof AppError ? error.message : 'O servidor não conseguiu concluir a ação. Tente novamente.', budgetBlock: error instanceof AppError ? error.budgetBlock : undefined });
+      send(response, error instanceof AppError ? error.status : 500, { code:error instanceof VoiceError||error instanceof ProviderFailure?error.code:undefined, error: error instanceof AppError ? error.message : 'O servidor não conseguiu concluir a ação. Tente novamente.', budgetBlock: error instanceof AppError ? error.budgetBlock : undefined });
     }
   });
   return { server, liveRuntime, runner, commerce, shop, marketing, engineering, close: async () => { voiceAccess.clear();await liveRuntime.close(); await engineering.close(); await marketing.close(); await shop.close(); await commerce.close(); await runner.close(); await new Promise(resolveClose => server.close(resolveClose)); } };

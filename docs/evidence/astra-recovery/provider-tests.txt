@@ -1,0 +1,33 @@
+✔ provider key encryption cannot be read using another workspace token (2.669651ms)
+✔ queue validation, retry accounting and interrupted execution recovery (2.013064ms)
+✔ SQLite persists data across restart and concurrent writes retain both changes (13.645598ms)
+✔ API runs real workflow through injected provider, isolates users and requires human approval (311.88656ms)
+✔ read-only endpoints do not unlock workers and idle workspaces leave the poll loop (0.855828ms)
+✔ image bytes are protected and downloaded separately from public mission history (38.951632ms)
+✔ cancel aborts provider request and never resurrects a cancelled mission (27.633707ms)
+✔ provider failure is visible without exposing raw secrets; disconnected queue cannot run (40.405039ms)
+✔ Responses API payload and parsing handle actual output structure and token truncation (4.150443ms)
+✔ permanent AUTHENTICATION_FAILED never automatically retries (6.634271ms)
+✔ permanent INSUFFICIENT_QUOTA never automatically retries (0.623702ms)
+✔ permanent MODEL_UNAVAILABLE never automatically retries (0.522277ms)
+✔ permanent CONTENT_REJECTED never automatically retries (0.823698ms)
+✔ pre-send cancellation and timeout do not invoke transport (0.633094ms)
+✔ post-send network and timeout preserve unknown outcome without retry (12.412992ms)
+✔ 429 honors Retry-After with bounded backoff, while 500/503 POST is uncertain and never repeated (5.572173ms)
+✔ invalid JSON, incomplete response and content refusal are classified (2.152705ms)
+✔ background response ID survives disconnected polling; resumption only GETs existing result (1.711838ms)
+✔ legacy exhausted resume counter stays intact; unknown legacy charge needs explicit authorization (6.756142ms)
+✔ auth reconnect, budget, active lease, limits and correction gates do not consume attempts (3.69318ms)
+✔ expired leases mark dispatched operations unknown and retain completed checkpoints (1.623792ms)
+✔ checkpoint atomic claim excludes duplicate invocation and reuses result even after cancellation (15.88616ms)
+✔ unknown operation cannot be silently repeated and budget block never reaches provider (12.609046ms)
+✔ two simultaneous resumes have one winner; budget refusal leaves history unchanged (2.382942ms)
+✔ cancelled operation left SENDING by a crash becomes unknown only after lease expiry (0.903429ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1082.29885

@@ -1,3 +1,4 @@
+import {campaignRecovery} from './campaign-recovery.mjs';
 import {publicMultimodal} from './multimodal-studio.mjs';
 import {creativeState} from './creative-director.mjs';
 import {activeVoice,voiceStudioState} from './lume-voice.mjs';
@@ -21,9 +22,8 @@ import { businessStrategy } from './strategy.mjs';
 import { publicCommerce } from './commerce.mjs';
 import { createHash, createCipheriv, createDecipheriv, randomBytes, randomUUID } from 'node:crypto';
 
-export class AppError extends Error {
-  constructor(message, status = 400) { super(message); this.status = status; }
-}
+import {AppError} from './app-error.mjs';
+export {AppError} from './app-error.mjs';
 export const TEXT_MODELS = modelCatalog.map(m => m.id);
 export const IMAGE_MODELS = ['gpt-image-1-mini', 'gpt-image-1.5'];
 export function workspaceId(token) {
@@ -49,7 +49,7 @@ export function initialWorkspace() {
   ], missions: [], settings: { model: 'gpt-4.1-mini', imageModel: 'gpt-image-1-mini', maxOutputTokens: 1800 } };
 }
 export function publicWorkspace(workspace, storage, durableAutonomy = false) {
-  return { multimodal:publicMultimodal(workspace),creativeCampaigns:workspace.creativeCampaigns||[], creativeDirector:creativeState(workspace), version: 2, salesJourneyVersion: 2, voiceStudio:voiceStudioState(workspace),liveFactory:publicLive(workspace), affiliates:publicAffiliates(workspace), etsy:publicEtsy(workspace), factories: publicFactories(workspace, publicExperiments(workspace)), aiCosts: publicCosts(workspace), knowledge: publicKnowledge(workspace), experiments: publicExperiments(workspace), engineering: publicEngineering(workspace), strategy: businessStrategy, marketing: publicMarketing(workspace), shop: publicShop(workspace), commerce: publicCommerce(workspace), autonomy: { projects: (workspace.autonomy?.projects || []).map(p=>({...p,commercialSummary:firstSaleSummary(workspace,p)})), enabled: Boolean(workspace.autonomy?.enabled), durable: durableAutonomy }, agents: workspace.agents, missions: workspace.missions.map(({ artifact, videoImages, execution, executionHistory, revisions, ...mission }) => ({ ...mission, videoImageCount: videoImages?.length || 0, completedSteps: execution?.checkpoints?.length || 0, reviewVersions: (revisions || []).map(r => ({ id:r.id, at:r.at, feedback:r.feedback, components:r.components })), reviewComponents: mission.kind === 'sprites' && execution?.checkpoints?.filter(c => c.kind === 'image').length === 4 ? [1,2,3,4].map(i => `sprites/object-${i}.png`) : [], releaseVersion: releaseVersion({ ...mission, artifact }), factoryId: missionFactoryId(workspace, mission), hasArtifact: Boolean(artifact), hasPreview: Boolean(artifact?.preview), artifactMime: artifact?.mime, artifactFilename: artifact?.filename })), settings: { model: workspace.settings.model, workerModel: workspace.settings.workerModel || 'gpt-4.1-mini', decisionModel: workspace.settings.decisionModel || 'gpt-4.1-mini', modelCatalog, availableModels: workspace.settings.availableModels || [], modelsCheckedAt: workspace.settings.modelsCheckedAt, imageModel: workspace.settings.imageModel, maxOutputTokens: workspace.settings.maxOutputTokens, configured: Boolean(workspace.secret) }, storage };
+  return { multimodal:publicMultimodal(workspace),creativeCampaigns:(workspace.creativeCampaigns||[]).map(c=>({...c,recovery:campaignRecovery(workspace,c)})), creativeDirector:creativeState(workspace), version: 2, salesJourneyVersion: 2, voiceStudio:voiceStudioState(workspace),liveFactory:publicLive(workspace), affiliates:publicAffiliates(workspace), etsy:publicEtsy(workspace), factories: publicFactories(workspace, publicExperiments(workspace)), aiCosts: publicCosts(workspace), knowledge: publicKnowledge(workspace), experiments: publicExperiments(workspace), engineering: publicEngineering(workspace), strategy: businessStrategy, marketing: publicMarketing(workspace), shop: publicShop(workspace), commerce: publicCommerce(workspace), autonomy: { projects: (workspace.autonomy?.projects || []).map(p=>({...p,commercialSummary:firstSaleSummary(workspace,p)})), enabled: Boolean(workspace.autonomy?.enabled), durable: durableAutonomy }, agents: workspace.agents, missions: workspace.missions.map(({ artifact, videoImages, execution, executionHistory, revisions, ...mission }) => ({ ...mission, videoImageCount: videoImages?.length || 0, completedSteps: execution?.checkpoints?.length || 0, reviewVersions: (revisions || []).map(r => ({ id:r.id, at:r.at, feedback:r.feedback, components:r.components })), reviewComponents: mission.kind === 'sprites' && execution?.checkpoints?.filter(c => c.kind === 'image').length === 4 ? [1,2,3,4].map(i => `sprites/object-${i}.png`) : [], releaseVersion: releaseVersion({ ...mission, artifact }), factoryId: missionFactoryId(workspace, mission), hasArtifact: Boolean(artifact), hasPreview: Boolean(artifact?.preview), artifactMime: artifact?.mime, artifactFilename: artifact?.filename })), settings: { model: workspace.settings.model, workerModel: workspace.settings.workerModel || 'gpt-4.1-mini', decisionModel: workspace.settings.decisionModel || 'gpt-4.1-mini', modelCatalog, availableModels: workspace.settings.availableModels || [], modelsCheckedAt: workspace.settings.modelsCheckedAt, imageModel: workspace.settings.imageModel, maxOutputTokens: workspace.settings.maxOutputTokens, configured: Boolean(workspace.secret) }, storage };
 }
 export function text(value, name, max) {
   if (typeof value !== 'string' || !value.trim() || value.trim().length > max) throw new AppError(`${name}: informe de 1 a ${max} caracteres.`);
@@ -140,8 +140,11 @@ export function cancelMission(workspace, id) {
 }
 export function recoverStale(workspace, now = Date.now()) {
   for (const mission of workspace.missions) {
+    if(mission.leaseUntil<now)for(const op of mission.externalOperations||[])if(op.state==='SENDING')Object.assign(op,{state:'UNKNOWN',reconciliation:'LEASE_EXPIRED',endedAt:new Date(now).toISOString()});
     if (mission.status === 'running' && mission.leaseUntil < now) {
       mission.status = 'failed'; mission.phase = 'Execução interrompida';
+      for(const op of mission.externalOperations||[])if(op.state==='SENDING')Object.assign(op,{state:'UNKNOWN',reconciliation:'LEASE_EXPIRED',endedAt:new Date(now).toISOString()});
+      mission.failure={code:'PROVIDER_OUTCOME_UNKNOWN',outcomeUnknown:true,stage:mission.phase};
       mission.error = 'A execução foi interrompida pelo servidor. Você pode tentar novamente; chamadas anteriores podem ter sido cobradas.';
     }
   }
