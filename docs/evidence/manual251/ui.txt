@@ -1,0 +1,1 @@
+PASS: 8 formats; narrative controls exclude Snake; existing battle form preserved; mobile390/desktop1440 no overflow or runtime errors.

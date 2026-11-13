@@ -1,0 +1,12 @@
+✔ manual registry separates executable narrative and snake adapters (0.765892ms)
+✔ manual plans need explicit silence, valid format, approved voice and revision (3.125597ms)
+✔ editing invalidates old budget and snapshots the explicit user plan (0.344483ms)
+✔ remote speech is an approved immutable snapshot and cannot bypass paid authorization (0.419516ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 285.87295

@@ -69,7 +69,7 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
   const server = createServer(async (request, response) => {
     try {
       const url = new URL(request.url, 'http://localhost');
-      if (url.pathname === '/health' && request.method === 'GET') return send(response, 200, { status: 'ok', service: 'hubloan-agents', storage: store.mode, release:'production-readiness-2.5', commit:/^[a-f0-9]{40}$/.test(process.env.RENDER_GIT_COMMIT||'')?process.env.RENDER_GIT_COMMIT:null });
+      if (url.pathname === '/health' && request.method === 'GET') return send(response, 200, { status: 'ok', service: 'hubloan-agents', storage: store.mode, release:'universal-video-2.5.1', commit:/^[a-f0-9]{40}$/.test(process.env.RENDER_GIT_COMMIT||'')?process.env.RENDER_GIT_COMMIT:null });
       if (!url.pathname.startsWith('/api/')) {
         if (request.method !== 'GET' && request.method !== 'HEAD') throw new AppError('Rota não encontrada.', 404);
         const path = resolve(root, '.' + decodeURIComponent(url.pathname));

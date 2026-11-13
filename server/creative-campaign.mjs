@@ -1,4 +1,5 @@
-import {planCommentary,authorizeCommentary} from './commentary-campaign.mjs';
+import {manualFormat} from './creative-formats.mjs';
+import {planCommentary,authorizeCommentary,editManualPlan} from './commentary-campaign.mjs';
 import {audienceLearning} from './viral-distribution.mjs';
 import {randomUUID,createHash} from 'node:crypto';
 import {AppError,text,addMission,queueMission,missionById,cancelMission,decryptKey} from './domain.mjs';
@@ -10,6 +11,12 @@ const terminal=new Set(['ReadyForReview','Failed','Cancelled']);
 const list=w=>w.creativeCampaigns ||= [];
 const event=(c,state,detail)=>{c.state=state;c.events.push({at:new Date().toISOString(),state,detail});};
 export function campaignAction(w,input,now=Date.now()){
+ if(input.action==='manual-plan'){
+  if(w.creativeDirector?.paused||list(w).length>=30||list(w).some(c=>!terminal.has(c.state)))throw new AppError('Uma campanha por vez; direção deve estar ativa.',409);
+  if(!w.agents.some(a=>a.enabled))throw new AppError('Nenhum agente ativo.');
+  const c={id:randomUUID(),revision:0,request:text(input.request,'Briefing',1000),state:'AwaitingBudget',mode:'visual-commentary',source:'manual',createdAt:new Date(now).toISOString(),events:[],decisions:[{source:'user',detail:'Escolhas manuais preservadas.'}],productionIds:[],publication:{enabled:false,approval:'human'}};
+  editManualPlan(w,c,input);list(w).push(c);return c;
+ }
  if(input.action==='start'){
   if(w.creativeDirector?.paused)throw new AppError('Direção criativa pausada.',409);
   if(list(w).length>=30||list(w).some(c=>!terminal.has(c.state)))throw new AppError('Uma campanha por vez; máximo 30 no histórico.',409);
@@ -18,12 +25,13 @@ export function campaignAction(w,input,now=Date.now()){
   const request=text(input.request,'Solicitação',1000),agent=w.agents.find(a=>a.enabled);if(!agent)throw new AppError('Nenhum agente ativo.');
   const m=addMission(w,{title:'Astra: campanha autônoma',brief:request,kind:'text',agentId:agent.id});
   const c={id:randomUUID(),revision:0,request,state:'Researching',createdAt:new Date(now).toISOString(),deadline:now+1800000,missionId:m.id,voiceMode:input.voiceMode,webResearch:input.webResearch===true,attemptLimit:2,model:w.settings.model,events:[],sources:[],decisions:[],productionIds:[],publication:{enabled:false,approval:'human',officialAuthenticationRequired:true,schedulerImplemented:false,metrics:[]}};
-  if(input.mode==='visual-commentary'){if(![15,18,20,24,30].includes(input.seconds))throw new AppError('Duração multimodal inválida.');c.mode='visual-commentary';c.requestedSeconds=input.seconds;c.qualityPreference=input.qualityPreference==='quality'?'quality':'economy';}
+  if(input.mode==='visual-commentary'){if(input.format&&manualFormat(input.format)?.adapter!=='visual-commentary')throw new AppError('Formato narrativo indisponível.');if(![15,18,20,24,30].includes(input.seconds))throw new AppError('Duração multimodal inválida.');c.mode='visual-commentary';c.manualFormat=input.format||'absurd-documentary';c.requestedSeconds=input.seconds;c.qualityPreference=input.qualityPreference==='quality'?'quality':'economy';}
   m.campaignId=c.id;m.creativeRequest={version:1,mode:c.mode,theme:request,sources:structuredClone((w.creativeDirector?.sources||[]).filter(s=>s.kind!=='fixture')),rejected:(w.creativeDirector?.experiments||[]).filter(e=>e.reviews.some(r=>r.decision==='reject')).map(e=>({title:e.proposal.title,concept:e.proposal.concept,reasons:e.reviews})),audienceEvidence:(w.experiments||[]).filter(e=>e.kind==='audience').map(audienceLearning)};
   event(c,'Researching','Solicitação recebida; nenhuma proposta ou cena fornecida pelo operador.');list(w).push(c);queueMission(w,m.id);return c;
  }
  const c=list(w).find(c=>c.id===input.id);if(!c)throw new AppError('Campanha não encontrada.',404);
  if(input.revision!==c.revision)throw new AppError('Campanha mudou. Recarregue.',409);
+ if(input.action==='edit-plan')return editManualPlan(w,c,input);
  if(input.action==='authorize-media')return authorizeCommentary(w,c,input,now);
  if(input.action==='resume'){
   if(c.state!=='Failed'||(c.resumes||0)>=1||w.creativeDirector?.paused)throw new AppError('Retomada indisponível ou limite atingido.',409);
@@ -42,7 +50,7 @@ export function reconcileCampaigns(w,now=Date.now()){
   if(terminal.has(c.state)||c.state==='AwaitingBudget')continue;
   const charges=(w.aiCosts?.entries||[]).filter(e=>[c.missionId,...c.productionIds].includes(e.taskId));c.costs={calls:charges.filter(e=>e.status!=='not_sent').length,exposureMinor:charges.reduce((n,e)=>n+costExposure(e),0),confirmedMinor:charges.every(e=>e.confirmedMinor!=null)?charges.reduce((n,e)=>n+e.confirmedMinor,0):null,infrastructureMinor:null};
   const m=w.missions.find(m=>m.id===c.missionId),jobs=c.productionIds.map(id=>w.missions.find(m=>m.id===id));
-  const failure=!m||['failed','cancelled'].includes(m.status)||jobs.some(m=>!m||['failed','cancelled'].includes(m.status));
+  const failure=(!m&&c.source!=='manual')||['failed','cancelled'].includes(m?.status)||jobs.some(m=>!m||['failed','cancelled'].includes(m.status));
   if(now>c.deadline||failure){
    for(const job of [m,...jobs])if(job&&['queued','running'].includes(job.status))cancelMission(w,job.id);
    c.error=now>c.deadline?'CAMPAIGN_DEADLINE_EXCEEDED':m?.error||jobs.find(m=>m?.error)?.error||'PRODUCTION_INTERRUPTED';event(c,'Failed',c.error);c.endedAt=new Date(now).toISOString();c.revision++;continue;
