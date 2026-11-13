@@ -1,0 +1,668 @@
+[
+  {
+    "format": "absurd-documentary",
+    "campaign": {
+      "id": "3bd42299-9d65-4d12-b0a8-020f0b1345e0",
+      "revision": 3,
+      "request": "Um falso estudo sobre uma colher deslocada, mostrado como diagrama abstrato.",
+      "state": "ReadyForReview",
+      "mode": "visual-commentary",
+      "source": "manual",
+      "createdAt": "2026-11-13T00:36:18.000Z",
+      "events": [
+        {
+          "at": "2026-11-13T00:36:18.001Z",
+          "state": "Planning",
+          "detail": "Roteiro e cenas definidos pelo usuário; estimativas e autorizações anteriores invalidadas."
+        },
+        {
+          "at": "2026-11-13T00:36:18.126Z",
+          "state": "Rendering",
+          "detail": "Orçamento autorizado pelo supervisor; produção na fila existente."
+        },
+        {
+          "at": "2026-11-13T00:36:20.827Z",
+          "state": "Validating",
+          "detail": "Verificar artefatos, planos e integridade técnica."
+        },
+        {
+          "at": "2026-11-13T00:36:20.827Z",
+          "state": "ReadyForReview",
+          "detail": "Artefatos tecnicamente válidos; revisão humana pendente."
+        }
+      ],
+      "decisions": [
+        {
+          "source": "user",
+          "detail": "Escolhas manuais preservadas."
+        }
+      ],
+      "productionIds": [
+        "5c276e25-e1b8-4073-b812-357a74082b89"
+      ],
+      "publication": {
+        "enabled": false,
+        "approval": "human"
+      },
+      "planHistory": [],
+      "plans": [
+        {
+          "version": 1,
+          "format": "visual-commentary",
+          "seconds": 15,
+          "title": "A colher em repouso",
+          "premise": "Um falso estudo sobre uma colher deslocada, mostrado como diagrama abstrato.",
+          "creativeReview": "Composição diagramática deliberada, sem narração nesta verificação local.",
+          "scenes": [
+            {
+              "id": "scene-0",
+              "seconds": 5,
+              "goal": "A colher em repouso",
+              "mechanism": "Seriedade documental fictícia",
+              "narration": "",
+              "title": "A colher em repouso",
+              "prompt": "Diagrama abstrato de trajetória e posição",
+              "visual": "local-diagram",
+              "motion": "push-in",
+              "annotation": "circle",
+              "tone": "documentary",
+              "beat": "setup",
+              "transition": "cut",
+              "model": null
+            },
+            {
+              "id": "scene-1",
+              "seconds": 5,
+              "goal": "Migração de três centímetros",
+              "mechanism": "Seriedade documental fictícia",
+              "narration": "",
+              "title": "Migração de três centímetros",
+              "prompt": "Diagrama abstrato de trajetória e posição",
+              "visual": "local-diagram",
+              "motion": "pan-left",
+              "annotation": "arrow",
+              "tone": "documentary",
+              "beat": "escalation",
+              "transition": "cut",
+              "model": null
+            },
+            {
+              "id": "scene-2",
+              "seconds": 5,
+              "goal": "A pia explica tudo",
+              "mechanism": "Seriedade documental fictícia",
+              "narration": "",
+              "title": "A pia explica tudo",
+              "prompt": "Diagrama abstrato de trajetória e posição",
+              "visual": "local-diagram",
+              "motion": "reveal",
+              "annotation": "none",
+              "tone": "documentary",
+              "beat": "payoff",
+              "transition": "cut",
+              "model": null
+            }
+          ]
+        }
+      ],
+      "manualFormat": "absurd-documentary",
+      "narrationSnapshot": null,
+      "resourceEstimate": [],
+      "planVersion": 1,
+      "mediaAuthorization": {
+        "maxMicros": 0,
+        "operationCapMicros": 0,
+        "planVersion": 1,
+        "at": "2026-11-13T00:36:18.126Z",
+        "unknownCostAccepted": false,
+        "unknownBalanceAccepted": false
+      },
+      "deadline": 1794531978126,
+      "costs": {
+        "calls": 0,
+        "exposureMinor": 0,
+        "confirmedMinor": 0,
+        "infrastructureMinor": null
+      },
+      "quality": {
+        "technical": "PASS",
+        "artistic": "HUMAN_REVIEW_REQUIRED",
+        "issues": [],
+        "artifacts": [
+          {
+            "missionId": "5c276e25-e1b8-4073-b812-357a74082b89",
+            "sha256": "53bf03d6a0a334c3c76b0cc756091cf760fecd308324ac19b2713f5e48ab8879",
+            "report": {
+              "format": "visual-commentary",
+              "seconds": 15,
+              "width": 360,
+              "height": 640,
+              "audio": false,
+              "distinctFrames": 225,
+              "technicalStatus": "TECHNICALLY_VALID",
+              "qualityStatus": "REQUIRES_HUMAN_REVIEW",
+              "artisticEligibility": {
+                "eligible": true,
+                "reasons": []
+              },
+              "resources": [
+                {
+                  "sceneId": "scene-0",
+                  "visual": "local-diagram",
+                  "image": null,
+                  "speech": null
+                },
+                {
+                  "sceneId": "scene-1",
+                  "visual": "local-diagram",
+                  "image": null,
+                  "speech": null
+                },
+                {
+                  "sceneId": "scene-2",
+                  "visual": "local-diagram",
+                  "image": null,
+                  "speech": null
+                }
+              ],
+              "captions": [],
+              "wallMs": 2685,
+              "sha256": "53bf03d6a0a334c3c76b0cc756091cf760fecd308324ac19b2713f5e48ab8879",
+              "creativeReview": {
+                "source": "User-plan",
+                "text": "Composição diagramática deliberada, sem narração nesta verificação local.",
+                "artifactReviewed": false
+              },
+              "infrastructureCost": "UNKNOWN",
+              "manualFormat": "absurd-documentary"
+            }
+          }
+        ]
+      },
+      "endedAt": "2026-11-13T00:36:20.827Z"
+    },
+    "mission": {
+      "id": "5c276e25-e1b8-4073-b812-357a74082b89",
+      "title": "A colher em repouso",
+      "brief": "A colher em repouso\nMigração de três centímetros\nA pia explica tudo",
+      "agentId": "research",
+      "kind": "video",
+      "status": "review",
+      "output": "Visual Commentary: MP4 360×640 composto localmente. Custos e recursos registrados na campanha; revisão humana obrigatória. Nenhuma publicação.",
+      "error": "",
+      "phase": "Vídeo pronto para revisão humana",
+      "createdAt": "2026-11-13T00:36:18.126Z",
+      "events": [
+        {
+          "at": "2026-11-13T00:36:18.126Z",
+          "message": "Tentativa 1: etapas concluídas serão preservadas."
+        },
+        {
+          "at": "2026-11-13T00:36:20.823Z",
+          "message": "MP4 validado e preservado no Armazém. Publicação não autorizada."
+        }
+      ],
+      "tokens": 0,
+      "images": 0,
+      "attempt": 1,
+      "campaignId": "3bd42299-9d65-4d12-b0a8-020f0b1345e0",
+      "visualCommentary": {
+        "manualFormat": "absurd-documentary",
+        "plan": {
+          "version": 1,
+          "format": "visual-commentary",
+          "seconds": 15,
+          "title": "A colher em repouso",
+          "premise": "Um falso estudo sobre uma colher deslocada, mostrado como diagrama abstrato.",
+          "creativeReview": "Composição diagramática deliberada, sem narração nesta verificação local.",
+          "scenes": [
+            {
+              "id": "scene-0",
+              "seconds": 5,
+              "goal": "A colher em repouso",
+              "mechanism": "Seriedade documental fictícia",
+              "narration": "",
+              "title": "A colher em repouso",
+              "prompt": "Diagrama abstrato de trajetória e posição",
+              "visual": "local-diagram",
+              "motion": "push-in",
+              "annotation": "circle",
+              "tone": "documentary",
+              "beat": "setup",
+              "transition": "cut",
+              "model": null
+            },
+            {
+              "id": "scene-1",
+              "seconds": 5,
+              "goal": "Migração de três centímetros",
+              "mechanism": "Seriedade documental fictícia",
+              "narration": "",
+              "title": "Migração de três centímetros",
+              "prompt": "Diagrama abstrato de trajetória e posição",
+              "visual": "local-diagram",
+              "motion": "pan-left",
+              "annotation": "arrow",
+              "tone": "documentary",
+              "beat": "escalation",
+              "transition": "cut",
+              "model": null
+            },
+            {
+              "id": "scene-2",
+              "seconds": 5,
+              "goal": "A pia explica tudo",
+              "mechanism": "Seriedade documental fictícia",
+              "narration": "",
+              "title": "A pia explica tudo",
+              "prompt": "Diagrama abstrato de trajetória e posição",
+              "visual": "local-diagram",
+              "motion": "reveal",
+              "annotation": "none",
+              "tone": "documentary",
+              "beat": "payoff",
+              "transition": "cut",
+              "model": null
+            }
+          ]
+        },
+        "narration": null,
+        "planVersion": 1
+      },
+      "attempts": [],
+      "executionId": "fc3526c9-339a-47e1-8bc2-63a5986e1984",
+      "leaseUntil": 1794530780823,
+      "videoReport": {
+        "format": "visual-commentary",
+        "seconds": 15,
+        "width": 360,
+        "height": 640,
+        "audio": false,
+        "distinctFrames": 225,
+        "technicalStatus": "TECHNICALLY_VALID",
+        "qualityStatus": "REQUIRES_HUMAN_REVIEW",
+        "artisticEligibility": {
+          "eligible": true,
+          "reasons": []
+        },
+        "resources": [
+          {
+            "sceneId": "scene-0",
+            "visual": "local-diagram",
+            "image": null,
+            "speech": null
+          },
+          {
+            "sceneId": "scene-1",
+            "visual": "local-diagram",
+            "image": null,
+            "speech": null
+          },
+          {
+            "sceneId": "scene-2",
+            "visual": "local-diagram",
+            "image": null,
+            "speech": null
+          }
+        ],
+        "captions": [],
+        "wallMs": 2685,
+        "sha256": "53bf03d6a0a334c3c76b0cc756091cf760fecd308324ac19b2713f5e48ab8879",
+        "creativeReview": {
+          "source": "User-plan",
+          "text": "Composição diagramática deliberada, sem narração nesta verificação local.",
+          "artifactReviewed": false
+        },
+        "infrastructureCost": "UNKNOWN",
+        "manualFormat": "absurd-documentary"
+      },
+      "videoImageCount": 0,
+      "completedSteps": 0,
+      "reviewVersions": [],
+      "reviewComponents": [],
+      "releaseVersion": "c574416ac2c127e133e0b05803b114f8dc61a63d3f4c10e3d7e4b098e2729559",
+      "factoryId": null,
+      "hasArtifact": true,
+      "hasPreview": true,
+      "artifactMime": "video/mp4",
+      "artifactFilename": "hubloan-5c276e25-e1b8-4073-b812-357a74082b89.mp4"
+    },
+    "sha256": "53bf03d6a0a334c3c76b0cc756091cf760fecd308324ac19b2713f5e48ab8879",
+    "bytes": 120601,
+    "paidCalls": 0,
+    "realProviderValidation": false
+  },
+  {
+    "format": "visual-commentary",
+    "campaign": {
+      "id": "e4fb6f8c-4989-4fa9-a91f-de199552f046",
+      "revision": 3,
+      "request": "Explicação gráfica da diferença entre posição e movimento.",
+      "state": "ReadyForReview",
+      "mode": "visual-commentary",
+      "source": "manual",
+      "createdAt": "2026-11-13T00:36:20.850Z",
+      "events": [
+        {
+          "at": "2026-11-13T00:36:20.851Z",
+          "state": "Planning",
+          "detail": "Roteiro e cenas definidos pelo usuário; estimativas e autorizações anteriores invalidadas."
+        },
+        {
+          "at": "2026-11-13T00:36:20.854Z",
+          "state": "Rendering",
+          "detail": "Orçamento autorizado pelo supervisor; produção na fila existente."
+        },
+        {
+          "at": "2026-11-13T00:36:23.294Z",
+          "state": "Validating",
+          "detail": "Verificar artefatos, planos e integridade técnica."
+        },
+        {
+          "at": "2026-11-13T00:36:23.294Z",
+          "state": "ReadyForReview",
+          "detail": "Artefatos tecnicamente válidos; revisão humana pendente."
+        }
+      ],
+      "decisions": [
+        {
+          "source": "user",
+          "detail": "Escolhas manuais preservadas."
+        }
+      ],
+      "productionIds": [
+        "c38518d4-24a9-474c-bac8-c150636a2dbf"
+      ],
+      "publication": {
+        "enabled": false,
+        "approval": "human"
+      },
+      "planHistory": [],
+      "plans": [
+        {
+          "version": 1,
+          "format": "visual-commentary",
+          "seconds": 15,
+          "title": "Como ler um deslocamento",
+          "premise": "Explicação gráfica da diferença entre posição e movimento.",
+          "creativeReview": "Composição diagramática deliberada, sem narração nesta verificação local.",
+          "scenes": [
+            {
+              "id": "scene-0",
+              "seconds": 5,
+              "goal": "Como ler um deslocamento",
+              "mechanism": "Explicação diagramática",
+              "narration": "",
+              "title": "Como ler um deslocamento",
+              "prompt": "Diagrama abstrato de trajetória e posição",
+              "visual": "local-diagram",
+              "motion": "push-in",
+              "annotation": "circle",
+              "tone": "documentary",
+              "beat": "setup",
+              "transition": "cut",
+              "model": null
+            },
+            {
+              "id": "scene-1",
+              "seconds": 5,
+              "goal": "A seta indica a mudança",
+              "mechanism": "Explicação diagramática",
+              "narration": "",
+              "title": "A seta indica a mudança",
+              "prompt": "Diagrama abstrato de trajetória e posição",
+              "visual": "local-diagram",
+              "motion": "pan-left",
+              "annotation": "arrow",
+              "tone": "documentary",
+              "beat": "escalation",
+              "transition": "cut",
+              "model": null
+            },
+            {
+              "id": "scene-2",
+              "seconds": 5,
+              "goal": "Posição não é velocidade",
+              "mechanism": "Explicação diagramática",
+              "narration": "",
+              "title": "Posição não é velocidade",
+              "prompt": "Diagrama abstrato de trajetória e posição",
+              "visual": "local-diagram",
+              "motion": "reveal",
+              "annotation": "none",
+              "tone": "documentary",
+              "beat": "payoff",
+              "transition": "cut",
+              "model": null
+            }
+          ]
+        }
+      ],
+      "manualFormat": "visual-commentary",
+      "narrationSnapshot": null,
+      "resourceEstimate": [],
+      "planVersion": 1,
+      "mediaAuthorization": {
+        "maxMicros": 0,
+        "operationCapMicros": 0,
+        "planVersion": 1,
+        "at": "2026-11-13T00:36:20.854Z",
+        "unknownCostAccepted": false,
+        "unknownBalanceAccepted": false
+      },
+      "deadline": 1794531980854,
+      "costs": {
+        "calls": 0,
+        "exposureMinor": 0,
+        "confirmedMinor": 0,
+        "infrastructureMinor": null
+      },
+      "quality": {
+        "technical": "PASS",
+        "artistic": "HUMAN_REVIEW_REQUIRED",
+        "issues": [],
+        "artifacts": [
+          {
+            "missionId": "c38518d4-24a9-474c-bac8-c150636a2dbf",
+            "sha256": "b09dc0f3136131d687196b86f4d2d689be907e30a5645e72a42b73c88762af0f",
+            "report": {
+              "format": "visual-commentary",
+              "seconds": 15,
+              "width": 360,
+              "height": 640,
+              "audio": false,
+              "distinctFrames": 225,
+              "technicalStatus": "TECHNICALLY_VALID",
+              "qualityStatus": "REQUIRES_HUMAN_REVIEW",
+              "artisticEligibility": {
+                "eligible": true,
+                "reasons": []
+              },
+              "resources": [
+                {
+                  "sceneId": "scene-0",
+                  "visual": "local-diagram",
+                  "image": null,
+                  "speech": null
+                },
+                {
+                  "sceneId": "scene-1",
+                  "visual": "local-diagram",
+                  "image": null,
+                  "speech": null
+                },
+                {
+                  "sceneId": "scene-2",
+                  "visual": "local-diagram",
+                  "image": null,
+                  "speech": null
+                }
+              ],
+              "captions": [],
+              "wallMs": 2422,
+              "sha256": "b09dc0f3136131d687196b86f4d2d689be907e30a5645e72a42b73c88762af0f",
+              "creativeReview": {
+                "source": "User-plan",
+                "text": "Composição diagramática deliberada, sem narração nesta verificação local.",
+                "artifactReviewed": false
+              },
+              "infrastructureCost": "UNKNOWN",
+              "manualFormat": "visual-commentary"
+            }
+          }
+        ]
+      },
+      "endedAt": "2026-11-13T00:36:23.294Z"
+    },
+    "mission": {
+      "id": "c38518d4-24a9-474c-bac8-c150636a2dbf",
+      "title": "Como ler um deslocamento",
+      "brief": "Como ler um deslocamento\nA seta indica a mudança\nPosição não é velocidade",
+      "agentId": "research",
+      "kind": "video",
+      "status": "review",
+      "output": "Visual Commentary: MP4 360×640 composto localmente. Custos e recursos registrados na campanha; revisão humana obrigatória. Nenhuma publicação.",
+      "error": "",
+      "phase": "Vídeo pronto para revisão humana",
+      "createdAt": "2026-11-13T00:36:20.854Z",
+      "events": [
+        {
+          "at": "2026-11-13T00:36:20.854Z",
+          "message": "Tentativa 1: etapas concluídas serão preservadas."
+        },
+        {
+          "at": "2026-11-13T00:36:23.292Z",
+          "message": "MP4 validado e preservado no Armazém. Publicação não autorizada."
+        }
+      ],
+      "tokens": 0,
+      "images": 0,
+      "attempt": 1,
+      "campaignId": "e4fb6f8c-4989-4fa9-a91f-de199552f046",
+      "visualCommentary": {
+        "manualFormat": "visual-commentary",
+        "plan": {
+          "version": 1,
+          "format": "visual-commentary",
+          "seconds": 15,
+          "title": "Como ler um deslocamento",
+          "premise": "Explicação gráfica da diferença entre posição e movimento.",
+          "creativeReview": "Composição diagramática deliberada, sem narração nesta verificação local.",
+          "scenes": [
+            {
+              "id": "scene-0",
+              "seconds": 5,
+              "goal": "Como ler um deslocamento",
+              "mechanism": "Explicação diagramática",
+              "narration": "",
+              "title": "Como ler um deslocamento",
+              "prompt": "Diagrama abstrato de trajetória e posição",
+              "visual": "local-diagram",
+              "motion": "push-in",
+              "annotation": "circle",
+              "tone": "documentary",
+              "beat": "setup",
+              "transition": "cut",
+              "model": null
+            },
+            {
+              "id": "scene-1",
+              "seconds": 5,
+              "goal": "A seta indica a mudança",
+              "mechanism": "Explicação diagramática",
+              "narration": "",
+              "title": "A seta indica a mudança",
+              "prompt": "Diagrama abstrato de trajetória e posição",
+              "visual": "local-diagram",
+              "motion": "pan-left",
+              "annotation": "arrow",
+              "tone": "documentary",
+              "beat": "escalation",
+              "transition": "cut",
+              "model": null
+            },
+            {
+              "id": "scene-2",
+              "seconds": 5,
+              "goal": "Posição não é velocidade",
+              "mechanism": "Explicação diagramática",
+              "narration": "",
+              "title": "Posição não é velocidade",
+              "prompt": "Diagrama abstrato de trajetória e posição",
+              "visual": "local-diagram",
+              "motion": "reveal",
+              "annotation": "none",
+              "tone": "documentary",
+              "beat": "payoff",
+              "transition": "cut",
+              "model": null
+            }
+          ]
+        },
+        "narration": null,
+        "planVersion": 1
+      },
+      "attempts": [],
+      "executionId": "6765b15b-97fd-4d7a-8383-b17d5c0d1e96",
+      "leaseUntil": 1794530783292,
+      "videoReport": {
+        "format": "visual-commentary",
+        "seconds": 15,
+        "width": 360,
+        "height": 640,
+        "audio": false,
+        "distinctFrames": 225,
+        "technicalStatus": "TECHNICALLY_VALID",
+        "qualityStatus": "REQUIRES_HUMAN_REVIEW",
+        "artisticEligibility": {
+          "eligible": true,
+          "reasons": []
+        },
+        "resources": [
+          {
+            "sceneId": "scene-0",
+            "visual": "local-diagram",
+            "image": null,
+            "speech": null
+          },
+          {
+            "sceneId": "scene-1",
+            "visual": "local-diagram",
+            "image": null,
+            "speech": null
+          },
+          {
+            "sceneId": "scene-2",
+            "visual": "local-diagram",
+            "image": null,
+            "speech": null
+          }
+        ],
+        "captions": [],
+        "wallMs": 2422,
+        "sha256": "b09dc0f3136131d687196b86f4d2d689be907e30a5645e72a42b73c88762af0f",
+        "creativeReview": {
+          "source": "User-plan",
+          "text": "Composição diagramática deliberada, sem narração nesta verificação local.",
+          "artifactReviewed": false
+        },
+        "infrastructureCost": "UNKNOWN",
+        "manualFormat": "visual-commentary"
+      },
+      "videoImageCount": 0,
+      "completedSteps": 0,
+      "reviewVersions": [],
+      "reviewComponents": [],
+      "releaseVersion": "39f670ebd43fcf4ea7978da19aed29fd66e107a44e410f9dc6ad3e672777c3d8",
+      "factoryId": null,
+      "hasArtifact": true,
+      "hasPreview": true,
+      "artifactMime": "video/mp4",
+      "artifactFilename": "hubloan-c38518d4-24a9-474c-bac8-c150636a2dbf.mp4"
+    },
+    "sha256": "b09dc0f3136131d687196b86f4d2d689be907e30a5645e72a42b73c88762af0f",
+    "bytes": 119518,
+    "paidCalls": 0,
+    "realProviderValidation": false
+  }
+]

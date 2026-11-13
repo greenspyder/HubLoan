@@ -1,0 +1,16 @@
+✔ shared WebGL spine stays inside every skull through turns, elimination and replay (2881.172585ms)
+✔ all archetypes retain their transformed neck socket in tight turns and slow replay (2913.19403ms)
+✔ autonomous presentation comments on real results, respects cooldown, never fills audience (160.04725ms)
+✔ neural unavailable falls back locally, rejects unsafe input and cancels (6.590676ms)
+﹣ real neural pt-BR synthesis, bounded PCM and model reuse (0.172928ms) # SKIP
+✔ real WebGL frames, camera, PCM mouth, game immutable, avatars, bounded geometry and cleanup (5484.36088ms)
+✔ offline preflight transports safe views and final rendering rechecks the selected pose (849.911394ms)
+✔ battle mouth and neck remain inspectable in four previously blocked real frames (3136.883858ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 6917.321108

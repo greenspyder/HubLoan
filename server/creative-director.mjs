@@ -5,18 +5,13 @@ import {releaseVersion} from './shop-release.mjs';
 import {activeVoice} from './lume-voice.mjs';
 import {videoRuntimeAvailable} from './video-production.mjs';
 
-export const creativeFormats = Object.freeze([
- {id:'comedy',category:'character',name:'Humor de personagem',pipeline:'short',implemented:true,dependencies:['Chromium/WebGL','FFmpeg','TTS local'],limitations:['Encenação editorial sobre simulação; não reproduz pedidos arbitrários de atuação.']},
- {id:'battle',category:'gameplay',name:'Confronto com contexto',pipeline:'short',implemented:true,dependencies:['Chromium/WebGL','FFmpeg','TTS local'],limitations:['Eventos selecionados da simulação real; nunca prometer um vencedor no roteiro.']},
- {id:'champion',category:'character',name:'Apresentação de elenco',pipeline:'short',implemented:true,dependencies:['Chromium/WebGL','FFmpeg','TTS local'],limitations:['Modelos existentes e poses procedurais; revisão visual obrigatória.']},
- {id:'mystery',category:'storytelling',name:'Microconto de luz e sombra',pipeline:'motion-story',implemented:true,dependencies:['FFmpeg','sharp','TTS local'],limitations:['Animação vetorial original: porta, viajante e sinal; não gera qualquer cenário solicitado.']},
- {id:'hybrid',category:'experimental',name:'Enigma interativo híbrido',pipeline:null,implemented:false,dependencies:['Editor de ramificações','Interação autorizada'],limitations:['Proposta somente; não renderizável nesta versão.']}
-]);
+export {creativeFormats} from './creative-formats.mjs';
+import {creativeFormats,manualFormats} from './creative-formats.mjs';
 const empty=()=>({version:1,revision:0,paused:false,sources:[],proposals:[],experiments:[]});
 const state=w=>w.creativeDirector ||= empty();
 export function creativeState(w){
  const s=w.creativeDirector||empty();
- return {...s,planning:w.missions.filter(m=>m.creativeRequest).map(m=>({id:m.id,status:m.status,phase:m.phase,error:m.error})),formats:creativeFormats.map(f=>({...f,runtime:!f.implemented?'NEEDS_IMPLEMENTATION':videoRuntimeAvailable()?'CHECK_TTS_AND_RENDERER':'FFMPEG_UNAVAILABLE'})),research:{externalConnected:false,notice:'Sem feed de tendências conectado. Fontes importadas são relatos, não verificação independente.'},autonomy:{publishingEnabled:false,schedulingImplemented:false,approvalPolicy:'HUMAN_REVIEW',paidCallsAllowed:false},experiments:s.experiments.map(e=>{const m=w.missions.find(m=>m.id===e.missionId);return {...e,status:m?.status||'missing',phase:m?.phase,error:m?.error||'',artifact:m?.artifact?{filename:m.artifact.filename,sha256:createHash('sha256').update(Buffer.from(m.artifact.base64,'base64')).digest('hex'),version:releaseVersion(m)}:null,resourceReport:m?.videoReport||null,observedResults:(w.experiments||[]).filter(x=>x.kind==='audience'&&x.missionIds.includes(e.missionId)).map(audienceLearning)};})};
+ return {...s,manualFormats,planning:w.missions.filter(m=>m.creativeRequest).map(m=>({id:m.id,status:m.status,phase:m.phase,error:m.error})),formats:creativeFormats.map(f=>({...f,runtime:!f.implemented?'NEEDS_IMPLEMENTATION':videoRuntimeAvailable()?'CHECK_TTS_AND_RENDERER':'FFMPEG_UNAVAILABLE'})),research:{externalConnected:false,notice:'Sem feed de tendências conectado. Fontes importadas são relatos, não verificação independente.'},autonomy:{publishingEnabled:false,schedulingImplemented:false,approvalPolicy:'HUMAN_REVIEW',paidCallsAllowed:false},experiments:s.experiments.map(e=>{const m=w.missions.find(m=>m.id===e.missionId);return {...e,status:m?.status||'missing',phase:m?.phase,error:m?.error||'',artifact:m?.artifact?{filename:m.artifact.filename,sha256:createHash('sha256').update(Buffer.from(m.artifact.base64,'base64')).digest('hex'),version:releaseVersion(m)}:null,resourceReport:m?.videoReport||null,observedResults:(w.experiments||[]).filter(x=>x.kind==='audience'&&x.missionIds.includes(e.missionId)).map(audienceLearning)};})};
 }
 export function validateCreativeSource(input){
  if(!input||typeof input!=='object')throw new AppError('Fonte inválida.');

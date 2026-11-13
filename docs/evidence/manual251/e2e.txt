@@ -1,0 +1,2 @@
+[{"format":"absurd-documentary","campaignId":"3bd42299-9d65-4d12-b0a8-020f0b1345e0","state":"ReadyForReview","bytes":120601,"sha256":"53bf03d6a0a334c3c76b0cc756091cf760fecd308324ac19b2713f5e48ab8879"},{"format":"visual-commentary","campaignId":"e4fb6f8c-4989-4fa9-a91f-de199552f046","state":"ReadyForReview","bytes":119518,"sha256":"b09dc0f3136131d687196b86f4d2d689be907e30a5645e72a42b73c88762af0f"}]
+PASS: campaign and MP4 persistence after reopening SQLite
