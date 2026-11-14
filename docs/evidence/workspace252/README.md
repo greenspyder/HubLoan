@@ -33,3 +33,7 @@ Base auditada: master `e53a4635f016628df35694fafb96ff83fff4f1bf`, com Astra Reco
 - Não foram usados provedores pagos, credenciais reais nem campanhas privadas do usuário. Custo de geração consumido: zero. A validação externa de navegador depende do acesso disponível; capturas aqui são locais.
 
 Os controles de produção e recuperação foram preservados. A central utiliza as capacidades financeiras existentes; os limites citados não são apresentados como recursos implementados.
+
+## Correção do CI
+
+A primeira execução remota aprovou backend (307 testes, 6 skips) e build, mas reprovou `set-state-in-effect` na atualização ao selecionar detalhes. A atualização foi agendada com cancelamento no cleanup para evitar trabalho pendente ao trocar rapidamente de seleção; lint, build e navegação foram revalidados. O merge aguarda o CI do commit corrigido.

@@ -94,7 +94,7 @@ export function AgentWorkspacePage() {
   }, [refresh]);
   const selectedView=new URLSearchParams(location.search);
   const selectedDetails=[selectedView.get('campaign'),selectedView.get('production'),selectedView.get('financeCampaign')].join(':');
-  useEffect(()=>{void refresh();},[selectedDetails,refresh]);
+  useEffect(()=>{const timer=setTimeout(()=>void refresh(),0);return()=>clearTimeout(timer);},[selectedDetails,refresh]);
   const loaded = Boolean(workspace);
   useEffect(() => {
     const legacy = sectionScreen[section];
