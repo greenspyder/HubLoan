@@ -1,0 +1,1 @@
+PASS: local real browser desktop/mobile; 12 synthetic campaigns; paging/search; one detail; return preserves filters; three production cards; no auto players; financial sections; Escape; no secret disclosure; no horizontal overflow. No paid calls.

@@ -1,3 +1,4 @@
+import {recordFinancialChange} from './financial-audit.mjs';
 import {createHash,randomUUID} from 'node:crypto';
 import {spawn} from 'node:child_process';
 import {decryptKey} from './domain.mjs';
@@ -12,7 +13,7 @@ export const voiceIdentityHash=p=>{const {version:_version,approvedSampleId:_app
 export function voiceBudgetAction(w,input){
  const s=w.voiceStudio||={active:voiceProfile(),revision:0};if(input.revision!==s?.revision)throw new VoiceError('VOICE_SYNTHESIS_BUSY');
  if(!['samples','viral','live'].includes(input.scope)||input.acceptUnknownCost!==true||!Number.isSafeInteger(input.characters)||input.characters<0||input.characters>100000||!Number.isSafeInteger(input.sessionCharacters)||input.sessionCharacters<0||input.sessionCharacters>input.characters)throw new VoiceError('VOICE_BUDGET_REQUIRED');
- s.budgets||={};s.budgets[input.scope]={characters:input.characters,sessionCharacters:input.sessionCharacters,unknownCostAccepted:true,at:new Date().toISOString()};s.revision++;
+ s.budgets||={};s.budgets[input.scope]={characters:input.characters,sessionCharacters:input.sessionCharacters,unknownCostAccepted:true,at:new Date().toISOString()};s.revision++;recordFinancialChange(w,'voice',input.scope,input);
 }
 // Persistent conservative character reservations; unknown charges are never released automatically.
 export async function synthesizeVoiceAsset({store,id,token,profile,text,scope='samples',sessionId='samples',signal,adapters=createMediaProviders(),campaignId,maxMicros,authorize=false}){

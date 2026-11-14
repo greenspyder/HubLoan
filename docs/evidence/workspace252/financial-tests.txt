@@ -1,0 +1,11 @@
+✔ financial controls preserve authentication, CAS, isolated persistence and no key disclosure (134.291112ms)
+✔ financial audit whitelists limits and never stores arbitrary credential input (0.23455ms)
+✔ studio transport returns only selected campaign and video details without mutating stored records (0.563201ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 371.366284
