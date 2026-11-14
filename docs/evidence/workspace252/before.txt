@@ -1,0 +1,1 @@
+Baseline captured from master e53a463; synthetic fixture only. No new interface assertions run against this baseline.

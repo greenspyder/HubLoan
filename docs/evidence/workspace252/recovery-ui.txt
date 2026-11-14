@@ -1,0 +1,1 @@
+PASS: selected campaign recovery; explicit unknown-charge consent; auth blocked until reconnect; mobile/desktop. No resume or paid calls.

@@ -1,3 +1,4 @@
+import {studioWorkspaceView} from './studio-workspace-view.mjs';
 import {ProviderFailure} from './provider-failures.mjs';
 import {synthesizeVoiceAsset,voiceBudgetAction} from './universal-voice.mjs';
 import {voiceError,VoiceError} from './voice-errors.mjs';
@@ -30,7 +31,7 @@ import { createCommerce } from './commerce.mjs';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { resolve, sep, extname } from 'node:path';
-import { AppError, decryptKey, workspaceId, publicWorkspace, encryptKey, text, TEXT_MODELS, IMAGE_MODELS, addAgent, addMission, missionById, queueMission, approveMission, reviewMission, cancelMission, recoverStale } from './domain.mjs';
+import { AppError, decryptKey, workspaceId, publicWorkspace as fullWorkspace, encryptKey, text, TEXT_MODELS, IMAGE_MODELS, addAgent, addMission, missionById, queueMission, approveMission, reviewMission, cancelMission, recoverStale } from './domain.mjs';
 import { recordExperiment } from './market.mjs';
 import { createRunner } from './runner.mjs';
 import { createProject, projectAction, reconcileProjects, syncAutonomy } from './autonomy.mjs';
@@ -70,7 +71,8 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
   const server = createServer(async (request, response) => {
     try {
       const url = new URL(request.url, 'http://localhost');
-      if (url.pathname === '/health' && request.method === 'GET') return send(response, 200, { status: 'ok', service: 'hubloan-agents', storage: store.mode, release:'astra-recovery-2.5.1', commit:/^[a-f0-9]{40}$/.test(process.env.RENDER_GIT_COMMIT||'')?process.env.RENDER_GIT_COMMIT:null });
+      const publicWorkspace=(...args)=>{const data=fullWorkspace(...args);return url.searchParams.get('view')==='studio'?studioWorkspaceView(data,{campaignIds:url.searchParams.getAll('campaign'),productionId:url.searchParams.get('production')}):data;};
+      if (url.pathname === '/health' && request.method === 'GET') return send(response, 200, { status: 'ok', service: 'hubloan-agents', storage: store.mode, release:'production-workspace-2.5.2', commit:/^[a-f0-9]{40}$/.test(process.env.RENDER_GIT_COMMIT||'')?process.env.RENDER_GIT_COMMIT:null });
       if (!url.pathname.startsWith('/api/')) {
         if (request.method !== 'GET' && request.method !== 'HEAD') throw new AppError('Rota não encontrada.', 404);
         const path = resolve(root, '.' + decodeURIComponent(url.pathname));

@@ -1,3 +1,4 @@
+import {recordFinancialChange} from './financial-audit.mjs';
 import {randomUUID,createHash} from 'node:crypto';
 import {AppError,encryptKey,decryptKey} from './domain.mjs';
 import {createMediaProviders,providerRegistry,soulModel} from './media-providers/index.mjs';
@@ -9,7 +10,7 @@ export function configureMultimodal(w,input,token){const s=state(w);if(input.rev
  else if(input.action==='connect'){if(!['elevenlabs','higgsfield'].includes(input.provider)||typeof input.key!=='string'||input.key.length<12||input.key.length>512||/[\r\n]/.test(input.key))throw new AppError('Credencial inválida.');s.connections[input.provider]={secret:encryptKey(input.key,token),status:'SAVED_NOT_VERIFIED'};}
  else if(input.action==='disconnect'){if(!['elevenlabs','higgsfield'].includes(input.provider))throw new AppError('Provedor inválido.');delete s.connections[input.provider];}
  else if(input.action==='narration'){const c=s.connections.elevenlabs,voice=c?.voices?.find(v=>v.id===input.voiceId),model=c?.models?.find(m=>m.id===input.model);if(!voice||!model||!model.languages.some(l=>l.language_id==='pt'))throw new AppError('Consulte uma voz e um modelo com português disponíveis.');s.narration={version:(s.narration?.version||0)+1,provider:'elevenlabs',voiceId:voice.id,model:model.id,settings:{stability:.6,similarity_boost:.75,...(model.style?{style:.15}:{})},approval:'TEST_PROFILE_ONLY',liveValidated:false};}
- else throw new AppError('Ação de provedor inválida.');s.revision++;return publicMultimodal(w);}
+ else throw new AppError('Ação de provedor inválida.');s.revision++;recordFinancialChange(w,'media',input.action,input);return publicMultimodal(w);}
 export async function refreshMediaProvider(store,id,token,provider,adapters=createMediaProviders()){
  if(provider!=='elevenlabs')throw new AppError('Higgsfield: saldo de API e catálogo completo não têm consulta implementada; uma estimativa autenticada verifica acesso ao adaptador selecionado.',409);
  const w=(await store.read(id)).workspace,connection=w.multimodal?.connections[provider];if(!connection?.secret)throw new AppError('PROVIDER_NOT_CONNECTED',409);const saved=JSON.stringify(connection.secret);

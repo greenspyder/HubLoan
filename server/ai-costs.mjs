@@ -1,3 +1,4 @@
+import {recordFinancialChange} from './financial-audit.mjs';
 import {providerOperationContext} from './provider-operation-context.mjs';
 import { selectedModel, estimatedTextUsd } from './models.mjs';
 import { randomUUID, createHash } from 'node:crypto';
@@ -10,6 +11,7 @@ export function costExposure(entry) {
  return Number.isSafeInteger(entry.confirmedMinor) && entry.confirmedMinor >= 0 ? entry.confirmedMinor : entry.reservedMinor;
 }
 export function configureCosts(w,input) {
+ const revision=init(w).revision||0;if(input.revision!==undefined&&input.revision!==revision)throw new AppError('Orçamento mudou. Atualize antes de salvar.',409);
  for(const k of ['dailyMinor','monthlyMinor','callMinor']) if(!Number.isSafeInteger(input[k]) || input[k]<1 || input[k]>10000000) throw new AppError('Limites devem ser centavos positivos.');
  for(const k of kinds) if(!Number.isSafeInteger(input.ceilings?.[k]) || input.ceilings[k]<1 || input.ceilings[k]>10000000) throw new AppError('Informe a reserva por chamada em centavos.');
  if(input.taskMinor !== undefined && (!Number.isSafeInteger(input.taskMinor) || input.taskMinor < 1 || input.taskMinor > 10000000)) throw new AppError('Limite por tarefa inválido.');
@@ -17,7 +19,8 @@ export function configureCosts(w,input) {
  for(const kind of kinds) for(const [dimension,limit] of Object.entries({call:input.callMinor,task:taskMinor,day:input.dailyMinor,month:input.monthlyMinor})) {
   if(input.ceilings[kind]>limit) throw budgetError(dimension,0,0,limit,input.ceilings[kind],kind,'configuração');
  }
- Object.assign(init(w),{taskMinor,enabled:input.enabled===true,dailyMinor:input.dailyMinor,monthlyMinor:input.monthlyMinor,callMinor:input.callMinor,ceilings:{...input.ceilings}});
+ Object.assign(init(w),{taskMinor,enabled:input.enabled===true,dailyMinor:input.dailyMinor,monthlyMinor:input.monthlyMinor,callMinor:input.callMinor,ceilings:{...input.ceilings},revision:revision+1});
+ recordFinancialChange(w,'openai','limits',input);
 }
 export function costTotals(entries) {
  return { hasConfirmedCosts:entries.some(e=>e.confirmedMinor!=null), confirmedMinor:entries.reduce((n,e)=>n+(e.confirmedMinor ?? 0),0), reservedMinor:entries.filter(e=>e.status==='pending').reduce((n,e)=>n+e.reservedMinor,0), unknownMinor:entries.filter(e=>e.status!=='pending' && e.status!=='not_sent' && costExposure(e)>0 && e.confirmedMinor==null).reduce((n,e)=>n+e.reservedMinor,0), exposureMinor:entries.reduce((n,e)=>n+costExposure(e),0) };
