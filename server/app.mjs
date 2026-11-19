@@ -72,7 +72,7 @@ export function createApp({ store, provider, staticDirectory = '../frontend/dist
     try {
       const url = new URL(request.url, 'http://localhost');
       const publicWorkspace=(...args)=>{const data=fullWorkspace(...args);return url.searchParams.get('view')==='studio'?studioWorkspaceView(data,{campaignIds:url.searchParams.getAll('campaign'),productionId:url.searchParams.get('production')}):data;};
-      if (url.pathname === '/health' && request.method === 'GET') return send(response, 200, { status: 'ok', service: 'hubloan-agents', storage: store.mode, release:'production-workspace-2.5.2', commit:/^[a-f0-9]{40}$/.test(process.env.RENDER_GIT_COMMIT||'')?process.env.RENDER_GIT_COMMIT:null });
+      if (url.pathname === '/health' && request.method === 'GET') return send(response, 200, { status: 'ok', service: 'hubloan-agents', storage: store.mode, release:'astra-one-line-2.5.3', commit:/^[a-f0-9]{40}$/.test(process.env.RENDER_GIT_COMMIT||'')?process.env.RENDER_GIT_COMMIT:null });
       if (!url.pathname.startsWith('/api/')) {
         if (request.method !== 'GET' && request.method !== 'HEAD') throw new AppError('Rota não encontrada.', 404);
         const path = resolve(root, '.' + decodeURIComponent(url.pathname));

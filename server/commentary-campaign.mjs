@@ -22,7 +22,8 @@ export function authorizeCommentary(w,c,input,now){
  if(count&&(!w.multimodal?.dailyLimitMicros||input.maxMicros>w.multimodal.dailyLimitMicros))throw new AppError('Configure limite diário suficiente.');
  for(const resource of c.resourceEstimate)if(!w.multimodal?.connections[resource.provider]?.secret)throw new AppError('PROVIDER_NOT_CONNECTED: '+resource.provider);
  c.mediaAuthorization={maxMicros:count?input.maxMicros:0,operationCapMicros:count?Math.floor(input.maxMicros/count):0,planVersion:c.planVersion,at:new Date(now).toISOString(),unknownCostAccepted:count>0,unknownBalanceAccepted:count>0};
- const planning=w.missions.find(m=>m.id===c.missionId);if(planning&&planning.status!=='review'){planning.status='review';planning.phase='Plano persistido recuperado; nenhuma chamada repetida';planning.events.push({at:new Date(now).toISOString(),message:'Etapa de planejamento concluída a partir do plano persistido.'});}const m=addMission(w,{title:c.plans[0].title,brief:c.plans[0].scenes.map(s=>s.title).join('\n'),kind:'video',agentId:planning?.agentId||w.agents.find(a=>a.enabled)?.id});m.campaignId=c.id;m.visualCommentary={manualFormat:c.manualFormat||'visual-commentary',plan:structuredClone(c.plans[0]),narration:structuredClone(c.narrationSnapshot),planVersion:c.planVersion};c.productionIds=[m.id];c.state='Rendering';c.deadline=now+1800000;c.events.push({at:new Date(now).toISOString(),state:'Rendering',detail:'Orçamento autorizado pelo supervisor; produção na fila existente.'});queueMission(w,m.id);c.revision++;return c;
+ const planning=w.missions.find(m=>m.id===c.missionId);if(planning&&planning.status!=='review'){planning.status='review';planning.phase='Plano persistido recuperado; nenhuma chamada repetida';planning.events.push({at:new Date(now).toISOString(),message:'Etapa de planejamento concluída a partir do plano persistido.'});}if(w.missions.filter(m=>['queued','running'].includes(m.status)).length+c.plans.length>5)throw new AppError('Aguarde espaço na fila.',409);
+ const jobs=c.plans.map(plan=>{const m=addMission(w,{title:plan.title,brief:plan.scenes.map(s=>s.title).join('\n'),kind:'video',agentId:planning?.agentId||w.agents.find(a=>a.enabled)?.id});m.campaignId=c.id;m.visualCommentary={manualFormat:c.manualFormat||'visual-commentary',plan:structuredClone(plan),narration:structuredClone(c.narrationSnapshot),planVersion:c.planVersion};return m;});c.productionIds=jobs.map(m=>m.id);c.targetCount=jobs.length;c.state='Rendering';c.deadline=now+1800000;c.events.push({at:new Date(now).toISOString(),state:'Rendering',detail:'Orçamento autorizado pelo supervisor; produção na fila existente.'});for(const m of jobs)queueMission(w,m.id);c.revision++;return c;
 }
 export async function produceCommentary({store,id,token,mission,signal,checkpoint}){
  const w=(await store.read(id)).workspace,c=w.creativeCampaigns.find(c=>c.id===mission.campaignId),config=mission.visualCommentary,assets={};signal=AbortSignal.any([signal,AbortSignal.timeout(Math.max(1,Math.min(480000,c.deadline-Date.now())))]);
@@ -34,7 +35,7 @@ export async function produceCommentary({store,id,token,mission,signal,checkpoin
 }
 export async function estimateCommentary({store,id,token,campaignId,revision,adapters}){
  const w=(await store.read(id)).workspace,c=w.creativeCampaigns?.find(c=>c.id===campaignId);if(!c||c.state!=='AwaitingBudget'||c.revision!==revision)throw new AppError('Plano alterado ou indisponível.',409);
- const resources=[];for(const r of c.resourceEstimate){const scene=c.plans[0].scenes.find(s=>s.id===r.sceneId),connection=w.multimodal?.connections[r.provider];let estimate=null,error=null;
+ const resources=[];for(const r of c.resourceEstimate){const scene=c.plans[r.planIndex||0].scenes.find(s=>s.id===r.sceneId),connection=w.multimodal?.connections[r.provider];let estimate=null,error=null;
   if(!connection?.secret)error='PROVIDER_NOT_CONNECTED';
   else try{if(r.operation==='image')estimate=(await adapters.estimateImage(decryptKey(connection.secret,token),{model:scene.model,prompt:scene.prompt})).usdMicros;else{const account=await adapters.inspectEleven(decryptKey(connection.secret,token));const model=account.models.find(m=>m.id===c.narrationSnapshot?.model);if(!model)throw Error('MODEL_UNAVAILABLE');r.estimatedCredits=Number.isFinite(model.characterMultiplier)?r.quantity*model.characterMultiplier:null;r.quota=account.quota;}}catch(e){error=e.code||'ESTIMATE_UNAVAILABLE';}
   resources.push({...r,estimatedMicros:estimate,error,estimatedAt:new Date().toISOString()});
@@ -43,6 +44,7 @@ export async function estimateCommentary({store,id,token,campaignId,revision,ada
 }
 
 export function editManualPlan(w,c,input){
+ if((c.plans?.length||0)>1)throw new AppError('Edição individual de lote ainda indisponível; preserve os planos existentes.',409);
  if(c.state!=='AwaitingBudget')throw new AppError('O plano só pode ser editado antes da produção.',409);
  const format=manualFormat(input.format||c.manualFormat);
  if(format?.adapter!=='visual-commentary')throw new AppError('Formato narrativo indisponível.');

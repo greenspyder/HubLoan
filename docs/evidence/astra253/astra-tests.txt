@@ -1,0 +1,22 @@
+✔ regression: short comedy rejected by original exact condition is valid without weakening timeline/actions (3.039765ms)
+✔ narrative grammar respects meme, montage, commentary and traditional arcs; targeted repair rejects unrelated edits (1.171953ms)
+✔ briefing only creates one-line campaign without requiring voice/format, preserves long input and legacy counts (2.790078ms)
+✔ registry does not mistake saved credentials for available remote generation, never exposes keys (166.70994ms)
+✔ research sources, bounded workspace cache, expiry, absent data and unknown paid errors (4.674644ms)
+✔ controlled planning acceptance A: system orchestration, not real-model artistic proof (93.254722ms)
+✔ controlled planning acceptance B: system orchestration, not real-model artistic proof (11.246685ms)
+✔ controlled planning acceptance C: system orchestration, not real-model artistic proof (9.775901ms)
+✔ controlled planning acceptance D: system orchestration, not real-model artistic proof (17.525864ms)
+✔ multiple videos require per-plan authorization and no model or media call before consent (18.547871ms)
+✔ targeted correction changes one beat while keeping all valid plan content (19.996531ms)
+✔ unknown planner outcome survives runner restart; completed intent and research are reused without new paid submission (26.757295ms)
+✔ budget refusal and provider timeout do not consume creative repair attempts (5.494538ms)
+✔ end-to-end local MP4 through existing runner, controlled model only, no paid providers or synthetic voice (4824.250368ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5736.475897

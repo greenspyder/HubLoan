@@ -11,7 +11,7 @@ import '../creative-studio.css';
 import {agentApi,type Workspace} from '../services/agentApi';
 const formats={comedy:'Lume Comedy',battle:'Snake Battles',champion:'Choose Your Champion'};
 export function ViralContentPanel({data,setData}:{data:Workspace;setData:(w:Workspace)=>void}){
- const [params,setParams]=useSearchParams();const tab=params.get('studio')||'campaigns';
+ const [params,setParams]=useSearchParams();const tab=params.get('studio')||'create';
  const [error,setError]=useState(''),[busy,setBusy]=useState(false),[preview,setPreview]=useState('');
  useEffect(()=>()=>{if(preview)URL.revokeObjectURL(preview);},[preview]);
  const [voiceMode,setVoiceMode]=useState('neural'),[headScale,setHeadScale]=useState(1.08),[effectsGain,setEffectsGain]=useState(.35);

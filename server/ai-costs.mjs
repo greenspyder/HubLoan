@@ -45,7 +45,7 @@ export function projectCostScope(w, projectId) {
 }
 export function preflightCosts(w,taskId,operations,now=Date.now()) {
  if(!operations.length)return {requiredMinor:0,operations};
- const c=init(w);if(!c.enabled)throw new AppError('Configure e ative o orçamento de IA antes de executar.');
+ const c=init(w);if(!c.enabled){const e=new AppError('Configure e ative o orçamento de IA antes de executar.');e.code='BUDGET_REQUIRED';throw e;}
  for(const kind of operations) if(!kinds.includes(kind))throw new AppError('Operação de IA inválida.');
  const required=operations.reduce((n,k)=>n+c.ceilings[k],0),date=new Date(now).toISOString();
  for(const kind of operations)if(c.ceilings[kind]>c.callMinor)throw budgetError('call',0,0,c.callMinor,c.ceilings[kind],kind);
@@ -75,7 +75,7 @@ export function costProvider(store,provider,id,taskId,agentId,{beforeSend=async(
  if(kind!=='image') { const {result:model}=await store.mutate(id,w=>selectedModel(w,agentId,kind)); args[1]=model; }
  const hash=createHash('sha256').update(JSON.stringify([kind,args[1],args.slice(2).map(v=>v instanceof AbortSignal?null:v)])).digest('hex'),entryId=randomUUID();
  const {result:cached}=await store.mutate(id,w=>{
- const c=init(w);if(!c.enabled)throw new AppError('Configure e ative o orçamento de IA antes de executar.');
+ const c=init(w);if(!c.enabled){const e=new AppError('Configure e ative o orçamento de IA antes de executar.');e.code='BUDGET_REQUIRED';throw e;}
  const cache=kind==='text' && c.cache.find(e=>e.hash===hash && Date.now()-e.time<86400000); if(cache) return cache.result;
  preflightCosts(w,taskId,[kind]);
  c.entries.push({id:entryId,at:new Date().toISOString(),taskId,executionId:w.missions?.find(m=>m.id===taskId)?.executionId,agentId,model:args[1],kind,reservedMinor:c.ceilings[kind],confirmedMinor:null,status:'pending',tokens:0,sentAt:null});
