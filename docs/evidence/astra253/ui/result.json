@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "viewports": [
+    1440,
+    390
+  ],
+  "checks": [
+    "one-line default",
+    "suggestion fills input",
+    "consent required",
+    "finance link preserves draft",
+    "advanced opens",
+    "no horizontal overflow",
+    "single campaign navigation",
+    "missing real key fails safely"
+  ],
+  "paidCalls": 0
+}

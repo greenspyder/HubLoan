@@ -1,0 +1,168 @@
+{
+  "notice": "Controlled model fixtures. Real local renderer/runner MP4; NOT real-model creativity, narration or external generation.",
+  "campaignId": "59e2c31d-45fa-4e2c-bffd-af77c5346314",
+  "productionId": "52e92232-79a7-43e6-8396-143ba3e7afec",
+  "events": [
+    {
+      "at": "2026-11-19T10:29:47.838Z",
+      "state": "Interpreting",
+      "detail": "Solicitação recebida; nenhuma proposta ou cena fornecida pelo operador."
+    },
+    {
+      "state": "Interpreting",
+      "detail": "Interpretando intenção, idioma e restrições do briefing.",
+      "at": "2026-11-19T10:29:47.838Z"
+    },
+    {
+      "state": "Researching",
+      "detail": "Referências atuais não necessárias para esta intenção.",
+      "at": "2026-11-19T10:29:47.839Z"
+    },
+    {
+      "state": "Ideating",
+      "detail": "Comparando três premissas internas; quantidade de vídeos definida pelo pedido.",
+      "at": "2026-11-19T10:29:47.839Z"
+    },
+    {
+      "state": "Selecting",
+      "detail": "Premissas selecionadas pelo modelo, com justificativa qualitativa.",
+      "at": "2026-11-19T10:29:47.844Z"
+    },
+    {
+      "state": "Scripting",
+      "detail": "Roteiros e intenção vocal preservados nos planos.",
+      "at": "2026-11-19T10:29:47.844Z"
+    },
+    {
+      "state": "Planning",
+      "detail": "Planos conferidos contra capacidades, narrativa, tempo e disponibilidade.",
+      "at": "2026-11-19T10:29:47.845Z"
+    },
+    {
+      "state": "AwaitingBudget",
+      "at": "2026-11-19T10:29:47.845Z",
+      "detail": "1 plano(s) pronto(s) para autorização; nenhuma mídia paga gerada."
+    },
+    {
+      "at": "2026-11-19T10:29:47.849Z",
+      "state": "Rendering",
+      "detail": "Orçamento autorizado pelo supervisor; produção na fila existente."
+    },
+    {
+      "at": "2026-11-19T10:29:52.652Z",
+      "state": "Validating",
+      "detail": "Verificar artefatos, planos e integridade técnica."
+    },
+    {
+      "at": "2026-11-19T10:29:52.652Z",
+      "state": "ReadyForReview",
+      "detail": "Artefatos tecnicamente válidos; revisão humana pendente."
+    }
+  ],
+  "plans": [
+    {
+      "version": 1,
+      "format": "visual-commentary",
+      "narrativeKind": "comedy",
+      "seconds": 15,
+      "title": "Teste controlado",
+      "premise": "Ensaio técnico local",
+      "creativeReview": "Hipótese interna sem aprovação artística",
+      "scenes": [
+        {
+          "id": "scene-0",
+          "seconds": 5,
+          "goal": "Mudança visual 0",
+          "mechanism": "Contraste",
+          "narration": "",
+          "title": "Etapa 0",
+          "prompt": "Diagrama abstrato original",
+          "visual": "local-diagram",
+          "motion": "push-in",
+          "annotation": "none",
+          "tone": "restrained",
+          "beat": "hook",
+          "transition": "cut",
+          "model": null
+        },
+        {
+          "id": "scene-1",
+          "seconds": 5,
+          "goal": "Mudança visual 1",
+          "mechanism": "Contraste",
+          "narration": "",
+          "title": "Etapa 1",
+          "prompt": "Diagrama abstrato original",
+          "visual": "local-diagram",
+          "motion": "pan-left",
+          "annotation": "none",
+          "tone": "restrained",
+          "beat": "situation",
+          "transition": "cut",
+          "model": null
+        },
+        {
+          "id": "scene-2",
+          "seconds": 5,
+          "goal": "Mudança visual 2",
+          "mechanism": "Contraste",
+          "narration": "",
+          "title": "Etapa 2",
+          "prompt": "Diagrama abstrato original",
+          "visual": "local-diagram",
+          "motion": "reveal",
+          "annotation": "none",
+          "tone": "restrained",
+          "beat": "twist",
+          "transition": "cut",
+          "model": null
+        }
+      ]
+    }
+  ],
+  "report": {
+    "format": "visual-commentary",
+    "seconds": 15,
+    "width": 360,
+    "height": 640,
+    "audio": false,
+    "distinctFrames": 225,
+    "technicalStatus": "TECHNICALLY_VALID",
+    "qualityStatus": "REQUIRES_HUMAN_REVIEW",
+    "artisticEligibility": {
+      "eligible": true,
+      "reasons": []
+    },
+    "resources": [
+      {
+        "sceneId": "scene-0",
+        "visual": "local-diagram",
+        "image": null,
+        "speech": null
+      },
+      {
+        "sceneId": "scene-1",
+        "visual": "local-diagram",
+        "image": null,
+        "speech": null
+      },
+      {
+        "sceneId": "scene-2",
+        "visual": "local-diagram",
+        "image": null,
+        "speech": null
+      }
+    ],
+    "captions": [],
+    "wallMs": 4770,
+    "sha256": "90459d447b0422ccba2a98fa90c1c96f521de4b4004feae4ded11f8e5d4253b6",
+    "creativeReview": {
+      "source": "Astra-plan",
+      "text": "Hipótese interna sem aprovação artística",
+      "artifactReviewed": false
+    },
+    "infrastructureCost": "UNKNOWN",
+    "manualFormat": "absurd-documentary"
+  },
+  "sha256": "90459d447b0422ccba2a98fa90c1c96f521de4b4004feae4ded11f8e5d4253b6"
+}
