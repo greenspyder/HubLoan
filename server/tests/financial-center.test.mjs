@@ -7,6 +7,7 @@ test('financial controls preserve authentication, CAS, isolated persistence and 
  const store=await createStore({file:':memory:'}),app=createApp({store,provider:{}});await new Promise(r=>app.server.listen(0,'127.0.0.1',r));t.after(async()=>{await app.close();await store.close();});const base=`http://127.0.0.1:${app.server.address().port}/api/agents`;
  const call=async(path,input,token='a'.repeat(64))=>{const r=await fetch(base+path,{method:input?'POST':'GET',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:input?JSON.stringify(input):undefined});return {status:r.status,data:await r.json()};};
  assert.equal((await call('/workspace',null,'invalid')).status,401);
+ assert.equal((await call('/workspace')).data.aiCosts.revision,0);
  const limits={enabled:true,dailyMinor:100,monthlyMinor:200,callMinor:20,taskMinor:50,ceilings:{text:10,research:10,vision:10,image:20},revision:0};
  const results=await Promise.all([call('/ai-costs',limits),call('/ai-costs',limits)]);assert.deepEqual(results.map(r=>r.status).sort(),[200,409]);
  const voice=await call('/voice-studio',{action:'budget',revision:0,scope:'live',characters:500,sessionCharacters:50,acceptUnknownCost:true});assert.equal(voice.status,200);assert.equal(voice.data.voiceStudio.budgets.live.sessionCharacters,50);

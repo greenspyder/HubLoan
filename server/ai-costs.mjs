@@ -28,7 +28,7 @@ export function costTotals(entries) {
 export function publicCosts(w,now=Date.now()) {
  const c=init(w),date=new Date(now).toISOString();
  const day=costTotals(c.entries.filter(e=>e.at.startsWith(date.slice(0,10)))),month=costTotals(c.entries.filter(e=>e.at.startsWith(date.slice(0,7))));
- return {...c,cache:undefined,dayMinor:day.exposureMinor,monthMinor:month.exposureMinor,day,month,entries:c.entries.slice(-100).map(e=>({...e,exposureMinor:costExposure(e)}))};
+ return {...c,revision:c.revision||0,cache:undefined,dayMinor:day.exposureMinor,monthMinor:month.exposureMinor,day,month,entries:c.entries.slice(-100).map(e=>({...e,exposureMinor:costExposure(e)}))};
 }
 function budgetError(dimension,used,reserved,limit,required,kind,operation='chamada') {
  const labels={call:'por chamada',task:'da tarefa',day:'diário',month:'mensal',experiment:'do experimento',project:'do projeto'};
