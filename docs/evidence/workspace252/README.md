@@ -37,3 +37,5 @@ Os controles de produção e recuperação foram preservados. A central utiliza 
 ## Correção do CI
 
 A primeira execução remota aprovou backend (307 testes, 6 skips) e build, mas reprovou `set-state-in-effect` na atualização ao selecionar detalhes. A atualização foi agendada com cancelamento no cleanup para evitar trabalho pendente ao trocar rapidamente de seleção; lint, build e navegação foram revalidados. O merge aguarda o CI do commit corrigido.
+
+A exportação explícita de histórico busca o snapshot completo sob autenticação, preservando o backup anterior mesmo com a navegação compacta. Teste de navegador verifica que esse download não usa a projeção resumida.

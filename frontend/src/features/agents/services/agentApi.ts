@@ -58,7 +58,7 @@ export function restoreAccessCode(value: string) {
 }
 async function request<T>(path: string, method = 'GET', body?: object): Promise<T> {
   let response: Response;
-  if(window.location.pathname==='/agentes/viral'){
+  if(window.location.pathname==='/agentes/viral'&&path!=='/workspace?archive=1'){
     const current=new URLSearchParams(window.location.search),url=new URL(path,window.location.origin);
     url.searchParams.set('view','studio');for(const key of ['campaign','financeCampaign']){const id=current.get(key);if(id)url.searchParams.append('campaign',id);}const production=current.get('production');if(production)url.searchParams.set('production',production);path=url.pathname+url.search;
   }
@@ -132,6 +132,7 @@ export const agentApi = {
   audienceAction: (id:string,action:string,input:object) => request<Workspace>(`/experiments/${id}/${action}`,'POST',input),
   addShort: (input:object) => request<Workspace>('/missions','POST',input),
   workspace: () => request<Workspace>('/workspace'),
+  workspaceArchive: () => request<Workspace>('/workspace?archive=1'),
   addProject: (input: ProjectInput) => request<Workspace>('/projects', 'POST', input),
   experiment: (projectId: string, decisionId: string, input: ExperimentInput) => request<Workspace>(`/projects/${projectId}/decisions/${decisionId}/feedback`, 'POST', input),
   projectAction: (id: string, action: 'pause' | 'resume') => request<Workspace>(`/projects/${id}/${action}`, 'POST'),
