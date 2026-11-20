@@ -1,4 +1,4 @@
-import {validateNarrative,narrativeKindFor,PlanValidationError} from './narrative-validation.mjs';
+import {validateNarrative,narrativeKindFor,PlanValidationError,validateNarrativeFormat} from './narrative-validation.mjs';
 // Executable vocabulary, not free-text interpretation or artistic scoring.
 export const sceneCapabilities={
  comedy:{seconds:18,actions:['performance','gameplay'],shots:['Front','Action','Follow'],scenes:4},
@@ -14,6 +14,7 @@ export function validateScenePlan(plan,format,lines,eventIds=[]){
   return {start:s.start,end:s.end,action:s.action,camera:s.camera,transition:s.transition,beat:s.beat,narration:s.narration,...(format==='battle'?{eventId:s.eventId}:{}),sound:'narration',caption:'from-narration'};
  });
  if(Math.abs(scenes.at(-1).end-c.seconds)>.01)throw new PlanValidationError('TIMELINE_DURATION',`scenes.${scenes.length-1}.end`,`Duração final deve ser ${c.seconds}s`);
+ validateNarrativeFormat(plan.narrativeKind||narrativeKindFor(format),format);
  validateNarrative(scenes,plan.narrativeKind||narrativeKindFor(format));
  if(lines.some((_,i)=>!scenes.some(s=>s.narration===i))||scenes.some((s,i)=>i>0&&s.narration<scenes[i-1].narration))throw Error('Narração deve cobrir as falas em ordem temporal.');
  if(new Set(scenes.map(s=>s.action)).size<2)throw Error('Plano sem progressão visual.');

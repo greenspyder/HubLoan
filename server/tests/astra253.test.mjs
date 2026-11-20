@@ -9,6 +9,7 @@ import {validateScenePlan} from '../creative-plan.mjs';
 import {validateCommentaryPlan} from '../visual-commentary.mjs';
 import {validateIntent,astraCapabilities,normalizeResearch,contextualResearch} from '../astra-one-line.mjs';
 import {validateNarrative,PlanValidationError,applyTargetedRepair} from '../narrative-validation.mjs';
+import {applyProgressionRepair} from '../narrative-repair.mjs';
 import {ProviderFailure} from '../provider-failures.mjs';
 const token='a'.repeat(64);
 const intent=(kind='comedy',quantity=1)=>({theme:'Cotidiano',objective:'Entretenimento',audience:'Brasil',language:'pt-BR',tone:kind==='traditional'?'sério':'irônico',genre:kind,references:[],characters:[],complexity:'2D',needsResearch:false,researchQuery:'',seconds:15,quantity,constraints:[],narrativeKind:kind});
@@ -23,7 +24,7 @@ test('regression: short comedy rejected by original exact condition is valid wit
  const p={version:1,narrativeKind:'comedy',scenes};assert.throws(()=>original(p),/Faltam começo/);
  // Original model had only legacy enum labels. Repair the one mislabelled situation, not the whole script.
  let error;try{validateScenePlan(p,'comedy',['O plano.','A quebra.']);}catch(e){error=e;}
- assert.equal(error.field,'scenes.1.beat');const repaired=applyTargetedRepair(p,error,{field:'scenes.1.beat',value:'situation'});
+ assert.equal(error.field,'scenes');const repaired=applyProgressionRepair(p,error,{mode:'relabel',sceneIndex:1,beat:'situation',evidence:{field:'script.0',quote:'O plano enfrenta um obstáculo.'},reason:'A fala descreve o obstáculo que desenvolve a situação.'},{kind:'comedy',script:['O plano enfrenta um obstáculo.','A quebra.']});
  assert.equal(validateScenePlan(repaired,'comedy',['O plano.','A quebra.']).scenes.length,4);assert.deepEqual(repaired.scenes[2],p.scenes[2]);
  const short={...repaired,scenes:repaired.scenes.map((s,i)=>({...s,beat:i===3?'twist':s.beat}))};assert.equal(validateScenePlan(short,'comedy',['O plano.','A quebra.']).scenes[3].beat,'twist');
  short.scenes[3].end=19;assert.throws(()=>validateScenePlan(short,'comedy',['a','b']),e=>e.rule==='TIMELINE_DURATION'&&e.field==='scenes.3.end');
@@ -31,7 +32,7 @@ test('regression: short comedy rejected by original exact condition is valid wit
 });
 test('narrative grammar respects meme, montage, commentary and traditional arcs; targeted repair rejects unrelated edits',()=>{
  for(const k of Object.keys(beats))assert.equal(validateCommentaryPlan(plan(k)).narrativeKind,k);
- const p=plan('traditional');p.scenes[2].beat='reaction';assert.throws(()=>validateCommentaryPlan(p),e=>e.rule==='NARRATIVE_ENDING');
+ const p=plan('traditional');p.scenes[2].beat='reaction';assert.throws(()=>validateCommentaryPlan(p),e=>e.rule==='NARRATIVE_ROLE');
  const e=new PlanValidationError('NARRATIVE_ENDING','scenes.2.beat','fim');assert.throws(()=>applyTargetedRepair(p,e,{field:'title',value:'overwrite'}),/REPAIR_SCOPE/);
  assert.throws(()=>validateNarrative([{beat:'hook'},{beat:'hook'},{beat:'payoff'}],'comedy'),/PROGRESSION/);
 });
@@ -70,7 +71,7 @@ test('multiple videos require per-plan authorization and no model or media call 
  }finally{await runner.close();await store.close();}
 });
 test('targeted correction changes one beat while keeping all valid plan content',async()=>{
- const store=await createStore({file:':memory:'});let repairs=0;const initial=output();initial.plans[0].scenes[1].beat='hook';const provider={text:async(k,m,r)=>({output:JSON.stringify(r.includes('Interprete o briefing')?intent():r.startsWith('Corrija somente')?(repairs++,{field:'scenes.1.beat',value:'situation'}):initial),model:'CONTROLLED',tokens:1})},runner=createRunner(store,provider,{intervalMs:86400000});try{await store.mutate('a',w=>{configure(w);campaignAction(w,{action:'start',mode:'astra',request:'Humor no escritório.',authorizeModelCall:true});});runner.unlock('a',token);await runner.tick();const w=(await store.read('a')).workspace,c=w.creativeCampaigns[0];assert.equal(c.state,'AwaitingBudget',w.missions[0].error);assert.equal(repairs,1);assert.equal(c.repairs[0].field,'scenes.1.beat');assert.equal(c.plans[0].scenes[0].prompt,initial.plans[0].scenes[0].prompt);}finally{await runner.close();await store.close();}
+ const store=await createStore({file:':memory:'});let repairs=0;const initial=output();initial.plans[0].scenes[1].beat='hook';const provider={text:async(k,m,r)=>({output:JSON.stringify(r.includes('Interprete o briefing')?intent():r.startsWith('Corrija somente')?(repairs++,{mode:'relabel',sceneIndex:1,beat:'situation',evidence:{field:'goal',quote:'Mudança visual 1'},reason:'A ação intermediária desenvolve a situação apresentada.'}):initial),model:'CONTROLLED',tokens:1})},runner=createRunner(store,provider,{intervalMs:86400000});try{await store.mutate('a',w=>{configure(w);campaignAction(w,{action:'start',mode:'astra',request:'Humor no escritório.',authorizeModelCall:true});});runner.unlock('a',token);await runner.tick();const w=(await store.read('a')).workspace,c=w.creativeCampaigns[0];assert.equal(c.state,'AwaitingBudget',w.missions[0].error);assert.equal(repairs,1);assert.equal(c.repairs[0].field,'scenes');assert.equal(c.repairs[0].sceneIndex,1);assert.equal(c.plans[0].scenes[0].prompt,initial.plans[0].scenes[0].prompt);}finally{await runner.close();await store.close();}
 });
 
 test('unknown planner outcome survives runner restart; completed intent and research are reused without new paid submission',async()=>{
