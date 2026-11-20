@@ -1,3 +1,4 @@
+import {narrativeContract} from './narrative-validation.mjs';
 import {manualFormat} from './creative-formats.mjs';
 import {synthesizeVoiceAsset} from './universal-voice.mjs';
 import {activeVoice} from './lume-voice.mjs';
@@ -7,7 +8,7 @@ import {executeMediaOperation} from './multimodal-studio.mjs';
 export async function planCommentary({store,id,mission,budgeted,checkpoint,signal,token}){
  const w=(await store.read(id)).workspace,c=w.creativeCampaigns.find(c=>c.id===mission.campaignId);if(!w.secret)throw new AppError('MODEL_NOT_CONNECTED: conecte o modelo para a Astra criar o roteiro.');
  const key=decryptKey(w.secret,token),narration=activeVoice(w).engine==='elevenlabs'&&activeVoice(w).approvedSampleId?activeVoice(w):null;
- const result=await checkpoint('text','Astra: plano multimodal',[1,c.request,c.requestedSeconds,narration],()=>budgeted.text(key,c.model,COMMENTARY_RULES+(manualFormat(c.manualFormat)?.direction||''),JSON.stringify({request:c.request,seconds:c.requestedSeconds,capabilities:commentaryCapabilities,narrationAvailable:!!narration,qualityPreference:c.qualityPreference,context:mission.creativeRequest}),5500,signal));
+ const result=await checkpoint('text','Astra: plano multimodal',[1,c.request,c.requestedSeconds,narration],()=>budgeted.text(key,c.model,COMMENTARY_RULES+(manualFormat(c.manualFormat)?.direction||''),JSON.stringify({request:c.request,seconds:c.requestedSeconds,capabilities:commentaryCapabilities,narrativeContract:narrativeContract('traditional'),narrationAvailable:!!narration,qualityPreference:c.qualityPreference,context:mission.creativeRequest}),5500,signal));
  if(result.truncated)throw new AppError('Plano multimodal truncado.');let raw,plan;try{raw=JSON.parse(result.output);plan=validateCommentaryPlan(raw.plan);}catch{const error=new AppError('O modelo retornou um plano inválido. O resultado foi preservado; revise o briefing em uma nova proposta.');error.code='PROVIDER_RESPONSE_INVALID';error.requiresNewPlan=true;throw error;}
  if(plan.seconds!==c.requestedSeconds||!Array.isArray(raw.proposals)||raw.proposals.length!==5||!Number.isInteger(raw.selectedIndex)||raw.selectedIndex<0||raw.selectedIndex>4)throw new AppError('Cinco propostas e seleção rastreável obrigatórias.');
  for(const p of raw.proposals)for(const k of ['title','premise','reason'])if(typeof p[k]!=='string'||!p[k].trim()||p[k].length>1000)throw new AppError('Proposta inválida.');

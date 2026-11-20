@@ -30,6 +30,10 @@ export function checkpointCall(store,id,missionId) {
    const claim=await store.mutate(id,w=>{
     const mission=missionById(w,missionId),ops=mission.externalOperations ||= [];
     if(mission.status!=='running')throw new ProviderFailure('RECOVERY_BLOCKED');
+    // A changed prompt/repair contract must not bypass an older uncertain operation.
+    // Same-key reconciliation remains supported; different-key work needs explicit authorization.
+    if(ops.some(o=>o.key!==key&&o.state==='UNKNOWN'&&!o.repeatAuthorizedAt))throw new ProviderFailure('PROVIDER_OUTCOME_UNKNOWN',{outcomeUnknown:true});
+    if(ops.some(o=>o.key!==key&&o.state==='SENDING'))throw new ProviderFailure('RECOVERY_BLOCKED');
     const previous=[...ops].reverse().find(o=>o.key===key);
     if(previous?.state==='SENDING')throw new ProviderFailure('RECOVERY_BLOCKED');
     if(previous?.state==='UNKNOWN'&&!previous.externalId&&!previous.repeatAuthorizedAt)throw new ProviderFailure('PROVIDER_OUTCOME_UNKNOWN',{outcomeUnknown:true});

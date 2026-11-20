@@ -1,0 +1,39 @@
+✔ regression: short comedy rejected by original exact condition is valid without weakening timeline/actions (2.857944ms)
+✔ narrative grammar respects meme, montage, commentary and traditional arcs; targeted repair rejects unrelated edits (1.166717ms)
+✔ briefing only creates one-line campaign without requiring voice/format, preserves long input and legacy counts (2.15746ms)
+✔ registry does not mistake saved credentials for available remote generation, never exposes keys (193.908076ms)
+✔ research sources, bounded workspace cache, expiry, absent data and unknown paid errors (9.607149ms)
+✔ controlled planning acceptance A: system orchestration, not real-model artistic proof (27.826309ms)
+✔ controlled planning acceptance B: system orchestration, not real-model artistic proof (8.314872ms)
+✔ controlled planning acceptance C: system orchestration, not real-model artistic proof (7.883343ms)
+✔ controlled planning acceptance D: system orchestration, not real-model artistic proof (8.020209ms)
+✔ multiple videos require per-plan authorization and no model or media call before consent (9.363102ms)
+✔ targeted correction changes one beat while keeping all valid plan content (11.732851ms)
+✔ unknown planner outcome survives runner restart; completed intent and research are reused without new paid submission (19.024112ms)
+✔ budget refusal and provider timeout do not consume creative repair attempts (4.987711ms)
+✔ end-to-end local MP4 through existing runner, controlled model only, no paid providers or synthetic voice (3800.444769ms)
+✔ reproduces original exact error with deterministic old validator (1.369723ms)
+✔ regression: progression diagnoses every intermediate candidate, not an arbitrary scalar (0.341464ms)
+✔ shared contract accepts comedy with full adapter validation and zero repair calls (1.190573ms)
+✔ shared contract accepts meme with full adapter validation and zero repair calls (0.2526ms)
+✔ shared contract accepts traditional with full adapter validation and zero repair calls (0.277228ms)
+✔ shared contract accepts montage with full adapter validation and zero repair calls (0.208514ms)
+✔ shared contract accepts commentary with full adapter validation and zero repair calls (0.216807ms)
+✔ lexical equivalence is repaired locally, never labels a hook by position (0.663529ms)
+✔ exact failing plan advances after evidence-based relabel; other scenes and fields untouched (0.497629ms)
+✔ all middle scenes inspected; correct candidate need not be index one (0.62436ms)
+✔ genuinely absent progression permits one bounded scene rewrite without changing assets or cost (0.469887ms)
+✔ rejects invented evidence, arbitrary budgets/assets, extra narration, wrong candidate and unrepaired output (1.277694ms)
+✔ full validation after patch rejects illegal timing; does not loop or increase attempts (0.445341ms)
+✔ budget failure and unknown paid outcome propagate unchanged, no second call (0.421996ms)
+✔ invalid role, missing structure and incompatible 3D narrative kind stay distinct (0.371319ms)
+✔ legacy campaign: missing progression repaired once and enqueues without regenerating valid proposals (781.962136ms)
+✔ changed repair contract cannot bypass unknown legacy paid operation; completed outputs are reused (1.934162ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4521.590698

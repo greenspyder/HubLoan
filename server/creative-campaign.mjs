@@ -1,5 +1,6 @@
 import {planOneLine} from './astra-one-line.mjs';
-import {PlanValidationError,applyTargetedRepair} from './narrative-validation.mjs';
+import {validateWithNarrativeRepair,NARRATIVE_REPAIR_RULES} from './narrative-repair.mjs';
+import {PlanValidationError,narrativeContract,narrativeKindFor} from './narrative-validation.mjs';
 import {campaignRecovery} from './campaign-recovery.mjs';
 import {manualFormat} from './creative-formats.mjs';
 import {planCommentary,authorizeCommentary,editManualPlan} from './commentary-campaign.mjs';
@@ -82,7 +83,7 @@ export function reconcileCampaigns(w,now=Date.now()){
   }
  }
 }
-export const CAMPAIGN_RULES=CREATIVE_MODEL_RULES+' Acrescente selection: [{index:0,reason:"comparação e justificativa"}] com exatamente três índices únicos: comedy, battle e mystery. Acrescente rejected:[{index:1,reason:"motivo"}] para os outros dois. Cada proposta selecionada deve incluir visualPlan:{version:1,scenes:[{start:0,end:6,action:"enum",camera:"enum",transition:"cut",beat:"hook",narration:0,eventId:"somente battle"}]}. Consulte capabilities e events. Para comedy use quatro cenas contínuas em 18 segundos, battle quatro em 25, mystery três de seis segundos em 18. Use apenas ações executáveis, sem inventar ações físicas ou resultados. As avaliações são julgamentos criativos, não previsões de viralidade.';
+export const CAMPAIGN_RULES=CREATIVE_MODEL_RULES+' Acrescente selection: [{index:0,reason:"comparação e justificativa"}] com exatamente três índices únicos: comedy, battle e mystery. Acrescente rejected:[{index:1,reason:"motivo"}] para os outros dois. Cada proposta selecionada deve incluir visualPlan:{version:1,scenes:[{start:0,end:6,action:"enum",camera:"enum",transition:"cut",beat:"papel permitido pelo contrato da etapa",narration:0,eventId:"somente battle"}]}. Consulte capabilities, narrativeContracts e events. A primeira cena usa opening.allowed, a última ending.allowed, e ao menos uma cena INTERMEDIÁRIA usa progression.allowed. Não copie o mesmo beat em todas as cenas. Para comedy use quatro cenas contínuas em 18 segundos, battle quatro em 25, mystery três de seis segundos em 18. Use apenas ações executáveis, sem inventar ações físicas ou resultados. As avaliações são julgamentos criativos, não previsões de viralidade.';
 export async function executeCampaign({store,id,mission,budgeted,checkpoint,signal,token}){
  if(mission.creativeRequest?.oneLine){try{return await planOneLine({store,id,mission,budgeted,checkpoint,signal,token});}catch(e){
   if(e instanceof PlanValidationError||e instanceof SyntaxError||/^CREATIVE_/.test(e.message)){const failure=new AppError(e.message);failure.code=e instanceof SyntaxError?'PROVIDER_RESPONSE_INVALID':'CREATIVE_PLAN_INVALID';failure.requiresNewPlan=true;throw failure;}throw e;
@@ -101,7 +102,7 @@ export async function executeCampaign({store,id,mission,budgeted,checkpoint,sign
  let lastError=null;
  for(let attempt=1;attempt<=c.attemptLimit;attempt++){
   await update(c=>{c.attempt=attempt;});
-  const result=await checkpoint('text','Planejar campanha',[1,c.request,attempt,lastError,researchContext],()=>budgeted.text(key,c.model,CAMPAIGN_RULES,JSON.stringify({request:c.request,research:researchContext,context:mission.creativeRequest,capabilities:sceneCapabilities,events,previousError:lastError}),7000,bounded));
+  const result=await checkpoint('text','Planejar campanha',[1,c.request,attempt,lastError,researchContext],()=>budgeted.text(key,c.model,CAMPAIGN_RULES,JSON.stringify({request:c.request,research:researchContext,context:mission.creativeRequest,capabilities:sceneCapabilities,narrativeContracts:Object.fromEntries(Object.keys(sceneCapabilities).map(f=>[f,narrativeContract(narrativeKindFor(f))])),events,previousError:lastError}),7000,bounded));
   try{
    if(result.truncated)throw Error('Resposta truncada.');const raw=JSON.parse(result.output);
    if(!Array.isArray(raw.selection)||raw.selection.length!==3||new Set(raw.selection.map(s=>s.index)).size!==3||raw.selection.some(s=>!Number.isInteger(s.index)||s.index<0||s.index>4||typeof s.reason!=='string'||!s.reason.trim()))throw Error('Seleção deve comparar três propostas.');
@@ -109,12 +110,12 @@ export async function executeCampaign({store,id,mission,budgeted,checkpoint,sign
    const selected=raw.selection.map(s=>raw.proposals?.[s.index]);if(new Set(selected.map(p=>p?.format)).size!==3||selected.some(p=>!sceneCapabilities[p?.format]))throw Error('Selecionar três adaptadores suportados distintos.');
    const plans=[];
    for(const [index,p] of selected.entries()){
-    try{plans.push(validateScenePlan(p.visualPlan,p.format,p.script,events.map(e=>e.id)));}
-    catch(error){if(!(error instanceof PlanValidationError))throw error;
-     const repaired=await checkpoint('text','Corrigir campo narrativo',[1,index,p.visualPlan,error.rule,error.field],()=>budgeted.text(key,c.model,'Repare somente o campo indicado; devolva JSON {field,value}. Preserve roteiro e cenas restantes.',JSON.stringify({plan:p.visualPlan,format:p.format,field:error.field,rule:error.rule,detail:error.message}),1000,bounded));
-     if(repaired.truncated)throw error;p.visualPlan=applyTargetedRepair(p.visualPlan,error,JSON.parse(repaired.output));plans.push(validateScenePlan(p.visualPlan,p.format,p.script,events.map(e=>e.id)));
-     await update(c=>{(c.repairs ||= []).push({proposal:index,field:error.field,rule:error.rule});});
-    }
+    const checked=await validateWithNarrativeRepair({plan:p.visualPlan,kind:p.visualPlan?.narrativeKind||narrativeKindFor(p.format),script:p.script,
+     onDiagnostic:d=>update(c=>{c.narrativeDiagnostics=[...(c.narrativeDiagnostics||[]),{...d,proposal:index,at:new Date().toISOString()}].slice(-30);}),
+     validate:draft=>validateScenePlan(draft,p.format,p.script,events.map(e=>e.id)),
+     requestRepair:payload=>checkpoint('text','Corrigir contrato narrativo',[2,index,p.visualPlan,payload.rule,payload.field],()=>budgeted.text(key,c.model,NARRATIVE_REPAIR_RULES,JSON.stringify(payload),1800,bounded))});
+    p.visualPlan=checked.draft;plans.push(checked.plan);
+    if(checked.repairs.length)await update(c=>{(c.repairs ||= []).push(...checked.repairs.map(r=>({...r,proposal:index})));});
    }
    const scripts=selected.map(p=>p.script.join(' '));for(let i=0;i<scripts.length;i++)for(let j=0;j<i;j++)if(scriptSimilarity(scripts[i],scripts[j])>.75)throw Error('Roteiros excessivamente semelhantes.');
    await update((c,w)=>{
@@ -125,7 +126,7 @@ export async function executeCampaign({store,id,mission,budgeted,checkpoint,sign
     raw.selection.forEach((selection,i)=>{const p=proposals[selection.index];p.visualPlan=plans[i];const e=creativeAction(w,{revision:w.creativeDirector.revision,action:'produce',proposalId:p.id,voiceMode:c.voiceMode}),m=missionById(w,e.missionId);m.campaignId=c.id;if(m.liveShort)m.liveShort.visualPlan=plans[i];else m.motionStory.visualPlan=plans[i];e.proposal.visualPlan=plans[i];c.productionIds.push(m.id);});
     c.plans=plans;event(c,'Rendering','Três produções enfileiradas automaticamente no runner existente.');
    });return;
-  }catch(error){if(error.budgetBlock||(error.code&&error.code!=='CREATIVE_PLAN_INVALID'))throw error;lastError=String(error.message).slice(0,1200);await update(c=>{c.lastError=lastError;c.events.push({at:new Date().toISOString(),state:'Ideating',detail:'Plano recusado; tentativa '+attempt+': '+lastError});});}
+  }catch(error){if(error instanceof PlanValidationError){const failure=new AppError(error.message);failure.code='CREATIVE_PLAN_INVALID';failure.requiresNewPlan=true;throw failure;}if(error.budgetBlock||(error.code&&error.code!=='CREATIVE_PLAN_INVALID'))throw error;lastError=String(error.message).slice(0,1200);await update(c=>{c.lastError=lastError;c.events.push({at:new Date().toISOString(),state:'Ideating',detail:'Plano recusado; tentativa '+attempt+': '+lastError});});}
  }
  throw new AppError('CREATIVE_ATTEMPTS_EXHAUSTED: '+lastError);
 }

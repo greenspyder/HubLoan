@@ -3,7 +3,7 @@ export function studioWorkspaceView(data,{campaignIds=[],productionId}={}) {
  const selected=new Set(campaignIds);
  return {...data,creativeCampaigns:data.creativeCampaigns.map(c=>{
   if(selected.has(c.id))return {...c,detailLoaded:true};
-  const {plans,decisions,quality,resourceEstimate,proposals,research,intent,repairs,adaptation,capabilitySnapshot,previousPlansSnapshot,...summary}=c;
+  const {plans,decisions,quality,resourceEstimate,proposals,research,intent,repairs,narrativeDiagnostics,adaptation,capabilitySnapshot,previousPlansSnapshot,...summary}=c;
   const milestones=new Map();for(const e of c.events||[])if(!milestones.has(e.state))milestones.set(e.state,{at:e.at,state:e.state,detail:''});
   return {...summary,detailLoaded:false,events:[...milestones.values()],decisions:[]};
  }),missions:data.missions.map(m=>{
